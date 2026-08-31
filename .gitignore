@@ -1,0 +1,22 @@
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+build/
+coverage/
+android/.gradle/
+android/local.properties
+windows/flutter/ephemeral/
+*.iml
+
+# Credentials and machine-local state must never enter GitHub.
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+node_modules/
+dist/
+docs/local_validation/

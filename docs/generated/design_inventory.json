@@ -1,0 +1,2315 @@
+{
+  "pages": [
+    {
+      "value": "view-home",
+      "line": 2144
+    },
+    {
+      "value": "view-search",
+      "line": 2230
+    },
+    {
+      "value": "view-library",
+      "line": 2253
+    },
+    {
+      "value": "view-settings",
+      "line": 2336
+    }
+  ],
+  "overlays": [
+    {
+      "value": "nowOverlay",
+      "line": 2439
+    },
+    {
+      "value": "lyricsOverlay",
+      "line": 2459
+    },
+    {
+      "value": "queueOverlay",
+      "line": 2488
+    },
+    {
+      "value": "sourceOverlay",
+      "line": 2494
+    },
+    {
+      "value": "sourceManagerOverlay",
+      "line": 2516
+    },
+    {
+      "value": "playlistOverlay",
+      "line": 2530
+    },
+    {
+      "value": "optionsOverlay",
+      "line": 2541
+    }
+  ],
+  "mediaQueries": [
+    {
+      "value": "(max-width: 1439px)",
+      "line": 955
+    },
+    {
+      "value": "(max-width: 1080px)",
+      "line": 968
+    },
+    {
+      "value": "(max-width: 1023px)",
+      "line": 977
+    },
+    {
+      "value": "(max-width: 760px)",
+      "line": 1005
+    },
+    {
+      "value": "(max-width: 599px)",
+      "line": 1014
+    },
+    {
+      "value": "(max-width: 370px)",
+      "line": 1105
+    },
+    {
+      "value": "(prefers-reduced-motion: reduce)",
+      "line": 1112
+    },
+    {
+      "value": "(max-width: 1180px)",
+      "line": 1361
+    },
+    {
+      "value": "(max-width: 760px)",
+      "line": 1366
+    },
+    {
+      "value": "(max-width: 599px)",
+      "line": 1373
+    },
+    {
+      "value": "(max-width: 900px) and (orientation: portrait), (max-width: 700px)",
+      "line": 1542
+    },
+    {
+      "value": "(max-height: 620px) and (orientation: landscape)",
+      "line": 1565
+    },
+    {
+      "value": "(max-width: 380px)",
+      "line": 1588
+    },
+    {
+      "value": "(max-width: 900px)",
+      "line": 1955
+    },
+    {
+      "value": "(max-width: 599px)",
+      "line": 1976
+    },
+    {
+      "value": "(max-height: 620px) and (orientation: landscape)",
+      "line": 2038
+    }
+  ],
+  "storageKeys": [
+    "yymusic-accent",
+    "yymusic-device",
+    "yymusic-favorites",
+    "yymusic-playlists",
+    "yymusic-queue",
+    "yymusic-recent",
+    "yymusic-repeat",
+    "yymusic-searches",
+    "yymusic-shuffle",
+    "yymusic-sources",
+    "yymusic-theme",
+    "yymusic-volume"
+  ],
+  "toggleIds": [
+    {
+      "value": "glassToggle",
+      "line": 2371
+    },
+    {
+      "value": "motionToggle",
+      "line": 2375
+    },
+    {
+      "value": "keepQueueToggle",
+      "line": 2385
+    },
+    {
+      "value": "dedupeToggle",
+      "line": 2390
+    },
+    {
+      "value": "gaplessToggle",
+      "line": 2393
+    },
+    {
+      "value": "normalizeToggle",
+      "line": 2394
+    },
+    {
+      "value": "autoplayToggle",
+      "line": 2395
+    }
+  ],
+  "events": [
+    "beforeunload",
+    "change",
+    "click",
+    "contextmenu",
+    "dblclick",
+    "drop",
+    "ended",
+    "error",
+    "fullscreenchange",
+    "input",
+    "keydown",
+    "loadedmetadata",
+    "offline",
+    "online",
+    "pause",
+    "play",
+    "pointerdown",
+    "resize",
+    "scroll",
+    "timeupdate",
+    "webkitfullscreenchange"
+  ],
+  "functions": [
+    {
+      "value": "clone",
+      "line": 2606
+    },
+    {
+      "value": "escapeHTML",
+      "line": 2607
+    },
+    {
+      "value": "uid",
+      "line": 2608
+    },
+    {
+      "value": "slug",
+      "line": 2609
+    },
+    {
+      "value": "formatTime",
+      "line": 2610
+    },
+    {
+      "value": "parseTime",
+      "line": 2614
+    },
+    {
+      "value": "formatBytes",
+      "line": 2618
+    },
+    {
+      "value": "showToast",
+      "line": 2626
+    },
+    {
+      "value": "openOverlay",
+      "line": 2633
+    },
+    {
+      "value": "closeOverlay",
+      "line": 2639
+    },
+    {
+      "value": "closeTopOverlay",
+      "line": 2644
+    },
+    {
+      "value": "registerTrack",
+      "line": 2659
+    },
+    {
+      "value": "findTrack",
+      "line": 2709
+    },
+    {
+      "value": "persistCore",
+      "line": 2745
+    },
+    {
+      "value": "applyTheme",
+      "line": 2754
+    },
+    {
+      "value": "hexToRgb",
+      "line": 2767
+    },
+    {
+      "value": "darken",
+      "line": 2771
+    },
+    {
+      "value": "pickOnAccent",
+      "line": 2772
+    },
+    {
+      "value": "linear",
+      "line": 2774
+    },
+    {
+      "value": "setAccent",
+      "line": 2778
+    },
+    {
+      "value": "restoreToggle",
+      "line": 2798
+    },
+    {
+      "value": "applySpecialToggle",
+      "line": 2803
+    },
+    {
+      "value": "setView",
+      "line": 2822
+    },
+    {
+      "value": "artHTML",
+      "line": 2843
+    },
+    {
+      "value": "trackRowHTML",
+      "line": 2844
+    },
+    {
+      "value": "attachDynamicTrackHandlers",
+      "line": 2853
+    },
+    {
+      "value": "enhanceStaticTracks",
+      "line": 2871
+    },
+    {
+      "value": "setArtworkClass",
+      "line": 2894
+    },
+    {
+      "value": "updateMediaUI",
+      "line": 2899
+    },
+    {
+      "value": "updateProgressUI",
+      "line": 2911
+    },
+    {
+      "value": "updatePlayUI",
+      "line": 2919
+    },
+    {
+      "value": "setRecent",
+      "line": 2925
+    },
+    {
+      "value": "stopAudioEngine",
+      "line": 2932
+    },
+    {
+      "value": "playTrack",
+      "line": 2938
+    },
+    {
+      "value": "togglePlay",
+      "line": 2959
+    },
+    {
+      "value": "playPrevious",
+      "line": 2970
+    },
+    {
+      "value": "nextTrack",
+      "line": 2977
+    },
+    {
+      "value": "handleEnded",
+      "line": 2992
+    },
+    {
+      "value": "updatePlaybackModes",
+      "line": 3033
+    },
+    {
+      "value": "getFullscreenElement",
+      "line": 3049
+    },
+    {
+      "value": "resolveLyrics",
+      "line": 3129
+    },
+    {
+      "value": "applyLyricsVisualTheme",
+      "line": 3144
+    },
+    {
+      "value": "renderFullscreenLyrics",
+      "line": 3149
+    },
+    {
+      "value": "updateLyricsPlaybackUI",
+      "line": 3168
+    },
+    {
+      "value": "requestBrowserFullscreen",
+      "line": 3187
+    },
+    {
+      "value": "exitBrowserFullscreen",
+      "line": 3198
+    },
+    {
+      "value": "syncPlayerFullscreenUI",
+      "line": 3206
+    },
+    {
+      "value": "syncLyricsFullscreenUI",
+      "line": 3220
+    },
+    {
+      "value": "openNowPlaying",
+      "line": 3233
+    },
+    {
+      "value": "openPlayerFullscreen",
+      "line": 3239
+    },
+    {
+      "value": "closeNowPlaying",
+      "line": 3249
+    },
+    {
+      "value": "togglePlayerFullscreen",
+      "line": 3258
+    },
+    {
+      "value": "openLyricsFullscreen",
+      "line": 3263
+    },
+    {
+      "value": "closeLyricsFullscreen",
+      "line": 3280
+    },
+    {
+      "value": "toggleLyricsBrowserFullscreen",
+      "line": 3290
+    },
+    {
+      "value": "handleFullscreenChange",
+      "line": 3297
+    },
+    {
+      "value": "renderQueue",
+      "line": 3323
+    },
+    {
+      "value": "closeTrackMenu",
+      "line": 3341
+    },
+    {
+      "value": "openTrackMenu",
+      "line": 3342
+    },
+    {
+      "value": "renderRecentSearches",
+      "line": 3378
+    },
+    {
+      "value": "filterTrack",
+      "line": 3383
+    },
+    {
+      "value": "renderSearch",
+      "line": 3388
+    },
+    {
+      "value": "renderLibraryTracks",
+      "line": 3418
+    },
+    {
+      "value": "setLibraryTab",
+      "line": 3426
+    },
+    {
+      "value": "renderRecent",
+      "line": 3436
+    },
+    {
+      "value": "systemPlaylistTracks",
+      "line": 3444
+    },
+    {
+      "value": "renderPlaylists",
+      "line": 3450
+    },
+    {
+      "value": "openPlaylistCollection",
+      "line": 3462
+    },
+    {
+      "value": "renderPlaylistChoices",
+      "line": 3469
+    },
+    {
+      "value": "openPlaylist",
+      "line": 3479
+    },
+    {
+      "value": "getAudioDuration",
+      "line": 3495
+    },
+    {
+      "value": "done",
+      "line": 3497
+    },
+    {
+      "value": "deriveMetadata",
+      "line": 3504
+    },
+    {
+      "value": "scanFiles",
+      "line": 3509
+    },
+    {
+      "value": "renderLocalTracks",
+      "line": 3537
+    },
+    {
+      "value": "renderLocalFolders",
+      "line": 3548
+    },
+    {
+      "value": "sourceStatusLabel",
+      "line": 3570
+    },
+    {
+      "value": "sourceBadgeClass",
+      "line": 3571
+    },
+    {
+      "value": "renderSources",
+      "line": 3572
+    },
+    {
+      "value": "testSource",
+      "line": 3588
+    },
+    {
+      "value": "resetSourceForm",
+      "line": 3593
+    },
+    {
+      "value": "openSourceForm",
+      "line": 3597
+    },
+    {
+      "value": "saveSourceForm",
+      "line": 3602
+    },
+    {
+      "value": "updateSleepUI",
+      "line": 3630
+    },
+    {
+      "value": "setSleep",
+      "line": 3643
+    },
+    {
+      "value": "openOptions",
+      "line": 3652
+    },
+    {
+      "value": "updateNetworkState",
+      "line": 3657
+    }
+  ],
+  "cssVariables": [
+    {
+      "value": "--bg-base",
+      "line": 11
+    },
+    {
+      "value": "--bg-elevated",
+      "line": 12
+    },
+    {
+      "value": "--bg-subtle",
+      "line": 13
+    },
+    {
+      "value": "--bg-pressed",
+      "line": 14
+    },
+    {
+      "value": "--text-primary",
+      "line": 15
+    },
+    {
+      "value": "--text-secondary",
+      "line": 16
+    },
+    {
+      "value": "--text-tertiary",
+      "line": 17
+    },
+    {
+      "value": "--text-on-accent",
+      "line": 18
+    },
+    {
+      "value": "--border-default",
+      "line": 19
+    },
+    {
+      "value": "--border-strong",
+      "line": 20
+    },
+    {
+      "value": "--icon-primary",
+      "line": 21
+    },
+    {
+      "value": "--icon-secondary",
+      "line": 22
+    },
+    {
+      "value": "--glass-fill",
+      "line": 23
+    },
+    {
+      "value": "--glass-stroke",
+      "line": 24
+    },
+    {
+      "value": "--glass-highlight",
+      "line": 25
+    },
+    {
+      "value": "--scrim",
+      "line": 26
+    },
+    {
+      "value": "--accent",
+      "line": 27
+    },
+    {
+      "value": "--accent-pressed",
+      "line": 28
+    },
+    {
+      "value": "--accent-rgb",
+      "line": 29
+    },
+    {
+      "value": "--accent-soft",
+      "line": 30
+    },
+    {
+      "value": "--success",
+      "line": 31
+    },
+    {
+      "value": "--warning",
+      "line": 32
+    },
+    {
+      "value": "--error",
+      "line": 33
+    },
+    {
+      "value": "--shadow-card",
+      "line": 34
+    },
+    {
+      "value": "--shadow-floating",
+      "line": 35
+    },
+    {
+      "value": "--radius-card",
+      "line": 36
+    },
+    {
+      "value": "--radius-control",
+      "line": 37
+    },
+    {
+      "value": "--radius-pill",
+      "line": 38
+    },
+    {
+      "value": "--motion-standard",
+      "line": 39
+    },
+    {
+      "value": "--motion-enter",
+      "line": 40
+    },
+    {
+      "value": "--bg-base",
+      "line": 44
+    },
+    {
+      "value": "--bg-elevated",
+      "line": 45
+    },
+    {
+      "value": "--bg-subtle",
+      "line": 46
+    },
+    {
+      "value": "--bg-pressed",
+      "line": 47
+    },
+    {
+      "value": "--text-primary",
+      "line": 48
+    },
+    {
+      "value": "--text-secondary",
+      "line": 49
+    },
+    {
+      "value": "--text-tertiary",
+      "line": 50
+    },
+    {
+      "value": "--border-default",
+      "line": 51
+    },
+    {
+      "value": "--border-strong",
+      "line": 52
+    },
+    {
+      "value": "--icon-primary",
+      "line": 53
+    },
+    {
+      "value": "--icon-secondary",
+      "line": 54
+    },
+    {
+      "value": "--glass-fill",
+      "line": 55
+    },
+    {
+      "value": "--glass-stroke",
+      "line": 56
+    },
+    {
+      "value": "--glass-highlight",
+      "line": 57
+    },
+    {
+      "value": "--scrim",
+      "line": 58
+    },
+    {
+      "value": "--shadow-card",
+      "line": 59
+    },
+    {
+      "value": "--shadow-floating",
+      "line": 60
+    },
+    {
+      "value": "--accent",
+      "line": 64
+    },
+    {
+      "value": "--accent-pressed",
+      "line": 65
+    },
+    {
+      "value": "--accent-rgb",
+      "line": 66
+    },
+    {
+      "value": "--accent-soft",
+      "line": 67
+    },
+    {
+      "value": "--accent",
+      "line": 71
+    },
+    {
+      "value": "--accent-pressed",
+      "line": 72
+    },
+    {
+      "value": "--accent-rgb",
+      "line": 73
+    },
+    {
+      "value": "--accent-soft",
+      "line": 74
+    },
+    {
+      "value": "--accent",
+      "line": 78
+    },
+    {
+      "value": "--accent-pressed",
+      "line": 79
+    },
+    {
+      "value": "--accent-rgb",
+      "line": 80
+    },
+    {
+      "value": "--accent-soft",
+      "line": 81
+    },
+    {
+      "value": "--accent",
+      "line": 85
+    },
+    {
+      "value": "--accent-pressed",
+      "line": 86
+    },
+    {
+      "value": "--accent-rgb",
+      "line": 87
+    },
+    {
+      "value": "--accent-soft",
+      "line": 88
+    },
+    {
+      "value": "--focus-ring",
+      "line": 1119
+    },
+    {
+      "value": "--text-on-accent",
+      "line": 1124
+    },
+    {
+      "value": "--lyrics-bg",
+      "line": 1679
+    },
+    {
+      "value": "--lyrics-surface",
+      "line": 1680
+    }
+  ],
+  "iconIds": [
+    "i-home",
+    "i-search",
+    "i-library",
+    "i-settings",
+    "i-moon",
+    "i-sun",
+    "i-play",
+    "i-pause",
+    "i-prev",
+    "i-next",
+    "i-shuffle",
+    "i-repeat",
+    "i-volume",
+    "i-queue",
+    "i-more",
+    "i-heart",
+    "i-folder",
+    "i-cloud",
+    "i-plus",
+    "i-chevron-right",
+    "i-chevron-down",
+    "i-x",
+    "i-minimize",
+    "i-maximize",
+    "i-music",
+    "i-palette",
+    "i-key",
+    "i-info",
+    "i-check",
+    "i-playlist",
+    "i-history",
+    "i-timer",
+    "i-device",
+    "i-trash",
+    "i-list-plus",
+    "i-up",
+    "i-down",
+    "i-refresh",
+    "i-speaker",
+    "i-drag",
+    "i-wave",
+    "i-fullscreen",
+    "i-fullscreen-exit",
+    "i-lyrics"
+  ],
+  "polishRules": [
+    {
+      "index": 1,
+      "line": 241,
+      "selector": "body",
+      "declarations": [
+        {
+          "property": "font-feature-settings",
+          "value": "\"cv01\",\"cv02\",\"ss01\",\"calt\""
+        }
+      ],
+      "target": "YYTypography / font.features"
+    },
+    {
+      "index": 2,
+      "line": 246,
+      "selector": ".brand-mark",
+      "declarations": [
+        {
+          "property": "width",
+          "value": "44px !important"
+        },
+        {
+          "property": "height",
+          "value": "44px !important"
+        },
+        {
+          "property": "border-radius",
+          "value": "50% !important"
+        },
+        {
+          "property": "background",
+          "value": "var(--text-primary) !important"
+        },
+        {
+          "property": "color",
+          "value": "var(--bg-elevated) !important"
+        },
+        {
+          "property": "font-size",
+          "value": "15px !important"
+        },
+        {
+          "property": "font-weight",
+          "value": "800 !important"
+        },
+        {
+          "property": "letter-spacing",
+          "value": "-1.5px !important"
+        },
+        {
+          "property": "box-shadow",
+          "value": "0 0 0 2px var(--bg-elevated), 0 0 0 3.5px var(--border-default) !important"
+        },
+        {
+          "property": "flex-shrink",
+          "value": "0 !important"
+        }
+      ],
+      "target": "YYProfileHeader / profile.size, typography, ring; footer deduplication"
+    },
+    {
+      "index": 3,
+      "line": 260,
+      "selector": ".brand-name",
+      "declarations": [
+        {
+          "property": "font-size",
+          "value": "13.5px !important"
+        },
+        {
+          "property": "font-weight",
+          "value": "720 !important"
+        },
+        {
+          "property": "letter-spacing",
+          "value": "-.4px !important"
+        }
+      ],
+      "target": "YYProfileHeader / profile.size, typography, ring; footer deduplication"
+    },
+    {
+      "index": 4,
+      "line": 265,
+      "selector": ".brand-subtitle",
+      "declarations": [
+        {
+          "property": "font-size",
+          "value": "10px !important"
+        },
+        {
+          "property": "font-weight",
+          "value": "540 !important"
+        },
+        {
+          "property": "letter-spacing",
+          "value": ".05px !important"
+        },
+        {
+          "property": "margin-top",
+          "value": "2px !important"
+        }
+      ],
+      "target": "YYProfileHeader / profile.size, typography, ring; footer deduplication"
+    },
+    {
+      "index": 5,
+      "line": 273,
+      "selector": ".sidebar-footer .profile-avatar, .sidebar-footer .profile-copy",
+      "declarations": [
+        {
+          "property": "display",
+          "value": "none !important"
+        }
+      ],
+      "target": "YYProfileHeader / profile.size, typography, ring; footer deduplication"
+    },
+    {
+      "index": 6,
+      "line": 275,
+      "selector": ".sidebar-footer",
+      "declarations": [
+        {
+          "property": "justify-content",
+          "value": "flex-end !important"
+        }
+      ],
+      "target": "YYProfileHeader / profile.size, typography, ring; footer deduplication"
+    },
+    {
+      "index": 7,
+      "line": 279,
+      "selector": ".nav-item",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "14px"
+        }
+      ],
+      "target": "YYNavigationItem / radius.navigation, accent, selectionIndicator; Phone adaptation"
+    },
+    {
+      "index": 8,
+      "line": 281,
+      "selector": ".nav-item.active",
+      "declarations": [
+        {
+          "property": "position",
+          "value": "relative"
+        }
+      ],
+      "target": "YYNavigationItem / radius.navigation, accent, selectionIndicator; Phone adaptation"
+    },
+    {
+      "index": 9,
+      "line": 283,
+      "selector": ".nav-item.active::before",
+      "declarations": [
+        {
+          "property": "content",
+          "value": "\"\""
+        },
+        {
+          "property": "position",
+          "value": "absolute"
+        },
+        {
+          "property": "left",
+          "value": "0"
+        },
+        {
+          "property": "top",
+          "value": "50%"
+        },
+        {
+          "property": "transform",
+          "value": "translateY(-50%)"
+        },
+        {
+          "property": "width",
+          "value": "3px"
+        },
+        {
+          "property": "height",
+          "value": "18px"
+        },
+        {
+          "property": "border-radius",
+          "value": "0 3px 3px 0"
+        },
+        {
+          "property": "background",
+          "value": "var(--accent)"
+        }
+      ],
+      "target": "YYNavigationItem / radius.navigation, accent, selectionIndicator; Phone adaptation"
+    },
+    {
+      "index": 10,
+      "line": 294,
+      "selector": ".icon",
+      "declarations": [
+        {
+          "property": "stroke-width",
+          "value": "1.72"
+        }
+      ],
+      "target": "YYIcons / icon.strokeWidth"
+    },
+    {
+      "index": 11,
+      "line": 297,
+      "selector": ".page-title",
+      "declarations": [
+        {
+          "property": "font-weight",
+          "value": "800"
+        },
+        {
+          "property": "letter-spacing",
+          "value": "-.82px"
+        }
+      ],
+      "target": "YYTypography / pageTitle, sectionTitle"
+    },
+    {
+      "index": 12,
+      "line": 298,
+      "selector": ".section-title",
+      "declarations": [
+        {
+          "property": "letter-spacing",
+          "value": "-.45px"
+        }
+      ],
+      "target": "YYTypography / pageTitle, sectionTitle"
+    },
+    {
+      "index": 13,
+      "line": 299,
+      "selector": ".hero h2",
+      "declarations": [
+        {
+          "property": "letter-spacing",
+          "value": "-2.1px"
+        }
+      ],
+      "target": "YYHero / typography.hero, radius.hero, shadow.hero"
+    },
+    {
+      "index": 14,
+      "line": 300,
+      "selector": ".hero-kicker",
+      "declarations": [
+        {
+          "property": "font-size",
+          "value": "10.5px"
+        },
+        {
+          "property": "font-weight",
+          "value": "760"
+        },
+        {
+          "property": "letter-spacing",
+          "value": ".55px"
+        },
+        {
+          "property": "text-transform",
+          "value": "uppercase"
+        }
+      ],
+      "target": "YYHero / typography.hero, radius.hero, shadow.hero"
+    },
+    {
+      "index": 15,
+      "line": 301,
+      "selector": ".album-title",
+      "declarations": [
+        {
+          "property": "font-size",
+          "value": "12.5px"
+        },
+        {
+          "property": "font-weight",
+          "value": "700"
+        },
+        {
+          "property": "letter-spacing",
+          "value": "-.15px"
+        }
+      ],
+      "target": "YYAlbumCard / typography.albumTitle, radius.album, shadow.album[-hover]"
+    },
+    {
+      "index": 16,
+      "line": 304,
+      "selector": ".hero",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "28px"
+        },
+        {
+          "property": "box-shadow",
+          "value": "0 4px 20px rgba(15,18,20,.06), 0 1px 3px rgba(15,18,20,.05)"
+        }
+      ],
+      "target": "YYHero / typography.hero, radius.hero, shadow.hero"
+    },
+    {
+      "index": 17,
+      "line": 310,
+      "selector": ".hero-stage-disc",
+      "declarations": [
+        {
+          "property": "box-shadow",
+          "value": "0 30px 72px rgba(15,18,20,.26)"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / heroDisc geometry, ring, shadow.heroDisc"
+    },
+    {
+      "index": 18,
+      "line": 313,
+      "selector": ".hero-stage-disc::before",
+      "declarations": [
+        {
+          "property": "inset",
+          "value": "24px"
+        },
+        {
+          "property": "border",
+          "value": "1px solid rgba(255,255,255,.17)"
+        },
+        {
+          "property": "box-shadow",
+          "value": "inset 0 0 0 22px rgba(255,255,255,.024), inset 0 0 0 52px rgba(255,255,255,.024), inset 0 0 0 82px rgba(255,255,255,.024)"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / heroDisc geometry, ring, shadow.heroDisc"
+    },
+    {
+      "index": 19,
+      "line": 321,
+      "selector": ".hero-stage-disc::after",
+      "declarations": [
+        {
+          "property": "font-size",
+          "value": "11px"
+        },
+        {
+          "property": "font-weight",
+          "value": "900"
+        },
+        {
+          "property": "letter-spacing",
+          "value": "-1.9px"
+        },
+        {
+          "property": "box-shadow",
+          "value": "0 6px 20px rgba(var(--accent-rgb),.32)"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / heroDisc geometry, ring, shadow.heroDisc"
+    },
+    {
+      "index": 20,
+      "line": 329,
+      "selector": ".floating-note",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "20px"
+        }
+      ],
+      "target": "YYFloatingNowPlaying / radius.floatingNote, radius.floatingArtwork"
+    },
+    {
+      "index": 21,
+      "line": 330,
+      "selector": ".floating-note-art",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "12px"
+        }
+      ],
+      "target": "YYFloatingNowPlaying / radius.floatingNote, radius.floatingArtwork"
+    },
+    {
+      "index": 22,
+      "line": 333,
+      "selector": ".button-primary",
+      "declarations": [
+        {
+          "property": "font-weight",
+          "value": "700"
+        },
+        {
+          "property": "letter-spacing",
+          "value": ".1px"
+        },
+        {
+          "property": "box-shadow",
+          "value": "0 6px 18px rgba(var(--accent-rgb),.2)"
+        }
+      ],
+      "target": "YYButton / typography.button, shadow.primaryButton, hover"
+    },
+    {
+      "index": 23,
+      "line": 338,
+      "selector": ".button-primary:hover",
+      "declarations": [
+        {
+          "property": "box-shadow",
+          "value": "0 9px 26px rgba(var(--accent-rgb),.3)"
+        }
+      ],
+      "target": "YYButton / typography.button, shadow.primaryButton, hover"
+    },
+    {
+      "index": 24,
+      "line": 341,
+      "selector": ".icon-button",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "13px"
+        },
+        {
+          "property": "box-shadow",
+          "value": "0 1px 6px rgba(15,18,20,.06)"
+        }
+      ],
+      "target": "YYIconButton / radius.iconButton, shadow.iconButton"
+    },
+    {
+      "index": 25,
+      "line": 347,
+      "selector": ".album-card .art",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "20px"
+        },
+        {
+          "property": "box-shadow",
+          "value": "0 10px 26px rgba(15,18,20,.13)"
+        }
+      ],
+      "target": "YYAlbumCard / typography.albumTitle, radius.album, shadow.album[-hover]"
+    },
+    {
+      "index": 26,
+      "line": 351,
+      "selector": ".album-card:hover .art",
+      "declarations": [
+        {
+          "property": "box-shadow",
+          "value": "0 16px 34px rgba(15,18,20,.19)"
+        }
+      ],
+      "target": "YYAlbumCard / typography.albumTitle, radius.album, shadow.album[-hover]"
+    },
+    {
+      "index": 27,
+      "line": 354,
+      "selector": ".track-art",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "10px"
+        }
+      ],
+      "target": "YYTrackTile / radius.trackArtwork"
+    },
+    {
+      "index": 28,
+      "line": 355,
+      "selector": ".queue-item-art",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "10px"
+        }
+      ],
+      "target": "YYQueueTile / radius.queueArtwork"
+    },
+    {
+      "index": 29,
+      "line": 356,
+      "selector": ".now-artwork",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "26px"
+        },
+        {
+          "property": "box-shadow",
+          "value": "0 22px 50px rgba(15,18,20,.2)"
+        }
+      ],
+      "target": "YYPlayerArtwork / radius.playerArtwork, shadow.playerArtwork.light|dark; specificity exception"
+    },
+    {
+      "index": 30,
+      "line": 360,
+      "selector": "html[data-theme=\"dark\"] .now-artwork",
+      "declarations": [
+        {
+          "property": "box-shadow",
+          "value": "0 24px 58px rgba(0,0,0,.46)"
+        }
+      ],
+      "target": "YYPlayerArtwork / radius.playerArtwork, shadow.playerArtwork.light|dark; specificity exception"
+    },
+    {
+      "index": 31,
+      "line": 365,
+      "selector": ".range::-webkit-slider-runnable-track",
+      "declarations": [
+        {
+          "property": "height",
+          "value": "3px"
+        }
+      ],
+      "target": "YYSlider / trackHeight, thumbSize, ring, hoverScale; fullscreen variants"
+    },
+    {
+      "index": 32,
+      "line": 366,
+      "selector": ".range::-webkit-slider-thumb",
+      "declarations": [
+        {
+          "property": "width",
+          "value": "14px"
+        },
+        {
+          "property": "height",
+          "value": "14px"
+        },
+        {
+          "property": "margin-top",
+          "value": "-5.5px"
+        },
+        {
+          "property": "box-shadow",
+          "value": "0 0 0 3px var(--bg-elevated), 0 3px 10px rgba(var(--accent-rgb),.32)"
+        },
+        {
+          "property": "transition",
+          "value": "transform 130ms ease"
+        }
+      ],
+      "target": "YYSlider / trackHeight, thumbSize, ring, hoverScale; fullscreen variants"
+    },
+    {
+      "index": 33,
+      "line": 371,
+      "selector": ".range:hover::-webkit-slider-thumb",
+      "declarations": [
+        {
+          "property": "transform",
+          "value": "scale(1.24)"
+        }
+      ],
+      "target": "YYSlider / trackHeight, thumbSize, ring, hoverScale; fullscreen variants"
+    },
+    {
+      "index": 34,
+      "line": 372,
+      "selector": ".range::-moz-range-track",
+      "declarations": [
+        {
+          "property": "height",
+          "value": "3px"
+        }
+      ],
+      "target": "YYSlider / trackHeight, thumbSize, ring, hoverScale; fullscreen variants"
+    },
+    {
+      "index": 35,
+      "line": 373,
+      "selector": ".range::-moz-range-thumb",
+      "declarations": [
+        {
+          "property": "width",
+          "value": "14px"
+        },
+        {
+          "property": "height",
+          "value": "14px"
+        },
+        {
+          "property": "box-shadow",
+          "value": "0 0 0 3px var(--bg-elevated), 0 3px 10px rgba(var(--accent-rgb),.28)"
+        }
+      ],
+      "target": "YYSlider / trackHeight, thumbSize, ring, hoverScale; fullscreen variants"
+    },
+    {
+      "index": 36,
+      "line": 379,
+      "selector": ".transport-button.primary",
+      "declarations": [
+        {
+          "property": "box-shadow",
+          "value": "0 12px 32px rgba(15,18,20,.2)"
+        }
+      ],
+      "target": "YYTransportButton / shadow.primaryControl, hoverScale, pressed"
+    },
+    {
+      "index": 37,
+      "line": 382,
+      "selector": ".transport-button.primary:hover",
+      "declarations": [
+        {
+          "property": "transform",
+          "value": "scale(1.04) !important"
+        },
+        {
+          "property": "box-shadow",
+          "value": "0 16px 40px rgba(15,18,20,.27)"
+        }
+      ],
+      "target": "YYTransportButton / shadow.primaryControl, hoverScale, pressed"
+    },
+    {
+      "index": 38,
+      "line": 386,
+      "selector": ".player-control.primary",
+      "declarations": [
+        {
+          "property": "box-shadow",
+          "value": "0 8px 22px rgba(15,18,20,.16)"
+        }
+      ],
+      "target": "YYDesktopPlayerBar / shadow.playerControl"
+    },
+    {
+      "index": 39,
+      "line": 391,
+      "selector": ".surface-card",
+      "declarations": [
+        {
+          "property": "box-shadow",
+          "value": "0 1px 4px rgba(15,18,20,.04), 0 4px 18px rgba(15,18,20,.04)"
+        }
+      ],
+      "target": "YYSurface / shadow.surface"
+    },
+    {
+      "index": 40,
+      "line": 396,
+      "selector": ".glass",
+      "declarations": [
+        {
+          "property": "-webkit-backdrop-filter",
+          "value": "blur(42px) saturate(1.3)"
+        },
+        {
+          "property": "backdrop-filter",
+          "value": "blur(42px) saturate(1.3)"
+        }
+      ],
+      "target": "YYGlassSurface / glass.blur, glass.saturation; clipped platform calibration"
+    },
+    {
+      "index": 41,
+      "line": 402,
+      "selector": ".sidebar",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "24px"
+        }
+      ],
+      "target": "YYWindowsSidebar, YYTabletNavigationRail / radius.sidebar; Phone adaptation"
+    },
+    {
+      "index": 42,
+      "line": 403,
+      "selector": ".now-panel",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "24px"
+        }
+      ],
+      "target": "YYNowPlayingInspector / radius.nowPanel"
+    },
+    {
+      "index": 43,
+      "line": 406,
+      "selector": ".track-row",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "14px"
+        }
+      ],
+      "target": "YYTrackTile / radius.trackRow"
+    },
+    {
+      "index": 44,
+      "line": 409,
+      "selector": ".source-icon",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "13px"
+        }
+      ],
+      "target": "YYSourceCard / radius.sourceIcon, radius.sourceStatus"
+    },
+    {
+      "index": 45,
+      "line": 410,
+      "selector": ".source-status",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "20px"
+        }
+      ],
+      "target": "YYSourceCard / radius.sourceIcon, radius.sourceStatus"
+    },
+    {
+      "index": 46,
+      "line": 413,
+      "selector": ".dialog",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "30px"
+        }
+      ],
+      "target": "YYDialog, FullscreenPlayerPage / radius.dialog; immersive specificity"
+    },
+    {
+      "index": 47,
+      "line": 414,
+      "selector": ".now-dialog",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "30px"
+        }
+      ],
+      "target": "YYDialog, FullscreenPlayerPage / radius.dialog; immersive specificity"
+    },
+    {
+      "index": 48,
+      "line": 415,
+      "selector": ".context-menu",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "20px"
+        }
+      ],
+      "target": "YYContextMenu / radius.contextMenu"
+    },
+    {
+      "index": 49,
+      "line": 418,
+      "selector": ".settings-nav-item",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "11px"
+        }
+      ],
+      "target": "YYSettingsNavigation / radius.settingsNav"
+    },
+    {
+      "index": 50,
+      "line": 421,
+      "selector": ".playlist-card",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "20px"
+        }
+      ],
+      "target": "YYPlaylistCard / radius.playlistCard, radius.playlistIcon"
+    },
+    {
+      "index": 51,
+      "line": 422,
+      "selector": ".playlist-icon",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "14px"
+        }
+      ],
+      "target": "YYPlaylistCard / radius.playlistCard, radius.playlistIcon"
+    },
+    {
+      "index": 52,
+      "line": 425,
+      "selector": ".badge",
+      "declarations": [
+        {
+          "property": "font-weight",
+          "value": "720"
+        },
+        {
+          "property": "letter-spacing",
+          "value": ".1px"
+        }
+      ],
+      "target": "YYBadge / typography.badge"
+    },
+    {
+      "index": 53,
+      "line": 426,
+      "selector": ".metric-card",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "18px"
+        }
+      ],
+      "target": "YYMetricCard / radius.metric"
+    },
+    {
+      "index": 54,
+      "line": 427,
+      "selector": ".folder-row",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "16px"
+        }
+      ],
+      "target": "YYFolderRow / radius.folder"
+    },
+    {
+      "index": 55,
+      "line": 428,
+      "selector": ".drop-zone",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "26px"
+        }
+      ],
+      "target": "YYDropZone / radius.dropZone"
+    },
+    {
+      "index": 56,
+      "line": 429,
+      "selector": ".now-panel-action-icon",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "11px"
+        }
+      ],
+      "target": "YYNowPlayingAction / radius.nowPanelAction"
+    },
+    {
+      "index": 57,
+      "line": 430,
+      "selector": ".search-input",
+      "declarations": [
+        {
+          "property": "font-weight",
+          "value": "460"
+        }
+      ],
+      "target": "YYSearchField / typography.search"
+    },
+    {
+      "index": 58,
+      "line": 433,
+      "selector": ".lyric-primary",
+      "declarations": [
+        {
+          "property": "font-weight",
+          "value": "780"
+        },
+        {
+          "property": "letter-spacing",
+          "value": "clamp(-1.9px, -.05em, -.45px)"
+        }
+      ],
+      "target": "YYLyricsLine / typography.lyrics, activeDot.ring"
+    },
+    {
+      "index": 59,
+      "line": 437,
+      "selector": ".fullscreen-lyric-line.active::before",
+      "declarations": [
+        {
+          "property": "box-shadow",
+          "value": "0 0 0 6px rgba(255,255,255,.08)"
+        }
+      ],
+      "target": "YYLyricsLine / typography.lyrics, activeDot.ring"
+    },
+    {
+      "index": 60,
+      "line": 440,
+      "selector": ".lyrics-player-dock",
+      "declarations": [
+        {
+          "property": "border-radius",
+          "value": "26px"
+        }
+      ],
+      "target": "YYLyricsPlayerDock / radius.lyricsDock; responsive reflow"
+    },
+    {
+      "index": 61,
+      "line": 443,
+      "selector": ".art-orbit",
+      "declarations": [
+        {
+          "property": "background",
+          "value": "#0D0F12"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / fixture palette and geometry; never production catalog"
+    },
+    {
+      "index": 62,
+      "line": 444,
+      "selector": ".art-orbit::before",
+      "declarations": [
+        {
+          "property": "width",
+          "value": "80%"
+        },
+        {
+          "property": "height",
+          "value": "80%"
+        },
+        {
+          "property": "left",
+          "value": "-14%"
+        },
+        {
+          "property": "top",
+          "value": "10%"
+        },
+        {
+          "property": "border-radius",
+          "value": "50%"
+        },
+        {
+          "property": "background",
+          "value": "#C42230"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / fixture palette and geometry; never production catalog"
+    },
+    {
+      "index": 63,
+      "line": 445,
+      "selector": ".art-orbit::after",
+      "declarations": [
+        {
+          "property": "width",
+          "value": "30%"
+        },
+        {
+          "property": "height",
+          "value": "30%"
+        },
+        {
+          "property": "right",
+          "value": "9%"
+        },
+        {
+          "property": "bottom",
+          "value": "12%"
+        },
+        {
+          "property": "border-radius",
+          "value": "50%"
+        },
+        {
+          "property": "background",
+          "value": "#ECE7DC"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / fixture palette and geometry; never production catalog"
+    },
+    {
+      "index": 64,
+      "line": 447,
+      "selector": ".art-tide",
+      "declarations": [
+        {
+          "property": "background",
+          "value": "#0468C4"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / fixture palette and geometry; never production catalog"
+    },
+    {
+      "index": 65,
+      "line": 448,
+      "selector": ".art-tide::before",
+      "declarations": [
+        {
+          "property": "width",
+          "value": "22%"
+        },
+        {
+          "property": "height",
+          "value": "114%"
+        },
+        {
+          "property": "left",
+          "value": "21%"
+        },
+        {
+          "property": "top",
+          "value": "-7%"
+        },
+        {
+          "property": "background",
+          "value": "#EDF2F8"
+        },
+        {
+          "property": "transform",
+          "value": "rotate(10deg)"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / fixture palette and geometry; never production catalog"
+    },
+    {
+      "index": 66,
+      "line": 449,
+      "selector": ".art-tide::after",
+      "declarations": [
+        {
+          "property": "width",
+          "value": "40%"
+        },
+        {
+          "property": "height",
+          "value": "40%"
+        },
+        {
+          "property": "right",
+          "value": "8%"
+        },
+        {
+          "property": "top",
+          "value": "10%"
+        },
+        {
+          "property": "border-radius",
+          "value": "50%"
+        },
+        {
+          "property": "background",
+          "value": "#FFA820"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / fixture palette and geometry; never production catalog"
+    },
+    {
+      "index": 67,
+      "line": 451,
+      "selector": ".art-noon",
+      "declarations": [
+        {
+          "property": "background",
+          "value": "#E9DDC8"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / fixture palette and geometry; never production catalog"
+    },
+    {
+      "index": 68,
+      "line": 452,
+      "selector": ".art-noon::before",
+      "declarations": [
+        {
+          "property": "width",
+          "value": "56%"
+        },
+        {
+          "property": "height",
+          "value": "56%"
+        },
+        {
+          "property": "left",
+          "value": "22%"
+        },
+        {
+          "property": "top",
+          "value": "20%"
+        },
+        {
+          "property": "background",
+          "value": "#13171B"
+        },
+        {
+          "property": "transform",
+          "value": "rotate(18deg)"
+        },
+        {
+          "property": "border-radius",
+          "value": "11%"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / fixture palette and geometry; never production catalog"
+    },
+    {
+      "index": 69,
+      "line": 453,
+      "selector": ".art-noon::after",
+      "declarations": [
+        {
+          "property": "width",
+          "value": "13%"
+        },
+        {
+          "property": "height",
+          "value": "84%"
+        },
+        {
+          "property": "left",
+          "value": "44%"
+        },
+        {
+          "property": "top",
+          "value": "8%"
+        },
+        {
+          "property": "background",
+          "value": "#C83828"
+        },
+        {
+          "property": "transform",
+          "value": "rotate(-26deg)"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / fixture palette and geometry; never production catalog"
+    },
+    {
+      "index": 70,
+      "line": 455,
+      "selector": ".art-mono",
+      "declarations": [
+        {
+          "property": "background",
+          "value": "#0C2030"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / fixture palette and geometry; never production catalog"
+    },
+    {
+      "index": 71,
+      "line": 456,
+      "selector": ".art-mono::before",
+      "declarations": [
+        {
+          "property": "width",
+          "value": "82%"
+        },
+        {
+          "property": "height",
+          "value": "36%"
+        },
+        {
+          "property": "left",
+          "value": "9%"
+        },
+        {
+          "property": "top",
+          "value": "32%"
+        },
+        {
+          "property": "border-radius",
+          "value": "50%"
+        },
+        {
+          "property": "background",
+          "value": "#009970"
+        },
+        {
+          "property": "transform",
+          "value": "rotate(-13deg)"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / fixture palette and geometry; never production catalog"
+    },
+    {
+      "index": 72,
+      "line": 457,
+      "selector": ".art-mono::after",
+      "declarations": [
+        {
+          "property": "width",
+          "value": "25%"
+        },
+        {
+          "property": "height",
+          "value": "25%"
+        },
+        {
+          "property": "right",
+          "value": "12%"
+        },
+        {
+          "property": "bottom",
+          "value": "12%"
+        },
+        {
+          "property": "background",
+          "value": "#E2E4D8"
+        },
+        {
+          "property": "border-radius",
+          "value": "5px"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / fixture palette and geometry; never production catalog"
+    },
+    {
+      "index": 73,
+      "line": 459,
+      "selector": ".art-signal",
+      "declarations": [
+        {
+          "property": "background",
+          "value": "#F0A018"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / fixture palette and geometry; never production catalog"
+    },
+    {
+      "index": 74,
+      "line": 460,
+      "selector": ".art-signal::before",
+      "declarations": [
+        {
+          "property": "width",
+          "value": "18%"
+        },
+        {
+          "property": "height",
+          "value": "78%"
+        },
+        {
+          "property": "left",
+          "value": "19%"
+        },
+        {
+          "property": "bottom",
+          "value": "0"
+        },
+        {
+          "property": "background",
+          "value": "#14181C"
+        },
+        {
+          "property": "box-shadow",
+          "value": "35px -27px 0 #14181C, 70px -54px 0 #14181C"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / fixture palette and geometry; never production catalog"
+    },
+    {
+      "index": 75,
+      "line": 461,
+      "selector": ".art-signal::after",
+      "declarations": [
+        {
+          "property": "width",
+          "value": "26%"
+        },
+        {
+          "property": "height",
+          "value": "26%"
+        },
+        {
+          "property": "right",
+          "value": "10%"
+        },
+        {
+          "property": "top",
+          "value": "10%"
+        },
+        {
+          "property": "border",
+          "value": "3px solid #FFF3DE"
+        },
+        {
+          "property": "border-radius",
+          "value": "50%"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / fixture palette and geometry; never production catalog"
+    },
+    {
+      "index": 76,
+      "line": 463,
+      "selector": ".art-quiet",
+      "declarations": [
+        {
+          "property": "background",
+          "value": "#F2EEE8"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / fixture palette and geometry; never production catalog"
+    },
+    {
+      "index": 77,
+      "line": 464,
+      "selector": ".art-quiet::before",
+      "declarations": [
+        {
+          "property": "width",
+          "value": "63%"
+        },
+        {
+          "property": "height",
+          "value": "63%"
+        },
+        {
+          "property": "left",
+          "value": "18%"
+        },
+        {
+          "property": "top",
+          "value": "18%"
+        },
+        {
+          "property": "background",
+          "value": "#0F1113"
+        },
+        {
+          "property": "border-radius",
+          "value": "50%"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / fixture palette and geometry; never production catalog"
+    },
+    {
+      "index": 78,
+      "line": 465,
+      "selector": ".art-quiet::after",
+      "declarations": [
+        {
+          "property": "width",
+          "value": "80%"
+        },
+        {
+          "property": "height",
+          "value": "11%"
+        },
+        {
+          "property": "left",
+          "value": "10%"
+        },
+        {
+          "property": "top",
+          "value": "45%"
+        },
+        {
+          "property": "background",
+          "value": "#C82826"
+        },
+        {
+          "property": "transform",
+          "value": "rotate(-16deg)"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / fixture palette and geometry; never production catalog"
+    },
+    {
+      "index": 79,
+      "line": 467,
+      "selector": ".art-local",
+      "declarations": [
+        {
+          "property": "background",
+          "value": "#1A1E24"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / fixture palette and geometry; never production catalog"
+    },
+    {
+      "index": 80,
+      "line": 468,
+      "selector": ".art-local::before",
+      "declarations": [
+        {
+          "property": "width",
+          "value": "73%"
+        },
+        {
+          "property": "height",
+          "value": "50%"
+        },
+        {
+          "property": "left",
+          "value": "14%"
+        },
+        {
+          "property": "top",
+          "value": "25%"
+        },
+        {
+          "property": "border",
+          "value": "2.5px solid #E4E7F0"
+        },
+        {
+          "property": "border-radius",
+          "value": "16px"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / fixture palette and geometry; never production catalog"
+    },
+    {
+      "index": 81,
+      "line": 469,
+      "selector": ".art-local::after",
+      "declarations": [
+        {
+          "property": "width",
+          "value": "33%"
+        },
+        {
+          "property": "height",
+          "value": "6%"
+        },
+        {
+          "property": "left",
+          "value": "34%"
+        },
+        {
+          "property": "top",
+          "value": "48%"
+        },
+        {
+          "property": "background",
+          "value": "var(--accent)"
+        },
+        {
+          "property": "border-radius",
+          "value": "var(--radius-pill)"
+        },
+        {
+          "property": "box-shadow",
+          "value": "0 -17px 0 rgba(var(--accent-rgb),.62), 0 17px 0 rgba(var(--accent-rgb),.38)"
+        }
+      ],
+      "target": "YYArtworkPlaceholder / fixture palette and geometry; never production catalog"
+    }
+  ],
+  "sourceLines": {
+    "app": 506,
+    "base": 3710
+  }
+}

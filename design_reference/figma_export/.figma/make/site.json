@@ -1,0 +1,10 @@
+{
+  "description": "Enhance UI icons and layouts based on existing HTML files, ensuring a polished look without gradients or purple hues, ideal for designers seeking simplicity.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
