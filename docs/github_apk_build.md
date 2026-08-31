@@ -24,7 +24,7 @@
 
 ## 当前核验边界
 
-2026-08-31：标准Git push可用；此前GitHub连接器访问仓库404，后经用户明确授权恢复临时API访问。首次核验cafb942的[运行33404830686](https://github.com/Z-YO-YI/YYMusic/actions/runs/33404830686)：ZIP校验因Linux隐藏`.gitattributes`读取失败，Android/Windows任务跳过。9f08a71的[第二次运行](https://github.com/Z-YO-YI/YYMusic/actions/runs/33415055087)通过源码门禁，Android因sdkmanager不在PATH失败。8e6915a的[第三次运行](https://github.com/Z-YO-YI/YYMusic/actions/runs/33415790519)已完成Android编译、验签、48项资源比对及Windows构建，但Actions返回artifact storage quota已满，未产生可下载APK；这不是编译失败。用户在2026-09-01明确允许改用私有草稿Release，实际新运行和下载核验完成前仍不得宣称交付成功。修复及后续证据见[CI记录](ci_reference_audit_fix.md)。
+2026-08-31：前两次核验分别暴露Linux隐藏文件和sdkmanager PATH问题。8e6915a的[第三次运行](https://github.com/Z-YO-YI/YYMusic/actions/runs/33415790519)已完成Android编译、验签、48项资源比对及Windows构建，但Actions返回artifact storage quota已满。用户在2026-09-01明确允许改用私有草稿Release；4be8ba2的手动[运行33451875605](https://github.com/Z-YO-YI/YYMusic/actions/runs/33451875605)三项任务全部成功，三个Release资产已重新下载并核对commit、run、metadata、SHA256SUMS、API digest和v2签名。当前[私有草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-9a49a12002f0c9cc058a)未正式发布，完整证据见[CI记录](ci_reference_audit_fix.md)。
 
 API访问仅限YYMusic；访问凭据只通过无回显输入进入短生命周期进程内存，不写入仓库、配置、环境持久值或构建产物，不读取现有本机Git凭据。必须取得目标commit的成功run、draft Release及三个资产记录并下载复核后，才可宣称“GitHub APK交付成功”；推送成功、YAML测试通过或旧本机APK都不能替代。
 

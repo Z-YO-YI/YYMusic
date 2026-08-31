@@ -116,19 +116,27 @@ jobs:
             echo 'Debug signing uses the ephemeral GitHub runner key and is not suitable for production updates.'
           } > "$release_notes"
           gh --version
-          gh release create "$release_tag" \
-            'build/ci/android-debug/YYMusic-debug.apk#YYMusic Android Debug APK' \
-            'build/ci/android-debug/SHA256SUMS#APK SHA-256 checksum' \
-            'build/ci/android-debug/build-metadata.json#GitHub build metadata' \
-            --repo "$GITHUB_REPOSITORY" \
-            --target "$GITHUB_SHA" \
-            --title "YYMusic Android Debug ${GITHUB_SHA:0:12}" \
-            --notes-file "$release_notes" \
-            --draft \
-            --prerelease
+          release_url="$(
+            gh release create "$release_tag" \
+              'build/ci/android-debug/YYMusic-debug.apk#YYMusic Android Debug APK' \
+              'build/ci/android-debug/SHA256SUMS#APK SHA-256 checksum' \
+              'build/ci/android-debug/build-metadata.json#GitHub build metadata' \
+              --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" \
+              --title "YYMusic Android Debug ${GITHUB_SHA:0:12}" \
+              --notes-file "$release_notes" \
+              --draft \
+              --prerelease
+          )"
+          case "$release_url" in
+            https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-*) ;;
+            *) echo 'Unexpected draft Release URL' >&2; exit 1 ;;
+          esac
           echo "release-tag=$release_tag" >> "$GITHUB_OUTPUT"
+          echo "release-url=$release_url" >> "$GITHUB_OUTPUT"
       - name: Add draft Release download to build summary
         if: github.event_name == 'workflow_dispatch'
         env:
           YY_APK_RELEASE_TAG: ${{ steps.android-apk-release.outputs.release-tag }}
+          YY_APK_RELEASE_URL: ${{ steps.android-apk-release.outputs.release-url }}
         run: node tools/android_artifact.mjs --summary

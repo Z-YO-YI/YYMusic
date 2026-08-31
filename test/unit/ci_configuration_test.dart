@@ -87,6 +87,18 @@ void main() {
       expect(script, contains('--prerelease'));
       expect(script, isNot(contains('--clobber')));
       expect(script, isNot(contains('actions/upload-artifact')));
+      expect(
+        script,
+        contains('https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-*'),
+      );
+      expect(script, contains(r'release-url=$release_url'));
+      expect(
+        steps[summary]['env'],
+        containsPair(
+          'YY_APK_RELEASE_URL',
+          r'${{ steps.android-apk-release.outputs.release-url }}',
+        ),
+      );
       for (final path in [
         'build/ci/android-debug/YYMusic-debug.apk',
         'build/ci/android-debug/SHA256SUMS',

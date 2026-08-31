@@ -32,10 +32,14 @@ export function buildMetadata(bytes, environment, checkoutCommit) {
   };
 }
 
-export function draftReleaseSummary(metadata, releaseTag) {
+export function draftReleaseSummary(metadata, releaseTag, releaseUrl) {
   const runId = metadata.runUrl.split('/').at(-1);
   assert.equal(releaseTag, `ci-debug-${runId}-${metadata.attempt}`, 'Draft Release belongs to another run');
-  const releaseUrl = `https://github.com/${repository}/releases/tag/${releaseTag}`;
+  assert.match(
+    releaseUrl ?? '',
+    /^https:\/\/github\.com\/Z-YO-YI\/YYMusic\/releases\/tag\/untagged-[a-f0-9]{20,64}$/,
+    'Unexpected private draft Release URL',
+  );
   return [
     '## YYMusic Android Debug APK', '',
     `[Download APK, SHA256SUMS and build metadata from the private draft Release](${releaseUrl})`, '',
@@ -58,7 +62,14 @@ function main() {
   const metadata = buildMetadata(readFileSync(source), process.env, commit);
   if (process.argv[2] === '--summary') {
     assert(process.env.GITHUB_STEP_SUMMARY, 'Missing GitHub summary file');
-    appendFileSync(process.env.GITHUB_STEP_SUMMARY, draftReleaseSummary(metadata, process.env.YY_APK_RELEASE_TAG));
+    appendFileSync(
+      process.env.GITHUB_STEP_SUMMARY,
+      draftReleaseSummary(
+        metadata,
+        process.env.YY_APK_RELEASE_TAG,
+        process.env.YY_APK_RELEASE_URL,
+      ),
+    );
     return;
   }
   assert.equal(process.argv.length, 2, 'Unexpected arguments');

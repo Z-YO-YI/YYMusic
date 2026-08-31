@@ -35,12 +35,21 @@ test('APK metadata refuses local, mismatched or malformed run identities', () =>
 test('draft Release summary links only this run and clearly identifies debug signing', () => {
   const metadata = buildMetadata(bytes, environment, commit);
   const tag = 'ci-debug-123-2';
-  const summary = draftReleaseSummary(metadata, tag);
-  assert(summary.includes(`https://github.com/Z-YO-YI/YYMusic/releases/tag/${tag}`));
+  const url = 'https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-0123456789abcdefabcd';
+  const summary = draftReleaseSummary(metadata, tag, url);
+  assert(summary.includes(url));
   assert(summary.includes('private draft Release'));
   assert(summary.includes('debug signing key can change'));
   for (const invalid of ['', `${tag}\n# untrusted`, 'ci-debug-999-2', 'ci-debug-123-1']) {
-    assert.throws(() => draftReleaseSummary(metadata, invalid));
+    assert.throws(() => draftReleaseSummary(metadata, invalid, url));
+  }
+  for (const invalid of [
+    '',
+    `${url}\n# untrusted`,
+    'https://example.com/Z-YO-YI/YYMusic/releases/tag/untagged-0123456789abcdefabcd',
+    'https://github.com/Z-YO-YI/YYMusic/releases/tag/ci-debug-123-2',
+  ]) {
+    assert.throws(() => draftReleaseSummary(metadata, tag, invalid));
   }
 });
 

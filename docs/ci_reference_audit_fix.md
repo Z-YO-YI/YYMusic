@@ -34,3 +34,9 @@ GitHub的[Ubuntu镜像清单](https://github.com/actions/runner-images/blob/main
 8e6915a的[运行33415790519](https://github.com/Z-YO-YI/YYMusic/actions/runs/33415790519)完成Android assembleDebug、apksigner v2验签、48项打包资源字节比对及Windows Debug/Golden；runner报告APK SHA-256为`1900a5710ecd65011516727265e24c4008590ebaa46cbfe106d5c4c2bca8f0b9`。该哈希当时未能通过下载副本独立复核。
 
 末尾upload-artifact返回`Artifact storage quota has been hit`，工作流因此失败且YYMusic仓库artifacts列表为空。用户于2026-09-01明确允许改用私有草稿Release。新流程只在手动workflow_dispatch时创建唯一`ci-debug-<run-id>-<attempt>`draft/prerelease并附加APK、SHA256SUMS和metadata；普通push/PR不创建Release。实际新运行、三个Release资产与下载后校验完成前，交付状态仍保持待验收。
+
+## 草稿 Release 交付验收
+
+4be8ba2的手动[运行33451875605](https://github.com/Z-YO-YI/YYMusic/actions/runs/33451875605)三项任务全部成功：源码门禁、Windows Debug/Golden、Android Debug编译/验签/48项资源比对及草稿Release上传均通过。生成的[私有草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-9a49a12002f0c9cc058a)标签为`ci-debug-33451875605-1`，保持draft和prerelease，未正式发布。
+
+通过用户授权的YYMusic只读API重新下载且只得到三个预期资产：`YYMusic-debug.apk` 175733601字节、`SHA256SUMS` 84字节、`build-metadata.json` 460字节。下载后APK SHA-256为`3c69bead8bc20c9a3ab12f35b2ab3dfe684dbbf6d0bc1be6dcb605344d8cd902`，与SHA256SUMS、metadata及GitHub API asset digest一致；metadata的仓库、完整commit、run、attempt、Flutter 3.47.2和Debug签名字段均匹配。本机apksigner再次验证v2签名有效、1个签名者；临时副本随后清理，不提交APK到Git。
