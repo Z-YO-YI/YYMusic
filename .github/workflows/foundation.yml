@@ -83,7 +83,10 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
       - name: Install pinned Android build components
-        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0' 'ndk;28.2.13676358'
+        run: |
+          sdk_manager="${ANDROID_HOME:?ANDROID_HOME is required}/cmdline-tools/latest/bin/sdkmanager"
+          test -x "$sdk_manager"
+          "$sdk_manager" 'platforms;android-36' 'build-tools;36.0.0' 'ndk;28.2.13676358'
       - run: flutter pub get --enforce-lockfile
       - run: flutter build apk --debug --no-pub
       - name: Verify APK signature

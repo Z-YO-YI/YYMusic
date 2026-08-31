@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-08-31 — GitHub Android SDK 工具路径修复
+
+- 隐藏文件修复9f08a71已在Linux通过源码/分析/测试；随后Android在SDK安装阶段暴露sdkmanager不在PATH的问题（exit 127）。
+- 从ANDROID_HOME显式定位并校验cmdline-tools/latest/bin/sdkmanager，保留JDK与三个固定SDK组件版本；不安装新的Action或批量接受许可。
+- 新增1项真实YAML合同回归，记录首次失败与第二次云端证据；PR #1保持待审核，不自动合并。
+
 ## 2026-08-31 — GitHub CI 隐藏参考文件校验修复
 
 - 首次获得远程运行证据：cafb942的ZIP校验读取隐藏`.gitattributes`失败，Android任务跳过、未产生APK；不把本地回归通过当作云端成功。

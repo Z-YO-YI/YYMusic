@@ -1,6 +1,6 @@
-# CI 修复：隐藏参考文件必须参与完整性核验
+# CI 修复：隐藏参考文件与 Android SDK 工具路径
 
-2026-08-31。分支`fix/reference-audit-hidden-files`基于已fetch/pull且工作树干净的`feat/android-ci-and-form-controls@cafb942`。本批只修CI校验器，不增加业务功能，也不提前进入后续Phase。
+2026-08-31。分支`fix/reference-audit-hidden-files`基于已fetch/pull且工作树干净的`feat/android-ci-and-form-controls@cafb942`。本批只修CI校验与构建环境，不增加业务功能，也不提前进入后续Phase。[PR #1](https://github.com/Z-YO-YI/YYMusic/pull/1)指向原功能分支，未自动合并。
 
 ## 远程故障证据
 
@@ -20,3 +20,11 @@
 本地已通过：53份Dart文件格式检查（0变更）、fatal-infos严格分析、74项Flutter测试（包括11张未更新的Golden）、28项Node检查及`git diff --check`。5份源指纹、44SVG、52份确定性派生产物及24个ZIP entry全部保持原始字节。修复提交的GitHub运行结果须在实际执行后另行核验，不能依据旧APK或仅推送成功声称云端成功。
 
 本批不在本机编译新APK。GitHub成功产物须带完整commit/run/attempt、SHA256SUMS及构建metadata；临时Debug签名和14天保留边界不变。访问凭据不写入本文件、Git提交、持久配置或构建产物。
+
+## 第二次云端核验：sdkmanager 不在 PATH
+
+隐藏文件修复已作为9f08a71提交并推送。[运行33415055087](https://github.com/Z-YO-YI/YYMusic/actions/runs/33415055087)的源码、28项Node检查、全部24个ZIP entry、Dart格式/分析及非Windows Flutter测试均通过；Android任务在安装固定SDK组件时报`sdkmanager: command not found`（exit 127），未产生APK。
+
+GitHub的[Ubuntu镜像清单](https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md)声明ANDROID_HOME；其[官方安装脚本](https://github.com/actions/runner-images/blob/main/images/ubuntu/scripts/build/install-android-sdk.sh)把工具安装到cmdline-tools/latest/bin/sdkmanager。工作流改为从ANDROID_HOME解析并带引号调用该路径，先要求环境变量非空、文件可执行。不下载额外Action、不改JDK17/API36/Build Tools36/NDK28版本、不批量接受新许可。
+
+新增YAML回归要求固定工具路径、可执行检查、精确组件参数、安装先于构建；旧工作流先验证为失败。修复后本地75项Flutter（含11张Golden）、28项Node、53文件format及严格analyze全部通过，24份ZIP entry仍保持原始字节。实际构建仍由GitHub执行，需再次核验新提交的运行和产物，不把环境修复等同于APK成功。

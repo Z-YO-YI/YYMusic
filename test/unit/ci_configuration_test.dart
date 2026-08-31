@@ -87,4 +87,40 @@ void main() {
       expect(options['name'], contains(r'${{ github.run_attempt }}'));
     },
   );
+
+  test(
+    'Android SDK installation does not depend on sdkmanager being on PATH',
+    () {
+      final workflow = loadYaml(
+        File('.github/workflows/foundation.yml').readAsStringSync(),
+      ) as YamlMap;
+      final jobs = workflow['jobs'] as YamlMap;
+      final android = jobs['android-debug'] as YamlMap;
+      final steps = (android['steps'] as YamlList).cast<YamlMap>();
+      final install = steps.indexWhere(
+        (step) => step['name'] == 'Install pinned Android build components',
+      );
+      final build = steps.indexWhere(
+        (step) => step['run'] == 'flutter build apk --debug --no-pub',
+      );
+      expect(install, greaterThanOrEqualTo(0));
+      expect(build, greaterThan(install));
+      final script = steps[install]['run'] as String;
+      expect(
+        script,
+        contains(
+          r'${ANDROID_HOME:?ANDROID_HOME is required}/cmdline-tools/latest/bin/sdkmanager',
+        ),
+      );
+      expect(script, contains(r'test -x "$sdk_manager"'));
+      expect(
+        script,
+        contains(
+          r'"$sdk_manager" '
+          "'platforms;android-36' 'build-tools;36.0.0' 'ndk;28.2.13676358'",
+        ),
+      );
+      expect(script, isNot(contains('--licenses')));
+    },
+  );
 }
