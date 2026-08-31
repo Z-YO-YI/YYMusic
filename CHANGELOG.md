@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-31 — GitHub CI 隐藏参考文件校验修复
+
+- 首次获得远程运行证据：cafb942的ZIP校验读取隐藏`.gitattributes`失败，Android任务跳过、未产生APK；不把本地回归通过当作云端成功。
+- `Get-Item -LiteralPath`增加`-Force`，只允许校验器读取隐藏文件属性；24份原始参考、ZIP哈希、文件数量和字节比对不变，没有跳过失败门禁。
+- 新增5项实际执行PowerShell校验器的Node回归，在临时副本中覆盖隐藏文件、隐藏文件篡改/缺失/多余与ZIP改动；Windows显式设置Hidden属性以复现Linux故障。
+- 不改Flutter业务、设计基线、依赖、签名或账号/仓库权限；云端复验与证据见docs/ci_reference_audit_fix.md。
+
 ## 2026-08-31 — Android Phase 2C 输入与选择
 
 - 新增YYSearchField，使用原生EditableText/选择手势/工具栏，支持IME组合输入、搜索提交、清空、错误公告与只读加载/禁用；不访问真实音乐服务。

@@ -35,7 +35,8 @@ try {
             $hasher.Dispose()
             $entryStream.Dispose()
         }
-        $fileInfo = Get-Item -LiteralPath $targetPath
+        # Dotfiles are hidden on Unix; include them without changing their bytes.
+        $fileInfo = Get-Item -LiteralPath $targetPath -Force
         $fileHash = (Get-FileHash -LiteralPath $targetPath -Algorithm SHA256).Hash
         if ($fileInfo.Length -ne $entry.Length -or $fileHash -ne $entryHash) {
             throw "Extracted reference differs from ZIP bytes: $($entry.FullName)"

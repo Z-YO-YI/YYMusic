@@ -24,8 +24,8 @@
 
 ## 当前核验边界
 
-2026-08-31：标准Git push可用；GitHub连接器访问仓库404，已授权账户列表为空。无法据此确认Actions是否启用、计费/额度、运行日志或产物是否成功。必须取得目标commit的成功run和artifact记录后，才可宣称“GitHub APK构建成功”；推送成功、YAML测试通过或旧本机APK都不能替代。
+2026-08-31：标准Git push可用；此前GitHub连接器访问仓库404，后经用户明确授权恢复临时API访问。首次核验cafb942的[运行33404830686](https://github.com/Z-YO-YI/YYMusic/actions/runs/33404830686)：ZIP校验因Linux隐藏`.gitattributes`读取失败，Android/Windows任务跳过，产物为空。修复及后续证据见[CI隐藏文件记录](ci_reference_audit_fix.md)。
 
-已请求用户为连接器授权本仓库，不索要Token，不读取本机Git秘密绕过限制。此权限缺口不阻止提交工作流和继续本地源码/Widget开发，但阻止云端交付验收。
+API访问仅限YYMusic；访问凭据只通过无回显输入进入短生命周期进程内存，不写入仓库、配置、环境持久值或构建产物，不读取现有本机Git凭据。必须取得目标commit的成功run和artifact记录后，才可宣称“GitHub APK构建成功”；推送成功、YAML测试通过或旧本机APK都不能替代。
 
 依据：[官方upload-artifact](https://github.com/actions/upload-artifact)、[GitHub工作流产物](https://docs.github.com/en/actions/concepts/workflows-and-actions/workflow-artifacts)。版本SHA通过官方git tag核验为`043fb46d1a93c77aae656e7c1c64a875d1fc6a0a`。

@@ -1,6 +1,6 @@
 # 实施状态
 
-更新：2026-08-31。用户要求继续Android开发且APK在GitHub构建。当前组件库推进到Phase2C；云端APK工作流已提交，运行/产物验收因连接器授权缺失未完成。Windows原生验收暂缓，不代表完整客户端或整个Phase2已完成。
+更新：2026-08-31。用户要求继续Android开发且APK在GitHub构建。当前组件库推进到Phase2C；经明确授权取得首次远程证据后发现Linux隐藏文件校验错误，正在独立修复分支复验。当前云端证据见[CI记录](ci_reference_audit_fix.md)，不是完整客户端或整个Phase2已完成。
 
 | 阶段/能力 | 状态 |
 | --- | --- |
@@ -13,10 +13,10 @@
 | Phase 3 Domain/数据库/状态 | 未开始；只有边界决策 |
 | Phase 4 双平台音频 | 仅 POC 计划；没有真实播放验证 |
 | 后续页面、歌词、导入、来源、平台集成 | 未开始 |
-| GitHub APK交付 | 用户要求云端构建；已补齐Actions验签/产物下载流程，远程run与artifact仍待授权核验，见github_apk_build.md |
+| GitHub APK交付 | 已补齐Actions验签/产物下载流程；首次cafb942运行校验失败、无产物，修复与复验见ci_reference_audit_fix.md |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
 | Flutter format/analyze/test | 本批74项含11张原生Golden；当前结果见phase_2c_android_report.md |
-| Windows / Android Debug构建 | 本批仅走GitHub构建，云端状态未核验；Phase2B本机APK仅历史证据；Windows安装等待UAC确认 |
+| Windows / Android Debug构建 | 本批仅走GitHub构建，首次运行两平台均因校验失败跳过；Phase2B本机APK仅历史证据；本机Windows安装等待UAC确认 |
 
 ## 保留的验收缺口与后续边界
 
@@ -30,4 +30,4 @@
 
 开发分支：feat/android-ci-and-form-controls，基于已拉取并同步的feat/android-navigation-controls@2f35cf5。未在main/master直接开发；旧原型保留于归档提交。本批先单独提交GitHub APK流程，再分批继续Phase2组件。
 
-GitHub连接器本批复查仍404，授权账户列表为空，无法创建/核验PR或读取远程CI；已请求本仓库授权，不索要或读取Token。本批PR草稿见phase_2c_android_pr_draft.md。CI阶段提交7458a28；UI提交号和实时同步状态通过git log/status/ls-remote核验，最终交付消息报告实际结果。
+此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问已能读取本仓库运行和PR，不修改账号权限或读取现有Git凭据。CI修复分支fix/reference-audit-hidden-files基于cafb942，不改动已完成UI；本次修复和远程证据见ci_reference_audit_fix.md。CI交付配置提交7458a28、UI提交cafb942；实时提交与同步状态以最终交付时实际核验为准。
