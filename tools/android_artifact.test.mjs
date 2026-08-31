@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import test from 'node:test';
-import { artifactSummary, buildMetadata } from './android_artifact.mjs';
+import { buildMetadata, draftReleaseSummary } from './android_artifact.mjs';
 
 const commit = 'a'.repeat(40);
 const environment = {
@@ -32,14 +32,15 @@ test('APK metadata refuses local, mismatched or malformed run identities', () =>
   assert.throws(() => buildMetadata(Buffer.alloc(0), environment, commit));
 });
 
-test('artifact summary links only this run and clearly identifies debug signing', () => {
+test('draft Release summary links only this run and clearly identifies debug signing', () => {
   const metadata = buildMetadata(bytes, environment, commit);
-  const url = `${metadata.runUrl}/artifacts/456`;
-  const summary = artifactSummary(metadata, url);
-  assert(summary.includes(url));
+  const tag = 'ci-debug-123-2';
+  const summary = draftReleaseSummary(metadata, tag);
+  assert(summary.includes(`https://github.com/Z-YO-YI/YYMusic/releases/tag/${tag}`));
+  assert(summary.includes('private draft Release'));
   assert(summary.includes('debug signing key can change'));
-  for (const invalid of ['', `${url}\n# untrusted`, url.replace('/123/', '/999/'), 'https://example.com']) {
-    assert.throws(() => artifactSummary(metadata, invalid));
+  for (const invalid of ['', `${tag}\n# untrusted`, 'ci-debug-999-2', 'ci-debug-123-1']) {
+    assert.throws(() => draftReleaseSummary(metadata, invalid));
   }
 });
 

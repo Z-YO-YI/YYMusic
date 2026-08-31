@@ -19,7 +19,7 @@
 
 本地已通过：53份Dart文件格式检查（0变更）、fatal-infos严格分析、74项Flutter测试（包括11张未更新的Golden）、28项Node检查及`git diff --check`。5份源指纹、44SVG、52份确定性派生产物及24个ZIP entry全部保持原始字节。修复提交的GitHub运行结果须在实际执行后另行核验，不能依据旧APK或仅推送成功声称云端成功。
 
-本批不在本机编译新APK。GitHub成功产物须带完整commit/run/attempt、SHA256SUMS及构建metadata；临时Debug签名和14天保留边界不变。访问凭据不写入本文件、Git提交、持久配置或构建产物。
+本批不在本机编译新APK。GitHub成功产物须带完整commit/run/attempt、SHA256SUMS及构建metadata；临时Debug签名边界不变。访问凭据不写入本文件、Git提交、持久配置或构建产物。
 
 ## 第二次云端核验：sdkmanager 不在 PATH
 
@@ -28,3 +28,9 @@
 GitHub的[Ubuntu镜像清单](https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md)声明ANDROID_HOME；其[官方安装脚本](https://github.com/actions/runner-images/blob/main/images/ubuntu/scripts/build/install-android-sdk.sh)把工具安装到cmdline-tools/latest/bin/sdkmanager。工作流改为从ANDROID_HOME解析并带引号调用该路径，先要求环境变量非空、文件可执行。不下载额外Action、不改JDK17/API36/Build Tools36/NDK28版本、不批量接受新许可。
 
 新增YAML回归要求固定工具路径、可执行检查、精确组件参数、安装先于构建；旧工作流先验证为失败。修复后本地75项Flutter（含11张Golden）、28项Node、53文件format及严格analyze全部通过，24份ZIP entry仍保持原始字节。实际构建仍由GitHub执行，需再次核验新提交的运行和产物，不把环境修复等同于APK成功。
+
+## 第三次云端核验：编译成功但产物额度已满
+
+8e6915a的[运行33415790519](https://github.com/Z-YO-YI/YYMusic/actions/runs/33415790519)完成Android assembleDebug、apksigner v2验签、48项打包资源字节比对及Windows Debug/Golden；runner报告APK SHA-256为`1900a5710ecd65011516727265e24c4008590ebaa46cbfe106d5c4c2bca8f0b9`。该哈希当时未能通过下载副本独立复核。
+
+末尾upload-artifact返回`Artifact storage quota has been hit`，工作流因此失败且YYMusic仓库artifacts列表为空。用户于2026-09-01明确允许改用私有草稿Release。新流程只在手动workflow_dispatch时创建唯一`ci-debug-<run-id>-<attempt>`draft/prerelease并附加APK、SHA256SUMS和metadata；普通push/PR不创建Release。实际新运行、三个Release资产与下载后校验完成前，交付状态仍保持待验收。

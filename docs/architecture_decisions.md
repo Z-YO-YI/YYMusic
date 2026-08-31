@@ -72,7 +72,7 @@ YYSlider的onChanged只表示预览，只有onChangeEnd可供未来业务提交S
 
 ## ADR-014：云端APK与Phase2C输入边界（2026-08-31）
 
-用户明确要求APK在GitHub构建：交付必须对应目标commit的GitHub运行与artifact，不能上传旧本机包冒充云端编译。保留本地格式/分析/Widget/Golden检查，不在本批本机重建APK。Actions先验签/比对资产再按白名单上传，元数据不复制环境变量，签名仍为临时Debug；Release签名和稳定升级密钥另行授权。
+用户明确要求APK在GitHub构建：交付必须对应目标commit的GitHub运行、私有草稿Release与校验和，不能上传旧本机包冒充云端编译。Actions artifact额度耗尽后，经用户允许改为仅手动workflow_dispatch创建draft/prerelease；普通push/PR只做验证。Actions先验签/比对资产再按三文件白名单上传，元数据不复制环境变量，签名仍为临时Debug；正式发布、Release签名和稳定升级密钥另行授权。
 
 输入控件是设计系统，不是搜索功能。YYSearchField保留原生TextEditingValue/composing/selection，不在onChanged重写IME组合文字，只通过onSubmitted通知调用方。调用方Controller/FocusNode所有权不转移；启用/加载状态阻止输入和提交。剪贴板正文只有用户发出复制/粘贴等编辑动作才访问，测试全用替身；无网络搜索、输入历史或隐藏持久化。
 

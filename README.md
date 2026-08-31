@@ -1,6 +1,6 @@
 # YYMusic
 
-当前阶段：**Android 优先 · Phase 2C 输入与选择控件**。主题/字体/44 SVG、手机/平板导航、滑块和封面占位已有；本批新增原生搜索输入、分段选择及开关。APK交付改走GitHub Actions；首次远程核验发现隐藏文件校验错误，本批修复后重新验收。不是完整音乐客户端，也不代表整个Phase2完成；真实播放、数据库和正式业务页尚未接入。
+当前阶段：**Android 优先 · Phase 2C 输入与选择控件**。主题/字体/44 SVG、手机/平板导航、滑块和封面占位已有；本批新增原生搜索输入、分段选择及开关。APK交付由GitHub Actions构建；Actions产物额度已满后，经用户允许改用私有草稿Release，实际下载仍以最新云端核验为准。不是完整音乐客户端，也不代表整个Phase2完成；真实播放、数据库和正式业务页尚未接入。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
@@ -47,7 +47,7 @@ flutter build windows --debug --no-pub
 
 工具链完整后使用 `flutter run -d windows` 或 `flutter run -d <android-device-id>`。不要重新运行 flutter create 覆盖现有工程。Android 发行签名未配置，禁止使用 Debug 签名冒充 Release。
 
-APK请到[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)选择目标commit，下载成功运行的Artifacts；必须确认Android任务成功且产物属于该commit，不能把推送当作云端构建成功。首次核验的cafb942运行在ZIP校验阶段失败、没有APK；修复与复验见[CI记录](docs/ci_reference_audit_fix.md)。产物包含APK、SHA256SUMS和构建提交信息，默认保留14天。旧本机`build/app/outputs/flutter-apk/app-debug.apk`不是本批云端产物，APK不提交Git源码。详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
+需要APK时，在[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)对目标分支手动运行工作流；成功后从该次运行生成的私有草稿Release下载。必须确认Android任务、Release标签、metadata完整commit和SHA256SUMS一致，不能把推送当作云端构建成功。普通push/PR只验证构建，不创建下载产物；旧本机`build/app/outputs/flutter-apk/app-debug.apk`不是本批云端产物，APK不提交Git源码。修复与复验见[CI记录](docs/ci_reference_audit_fix.md)，详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
 
 无已连接真机/模拟器的验收证据，构建成功不等于已安装运行。11张组件/原生 Shell Golden 使用打包字体、Flutter 3.47.2 / Windows 测试宿主，精确像素比较；Linux明确跳过这11张，运行其余63项测试，Windows CI执行Golden。只在审查视觉变更后对指定测试使用 `--update-goldens`，日常测试不得更新基线。
 

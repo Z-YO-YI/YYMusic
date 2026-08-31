@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-01 — 私有草稿 Release APK 交付
+
+- 8e6915a的GitHub运行已完成Android编译、Debug验签、48项资源比对及Windows构建，但Actions产物存储额度已满，未伪称存在可下载APK。
+- 经用户明确允许，APK交付改为仅在workflow_dispatch手动运行时创建私有draft/prerelease；普通push/PR仍执行构建但不产生Release。
+- Release只附加APK、SHA256SUMS及构建metadata，使用唯一run/attempt标签，不覆盖或删除既有资产；个人令牌不进入runner。
+- 全局与非Android任务保持contents:read；Android任务单独申请contents:write，上传前的测试、验签与资源字节门禁不放宽。
+
 ## 2026-08-31 — GitHub Android SDK 工具路径修复
 
 - 隐藏文件修复9f08a71已在Linux通过源码/分析/测试；随后Android在SDK安装阶段暴露sdkmanager不在PATH的问题（exit 127）。

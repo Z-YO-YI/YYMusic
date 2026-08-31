@@ -32,16 +32,18 @@ export function buildMetadata(bytes, environment, checkoutCommit) {
   };
 }
 
-export function artifactSummary(metadata, artifactUrl) {
-  assert.match(artifactUrl ?? '', /^https:\/\/github\.com\/Z-YO-YI\/YYMusic\/actions\/runs\/[1-9][0-9]*\/artifacts\/[1-9][0-9]*$/);
-  assert(artifactUrl.startsWith(`${metadata.runUrl}/artifacts/`), 'Artifact belongs to another run');
+export function draftReleaseSummary(metadata, releaseTag) {
+  const runId = metadata.runUrl.split('/').at(-1);
+  assert.equal(releaseTag, `ci-debug-${runId}-${metadata.attempt}`, 'Draft Release belongs to another run');
+  const releaseUrl = `https://github.com/${repository}/releases/tag/${releaseTag}`;
   return [
     '## YYMusic Android Debug APK', '',
-    `[Download APK, SHA256SUMS and build metadata](${artifactUrl})`, '',
+    `[Download APK, SHA256SUMS and build metadata from the private draft Release](${releaseUrl})`, '',
+    `Draft Release tag: \`${releaseTag}\``, '',
     `Commit: \`${metadata.commit}\``, '',
     `APK SHA-256: \`${metadata.apk.sha256}\``, '',
     'Built and verified on GitHub Actions; this is not a locally uploaded APK.', '',
-    'Debug only. Retained for 14 days (subject to repository policy). GitHub sign-in and repository access are required.', '',
+    'Debug only. The Release remains a draft; GitHub sign-in and repository access are required.', '',
     'The runner debug signing key can change between runs. This is not a stable release/update signing identity.', '',
   ].join('\n');
 }
@@ -56,7 +58,7 @@ function main() {
   const metadata = buildMetadata(readFileSync(source), process.env, commit);
   if (process.argv[2] === '--summary') {
     assert(process.env.GITHUB_STEP_SUMMARY, 'Missing GitHub summary file');
-    appendFileSync(process.env.GITHUB_STEP_SUMMARY, artifactSummary(metadata, process.env.YY_APK_ARTIFACT_URL));
+    appendFileSync(process.env.GITHUB_STEP_SUMMARY, draftReleaseSummary(metadata, process.env.YY_APK_RELEASE_TAG));
     return;
   }
   assert.equal(process.argv.length, 2, 'Unexpected arguments');
