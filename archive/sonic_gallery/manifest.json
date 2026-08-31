@@ -1,0 +1,15 @@
+[
+  {"path":"lib/main.dart","bytes":162,"sha256":"bb0781e7b91ef13e45fc7e9a6758b368aaef440ca57ea0557920b6748a53f3e5"},
+  {"path":"lib/src/app.dart","bytes":6420,"sha256":"cf2bc5adb2815a71736dbc7654749741ca492f83fc91df6c5f381f946ced9c62"},
+  {"path":"lib/src/components.dart","bytes":27788,"sha256":"e0eed00c260c46496f1a73ec2bc89ab9eb28b95efd567595ae3d0d4f699bf920"},
+  {"path":"lib/src/icons.dart","bytes":11540,"sha256":"9ffcfd7cee99710a28b076bd65b48254d8d64cea87ae9fb4fd96767d34b4e38b"},
+  {"path":"lib/src/models.dart","bytes":1563,"sha256":"80d6e099e51cd649bfe48aec89185e6423dfdd4e335053cf152329f439cf6bec"},
+  {"path":"lib/src/pages.dart","bytes":59492,"sha256":"54d2fc308204903da5b2156859cc47a2ee6d18b9ff20d7f23d2b445dd658e221"},
+  {"path":"lib/src/shell.dart","bytes":33982,"sha256":"8e1a89bb05b3e075ef4ee9933525e2c3ed71d0513673172b3677a518e7cfe173"},
+  {"path":"lib/src/theme.dart","bytes":8168,"sha256":"f76b69b323cc7237244b29a68f6c5c9b81703e3e17f359d036e507df1d600bbc"},
+  {"path":"test/app_smoke_test.dart","bytes":1205,"sha256":"ad8a1034c59406a00f0282a9be4430e06914e9832d4d37b6e04a05bf7b5a97aa"},
+  {"path":"test/design_tokens_test.dart","bytes":676,"sha256":"84bd78a3bbd4009ea2566e4213f70e38227376441f17ac10c8b79919773217b4"},
+  {"path":"pubspec.yaml","bytes":398,"sha256":"928ce771e64e707c7f99a5bd939e40e32c76a133dfede3d851b7f9b14ae39107"},
+  {"path":"analysis_options.yaml","bytes":174,"sha256":"2e4d8a880006e801ea0facc6c59c84c4fe766d0c1c35577904c5793940b660d2"},
+  {"path":"assets/images/album_atlas.png","bytes":3240021,"sha256":"c4a9155ccecb231c975acfe5ff24747e20c9e495d3d83178dcbbc6e077721540"}
+]

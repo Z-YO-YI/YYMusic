@@ -1,5 +1,6 @@
 # Keep audited references byte-exact; never normalize the source fingerprints.
 /design_reference/** -text
+/archive/sonic_gallery/** -text
 /assets/icons/yymusic/*.svg text eol=lf
 /docs/** text eol=lf
 /tools/*.mjs text eol=lf
