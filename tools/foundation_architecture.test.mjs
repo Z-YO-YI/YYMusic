@@ -39,7 +39,7 @@ test('native runners are branded and Android release does not use debug signing'
   assert(!read('android/app/build.gradle.kts').includes('signingConfigs.getByName("debug")'));
 });
 
-test('CI validates both debug targets with read-only, pinned actions', () => {
+test('CI validates both debug targets with least-privileged, pinned actions', () => {
   const workflow = read('.github/workflows/foundation.yml');
   assert.match(workflow, /contents: read/);
   assert.match(workflow, /flutter build windows --debug --no-pub/);
@@ -47,5 +47,10 @@ test('CI validates both debug targets with read-only, pinned actions', () => {
   const actions = [...workflow.matchAll(/uses: (\S+)/g)].map(match => match[1]);
   assert(actions.length >= 4);
   assert(actions.every(action => /@[a-f0-9]{40}$/.test(action)));
-  assert(!/pull_request_target|secrets\.|contents: write/.test(workflow));
+  assert(!/pull_request_target|secrets\./.test(workflow));
+  assert.equal(workflow.match(/contents: write/g)?.length, 1);
+  const android = workflow.slice(workflow.indexOf('\n  android-debug:'));
+  assert.match(android, /permissions:\s+contents: write/);
+  assert.match(android, /if: github\.event_name == 'workflow_dispatch'/);
+  assert.match(android, /GH_TOKEN: \$\{\{ github\.token \}\}/);
 });

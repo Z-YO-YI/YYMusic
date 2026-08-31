@@ -9,9 +9,9 @@ Phase0设计身份/完整App.tsx+基础HTML审计已保留；Phase1的Android基
 ## GitHub APK流程（独立阶段7458a28）
 
 - 原工作流已有编译但没有下载产物；现在Android job在checks之后编译，依次验签、逐字节核验48份SVG/字体/许可证，再上传APK、SHA256SUMS、构建metadata。
-- 输出关联完整commit/run/attempt；上传仅三文件白名单，默认14天、不覆盖历史；失败不上传，无Secrets或写仓库权限。官方upload-artifact固定v7.0.1 SHA。
+- 输出关联完整commit/run/attempt；上传仅三文件白名单。原artifact方案因账户额度耗尽，后经用户允许改为仅手动运行创建私有草稿Release；其他任务保持只读，个人令牌不进入runner。
 - 本机打包脚本默认拒绝执行；本轮没有运行flutter build apk，也没有把旧Phase2B APK上传冒充云端构建。仅以旧包只读运行资产校验脚本来验证脚本兼容性，该结果不代表新版本构建通过。
-- GitHub连接器仓库404、授权账户列表为空。已请求用户授权本仓库，不索要Token、不读取Git凭据绕过。**尚无可核验的云端成功run或artifact，APK云端交付验收未完成。** 下载路径与签名限制见[说明](github_apk_build.md)。
+- 阶段结束时尚无可核验的云端下载；后续已恢复用户授权并确认云端Android/Windows编译通过，但artifact额度已满。新的私有草稿Release仍须按目标commit复验下载、metadata和SHA256SUMS，最新状态见[说明](github_apk_build.md)。
 
 ## Phase2C实现
 

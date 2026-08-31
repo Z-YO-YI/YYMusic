@@ -1,12 +1,12 @@
 # YYMusic
 
-当前阶段：**Android 优先 · Phase 2C 输入与选择控件**。主题/字体/44 SVG、手机/平板导航、滑块和封面占位已有；本批新增原生搜索输入、分段选择及开关。APK交付改走GitHub Actions，云端结果仍待授权核验。不是完整音乐客户端，也不代表整个Phase2完成；真实播放、数据库和正式业务页尚未接入。
+当前阶段：**Android 优先 · Phase 2C 输入与选择控件**。主题/字体/44 SVG、手机/平板导航、滑块和封面占位已有；本批新增原生搜索输入、分段选择及开关。APK已由GitHub Actions构建，并通过私有草稿Release完成下载、校验和、metadata及签名复核。不是完整音乐客户端，也不代表整个Phase2完成；真实播放、数据库和正式业务页尚未接入。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
 ## 开发入口
 
-- [GitHub APK 构建与下载](docs/github_apk_build.md)（当前云端运行状态尚待访问权限核验）
+- [GitHub APK 构建与下载](docs/github_apk_build.md)、[CI 隐藏文件校验修复](docs/ci_reference_audit_fix.md)
 - [Phase 2C 报告](docs/phase_2c_android_report.md)、[本批范围](docs/phase_2c_android_plan.md)、[本批 PR 草稿](docs/phase_2c_android_pr_draft.md)
 - [Android Phase 2B 报告](docs/phase_2b_android_report.md)、[本批范围](docs/phase_2b_android_plan.md)、[本批 PR 草稿](docs/phase_2b_android_pr_draft.md)
 - [Phase 2A 历史报告](docs/phase_2_android_report.md)、[字体与图标接入记录](docs/design_assets.md)
@@ -47,19 +47,19 @@ flutter build windows --debug --no-pub
 
 工具链完整后使用 `flutter run -d windows` 或 `flutter run -d <android-device-id>`。不要重新运行 flutter create 覆盖现有工程。Android 发行签名未配置，禁止使用 Debug 签名冒充 Release。
 
-APK请到[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)选择目标commit，下载成功运行的Artifacts；构建日志及产物仍待仓库访问权限核验，不能把推送当作云端构建成功。产物包含APK、SHA256SUMS和构建提交信息，默认保留14天。旧本机`build/app/outputs/flutter-apk/app-debug.apk`不是本批云端产物，APK不提交Git源码。详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
+需要APK时，在[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)对目标分支手动运行工作流；成功后从该次运行生成的私有草稿Release下载。当前已验收的是4be8ba2的[运行33451875605](https://github.com/Z-YO-YI/YYMusic/actions/runs/33451875605)及其[草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-9a49a12002f0c9cc058a)。必须确认Android任务、Release标签、metadata完整commit和SHA256SUMS一致；普通push/PR只验证构建，不创建下载产物。旧本机APK不是本批云端产物，APK不提交Git源码。证据见[CI记录](docs/ci_reference_audit_fix.md)，详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
 
 无已连接真机/模拟器的验收证据，构建成功不等于已安装运行。11张组件/原生 Shell Golden 使用打包字体、Flutter 3.47.2 / Windows 测试宿主，精确像素比较；Linux明确跳过这11张，运行其余63项测试，Windows CI执行Golden。只在审查视觉变更后对指定测试使用 `--update-goldens`，日常测试不得更新基线。
 
 ## 设计与归档完整性
 
-只需 Node.js 22 或更高版本，无第三方依赖；这些命令不执行参考 HTML 的脚本，不构建 Flutter：
+需要 Node.js 22 或更高版本及PATH中的PowerShell 7（`pwsh`），无额外包依赖；这些命令不执行参考 HTML 的脚本，不构建 Flutter。新增归档回归仅改动临时副本，覆盖隐藏文件与完整性失败情形：
 
 ```powershell
 node --check tools/design_audit.mjs
 node --check tools/design_audit.test.mjs
 node tools/design_audit.mjs --check
-node --test tools/design_audit.test.mjs tools/design_assets.test.mjs tools/legacy_archive.test.mjs tools/foundation_architecture.test.mjs tools/android_artifact.test.mjs
+node --test tools/design_audit.test.mjs tools/design_assets.test.mjs tools/legacy_archive.test.mjs tools/foundation_architecture.test.mjs tools/android_artifact.test.mjs tools/reference_archive.test.mjs
 pwsh -NoProfile -File tools/verify_reference_archive.ps1
 ```
 
@@ -69,7 +69,7 @@ pwsh -NoProfile -File tools/verify_reference_archive.ps1
 
 ## Git 与历史原型
 
-仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。本批分支 `feat/android-ci-and-form-controls` 基于已拉取并同步的 `feat/android-navigation-controls@2f35cf5`，未在 main/master 开发。此前阶段提交保留；合并前需审核完整分支差异。GitHub连接器仍404且授权账户为空，PR/远程CI不可核验，不读取本机秘密绕过权限；Git提交/推送状态以每次交付时实际核验为准。
+仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。当前CI修复分支 `fix/reference-audit-hidden-files` 基于已拉取并同步的 `feat/android-ci-and-form-controls@cafb942`，未在 main/master 开发。此前阶段提交保留；合并前需审核完整分支差异。经用户明确授权已恢复临时GitHub API访问，不读取现有Git凭据、不持久化访问令牌；Git提交/推送和云端产物状态以每次交付时实际核验为准。
 
 旧原型 13 个文件已原样迁入 [archive/sonic_gallery](archive/sonic_gallery/README.md)，并在 `f96197b` 单独提交；源码、两份测试、配置和图片可恢复，不再散落为根目录未跟踪文件。Phase 0 中“保留原地、未纳入提交”的说明是当时历史状态。
 

@@ -1,5 +1,26 @@
 # Changelog
 
+## 2026-09-01 — 私有草稿 Release APK 交付
+
+- 8e6915a的GitHub运行已完成Android编译、Debug验签、48项资源比对及Windows构建，但Actions产物存储额度已满，未伪称存在可下载APK。
+- 经用户明确允许，APK交付改为仅在workflow_dispatch手动运行时创建私有draft/prerelease；普通push/PR仍执行构建但不产生Release。
+- Release只附加APK、SHA256SUMS及构建metadata，使用唯一run/attempt标签，不覆盖或删除既有资产；个人令牌不进入runner。
+- 全局与非Android任务保持contents:read；Android任务单独申请contents:write，上传前的测试、验签与资源字节门禁不放宽。
+- 4be8ba2的手动运行33451875605三项任务成功；三个草稿Release资产已独立下载，核对commit/run/metadata/API digest/SHA256SUMS并再次通过APK v2验签。
+
+## 2026-08-31 — GitHub Android SDK 工具路径修复
+
+- 隐藏文件修复9f08a71已在Linux通过源码/分析/测试；随后Android在SDK安装阶段暴露sdkmanager不在PATH的问题（exit 127）。
+- 从ANDROID_HOME显式定位并校验cmdline-tools/latest/bin/sdkmanager，保留JDK与三个固定SDK组件版本；不安装新的Action或批量接受许可。
+- 新增1项真实YAML合同回归，记录首次失败与第二次云端证据；PR #1保持待审核，不自动合并。
+
+## 2026-08-31 — GitHub CI 隐藏参考文件校验修复
+
+- 首次获得远程运行证据：cafb942的ZIP校验读取隐藏`.gitattributes`失败，Android任务跳过、未产生APK；不把本地回归通过当作云端成功。
+- `Get-Item -LiteralPath`增加`-Force`，只允许校验器读取隐藏文件属性；24份原始参考、ZIP哈希、文件数量和字节比对不变，没有跳过失败门禁。
+- 新增5项实际执行PowerShell校验器的Node回归，在临时副本中覆盖隐藏文件、隐藏文件篡改/缺失/多余与ZIP改动；Windows显式设置Hidden属性以复现Linux故障。
+- 不改Flutter业务、设计基线、依赖、签名或账号/仓库权限；云端复验与证据见docs/ci_reference_audit_fix.md。
+
 ## 2026-08-31 — Android Phase 2C 输入与选择
 
 - 新增YYSearchField，使用原生EditableText/选择手势/工具栏，支持IME组合输入、搜索提交、清空、错误公告与只读加载/禁用；不访问真实音乐服务。

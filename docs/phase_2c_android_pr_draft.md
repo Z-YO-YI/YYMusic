@@ -4,7 +4,7 @@ Head：feat/android-ci-and-form-controls；增量基线：feat/android-navigatio
 
 ## 变更
 
-- GitHub runner编译APK，验签/核验原始资产后上传三文件白名单，提供commit/run/校验和与下载摘要；不是本机上传旧包。固定Action SHA、14天保留、无秘密/仓库写权限。
+- GitHub runner编译APK，验签/核验原始资产后上传三文件白名单，提供commit/run/校验和与下载摘要；不是本机上传旧包。原artifact方案因账户额度耗尽，后经用户允许改为仅手动运行创建私有草稿Release；个人令牌不进入runner。
 - 原生YYSearchField、YYToggle、YYSegmentedControl，共用动作/语义层；IME/选择菜单/清空、键盘、RTL、禁用加载与低对比适配。
 - Gallery真实外观开关和仅本地文本示例；保留全部原有导航/播放边界/资产/Golden，无WebView、Material默认外观、网络或假曲库。
 
@@ -14,6 +14,6 @@ Head：feat/android-ci-and-form-controls；增量基线：feat/android-navigatio
 
 ## 风险与未验收项
 
-本轮未在本机重建APK；云端run/artifact不可读，**不能标记GitHub构建成功**。获得授权后检查当前commit的checks/android-debug及artifact，再单独核验Windows job。临时Debug签名可能跨runner变化，不能当稳定升级/Release签名。
+本轮未在本机重建APK。后续云端已证明Android与Windows可编译，但artifact额度阻止下载；新的草稿Release流程仍须用目标commit实际运行并下载核验后才能标记交付成功。临时Debug签名可能跨runner变化，不能当稳定升级/正式Release签名。
 
 真机IME/TalkBack/性能与网页视觉对照未验收，输入组件不是完整搜索业务。数据库/音频/正式业务页未接入。没有新增依赖或媒体权限，不提交APK、机器配置、用户文本、剪贴板内容或密钥。
