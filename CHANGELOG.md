@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-31 — Android Phase 2C 输入与选择
+
+- 新增YYSearchField，使用原生EditableText/选择手势/工具栏，支持IME组合输入、搜索提交、清空、错误公告与只读加载/禁用；不访问真实音乐服务。
+- 新增受控YYToggle、YYSegmentedControl，共用触控/键盘/语义处理；保留46/28/22开关几何、分段14/11圆角，触控不小于44dp，支持RTL/减少动态与焦点自动滚入视野。
+- Gallery实际外观开关接入根状态，新增纯本地文本与筛选示例；未加入假搜索结果、数据库或模拟音频。
+- 新增11项Widget与3张130%真实字体Golden，旧8张不改；总计74项Flutter及23项Node检查。APK不在本机重建，云端状态仍待授权核验。
+
 ## 2026-08-31 — GitHub Actions APK交付
 
 - 按用户要求，APK交付改由GitHub runner编译；补齐原工作流缺失的验签、资产比对、APK/校验和/构建身份上传与摘要下载链接。

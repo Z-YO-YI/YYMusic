@@ -32,10 +32,15 @@ test('Flutter glyph enum covers each original SVG exactly once', () => {
 test('Git preserves exact bytes for fonts, upstream licenses and PNG goldens', () => {
   const files = JSON.parse(read('assets/fonts/manifest.json')).files.map(file => file.path);
   const goldens = walk('test/golden/baselines').filter(path => path.endsWith('.png'));
-  for (const original of ['components_dark_390_130.png', 'components_light_390_130.png', 'icon_atlas_800.png']) {
+  for (const original of [
+    'components_dark_390_130.png', 'components_light_390_130.png', 'icon_atlas_800.png',
+    'android_phone_130.png', 'android_tablet_130.png', 'controls_dark_jade.png',
+    'controls_light_coral.png', 'controls_light_white_reduced.png',
+    'forms_light_coral.png', 'forms_dark_jade.png', 'forms_light_white.png',
+  ]) {
     assert(goldens.some(path => path.endsWith(`/${original}`)), original);
   }
-  assert(goldens.length >= 8, 'Phase2B adds five baselines without dropping the original three');
+  assert(goldens.length >= 11, 'Phase2C adds three baselines without dropping prior phases');
   files.push(...goldens);
   const attributes = execFileSync('git', ['check-attr', 'text', '--', ...files], { encoding: 'utf8' }).trim().split(/\r?\n/);
   assert.equal(attributes.length, files.length);

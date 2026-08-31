@@ -1,12 +1,13 @@
 # YYMusic
 
-当前阶段：**Android 优先 · Phase 2B 导航与媒体基础控件**。已在 Phase 2A 主题、字体、44 SVG 和首批组件上，接入手机胶囊导航、平板 Rail、受控滑块及七种几何封面占位。保留 Windows runner 与共享架构；不是完整音乐客户端，也不代表 Phase 2 或双平台验收全部完成（ADR-012/013）。
+当前阶段：**Android 优先 · Phase 2C 输入与选择控件**。主题/字体/44 SVG、手机/平板导航、滑块和封面占位已有；本批新增原生搜索输入、分段选择及开关。APK交付改走GitHub Actions，云端结果仍待授权核验。不是完整音乐客户端，也不代表整个Phase2完成；真实播放、数据库和正式业务页尚未接入。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
 ## 开发入口
 
 - [GitHub APK 构建与下载](docs/github_apk_build.md)（当前云端运行状态尚待访问权限核验）
+- [Phase 2C 报告](docs/phase_2c_android_report.md)、[本批范围](docs/phase_2c_android_plan.md)、[本批 PR 草稿](docs/phase_2c_android_pr_draft.md)
 - [Android Phase 2B 报告](docs/phase_2b_android_report.md)、[本批范围](docs/phase_2b_android_plan.md)、[本批 PR 草稿](docs/phase_2b_android_pr_draft.md)
 - [Phase 2A 历史报告](docs/phase_2_android_report.md)、[字体与图标接入记录](docs/design_assets.md)
 - [Phase 1 报告与限制](docs/phase_1_report.md)、[阶段计划](docs/phase_1_plan.md)
@@ -16,6 +17,8 @@
 Android 启动后，底部或左侧导航可切换首页、搜索、音乐库、设置；宽度跨越 600dp 时保留当前路由和根状态。在首页点“设计基础预览”进入 `/design-system`：切换浅色/深色/系统、五种预设/自定义 HEX、减少动态/透明，查看原生组件、滑块、七种占位封面与图标。滑块横向拖动预览、松开提交示例数值，系统取消不提交，支持键盘/无障碍增减，但不触发播放。
 
 外观仅在本次运行保留，重启恢复默认。预览页的点击/收藏/进度只是标注清楚的本页示例状态；四个业务入口仍是工程骨架，音频、数据库和平台全屏尚未接入。
+
+“输入与选择”可输入中文/英文、按软键盘搜索提交本页文字、清空或长按选择/复制/粘贴，切换示例筛选和加载状态。不会发送网络查询或保存搜索历史；“减少动态/透明”开关实际更新根外观状态。分段控件支持Tab定位、Enter/Space选择和窄宽横向滚动。
 
 ## Phase 0 审计入口
 
@@ -46,7 +49,7 @@ flutter build windows --debug --no-pub
 
 APK请到[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)选择目标commit，下载成功运行的Artifacts；构建日志及产物仍待仓库访问权限核验，不能把推送当作云端构建成功。产物包含APK、SHA256SUMS和构建提交信息，默认保留14天。旧本机`build/app/outputs/flutter-apk/app-debug.apk`不是本批云端产物，APK不提交Git源码。详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
 
-无已连接真机/模拟器的验收证据，构建成功不等于已安装运行。8张组件/原生 Shell Golden 使用打包字体、Flutter 3.47.2 / Windows 测试宿主，精确像素比较；Linux 明确跳过这8张宿主基线，Windows CI执行它们。只在审查视觉变更后对指定测试使用 `--update-goldens`，日常测试不得更新基线。
+无已连接真机/模拟器的验收证据，构建成功不等于已安装运行。11张组件/原生 Shell Golden 使用打包字体、Flutter 3.47.2 / Windows 测试宿主，精确像素比较；Linux明确跳过这11张，运行其余63项测试，Windows CI执行Golden。只在审查视觉变更后对指定测试使用 `--update-goldens`，日常测试不得更新基线。
 
 ## 设计与归档完整性
 
@@ -56,7 +59,7 @@ APK请到[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/f
 node --check tools/design_audit.mjs
 node --check tools/design_audit.test.mjs
 node tools/design_audit.mjs --check
-node --test tools/design_audit.test.mjs tools/design_assets.test.mjs tools/legacy_archive.test.mjs tools/foundation_architecture.test.mjs
+node --test tools/design_audit.test.mjs tools/design_assets.test.mjs tools/legacy_archive.test.mjs tools/foundation_architecture.test.mjs tools/android_artifact.test.mjs
 pwsh -NoProfile -File tools/verify_reference_archive.ps1
 ```
 

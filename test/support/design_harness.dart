@@ -50,7 +50,11 @@ Widget designHarness(
               data: theme,
               child: DefaultTextStyle(
                 style: YYTypography.text(color: theme.colors.text),
-                child: ColoredBox(color: theme.colors.base, child: child),
+                // Match the real router's Overlay so native selection menus
+                // and handles can be exercised without a Material app.
+                child: Overlay.wrap(
+                  child: ColoredBox(color: theme.colors.base, child: child),
+                ),
               ),
             ),
           ),
