@@ -12,6 +12,7 @@
 | Phase 3 Domain/数据库/状态 | 未开始；只有边界决策 |
 | Phase 4 双平台音频 | 仅 POC 计划；没有真实播放验证 |
 | 后续页面、歌词、导入、来源、平台集成 | 未开始 |
+| GitHub APK交付 | 用户要求云端构建；已补齐Actions验签/产物下载流程，远程run与artifact仍待授权核验，见github_apk_build.md |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
 | Flutter format/analyze/test | Phase2B已实际执行；59项含8张原生Golden；当前结果见phase_2b_android_report.md |
 | Windows / Android Debug构建 | Android本批结果见phase_2b_android_report.md；Windows安装等待UAC确认，远程CI未核验 |
@@ -26,6 +27,6 @@
 
 ## 仓库边界
 
-开发分支：feat/android-navigation-controls，基于已拉取并同步的feat/android-design-foundation@601137c。未在main/master直接开发；旧原型保留于归档提交。
+开发分支：feat/android-ci-and-form-controls，基于已拉取并同步的feat/android-navigation-controls@2f35cf5。未在main/master直接开发；旧原型保留于归档提交。本批先单独提交GitHub APK流程，再分批继续Phase2组件。
 
 GitHub连接器本批复查仍404，无法创建/核验PR或读取远程CI；不能读取本机Git秘密绕过限制。本批PR草稿见phase_2b_android_pr_draft.md。提交号和实时同步状态通过git log/status/ls-remote核验，最终交付消息报告实际结果。

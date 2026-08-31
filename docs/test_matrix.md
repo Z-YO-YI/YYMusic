@@ -25,8 +25,10 @@ Phase1/2A原有40项检查保留，Phase2B新增14项Widget和5张原生Golden�
 
 ## CI
 
-`.github/workflows/foundation.yml`：checks 在 Ubuntu24.04 跑 Node/PowerShell 源核验、Dart格式/严格分析/Flutter测试；checks 成功后独立 Windows2025 Debug 和 Ubuntu Android Debug 构建。push feat/fix 或 PR 触发，超时20/30分钟，未发布产物/签名/部署，无 secrets 注入，checkout 不保留凭据。
+`.github/workflows/foundation.yml`：checks 在 Ubuntu24.04 跑 Node/PowerShell 源核验、Dart格式/严格分析/Flutter测试；checks 成功后独立 Windows2025 Debug 和 Ubuntu Android Debug 构建。push feat/fix 或 PR 触发，超时20/30分钟。Android新增验签/48文件比对/严格白名单artifact上传及摘要下载；14天保留，不是Release发布/部署，无 secrets 注入，checkout 不保留凭据。
 
 8张Golden按Windows宿主标记，Linux明确跳过（非静默通过），Windows job构建前执行`flutter test --tags windows-golden`；其余51个Flutter测试仍在checks执行。没有删除或跳过原有回归，CI本批无需修改即可发现新增文件。远程工作流尚不可读，本地通过不冒充远程通过。
+
+云端交付增量：另加1项YAML门禁测试、4项Node元数据/拒绝本地打包测试。APK必须在build→signature→assets→package均成功后上传，不使用always/continue-on-error；metadata不复制环境变量或秘密，下载URL必须属于本run。当前累计60项Flutter、23项Node，远程状态仍待核验。
 
 Actions 固定 SHA，来源为维护者公开 refs 和说明：[checkout](https://github.com/actions/checkout)、[setup-node](https://github.com/actions/setup-node)、[setup-java](https://github.com/actions/setup-java)、[flutter-action](https://github.com/subosito/flutter-action)。静态配置验证不代表远程工作流已经通过；私有 CI 结果必须可读取后才记录成功。

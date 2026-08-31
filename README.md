@@ -6,6 +6,7 @@
 
 ## 开发入口
 
+- [GitHub APK 构建与下载](docs/github_apk_build.md)（当前云端运行状态尚待访问权限核验）
 - [Android Phase 2B 报告](docs/phase_2b_android_report.md)、[本批范围](docs/phase_2b_android_plan.md)、[本批 PR 草稿](docs/phase_2b_android_pr_draft.md)
 - [Phase 2A 历史报告](docs/phase_2_android_report.md)、[字体与图标接入记录](docs/design_assets.md)
 - [Phase 1 报告与限制](docs/phase_1_report.md)、[阶段计划](docs/phase_1_plan.md)
@@ -36,14 +37,16 @@ flutter pub get --enforce-lockfile
 dart format --output=none --set-exit-if-changed lib test
 flutter analyze --no-pub --fatal-infos
 flutter test --no-pub --coverage
-flutter build apk --debug --no-pub
+# APK交付由GitHub Actions执行；不要用旧本机APK替代云端产物。
 # Windows 工具链就绪后单独验收；本地尚未完成。
 flutter build windows --debug --no-pub
 ```
 
 工具链完整后使用 `flutter run -d windows` 或 `flutter run -d <android-device-id>`。不要重新运行 flutter create 覆盖现有工程。Android 发行签名未配置，禁止使用 Debug 签名冒充 Release。
 
-本批 APK：`build/app/outputs/flutter-apk/app-debug.apk`（本地忽略，不提交 GitHub）。无已连接真机/模拟器的验收证据，构建成功不等于已安装运行。8张组件/原生 Shell Golden 使用打包字体、Flutter 3.47.2 / Windows 测试宿主，精确像素比较；Linux 明确跳过这8张宿主基线，Windows CI执行它们，其他51项测试正常执行。只在审查视觉变更后对指定测试使用 `--update-goldens`，日常测试不得更新基线。
+APK请到[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)选择目标commit，下载成功运行的Artifacts；构建日志及产物仍待仓库访问权限核验，不能把推送当作云端构建成功。产物包含APK、SHA256SUMS和构建提交信息，默认保留14天。旧本机`build/app/outputs/flutter-apk/app-debug.apk`不是本批云端产物，APK不提交Git源码。详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
+
+无已连接真机/模拟器的验收证据，构建成功不等于已安装运行。8张组件/原生 Shell Golden 使用打包字体、Flutter 3.47.2 / Windows 测试宿主，精确像素比较；Linux 明确跳过这8张宿主基线，Windows CI执行它们。只在审查视觉变更后对指定测试使用 `--update-goldens`，日常测试不得更新基线。
 
 ## 设计与归档完整性
 
@@ -63,7 +66,7 @@ pwsh -NoProfile -File tools/verify_reference_archive.ps1
 
 ## Git 与历史原型
 
-仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。本批分支 `feat/android-navigation-controls` 基于已拉取并同步的 `feat/android-design-foundation@601137c`，未在 main/master 开发。此前 Phase 0 / Phase 1 / 工具链 / Phase 2A 提交保留；合并前需审核完整分支差异。GitHub 连接器仍404，PR/远程CI不可核验，不读取本机秘密绕过权限；Git提交/推送状态以每次交付时实际核验为准。
+仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。本批分支 `feat/android-ci-and-form-controls` 基于已拉取并同步的 `feat/android-navigation-controls@2f35cf5`，未在 main/master 开发。此前阶段提交保留；合并前需审核完整分支差异。GitHub连接器仍404且授权账户为空，PR/远程CI不可核验，不读取本机秘密绕过权限；Git提交/推送状态以每次交付时实际核验为准。
 
 旧原型 13 个文件已原样迁入 [archive/sonic_gallery](archive/sonic_gallery/README.md)，并在 `f96197b` 单独提交；源码、两份测试、配置和图片可恢复，不再散落为根目录未跟踪文件。Phase 0 中“保留原地、未纳入提交”的说明是当时历史状态。
 

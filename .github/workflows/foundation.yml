@@ -62,7 +62,7 @@ jobs:
       - run: flutter build windows --debug --no-pub
 
   android-debug:
-    name: Android Debug build
+    name: Android Debug APK and download
     needs: checks
     runs-on: ubuntu-24.04
     timeout-minutes: 30
@@ -74,9 +74,40 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '22'
+          package-manager-cache: false
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
+      - name: Install pinned Android build components
+        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0' 'ndk;28.2.13676358'
       - run: flutter pub get --enforce-lockfile
       - run: flutter build apk --debug --no-pub
+      - name: Verify APK signature
+        run: '"$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose build/app/outputs/flutter-apk/app-debug.apk'
+      - name: Verify packaged design assets
+        shell: pwsh
+        run: ./tools/verify_android_apk.ps1
+      - name: Package APK with commit and checksum
+        run: node tools/android_artifact.mjs
+      - name: Upload verified Android Debug APK
+        id: android-apk
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: YYMusic-android-debug-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            build/ci/android-debug/YYMusic-debug.apk
+            build/ci/android-debug/SHA256SUMS
+            build/ci/android-debug/build-metadata.json
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Add APK download to build summary
+        env:
+          YY_APK_ARTIFACT_URL: ${{ steps.android-apk.outputs.artifact-url }}
+        run: node tools/android_artifact.mjs --summary
