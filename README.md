@@ -7,7 +7,7 @@
 ## 开发入口
 
 - [Phase 1 报告与限制](docs/phase_1_report.md)、[阶段计划](docs/phase_1_plan.md)
-- [当前架构](docs/architecture.md)、[验证矩阵](docs/test_matrix.md)、[工具链前置条件](docs/toolchain_setup.md)
+- [当前架构](docs/architecture.md)、[验证矩阵](docs/test_matrix.md)、[工具链盘点、安装与恢复记录](docs/toolchain_setup.md)
 - [PR 描述草稿](docs/phase_1_pr_draft.md)
 
 屏幕明确显示“Phase 1 工程骨架”，只验证布局、导航和依赖生命周期，不代表 Figma 外观或音乐业务完成。音频、数据库和平台全屏尚未接入；不伪造播放或来源连接成功。
@@ -24,6 +24,8 @@
 ## 运行与验证
 
 开发基线：Flutter 3.47.2 / Dart 3.13.2（stable），CI 固定相同 Flutter 版本。先确认 flutter doctor；Windows 需要 Visual Studio Desktop development with C++，Android 需要 SDK 命令行工具及用户认可的 SDK 许可。本机缺失项见工具链文档，不能将分析/测试通过当作构建通过。
+
+2026-08-31 环境补齐：复用已安装的 Flutter、Android Studio 和 JDK；新增 Android 命令行工具 22.0、API 36 与 NDK 28.2.13676358，配置用户级路径并保留恢复备份。Android Debug APK 已构建并通过签名校验；Windows C++ 安装仍等待管理员确认，双平台构建状态以工具链记录为准。安装包、机器配置及构建产物不提交仓库。
 
 ```powershell
 flutter pub get --enforce-lockfile

@@ -2,6 +2,8 @@
 
 2026-08-31。已实现并验证的范围是工程骨架；不宣称 Phase 1 全部完成，不进入 Phase 2。
 
+后续环境补齐记录见 [toolchain_setup.md](toolchain_setup.md)：用户已批准安装缺失组件，Android Debug APK 已构建并通过签名校验，Windows 仍等待管理员确认。下文原始构建结果为骨架提交时的历史记录，最新复核结果以工具链记录为准。
+
 ## 实际新增/修改
 
 - 原型：13 个原文件完整移入 archive/sonic_gallery，指纹一致；独立保存提交 f96197b，不丢失旧源码/测试/图片。

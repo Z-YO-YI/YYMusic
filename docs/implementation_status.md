@@ -12,12 +12,12 @@
 | 后续页面、歌词、导入、来源、平台集成 | 未开始 |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
 | Flutter format/analyze/test | 已找到现有SDK并实际执行，最终结果见phase_1_report.md |
-| Windows / Android Debug构建 | Windows缺VS构建失败；Android工具/许可未就绪，未运行；远程CI结果未核验 |
+| Windows / Android Debug构建 | Android Debug APK已构建并通过签名校验；Windows安装等待UAC确认；最新结果见toolchain_setup.md，远程CI未核验 |
 
 ## Phase 1 尚待满足的出口
 
 1. 已执行安全归档：13个旧原型文件移入archive/sonic_gallery，指纹一致，f96197b保存；根lib是新骨架，不再是旧代码。
-2. 待授权补足Windows C++工具链、Android命令行工具/许可，或获取真实CI双平台构建成功证据。
+2. 用户已批准补足工具链；Android命令行工具/API36/NDK已安装，Windows C++安装等待UAC确认。仍需取得双平台Debug构建成功证据，未批量接受所有Android许可。
 3. 已解析Riverpod/go_router并提交lockfile；音频后端仍等待Phase 4双平台POC。
 4. 已建立实时平台分类、三个Shell和根依赖；保持业务页面未实现，不越过Phase 1出口。
 5. 为后续视觉验证准备获准且可访问的预览环境；遵守 Browser 技能边界，不绕过本轮 file: 拒绝。参考 screenshot 与 Flutter Golden 必须分别记录。

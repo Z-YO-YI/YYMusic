@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-31 — Android 工具链与 Debug 构建通过（Windows 待确认）
+
+- 用户确认后复用现有 Flutter / Android Studio / JDK，仅补 Android 命令行工具 22.0、API 36 与 NDK 28.2.13676358。
+- 配置用户级工具路径，统一 ADB 来源；原环境设置保存在本地忽略目录，未删除旧工具。
+- 校验官方 Android ZIP 哈希和微软安装程序签名；Windows C++ 安装等待系统 UAC 确认，不绕过管理员权限。
+- 记录安装范围、恢复方式及实际测试/构建状态，不改变设计参考、业务代码、项目依赖或发布签名。
+- Android Debug APK 构建及签名校验通过；format/analyze、24 项 Flutter 测试、15 项 Node 测试和 24 个 ZIP entry 核验通过。Windows 尚未安装完成，不标记 Phase 1 全部完成。
+
 ## 2026-08-31 — Phase 1 工程骨架（构建出口待验证）
 
 - 将旧 Sonic Gallery 的 13 个文件原样归档并单独提交，增加指纹测试。
