@@ -1,16 +1,18 @@
 # YYMusic
 
-当前阶段：**Phase 1 — 原生 Flutter 工程骨架**。已有 Windows / Android runner、三套结构性 Shell、根依赖图和独立路由；尚未完成双平台构建验收，不进入 Phase 2。
+当前阶段：**Android 优先 · Phase 2A 设计基础**。根据用户最新要求先推进 Android，保留 Windows runner 与共享架构。Android 原生预览入口、主题、字体、44 SVG 和首批组件已实现；不是完整音乐客户端，也不代表 Phase 2 或双平台验收全部完成（ADR-012）。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
 ## 开发入口
 
+- [Android Phase 2A 报告](docs/phase_2_android_report.md)、[阶段范围](docs/phase_2_android_plan.md)、[字体与图标接入记录](docs/design_assets.md)
+- [本批 PR 描述草稿](docs/phase_2_android_pr_draft.md)
 - [Phase 1 报告与限制](docs/phase_1_report.md)、[阶段计划](docs/phase_1_plan.md)
 - [当前架构](docs/architecture.md)、[验证矩阵](docs/test_matrix.md)、[工具链盘点、安装与恢复记录](docs/toolchain_setup.md)
 - [PR 描述草稿](docs/phase_1_pr_draft.md)
 
-屏幕明确显示“Phase 1 工程骨架”，只验证布局、导航和依赖生命周期，不代表 Figma 外观或音乐业务完成。音频、数据库和平台全屏尚未接入；不伪造播放或来源连接成功。
+Android 启动后，在首页点“设计基础预览”进入 `/design-system`：切换浅色/深色/系统、五种预设/自定义 HEX、减少动态/透明，查看原生组件与图标。外观仅在本次运行保留，重启恢复默认。预览页的点击/收藏只是标注清楚的本页示例状态；四个业务入口仍是工程骨架，音频、数据库和平台全屏尚未接入。
 
 ## Phase 0 审计入口
 
@@ -32,11 +34,14 @@ flutter pub get --enforce-lockfile
 dart format --output=none --set-exit-if-changed lib test
 flutter analyze --no-pub --fatal-infos
 flutter test --no-pub --coverage
-flutter build windows --debug --no-pub
 flutter build apk --debug --no-pub
+# Windows 工具链就绪后单独验收；本地尚未完成。
+flutter build windows --debug --no-pub
 ```
 
 工具链完整后使用 `flutter run -d windows` 或 `flutter run -d <android-device-id>`。不要重新运行 flutter create 覆盖现有工程。Android 发行签名未配置，禁止使用 Debug 签名冒充 Release。
+
+本批 APK：`build/app/outputs/flutter-apk/app-debug.apk`（本地忽略，不提交 GitHub）。无已连接真机/模拟器的验收证据，构建成功不等于已安装运行。组件 Golden 使用打包字体、Flutter 3.47.2 / Windows 测试宿主，精确像素比较；Linux 明确跳过这3张宿主基线，Windows CI执行它们。只在审查视觉变更后使用 `flutter test --tags windows-golden --update-goldens`，日常测试不得更新基线。
 
 ## 设计与归档完整性
 
@@ -46,7 +51,7 @@ flutter build apk --debug --no-pub
 node --check tools/design_audit.mjs
 node --check tools/design_audit.test.mjs
 node tools/design_audit.mjs --check
-node --test tools/design_audit.test.mjs tools/legacy_archive.test.mjs tools/foundation_architecture.test.mjs
+node --test tools/design_audit.test.mjs tools/design_assets.test.mjs tools/legacy_archive.test.mjs tools/foundation_architecture.test.mjs
 pwsh -NoProfile -File tools/verify_reference_archive.ps1
 ```
 
@@ -56,7 +61,7 @@ pwsh -NoProfile -File tools/verify_reference_archive.ps1
 
 ## Git 与历史原型
 
-仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。Phase 1 分支 `feat/phase-1-flutter-foundation` 基于已同步的 `docs/phase-0-design-audit`，未在 main/master 开发。
+仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。本批分支 `feat/android-design-foundation` 基于已同步的 `chore/local-toolchain-setup@261e628`，未在 main/master 开发。此前 Phase 0 / Phase 1 / 工具链提交保留；合并前需审核完整分支差异。GitHub 连接器仍404，PR/远程CI不可核验，不读取本机秘密绕过权限；Git提交/推送状态以每次交付时实际核验为准。
 
 旧原型 13 个文件已原样迁入 [archive/sonic_gallery](archive/sonic_gallery/README.md)，并在 `f96197b` 单独提交；源码、两份测试、配置和图片可恢复，不再散落为根目录未跟踪文件。Phase 0 中“保留原地、未纳入提交”的说明是当时历史状态。
 

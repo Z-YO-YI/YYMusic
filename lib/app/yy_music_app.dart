@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../design_system/yy_theme.dart';
+import '../design_system/yy_tokens.dart';
 import 'app_router.dart';
 import 'app_routes.dart';
 import 'dependency_graph.dart';
@@ -54,35 +56,61 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp> {
       title: 'YYMusic',
       color: const Color(0xFFF5F5F2),
       debugShowCheckedModeBanner: false,
-      textStyle: const TextStyle(
-        color: Color(0xFF111214),
-        fontSize: 14,
-        height: 1.4,
-      ),
+      textStyle: YYTypography.text(color: const Color(0xFF111214)),
       routerConfig: router.config,
-      builder: (context, child) => ColoredBox(
-        color: const Color(0xFFF5F5F2),
-        child: CallbackShortcuts(
-          bindings: {
-            const SingleActivator(LogicalKeyboardKey.arrowLeft, alt: true):
-                router.back,
-            const SingleActivator(LogicalKeyboardKey.escape): router.back,
-            const SingleActivator(LogicalKeyboardKey.keyK, control: true): () =>
-                router.goTo(AppRoute.search),
-            const SingleActivator(LogicalKeyboardKey.keyL, control: true): () =>
-                router.goTo(AppRoute.library),
-            const SingleActivator(
-              LogicalKeyboardKey.comma,
-              control: true,
-            ): () =>
-                router.goTo(AppRoute.settings),
+      builder: (context, child) {
+        final appearance = ref.watch(dependencyGraphProvider).appearance;
+        return ListenableBuilder(
+          listenable: appearance,
+          builder: (context, _) {
+            final theme = appearance.resolve(
+              MediaQuery.platformBrightnessOf(context),
+              systemReduceMotion: MediaQuery.disableAnimationsOf(context),
+            );
+            return YYAppearanceScope(
+              controller: appearance,
+              child: YYTheme(
+                data: theme,
+                child: DefaultTextStyle(
+                  style: YYTypography.text(color: theme.colors.text),
+                  child: ColoredBox(
+                    color: theme.colors.base,
+                    child: CallbackShortcuts(
+                      bindings: {
+                        const SingleActivator(
+                          LogicalKeyboardKey.arrowLeft,
+                          alt: true,
+                        ): router.back,
+                        const SingleActivator(LogicalKeyboardKey.escape):
+                            router.back,
+                        const SingleActivator(
+                          LogicalKeyboardKey.keyK,
+                          control: true,
+                        ): () =>
+                            router.goTo(AppRoute.search),
+                        const SingleActivator(
+                          LogicalKeyboardKey.keyL,
+                          control: true,
+                        ): () =>
+                            router.goTo(AppRoute.library),
+                        const SingleActivator(
+                          LogicalKeyboardKey.comma,
+                          control: true,
+                        ): () =>
+                            router.goTo(AppRoute.settings),
+                      },
+                      child: Focus(
+                        autofocus: true,
+                        child: child ?? const SizedBox.shrink(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
           },
-          child: Focus(
-            autofocus: true,
-            child: child ?? const SizedBox.shrink(),
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

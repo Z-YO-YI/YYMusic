@@ -1,5 +1,7 @@
 # Phase 1 实际架构
 
+Phase2A增量：根DependencyGraph现在还拥有并释放唯一YYAppearanceController；YYMusicApp按系统亮度/动态偏好解析YYTheme，原路由/业务控制器不重建。Android增加独立`/design-system`预览，设计组件集中在lib/design_system，预览UI位于lib/features/design_gallery，无网络/数据/音频副作用。下表保留Phase1架构职责，正式导航与音乐业务仍未实现。
+
 这份文件描述已经存在的工程骨架，不把 Phase 0 的未来目录全部冒充实现。正式代码位于根 lib；旧原型和 Web 参考隔离在 archive/design_reference。
 
 | 边界 | 已有责任 | 尚未实现 |

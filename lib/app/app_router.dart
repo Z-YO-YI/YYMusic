@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/design_gallery/design_gallery_screen.dart';
 import '../shared/foundation_button.dart';
 import 'adaptive_root.dart';
 import 'app_routes.dart';
@@ -16,8 +17,12 @@ final class AppRouter implements AppNavigation {
     required AppViewState viewState,
     String initialLocation = '/home',
   }) {
-    Widget screen(AppRoute route) =>
-        FoundationScreen(route: route, navigation: this, viewState: viewState);
+    Widget screen(AppRoute route) => FoundationScreen(
+      route: route,
+      navigation: this,
+      viewState: viewState,
+      showDesignGallery: platform == YYPlatform.android && route.isMain,
+    );
     _router = GoRouter(
       initialLocation: initialLocation,
       routes: [
@@ -52,6 +57,14 @@ final class AppRouter implements AppNavigation {
               child: screen(route),
             ),
           ),
+        if (platform == YYPlatform.android)
+          GoRoute(
+            path: '/design-system',
+            pageBuilder: (context, state) => NoTransitionPage<void>(
+              key: state.pageKey,
+              child: DesignGalleryScreen(onBack: back),
+            ),
+          ),
       ],
       errorBuilder: (context, state) => Center(
         child: Column(
@@ -77,6 +90,8 @@ final class AppRouter implements AppNavigation {
   void openPlayer() => unawaited(_router.push<void>(AppRoute.player.path));
   @override
   void openLyrics() => unawaited(_router.push<void>(AppRoute.lyrics.path));
+  @override
+  void openDesignGallery() => unawaited(_router.push<void>('/design-system'));
   @override
   void back() {
     if (_router.canPop()) {

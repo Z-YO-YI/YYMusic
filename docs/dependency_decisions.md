@@ -42,3 +42,11 @@
 选用Riverpod的ProviderScope集中管理和替换依赖，不将其类型暴露给Shell/Controller；go_router使用StatefulShellRoute和独立根路由，包在AppRouter中。[Riverpod Providers](https://riverpod.dev/docs/concepts2/providers)、[go_router配置](https://pub.dev/documentation/go_router/latest/topics/Configuration-topic.html)。
 
 pub提示9个传递包存在不兼容约束的新版本，当前解析成功，不执行major强制升级或忽略SDK约束。go_router传递引入material_ui/cupertino_ui；客户端只使用WidgetsApp及自有文本控件，不代表默认Material视觉已获许可。依赖已通过本机分析/测试不等于原生双平台构建通过。
+
+## Phase 2A Android 解析结果
+
+新增直接依赖 [flutter_svg2.3.0](https://pub.dev/packages/flutter_svg)（flutter.dev发布、MIT、支持Android/Windows），锁文件记录实际版本与包哈希；用于原始本地SVG，不使用网络构造器或默认Material图标。对应组件用真实44个SVG解码/渲染测试验证，Android Debug实际构建通过；Windows原生验收仍待完成。
+
+新增传递包：http1.6.0、path_parsing1.1.0、petitparser7.0.2、vector_graphics1.2.3、vector_graphics_codec1.1.13、vector_graphics_compiler1.3.0、xml7.0.1。http为SVG包的传递依赖，本批UI无网络请求，不新增生产网络/媒体权限。没有升级已有Riverpod/go_router或安装音频/数据库包。
+
+Inter/Noto Sans SC以Google Fonts固定提交原文件进入应用assets，OFL许可/哈希/体积详见design_assets.md；不是新增运行时字体服务依赖。UI隔离包的原则延续：flutter_svg只出现在YYIcon，业务UI使用自有组件；Riverpod/go_router仍只出现在app。

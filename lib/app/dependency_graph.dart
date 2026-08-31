@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../design_system/yy_theme.dart';
 import '../domain/repositories/library_repository.dart';
 import '../platform/contracts/fullscreen_gateway.dart';
 import '../playback/audio_engine.dart';
@@ -20,6 +21,7 @@ final class DependencyGraph {
   final LibraryRepository? library;
   final FullscreenGateway? fullscreen;
   final viewState = AppViewState();
+  final appearance = YYAppearanceController();
   final queue = QueueController();
   late final PlaybackController playback;
   bool _disposed = false;
@@ -29,6 +31,7 @@ final class DependencyGraph {
     _disposed = true;
     playback.dispose();
     queue.dispose();
+    appearance.dispose();
     unawaited(_audioEngine.dispose());
     final repository = library;
     if (repository != null) unawaited(repository.dispose());

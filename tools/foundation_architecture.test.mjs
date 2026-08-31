@@ -11,7 +11,17 @@ test('formal source does not embed WebViews, fixture catalogs or source archives
   }
   const pubspec = read('pubspec.yaml');
   assert.match(pubspec, /uses-material-design: false/);
-  assert(!/assets:\s*\n/.test(pubspec), 'Phase 1 must not bundle reference or legacy fixtures');
+  const bundled = [...pubspec.matchAll(/^\s+-\s+(?:asset:\s+)?(assets\/[^\s]+)\s*$/gm)].map(match => match[1]);
+  assert.deepEqual(bundled, [
+    'assets/icons/yymusic/',
+    'assets/fonts/inter/OFL.txt',
+    'assets/fonts/noto_sans_sc/OFL.txt',
+    'assets/fonts/inter/InterVariable.ttf',
+    'assets/fonts/noto_sans_sc/NotoSansSCVariable.ttf',
+  ], 'Only audited icons, pinned fonts and licenses may be bundled');
+  for (const path of sources) {
+    assert(!/package:flutter\/material.dart|SvgPicture\.network|GoogleFonts\./.test(read(path)), path);
+  }
 });
 
 test('routing and injection packages remain inside the app composition boundary', () => {

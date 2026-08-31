@@ -11,6 +11,13 @@
 /.gitignore text eol=lf
 /lib/** text eol=lf
 /test/** text eol=lf
+# Asset exceptions must follow the broad test-source rule above.
+/test/golden/baselines/*.png binary
+/assets/fonts/**/*.ttf binary
+# Preserve upstream license bytes, including their original trailing spaces.
+/assets/fonts/**/OFL.txt -text whitespace=-blank-at-eol
+/assets/fonts/manifest.json text eol=lf
+/dart_test.yaml text eol=lf
 /.github/** text eol=lf
 /pubspec.yaml text eol=lf
 /pubspec.lock text eol=lf

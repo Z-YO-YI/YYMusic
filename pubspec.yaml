@@ -1,5 +1,5 @@
 name: yymusic
-description: "YYMusic native Windows and Android client — Phase 1 foundation."
+description: "YYMusic native client — Android-first design foundation."
 publish_to: 'none'
 version: 0.1.0+1
 
@@ -12,6 +12,7 @@ dependencies:
     sdk: flutter
   flutter_riverpod: ^3.4.2
   go_router: ^18.0.0
+  flutter_svg: ^2.3.0
 
 dev_dependencies:
   flutter_test:
@@ -21,3 +22,14 @@ dev_dependencies:
 
 flutter:
   uses-material-design: false
+  assets:
+    - assets/icons/yymusic/
+    - assets/fonts/inter/OFL.txt
+    - assets/fonts/noto_sans_sc/OFL.txt
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/inter/InterVariable.ttf
+    - family: Noto Sans SC
+      fonts:
+        - asset: assets/fonts/noto_sans_sc/NotoSansSCVariable.ttf

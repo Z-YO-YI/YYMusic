@@ -1,5 +1,8 @@
 import 'package:flutter/widgets.dart';
 
+import '../design_system/yy_button.dart';
+import '../design_system/yy_icon.dart';
+import '../design_system/yy_theme.dart';
 import '../shared/foundation_button.dart';
 import 'app_routes.dart';
 import 'app_view_state.dart';
@@ -11,10 +14,12 @@ class FoundationScreen extends StatefulWidget {
     required this.route,
     required this.navigation,
     required this.viewState,
+    this.showDesignGallery = false,
   });
   final AppRoute route;
   final AppNavigation navigation;
   final AppViewState viewState;
+  final bool showDesignGallery;
 
   @override
   State<FoundationScreen> createState() => _FoundationScreenState();
@@ -44,7 +49,7 @@ class _FoundationScreenState extends State<FoundationScreen> {
 
   @override
   Widget build(BuildContext context) => ColoredBox(
-    color: const Color(0xFFF5F5F2),
+    color: YYTheme.of(context).colors.base,
     child: SafeArea(
       child: SingleChildScrollView(
         key: ValueKey('screen-${widget.route.name}'),
@@ -60,7 +65,17 @@ class _FoundationScreenState extends State<FoundationScreen> {
             const SizedBox(height: 16),
             const Text('Phase 1 · 工程骨架', style: TextStyle(fontSize: 18)),
             const SizedBox(height: 12),
-            const Text('仅验证平台布局、导航和共用依赖。业务页面与 Figma 设计系统尚未实现。'),
+            const Text('此处验证平台布局、导航和共用依赖。业务页面尚未实现。'),
+            if (widget.showDesignGallery) ...[
+              const SizedBox(height: 20),
+              YYButton(
+                key: const ValueKey('open-design-gallery'),
+                label: '设计基础预览',
+                glyph: YYGlyph.palette,
+                style: YYButtonStyle.primary,
+                onPressed: widget.navigation.openDesignGallery,
+              ),
+            ],
             const SizedBox(height: 24),
             Wrap(
               spacing: 8,

@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../design_system/yy_theme.dart';
+
 /// A text-only foundation control, not the Phase 2 design-system button.
 class FoundationButton extends StatefulWidget {
   const FoundationButton({
@@ -52,12 +54,15 @@ class _FoundationButtonState extends State<FoundationButton> {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
           decoration: BoxDecoration(
             color: widget.selected
-                ? const Color(0xFFFFE7EC)
-                : const Color(0xFFFFFFFF),
+                ? Color.alphaBlend(
+                    YYTheme.of(context).accent.soft,
+                    YYTheme.of(context).colors.elevated,
+                  )
+                : YYTheme.of(context).colors.elevated,
             border: Border.all(
               color: _focused
-                  ? const Color(0xFF111214)
-                  : const Color(0xFFD9DBD7),
+                  ? YYTheme.of(context).colors.text
+                  : YYTheme.of(context).colors.border,
             ),
             borderRadius: BorderRadius.circular(8),
           ),

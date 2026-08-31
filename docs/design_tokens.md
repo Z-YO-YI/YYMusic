@@ -2,6 +2,12 @@
 
 来源优先级：产品/平台硬约束 → App.tsx Sprite/Polish → 基础HTML结构与行为。这里只建立语义映射，不生成Dart主题。81规则/203声明全部映射见 [polish_rule_mapping.md](generated/polish_rule_mapping.md)；这里的数值是参考与目标，不是已验证的Flutter像素结果。
 
+## Phase 2A 实现状态（覆盖上面的 Phase 0 时间快照）
+
+`lib/design_system/yy_tokens.dart` 已实现本批语义颜色、间距/圆角、字体、阴影和动效；`yy_theme.dart`提供会话级Light/Dark/System、五种预设和严格6位HEX输入。原始颜色不改；onAccent/onPressed按实际填充选择黑/白，强调文字单独派生≥4.5对比色。默认Coral主按钮使用黑色前景属于可读性适配，不将原始accent擅自改暗。
+
+Inter/Noto Sans SC为打包变量字体，精确保留720/740等字重，来源与许可见design_assets.md。当前实现44dp双ring账户、按钮/普通表面、局部Glass30/34sigma与saturate1.3及Reduce Glass。Slider、Artwork、业务专属Token消费和完整Polish视觉验收仍待后续；表中列出的全部Token不等于都已消费。
+
 ## 颜色
 
 | Token | Light | Dark |

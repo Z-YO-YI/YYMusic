@@ -21,6 +21,14 @@ void main() {
       for (final id in ['windows-debug', 'android-debug']) {
         expect((jobs[id] as YamlMap)['needs'], 'checks');
       }
+      final windowsSteps =
+          (jobs['windows-debug'] as YamlMap)['steps'] as YamlList;
+      expect(
+        windowsSteps.whereType<YamlMap>().map((step) => step['run']),
+        contains(
+          'flutter test --no-pub --tags windows-golden --reporter expanded',
+        ),
+      );
       final environment = workflow['env'] as YamlMap;
       final pubspec =
           loadYaml(File('pubspec.yaml').readAsStringSync()) as YamlMap;

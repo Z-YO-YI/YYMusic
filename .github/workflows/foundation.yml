@@ -1,4 +1,4 @@
-name: Phase 1 foundation
+name: Native foundation
 
 on:
   push:
@@ -57,6 +57,8 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
       - run: flutter pub get --enforce-lockfile
+      - name: Native widget goldens on their pinned host
+        run: flutter test --no-pub --tags windows-golden --reporter expanded
       - run: flutter build windows --debug --no-pub
 
   android-debug:

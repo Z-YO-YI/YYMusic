@@ -19,5 +19,6 @@ abstract interface class AppNavigation {
   void goTo(AppRoute route);
   void openPlayer();
   void openLyrics();
+  void openDesignGallery();
   void back();
 }

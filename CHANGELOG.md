@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-31 — Android 优先 Phase 2A 设计基础
+
+- 按用户最新要求先推进 Android；Windows 工具链与原生验收暂缓，保留 runner、布局分类和 CI，不标记整个 Phase 2 完成。
+- 新增语义 Token、Light/Dark/System、五种预设及自定义 HEX；原色保留，文字/前景另行派生满足对比度的颜色；根 Controller 持有会话级外观。
+- 按 App.tsx 原始 Sprite 接入44个 SVG，保留 POLISH_CSS 的字体、双环44dp账户头像、圆角与阴影；打包固定提交的 Inter / Noto Sans SC 及 OFL，不安装系统字体。
+- 新增 YYButton / YYIconButton / YYSurface / YYGlassSurface / YYProfileHeader 和 Android 设计预览入口；触控、键盘、语义、减少动态/透明可验证，无 WebView、默认 Material 外观或假播放。
+- 新增字体资产与架构检查、主题/对比度/控件/导航测试，以及3张原生 Golden。40项 Flutter 测试通过；Android Debug APK 构建及签名校验通过，未进行真机或网页像素一致性验收。
+
 ## 2026-08-31 — Android 工具链与 Debug 构建通过（Windows 待确认）
 
 - 用户确认后复用现有 Flutter / Android Studio / JDK，仅补 Android 命令行工具 22.0、API 36 与 NDK 28.2.13676358。

@@ -1,11 +1,17 @@
 # 视觉还原与 Golden 计划
 
-## 本轮证据与限制
+## Phase 0 当时证据与限制
 
 - 已生成与App.tsx合成顺序一致的静态HTML、44个SVG、完整polish.css及映射。
 - 指纹、合成字节一致性、图标路径、CSS覆盖完整性、源JS语法、生成确定性已用Node测试验证。
 - Browser技能连接成功，但file: URL被浏览器安全策略阻止；**未截图、未测computed style**。没有改用其他浏览器、localhost代理或底层协议绕过限制；临时viewport已恢复。
 - 没有Flutter/Dart可执行命令，未运行Flutter Golden或真机性能检查。生成的参考HTML不是Golden通过证据。
+
+## Phase 2A 新证据与未解决限制
+
+现已使用本机Flutter3.47.2/Windows测试宿主、固定打包Inter/NotoSansSC生成3张原生Golden，逐张查看后非更新模式精确比较通过。基线在test/golden/baselines：浅/深组件390×900、文字130%；全部44SVG的800×590图标集。真实字体Widget另覆盖360×800、390×844、600×900、1280×800、844×390，不代表这些尺寸已完成参考截图比对。
+
+这些是原生组件自身回归基线；没有Figma远端/网页截图，没有computed-style或设备Profile测量。此前浏览器拒绝仍不绕过，网页像素一致性保持待办。初次Golden捕获曾遗漏祖先背景，已将实际主题背景放入捕获边界，重新查看和非更新复测；未通过加宽像素容差掩盖差异。
 
 ## 后续合法可访问预览环境的参考采集
 

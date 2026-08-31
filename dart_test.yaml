@@ -1,0 +1,4 @@
+tags:
+  windows-golden:
+    # These exact-pixel baselines were generated with Flutter 3.47.2 on Windows.
+    # Linux still runs every non-golden unit/widget/source-integrity test.
