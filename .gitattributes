@@ -9,3 +9,9 @@
 /CHANGELOG.md text eol=lf
 /.gitattributes text eol=lf
 /.gitignore text eol=lf
+/lib/** text eol=lf
+/test/** text eol=lf
+/.github/** text eol=lf
+/pubspec.yaml text eol=lf
+/pubspec.lock text eol=lf
+/analysis_options.yaml text eol=lf

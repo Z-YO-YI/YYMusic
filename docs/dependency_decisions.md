@@ -34,3 +34,11 @@
 可以现在锁定：一个仓库/三套Shell/一套Domain、数据与播放状态；自有Gateway隔离；SQLite关系模型方向；无WebView/无下载/无明文凭据。
 
 不能现在锁定：音频backend、native lib打包策略、SDK/target SDK具体版本、字体和Golden容差。双平台音频POC计划见audio_poc_plan.md；POC在Phase 4实际执行，Phase 0只制定方案。
+
+## Phase 1 解析结果（2026-08-31，覆盖上面的阶段快照状态）
+
+本机已有Flutter 3.47.2 stable / Dart3.13.2；未升级SDK。实际pub解析并提交lockfile：flutter_riverpod3.4.2、go_router18.0.0；开发依赖flutter_lints6.0.0与[yaml3.1.4](https://pub.dev/packages/yaml)（MIT，维护者tools.dart.dev，仅解析CI测试配置）。没有安装数据库/音频/窗口等其余候选。
+
+选用Riverpod的ProviderScope集中管理和替换依赖，不将其类型暴露给Shell/Controller；go_router使用StatefulShellRoute和独立根路由，包在AppRouter中。[Riverpod Providers](https://riverpod.dev/docs/concepts2/providers)、[go_router配置](https://pub.dev/documentation/go_router/latest/topics/Configuration-topic.html)。
+
+pub提示9个传递包存在不兼容约束的新版本，当前解析成功，不执行major强制升级或忽略SDK约束。go_router传递引入material_ui/cupertino_ui；客户端只使用WidgetsApp及自有文本控件，不代表默认Material视觉已获许可。依赖已通过本机分析/测试不等于原生双平台构建通过。

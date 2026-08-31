@@ -20,3 +20,9 @@ windows/flutter/ephemeral/
 node_modules/
 dist/
 docs/local_validation/
+.idea/
+*.log
+android/key.properties
+*.jks
+*.keystore
+android/.kotlin/

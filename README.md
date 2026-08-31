@@ -1,10 +1,18 @@
 # YYMusic
 
-当前交付范围：**Phase 0 — Figma 导出审计、最终视觉合成与架构决策**。没有进入 Phase 1，没有批量创建页面，也没有使用 WebView 实现客户端。
+当前阶段：**Phase 1 — 原生 Flutter 工程骨架**。已有 Windows / Android runner、三套结构性 Shell、根依赖图和独立路由；尚未完成双平台构建验收，不进入 Phase 2。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
-## 审计入口
+## 开发入口
+
+- [Phase 1 报告与限制](docs/phase_1_report.md)、[阶段计划](docs/phase_1_plan.md)
+- [当前架构](docs/architecture.md)、[验证矩阵](docs/test_matrix.md)、[工具链前置条件](docs/toolchain_setup.md)
+- [PR 描述草稿](docs/phase_1_pr_draft.md)
+
+屏幕明确显示“Phase 1 工程骨架”，只验证布局、导航和依赖生命周期，不代表 Figma 外观或音乐业务完成。音频、数据库和平台全屏尚未接入；不伪造播放或来源连接成功。
+
+## Phase 0 审计入口
 
 - [Phase 0 完成报告](docs/phase_0_report.md)与[阶段计划及出口](docs/phase_0_plan.md)
 - [指纹和完整导出清单](docs/figma_export_manifest.md)
@@ -13,7 +21,22 @@
 - [架构决策](docs/architecture_decisions.md)、[依赖候选证据](docs/dependency_decisions.md)、[双平台音频 POC 计划](docs/audio_poc_plan.md)
 - [实施状态与下一阶段前置条件](docs/implementation_status.md)
 
-## 可重复验证
+## 运行与验证
+
+开发基线：Flutter 3.47.2 / Dart 3.13.2（stable），CI 固定相同 Flutter 版本。先确认 flutter doctor；Windows 需要 Visual Studio Desktop development with C++，Android 需要 SDK 命令行工具及用户认可的 SDK 许可。本机缺失项见工具链文档，不能将分析/测试通过当作构建通过。
+
+```powershell
+flutter pub get --enforce-lockfile
+dart format --output=none --set-exit-if-changed lib test
+flutter analyze --no-pub --fatal-infos
+flutter test --no-pub --coverage
+flutter build windows --debug --no-pub
+flutter build apk --debug --no-pub
+```
+
+工具链完整后使用 `flutter run -d windows` 或 `flutter run -d <android-device-id>`。不要重新运行 flutter create 覆盖现有工程。Android 发行签名未配置，禁止使用 Debug 签名冒充 Release。
+
+## 设计与归档完整性
 
 只需 Node.js 22 或更高版本，无第三方依赖；这些命令不执行参考 HTML 的脚本，不构建 Flutter：
 
@@ -21,7 +44,7 @@
 node --check tools/design_audit.mjs
 node --check tools/design_audit.test.mjs
 node tools/design_audit.mjs --check
-node --test tools/design_audit.test.mjs
+node --test tools/design_audit.test.mjs tools/legacy_archive.test.mjs tools/foundation_architecture.test.mjs
 pwsh -NoProfile -File tools/verify_reference_archive.ps1
 ```
 
@@ -29,60 +52,10 @@ pwsh -NoProfile -File tools/verify_reference_archive.ps1
 
 开发参考：[最终合成 HTML](design_reference/generated/YYMusic_Figma_Composed_Reference.html)。仅用于获准环境中的视觉对照，不是正式客户端或已通过的截图基线；不应将 `design_reference` 声明为 Flutter Release assets。
 
-## Git 与本地原型边界
+## Git 与历史原型
 
-仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。初始远程无 refs，本地也没有 `.git`，本轮建立 `docs/phase-0-design-audit` 独立分支并 fetch 空远程，没有基于或直接开发 main/master。
+仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。Phase 1 分支 `feat/phase-1-flutter-foundation` 基于已同步的 `docs/phase-0-design-audit`，未在 main/master 开发。
 
-本轮仅纳入审计来源、派生资产、工具、文档和 Git 保护配置。任务开始前已有的 `lib/`、`test/`、`pubspec.yaml`、`analysis_options.yaml`、`assets/images/album_atlas.png` 保留原地、不修改、未纳入本阶段 Git 基线。因此克隆此阶段分支得到的是审计基线，不是可运行的 Flutter 应用；本机旧代码仍可能显示为未跟踪文件。
+旧原型 13 个文件已原样迁入 [archive/sonic_gallery](archive/sonic_gallery/README.md)，并在 `f96197b` 单独提交；源码、两份测试、配置和图片可恢复，不再散落为根目录未跟踪文件。Phase 0 中“保留原地、未纳入提交”的说明是当时历史状态。
 
-## 历史原型说明：声场画廊 · Sonic Gallery
-
-以下保留任务开始前 README 的内容，属于**未重新验证的旧原型记录**，不是 YYMusic Phase 0 的功能交付声明。原型问题见[现有 Flutter 检查](docs/existing_flutter_audit.md)。旧运行命令不应直接用于覆盖当前目录；先在 Phase 1 确认旧代码迁移/归档方式及 SDK。
-
-按《跨平台音乐 App UI/UX 设计规范与 AI 生成指令》实现的 Flutter 交互原型，目标平台为 Windows、Android 手机和 Android 平板。
-
-### 已实现（旧原型记录）
-
-- `< 600dp` 手机单栏布局：双层悬浮迷你播放器 / Liquid Glass 底部导航、全屏播放器与 Bottom Sheet 队列。
-- `600–1023dp` 平板布局：84px 悬浮玻璃侧栏、双栏播放器 / 歌词、横向底部播放器与右侧队列。
-- `>= 1024dp` Windows 布局：自定义标题栏、232px 侧栏、最大内容宽度、固定底部播放器与 340px 队列。
-- 首页、发现、统一搜索、资料库、本地音乐管理、歌词、队列、服务管理、设备同步和主题设置。
-- Light / Dark `ThemeExtension`、4px 间距体系、自定义线性图标和自定义按钮 / 搜索 / 分段 / 进度组件。
-- Hover、Pressed、Focused、Selected、Disabled 状态；Windows 常用快捷键。
-- 原创 3×2 专辑封面图集，应用内离线裁切使用，不依赖远程图片。
-
-界面没有渐变、紫色、霓虹或 Material 3 默认可见组件。
-
-### 运行（旧原型记录）
-
-当前机器没有安装 Flutter SDK，因此仓库保留纯 Flutter 源码与测试，未生成 Android / Windows runner。安装 Flutter 3.27 或更新版本后，在项目根目录执行：
-
-```powershell
-flutter create --platforms=android,windows .
-flutter pub get
-flutter analyze
-flutter test
-flutter run -d windows
-```
-
-Android 可通过 `flutter devices` 查看设备后，使用 `flutter run -d <device-id>` 启动。
-
-### 键盘快捷键（旧原型记录）
-
-- `Space`：播放 / 暂停
-- `Ctrl+K`：搜索
-- `Ctrl+O`：本地音乐
-- `Ctrl+,`：设置
-- `Ctrl+L`：资料库
-- `Ctrl+Q`：播放队列
-- `Esc`：关闭队列或播放器
-
-### 目录（旧原型记录）
-
-- `lib/src/theme.dart`：主题与设计 Token
-- `lib/src/icons.dart`：自绘线性图标系统
-- `lib/src/components.dart`：可复用 UI 组件
-- `lib/src/pages.dart`：业务页面
-- `lib/src/shell.dart`：三端响应式壳层
-- `assets/images/album_atlas.png`：原创封面图集
-- `test/`：Token 与手机 / Windows 冒烟测试
+正式客户端只来自根 lib/，不依赖 archive 或 design_reference。归档目录有独立 pubspec，但不是当前工程的测试目标；禁止对整个仓库递归格式化，破坏原始指纹。
