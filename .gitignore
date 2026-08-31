@@ -5,6 +5,7 @@
 .pub-cache/
 build/
 coverage/
+test/golden/failures/
 android/.gradle/
 android/local.properties
 windows/flutter/ephemeral/

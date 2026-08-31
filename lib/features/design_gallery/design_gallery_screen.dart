@@ -7,6 +7,7 @@ import '../../design_system/yy_profile_header.dart';
 import '../../design_system/yy_surface.dart';
 import '../../design_system/yy_theme.dart';
 import '../../design_system/yy_tokens.dart';
+import 'gallery_media_controls.dart';
 
 /// An explicitly labelled component preview, not a fixture-backed music page.
 class DesignGalleryScreen extends StatefulWidget {
@@ -107,7 +108,7 @@ class _DesignGalleryScreenState extends State<DesignGalleryScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Phase 2A · 原生组件\n仅验证设计与交互，尚未接入音乐库或播放。',
+                    'Phase 2B · 原生组件\n仅验证设计与交互，尚未接入音乐库或播放。',
                     style: YYTypography.caption.copyWith(
                       color: colors.secondary,
                     ),
@@ -374,6 +375,10 @@ class _DesignGalleryScreenState extends State<DesignGalleryScreen> {
                       ],
                     ),
                   ),
+                  const SizedBox(height: 32),
+                  const GalleryMediaControls(),
+                  const SizedBox(height: 24),
+                  const GalleryArtworkSection(),
                   const SizedBox(height: 32),
                   _Section(
                     title: '原始图标 · 44',

@@ -1,7 +1,17 @@
 import 'package:flutter/widgets.dart';
 
 import '../app/app_routes.dart';
+import '../design_system/yy_icon.dart';
+import '../design_system/yy_navigation.dart';
 import '../shared/foundation_button.dart';
+
+/// Maps the shared root routes to presentation-only navigation content.
+const androidDestinations = [
+  YYNavigationDestination(id: 'home', label: '首页', glyph: YYGlyph.home),
+  YYNavigationDestination(id: 'search', label: '搜索', glyph: YYGlyph.search),
+  YYNavigationDestination(id: 'library', label: '音乐库', glyph: YYGlyph.library),
+  YYNavigationDestination(id: 'settings', label: '设置', glyph: YYGlyph.settings),
+];
 
 class ShellNavigation extends StatelessWidget {
   const ShellNavigation({

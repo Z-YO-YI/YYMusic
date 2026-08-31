@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../app/app_routes.dart';
+import '../design_system/yy_navigation.dart';
 import 'shell_chrome.dart';
 
 class AndroidPhoneShell extends StatelessWidget {
@@ -26,10 +27,10 @@ class AndroidPhoneShell extends StatelessWidget {
         const FoundationPlaybackSlot(height: 64),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: ShellNavigation(
-            navigation: navigation,
-            selected: selected,
-            horizontal: true,
+          child: YYMobileBottomNavigation(
+            destinations: androidDestinations,
+            selectedIndex: AppRoute.mainRoutes.indexOf(selected),
+            onSelected: (index) => navigation.goTo(AppRoute.mainRoutes[index]),
           ),
         ),
       ],

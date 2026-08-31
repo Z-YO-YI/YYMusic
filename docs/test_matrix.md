@@ -1,6 +1,6 @@
 # 原生基础验证矩阵
 
-Phase1原有检查保留，Phase2A新增原生组件Golden，但不包含网页视觉对照、真实音频POC或用户音乐数据。当前结果集中在phase_2_android_report.md。
+Phase1/2A原有40项检查保留，Phase2B新增14项Widget和5张原生Golden，总计59项；不包含网页视觉对照、真实音频POC或用户音乐数据。当前结果集中在phase_2b_android_report.md。
 
 | 类别 | 已有自动检查 |
 | --- | --- |
@@ -18,12 +18,15 @@ Phase1原有检查保留，Phase2A新增原生组件Golden，但不包含网页�
 | 外观 | 五预设+216自定义色网格的正常/按下/浅深文字对比；非法HEX不改状态、System亮度/减少动态、会话通知 |
 | 原生控件 | 键盘/指针动作、语义、44dp、选中、Disabled/Loading、Hover/Pressed/Focus、Reduce Glass几何保留 |
 | Android Gallery | 返回和根状态保留、真实字体130%手机/平板/横屏尺寸、示例动作与HEX校验；Windows无预览入口 |
-| Golden | 3张Windows宿主基线：Light/Dark组件390×900/130%与44图标集800×590，真实打包字体，精确像素比较 |
+| Android原生导航 | Phone64/32、Tablet72及3×18条、低高度滚动、键盘/语义/Disabled、低对比色边界；599/600/1280/844横屏、SafeArea和根图保留 |
+| Slider | 3/14/44几何、两端/步进、预览/单次提交/系统取消、纵向滚动不改值、RTL/键盘/语义、禁用/Loading/零范围/拖动中禁用、ReduceMotion |
+| Artwork | 七种最终CSS背景真实像素、48/96/192尺寸、10/20/26圆角、image语义、local accent更新与Gallery本地数值 |
+| Golden | 保留3张原始基线；新增浅珊瑚/深翡翠/白色ReduceGlass组件800×1000、AndroidPhone390×844及Tablet600×900，均130%文字/真实字体/精确比较，共8张 |
 
 ## CI
 
 `.github/workflows/foundation.yml`：checks 在 Ubuntu24.04 跑 Node/PowerShell 源核验、Dart格式/严格分析/Flutter测试；checks 成功后独立 Windows2025 Debug 和 Ubuntu Android Debug 构建。push feat/fix 或 PR 触发，超时20/30分钟，未发布产物/签名/部署，无 secrets 注入，checkout 不保留凭据。
 
-Phase2A的3张Golden按Windows宿主标记，Linux明确跳过（非静默通过），Windows job构建前执行`flutter test --tags windows-golden`；其余37个Flutter测试仍在checks执行。没有删除或跳过原有24项回归。远程工作流尚不可读，本地通过不冒充远程通过。
+8张Golden按Windows宿主标记，Linux明确跳过（非静默通过），Windows job构建前执行`flutter test --tags windows-golden`；其余51个Flutter测试仍在checks执行。没有删除或跳过原有回归，CI本批无需修改即可发现新增文件。远程工作流尚不可读，本地通过不冒充远程通过。
 
 Actions 固定 SHA，来源为维护者公开 refs 和说明：[checkout](https://github.com/actions/checkout)、[setup-node](https://github.com/actions/setup-node)、[setup-java](https://github.com/actions/setup-java)、[flutter-action](https://github.com/subosito/flutter-action)。静态配置验证不代表远程工作流已经通过；私有 CI 结果必须可读取后才记录成功。

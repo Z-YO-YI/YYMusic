@@ -1,6 +1,8 @@
-# Phase 1 实际架构
+# YYMusic 当前实际架构
 
-Phase2A增量：根DependencyGraph现在还拥有并释放唯一YYAppearanceController；YYMusicApp按系统亮度/动态偏好解析YYTheme，原路由/业务控制器不重建。Android增加独立`/design-system`预览，设计组件集中在lib/design_system，预览UI位于lib/features/design_gallery，无网络/数据/音频副作用。下表保留Phase1架构职责，正式导航与音乐业务仍未实现。
+Phase2A增量：根DependencyGraph现在还拥有并释放唯一YYAppearanceController；YYMusicApp按系统亮度/动态偏好解析YYTheme，原路由/业务控制器不重建。Android增加独立`/design-system`预览，设计组件集中在lib/design_system，预览UI位于lib/features/design_gallery，无网络/数据/音频副作用。
+
+Phase2B增量：Android Shell使用原生YYMobileBottomNavigation/YYTabletNavigationRail；它们接收受控选中项和回调，不导入go_router或持有Controller。Shell将index映射到既有AppRoute。YYSlider只发出预览/提交/取消事件，不访问播放层；Gallery拥有本页示例数值。YYArtworkPlaceholder只原生绘制经过审计的CSS几何，不加载媒体或伪造专辑。Windows保留原ShellNavigation。
 
 这份文件描述已经存在的工程骨架，不把 Phase 0 的未来目录全部冒充实现。正式代码位于根 lib；旧原型和 Web 参考隔离在 archive/design_reference。
 
@@ -10,10 +12,11 @@ Phase2A增量：根DependencyGraph现在还拥有并释放唯一YYAppearanceCont
 | app/DependencyGraph | 创建并释放 PlaybackController、QueueController、ViewState；可注入 AudioEngine/Repository/Gateway | Phase 3 模型和正式仓储、Phase 4 音频 |
 | app/AppRouter | 私有 go_router，四个状态保留分支，根级 /player 和 /lyrics；暴露自有 AppNavigation | 业务详情、菜单层级和平台全屏返回协调 |
 | app/AdaptiveRoot | 实时 LayoutBuilder + 平台优先分类，选择三个 Shell；零尺寸时不动根依赖 | 生产级窗口约束/布局细化 |
-| shells | 容器、导航槽位、未接入的播放槽位；不直接网络/DB/音频 | Figma 设计系统与正式页面布局 |
+| shells | Android原生Phone/Tablet导航、Windows骨架导航、未接入的播放槽位；不直接网络/DB/音频 | Windows正式设计导航、业务布局、MiniPlayer |
+| design_system | Theme/Token/原始SVG/按钮/Surface/Profile，加导航/Slider/Artwork | 业务卡片、表单、菜单/弹层等 |
 | playback | 唯一事件订阅、播放状态传播、错误/销毁边界；默认后端明确 unavailable | 加载曲目、Seek、队列算法、系统媒体会话 |
 | domain / platform | LibraryRepository、FullscreenGateway 生命周期合同 | 具体实现和平台能力 |
-| shared/FoundationButton | 仅供骨架验证的文本按钮、44px 命中区、Semantics/键盘激活 | YY 组件视觉、图标、全部交互状态 |
+| shared/FoundationButton | 仍用于工程骨架内容及Windows导航；44px 命中区、Semantics/键盘激活 | 后续业务页以对应YY组件逐步替换 |
 
 Riverpod 只用于 app 注入边界，业务 Controller 不依赖它；go_router 也只出现在 app 层。WidgetsApp.router 没有 Material Scaffold/默认 Material 3 可见控件；go_router 的传递依赖含 material_ui/cupertino_ui，不表示正式 UI 使用其默认外观。
 

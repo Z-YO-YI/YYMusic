@@ -187,6 +187,20 @@ abstract final class YYMotion {
   static const selected = Duration(milliseconds: 200);
 }
 
+/// Android navigation dimensions, independent of the current device model.
+abstract final class YYNavigationMetrics {
+  static const phoneHeight = 64.0, railWidth = 72.0, railItemHeight = 60.0;
+  static const indicatorWidth = 3.0, indicatorHeight = 18.0;
+  static const labelSize = 11.0, iconSize = 20.0;
+}
+
+/// Small visual geometry is deliberately separate from the 44dp hit area.
+abstract final class YYSliderMetrics {
+  static const trackHeight = 3.0, thumbDiameter = 14.0, outerRing = 3.0;
+  static const horizontalInset = 12.0, hoverScale = 1.24;
+  static const hoverDuration = Duration(milliseconds: 130);
+}
+
 /// Layered, solid-color shadows; ordinary surfaces never use a gradient.
 abstract final class YYShadows {
   static const surface = [

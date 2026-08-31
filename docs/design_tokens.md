@@ -118,3 +118,11 @@ Motion：standard cubic(.2,.8,.2,1)、enter cubic(.16,1,.3,1)；press100–130ms
 | Local | #1A1E24 /#E4E7F0 /当前accent | #40515B |
 
 圆/矩形的百分比、旋转、线宽、阴影在全量polish表中逐项保留。未来真实Artwork优先；歌词只提取单一代表色并限制亮度/饱和度、检查白字对比，不生成模糊封面或渐变背景。
+
+## Phase 2B 实现补充
+
+YYNavigationMetrics集中定义Phone64、Rail72、条目60、指示条3×18、glyph20、label11。Phone胶囊圆角32，selected pill26，Rail item14；正常文字可读色与原始accent分开。原色对elevated对比不足3时补1.5dp选中边界、.75dp指示条边界；派生边界对实际填充对比至少4.5，焦点另用语义text色。
+
+YYSliderMetrics为轨道3、thumb14、基础外ring3、水平内距12、命中44、hover1.24/130ms；焦点额外2dp可读环。原始轨道/滑块accent保留，低对比thumb增加边界，ReducedMotion清零动画时间。正式Seek集成待Phase4，本批Gallery为本地示例。
+
+YYArtworkPlaceholder的三种role为album20、track10、player26。原CSS为百分比的几何随尺寸变化，而Signal阴影35/-27及70/-54、Local阴影±17、Mono圆角5、Local圆角16/描边2.5、Signal描边3均保留逻辑px；Canvas旋转中心与border-box内描边匹配源码约定。七种原配色见上表。

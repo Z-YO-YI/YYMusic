@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../app/app_routes.dart';
 import '../app/layout_class.dart';
+import '../design_system/yy_navigation.dart';
 import 'shell_chrome.dart';
 
 class AndroidTabletShell extends StatelessWidget {
@@ -32,9 +33,14 @@ class AndroidTabletShell extends StatelessWidget {
             children: [
               SizedBox(
                 width: 72,
-                child: ShellNavigation(
-                  navigation: navigation,
-                  selected: selected,
+                child: LayoutBuilder(
+                  builder: (context, constraints) => YYTabletNavigationRail(
+                    height: constraints.maxHeight,
+                    destinations: androidDestinations,
+                    selectedIndex: AppRoute.mainRoutes.indexOf(selected),
+                    onSelected: (index) =>
+                        navigation.goTo(AppRoute.mainRoutes[index]),
+                  ),
                 ),
               ),
               Expanded(child: child),

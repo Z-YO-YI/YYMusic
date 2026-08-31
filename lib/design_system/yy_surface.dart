@@ -32,20 +32,34 @@ class YYSurface extends StatelessWidget {
 
 /// Deliberately bounded: blur is never applied to the whole scrolling page.
 class YYGlassSurface extends StatelessWidget {
-  const YYGlassSurface({super.key, required this.height, required this.child})
-    : assert(height > 0 && height < double.infinity);
+  const YYGlassSurface({
+    super.key,
+    required this.height,
+    required this.child,
+    this.radius = YYRadius.dock,
+    this.padding = const EdgeInsets.all(16),
+    this.blurSigma,
+  }) : assert(height > 0 && height < double.infinity),
+       assert(blurSigma == null || blurSigma > 0);
   final double height;
   final Widget child;
+
+  /// Allows bounded navigation surfaces to reuse the same glass implementation.
+  final double radius;
+  final EdgeInsetsGeometry padding;
+  final double? blurSigma;
 
   @override
   Widget build(BuildContext context) {
     final theme = YYTheme.of(context);
     final colors = theme.colors;
-    final sigma = MediaQuery.sizeOf(context).shortestSide < 600 ? 30.0 : 34.0;
+    final sigma =
+        blurSigma ??
+        (MediaQuery.sizeOf(context).shortestSide < 600 ? 30.0 : 34.0);
     final panel = DecoratedBox(
       decoration: BoxDecoration(
         color: theme.reduceGlass ? colors.elevated : colors.glassFill,
-        borderRadius: BorderRadius.circular(YYRadius.dock),
+        borderRadius: BorderRadius.circular(radius),
         border: Border.all(
           color: theme.reduceGlass ? colors.border : colors.glassStroke,
         ),
@@ -58,7 +72,7 @@ class YYGlassSurface extends StatelessWidget {
             color: colors.glassHighlight,
           ),
           Expanded(
-            child: Padding(padding: const EdgeInsets.all(16), child: child),
+            child: Padding(padding: padding, child: child),
           ),
         ],
       ),
@@ -67,11 +81,11 @@ class YYGlassSurface extends StatelessWidget {
       height: height,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(YYRadius.dock),
+          borderRadius: BorderRadius.circular(radius),
           boxShadow: YYShadows.floating(theme.brightness),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(YYRadius.dock),
+          borderRadius: BorderRadius.circular(radius),
           child: theme.reduceGlass
               ? panel
               : BackdropFilter(
