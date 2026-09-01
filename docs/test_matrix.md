@@ -1,6 +1,6 @@
 # 原生基础验证矩阵
 
-保留Phase3E的181项Flutter检查，Phase3F新增8项真实SQLite MusicSourceRepository测试，共189项Flutter、29项Node；不包含SecureCredentialGateway生产实现、Dev Fixture、音频POC或用户音乐数据。当前结果集中在phase_3f_music_source_repository_report.md。
+保留Phase3F的189项Flutter检查，Phase3G新增10项Android/Windows安全凭据Gateway测试，共199项Flutter、29项Node；不包含生产AppBootstrap接线、Dev Fixture、REST Adapter、音频POC或用户音乐数据。本地与目标实现提交的GitHub Windows/Android结果集中在phase_3g_secure_credential_gateway_report.md。
 
 | 类别 | 已有自动检查 |
 | --- | --- |
@@ -33,13 +33,16 @@
 | Phase3B数据库 | v1精确17表/10索引、user_version/迁移审计/空队列状态、官方Schema验证、Track/Queue/Playlist/歌词约束、catalog/歌单外键级联、来源删除引用保留、敏感列白名单、后台文件打开与生成快照复现 |
 | Phase3C LibraryRepository | remote/local双向row映射、递归JSON/UTC/URI/枚举、稳定TrackRef、确定分页、关联watch单次提交、事务回滚、Album/Artist聚合/替换、availability/notFound、损坏row/SQL脱敏、生命周期与owned/shared DB |
 | Phase3D CollectionRepository | 歌单确定排序/系统身份保护、混合来源entries、连续位置校验、歌单/队列事务回滚、队列重复TrackRef/current/单次流、收藏幂等、历史去重20条/清空、损坏row脱敏与shared/owned DB |
+| Phase3E LyricsRepository | plain/synchronized双语规范JSON、完整TrackRef隔离、upsert/remove、损坏JSON/UTC/SQLite脱敏及shared/owned生命周期 |
+| Phase3F MusicSourceRepository | REST/local配置往返、排序JSON、确定watch、稳定身份/内置删除保护、用户引用保留、损坏配置/SQLite脱敏及shared/owned生命周期 |
+| Phase3G SecureCredentialGateway | Android/Windows save-read-delete、确定载荷、四类凭据、碰撞不覆盖、非法引用预拒绝、损坏/插件失败脱敏、并发串行与限额fail-closed |
 | Golden | 保留Windows Shell及既有组件29张；新增浅珊瑚/深翡翠/自定义白ReduceGlass队列歌词板3张，总计32张精确像素比较，旧基线不改 |
 
 ## CI
 
 `.github/workflows/foundation.yml`：checks 在 Ubuntu24.04 跑 Node/PowerShell 源核验、Dart格式/严格分析/Flutter测试；checks 成功后独立 Windows2025 Debug 和 Ubuntu Android Debug 构建。push feat/fix、PR或手动运行触发，超时20/30分钟。Android执行验签/48文件比对/三文件白名单；只有手动workflow_dispatch在全部门禁后创建私有draft/prerelease，普通push/PR不创建下载产物。个人令牌不注入runner，checkout不保留凭据。
 
-32张Golden按Windows宿主标记，Linux明确跳过（非静默通过），Windows job构建前执行`flutter test --tags windows-golden`；其余133个Flutter测试仍在checks执行。checks在分析前重跑build_runner与make-migrations，并要求g.dart/v1快照Git零差异。没有删除或跳过原有回归，远程状态须按目标commit单独核验。
+32张Golden按Windows宿主标记，Linux明确跳过（非静默通过）并运行完整非Golden回归，Windows job构建前执行`flutter test --tags windows-golden`。checks在分析前重跑build_runner与make-migrations，并要求g.dart/v1快照Git零差异。没有删除或跳过原有回归，远程状态须按目标commit单独核验。
 
 云端交付增量：1项YAML门禁测试、4项Node元数据/拒绝本地打包测试。APK必须在build→signature→assets→package均成功后上传，不使用always/continue-on-error；metadata不复制环境变量或秘密，下载URL必须属于本run。4be8ba2的手动运行已完成既有交付复核；每个新commit仍须重新取得运行证据。
 
@@ -70,5 +73,9 @@ Phase3E实现提交1e45532的push运行33499761224、PR运行33499787210与手�
 Phase3F本地增量：8项真实SQLite覆盖REST完整往返/规范JSON、local内置、确定watch、身份/删除保护、用户引用保留、损坏配置/SQLite脱敏及shared/owned生命周期；完整189项Flutter含32 Golden、125文件format、严格分析、29项Node、24项ZIP、lockfile及生成/v1快照零差异已通过。
 
 Phase3F实现提交22d68f2的push运行33503815038、PR运行33503837936与手动运行33504877925均为三job success。手动运行的草稿Release三资产已下载，APK为183604101字节，SHA256SUMS、metadata、API digest与`db2946d4b416971b2fbb89cc754ba77cdf0c03f36aff3f84b2ad425a281c24a2`一致；48份打包资产逐字节匹配，v2单签名有效，临时副本已清理。证据只适用于该实现提交。
+
+Phase3G本地增量：10项安全Gateway覆盖Android/Windows生命周期、规范JSON/四类凭据、碰撞不覆盖、非法引用、损坏载荷/插件失败脱敏、并发串行及限额；完整199项Flutter含32 Golden、130文件format、严格分析、29项Node、24项ZIP、lockfile及生成/v1快照零差异均通过。本机Android Debug成功，APK为237658550字节、48份资产逐字节匹配、Manifest禁用备份且v2单签名有效。
+
+Phase3G实现提交4daf380的push运行33510086595、PR运行33510153174与唯一手动运行33511421874均为三job success。手动运行的草稿Release三资产已下载，APK为189393711字节，SHA256SUMS、metadata、API digest与`2623eab9590f4f333bc7327ee4d4dea49ee5b6f6789219f129b44f1e7108bcdf`一致；48份打包资产逐字节匹配、Manifest确认`allowBackup=false`、v2单签名有效，临时副本已清理。证据只适用于该实现提交。
 
 Actions 固定 SHA，来源为维护者公开 refs 和说明：[checkout](https://github.com/actions/checkout)、[setup-node](https://github.com/actions/setup-node)、[setup-java](https://github.com/actions/setup-java)、[flutter-action](https://github.com/subosito/flutter-action)。静态配置验证不代表远程工作流已经通过；私有 CI 结果必须可读取后才记录成功。

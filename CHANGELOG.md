@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-09-01 — Phase 3G Android / Windows SecureCredentialGateway
+
+- 新增共用版本凭据编解码/串行store核心、`FlutterSecureStringStore`与Android/Windows正式Gateway；插件类型不进入Domain/UI/Drift。
+- 引用由192-bit安全随机生成且严格验证；冲突不覆盖，JSON字段排序、版本/类型/尺寸受限，并发底层访问串行、删除幂等。
+- 新增日志安全`SecureCredentialFailure`；插件异常、引用、载荷与凭据不进入错误字符串。Android使用独立namespace/崩溃安全迁移、禁止静默reset与应用备份；Windows关闭旧格式扫描。
+- 锁定`flutter_secure_storage 10.3.1`和Windows 4.2.2解析；不选需compileSdk37的11.0.0。不改v1 Schema，不接AppBootstrap、REST、Fixture、Controller、UI或播放。
+- 10项定向、199项Flutter/32 Golden、130文件format、严格分析、29项Node、24项ZIP及生成/快照零差异已通过；本机Android Debug构建/v2验签/48资产/manifest复核通过。
+- 实现提交`4daf380`的push运行33510086595、PR运行33510153174与唯一手动运行33511421874均为三job success；Draft PR #15保持待审核。
+- 手动运行的私有草稿Release三资产已下载复核；APK为189393711字节，SHA-256、SHA256SUMS、metadata和API digest均为`2623eab9590f4f333bc7327ee4d4dea49ee5b6f6789219f129b44f1e7108bcdf`，48份资产匹配、Manifest禁用备份且v2单签名有效，临时副本已清理。
+
 ## 2026-09-01 — Phase 3F Drift MusicSourceRepository
 
 - 新增MusicSourceConfig严格JSON/row mapper与正式`DriftMusicSourceRepository`，不将Drift类型暴露到Domain/UI。
