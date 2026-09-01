@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-01 — Phase 3C Drift LibraryRepository
+
+- 新增Track/Album/Artist严格row mapper与正式`DriftLibraryRepository`，实现initialize/watch/list/get/upsert/setAvailability/dispose全合同；Domain/UI不暴露Drift类型。
+- upsert使用单事务+batch，替换Track艺术家关联、重建Album credits/聚合计数并清理无引用派生实体；watch只在提交后发布一致快照。
+- Track/Album/Artist采用确定排序和`limit + 1`/offset分页；TrackRef跨来源不冲突，缺失引用返回脱敏notFound，损坏row/SQLite异常返回脱敏databaseCorrupted。
+- `crypto`3.0.7从已锁定传递依赖提升为直接依赖，用sourceId+精确艺术家名SHA-256派生稳定内部ID；不改v1 Schema/快照，不新增原生包/权限。
+- 新增9项真实SQLite Repository与1项Domain JSON有限数测试；116文件format、严格分析、完整165项Flutter/32 Golden、29项Node、ZIP24项及生成/快照零差异已通过，GitHub结果待目标提交。
+
 ## 2026-09-01 — Phase 3B Drift Schema 与首版 Migration
 
 - 新增Drift/SQLite3双平台数据层：主指令15张持久化表、单行`queue_state`与`schema_migrations`，共17张表及10个显式索引；稳定TrackRef、独立QueueEntry和用户集合引用不因来源删除级联消失。

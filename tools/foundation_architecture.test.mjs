@@ -50,8 +50,12 @@ test('domain contracts stay independent and UI has no direct data access', () =>
   for (const path of sources.filter(path => path.startsWith('lib/data/'))) {
     assert(!/import\s+['"][^'"]*\/(app|design_system|features|playback|shells)\//.test(read(path)), path);
   }
+  for (const path of sources) {
+    assert(!/package:drift_dev\//.test(read(path)), `${path} must not import dev-only migration APIs`);
+  }
 
   const pubspec = read('pubspec.yaml');
+  assert.match(pubspec, /^  crypto: \^3\.0\.7$/m);
   assert.match(pubspec, /^  drift: \^2\.34\.3$/m);
   assert.match(pubspec, /^  sqlite3: \^3\.5\.2$/m);
   assert.match(pubspec, /^  path_provider: \^2\.1\.6$/m);
@@ -69,6 +73,15 @@ test('domain contracts stay independent and UI has no direct data access', () =>
     'playlist_entries', 'playlists', 'queue_entries', 'queue_state',
     'schema_migrations', 'search_history', 'track_artists', 'tracks',
   ]);
+
+  const repository = read('lib/data/repositories/drift_library_repository.dart');
+  assert.match(repository, /implements LibraryRepository/);
+  assert.match(repository, /transaction\(\(\) async/);
+  assert.match(repository, /insertAllOnConflictUpdate/);
+  assert.match(repository, /limit\(request\.limit \+ 1, offset: request\.offset\)/);
+  assert(!/CollectionRepository|MusicSourceRepository|SecureCredentialGateway|package:flutter/.test(repository));
+  const bootstrap = read('lib/app/app_bootstrap.dart');
+  assert(!/DriftLibraryRepository|AppDatabase/.test(bootstrap), 'Phase 3C must not open the database from AppBootstrap');
 });
 
 test('native runners are branded and Android release does not use debug signing', () => {

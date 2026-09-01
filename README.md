@@ -1,13 +1,14 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 3B Drift Schema 与首版 Migration**。Phase2通用原语、三套Shell骨架、Phase3A Domain合同，以及17张Drift表/首版创建迁移/后台双平台打开函数已有。Phase3B的本地门禁、GitHub Android/Windows Debug和新APK证据均已完成。不是完整音乐客户端；正式Repository/安全存储、业务Controller、播放、正式页面和平台Gateway尚未接入。
+当前阶段：**Android + Windows · Phase 3C Drift LibraryRepository**。Phase2通用原语、三套Shell骨架、Phase3A Domain合同、Phase3B 17张Drift表/首版Migration，以及Track/Album/Artist映射与首个正式LibraryRepository已有。本批尚需目标提交的GitHub Android/Windows与新APK证据。不是完整音乐客户端；其余Repository/安全存储、Dev Fixture、业务Controller、播放、正式页面和平台Gateway尚未接入。
 
-Phase3B门禁已完成：锁文件严格复现、113个Dart文件格式无变更、严格分析0问题、155项Flutter与32张Windows宿主Golden、29项Node、生成代码/v1快照复现及24份ZIP逐字节复核全部通过；实现commit的push、PR和手动运行也均为三job success。
+Phase3C当前本地门禁：116个Dart文件格式无变更、严格分析0问题，9项真实SQLite Repository与1项Domain增量测试通过，完整165项Flutter含32张Windows宿主Golden、29项Node、生成代码/v1快照零差异及24份ZIP逐字节复核全部通过。云端状态必须按本批目标commit另行验证。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
 ## 开发入口
 
+- [Phase 3C LibraryRepository报告](docs/phase_3c_library_repository_report.md)、[本批范围](docs/phase_3c_library_repository_plan.md)、[本批 PR 草稿](docs/phase_3c_library_repository_pr_draft.md)
 - [Phase 3B 数据库报告](docs/phase_3b_database_schema_report.md)、[本批范围](docs/phase_3b_database_schema_plan.md)、[本批 PR 草稿](docs/phase_3b_database_schema_pr_draft.md)
 - [Phase 3A Domain 合同报告](docs/phase_3a_domain_contracts_report.md)、[本批范围](docs/phase_3a_domain_contracts_plan.md)、[本批 PR 草稿](docs/phase_3a_domain_contracts_pr_draft.md)
 - [Phase 2J 队列与歌词原语报告](docs/phase_2j_queue_lyrics_primitives_report.md)、[本批范围](docs/phase_2j_queue_lyrics_primitives_plan.md)、[本批 PR 草稿](docs/phase_2j_queue_lyrics_primitives_pr_draft.md)
@@ -48,6 +49,8 @@ Windows按1440/1024断点显示240dp展开或72dp紧凑侧栏，导航驱动同�
 Phase3A数据合同不新增可见页面。TrackRef保留来源身份，QueueEntry使用独立ID以允许重复曲目；来源公开配置只保存credentialRef，秘密仅通过SecureCredentialGateway。当前Fake只用于测试，不会在正式Shell中伪造在线来源、歌曲、歌词或数据库成功。
 
 Phase3B仍不新增可见页面。Drift schema覆盖主指令15张建议表，并用`queue_state`保存空队列游标/更新时间、`schema_migrations`记录首版创建；SQLite文件只在显式调用后台打开函数时写入应用支持目录。当前AppBootstrap没有调用它，因此启动应用不会创建数据库或Fixture。
+
+Phase3C仍不新增可见页面或启动接线。DriftLibraryRepository提供事务upsert、确定分页、关联感知watch、TrackRef查询和availability更新；不扫描文件、不访问网络/凭据、不生成假曲库。
 
 ## Phase 0 审计入口
 
@@ -98,7 +101,7 @@ pwsh -NoProfile -File tools/verify_reference_archive.ps1
 
 ## Git 与历史原型
 
-仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。当前开发分支`feat/database-schema-migrations`基于已拉取并同步的`feat/domain-model-contracts@9ebee65`，未在main/master开发。此前阶段提交保留；合并前需审核完整分支差异。经用户明确授权曾恢复临时GitHub API访问，不持久化访问令牌；Git提交/推送和云端产物状态以每次交付时实际核验为准。
+仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。当前开发分支`feat/library-repository-drift`基于已拉取并同步的`feat/database-schema-migrations@8f5b369`，未在main/master开发。此前阶段提交保留；合并前需审核完整分支差异。经用户明确授权曾恢复临时GitHub API访问，不持久化访问令牌；Git提交/推送和云端产物状态以每次交付时实际核验为准。
 
 旧原型 13 个文件已原样迁入 [archive/sonic_gallery](archive/sonic_gallery/README.md)，并在 `f96197b` 单独提交；源码、两份测试、配置和图片可恢复，不再散落为根目录未跟踪文件。Phase 0 中“保留原地、未纳入提交”的说明是当时历史状态。
 

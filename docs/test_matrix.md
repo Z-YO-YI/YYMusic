@@ -1,6 +1,6 @@
 # 原生基础验证矩阵
 
-保留Phase3A的147项Flutter检查，Phase3B新增真实SQLite Schema/Migration8项，共155项Flutter、29项Node；不包含正式Repository、安全存储、音频POC或用户音乐数据。当前结果集中在phase_3b_database_schema_report.md。
+保留Phase3B的155项Flutter检查，Phase3C新增9项真实SQLite Repository与1项Domain测试，共165项Flutter、29项Node；不包含其余Repository、安全存储、Dev Fixture、音频POC或用户音乐数据。当前结果集中在phase_3c_library_repository_report.md。
 
 | 类别 | 已有自动检查 |
 | --- | --- |
@@ -31,13 +31,14 @@
 | Phase2J队列/歌词 | Queue标准/沉浸几何、独立动作与44dp命中；Lyrics future/past/active/双语/ReduceMotion；Dock桌面/Phone/低高度、进度提交/取消及ReduceGlass；无算法/Seek/计时器/持久化 |
 | Phase3A Domain合同 | 稳定TrackRef、独立QueueEntry/重复曲目、不可变JSON、UTC/连续位置、歌词时序/翻译、HTTPS/公开Header/受限映射、凭据与失败脱敏、分页运行时校验、Fake替换及Graph释放 |
 | Phase3B数据库 | v1精确17表/10索引、user_version/迁移审计/空队列状态、官方Schema验证、Track/Queue/Playlist/歌词约束、catalog/歌单外键级联、来源删除引用保留、敏感列白名单、后台文件打开与生成快照复现 |
+| Phase3C LibraryRepository | remote/local双向row映射、递归JSON/UTC/URI/枚举、稳定TrackRef、确定分页、关联watch单次提交、事务回滚、Album/Artist聚合/替换、availability/notFound、损坏row/SQL脱敏、生命周期与owned/shared DB |
 | Golden | 保留Windows Shell及既有组件29张；新增浅珊瑚/深翡翠/自定义白ReduceGlass队列歌词板3张，总计32张精确像素比较，旧基线不改 |
 
 ## CI
 
 `.github/workflows/foundation.yml`：checks 在 Ubuntu24.04 跑 Node/PowerShell 源核验、Dart格式/严格分析/Flutter测试；checks 成功后独立 Windows2025 Debug 和 Ubuntu Android Debug 构建。push feat/fix、PR或手动运行触发，超时20/30分钟。Android执行验签/48文件比对/三文件白名单；只有手动workflow_dispatch在全部门禁后创建私有draft/prerelease，普通push/PR不创建下载产物。个人令牌不注入runner，checkout不保留凭据。
 
-32张Golden按Windows宿主标记，Linux明确跳过（非静默通过），Windows job构建前执行`flutter test --tags windows-golden`；其余123个Flutter测试仍在checks执行。checks在分析前重跑build_runner与make-migrations，并要求g.dart/v1快照Git零差异。没有删除或跳过原有回归，远程状态须按目标commit单独核验。
+32张Golden按Windows宿主标记，Linux明确跳过（非静默通过），Windows job构建前执行`flutter test --tags windows-golden`；其余133个Flutter测试仍在checks执行。checks在分析前重跑build_runner与make-migrations，并要求g.dart/v1快照Git零差异。没有删除或跳过原有回归，远程状态须按目标commit单独核验。
 
 云端交付增量：1项YAML门禁测试、4项Node元数据/拒绝本地打包测试。APK必须在build→signature→assets→package均成功后上传，不使用always/continue-on-error；metadata不复制环境变量或秘密，下载URL必须属于本run。4be8ba2的手动运行已完成既有交付复核；每个新commit仍须重新取得运行证据。
 
