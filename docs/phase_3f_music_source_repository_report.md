@@ -24,7 +24,11 @@
 
 ## 云端与限制
 
-实现提交、Draft PR、push/PR/手动运行、Windows/Android Debug和本批APK尚待目标commit创建后独立核验；不沿用Phase3E APK冒充。本机Windows C++/Developer Mode仍受远程/UAC限制，不声称本机Windows构建或安装成功。
+实现提交`22d68f2`已推送；[Draft PR #14](https://github.com/Z-YO-YI/YYMusic/pull/14)以`feat/lyrics-repository-drift`为base并保持未合并。目标提交的push[运行33503815038](https://github.com/Z-YO-YI/YYMusic/actions/runs/33503815038)、PR[运行33503837936](https://github.com/Z-YO-YI/YYMusic/actions/runs/33503837936)和唯一一次手动[运行33504877925](https://github.com/Z-YO-YI/YYMusic/actions/runs/33504877925)均为三job success，分别通过源码/分析/测试、Windows Debug与Android Debug构建。
+
+手动运行创建了标签字段`ci-debug-33504877925-1`的[私有草稿/prerelease](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-9837f6cb2678f1e8c7f7)，target_commitish精确等于完整实现提交，且只有`build-metadata.json`、`SHA256SUMS`和`YYMusic-debug.apk`三资产。下载后独立复核APK为183604101字节，metadata、SHA256SUMS、本地计算与API digest均为`db2946d4b416971b2fbb89cc754ba77cdf0c03f36aff3f84b2ad425a281c24a2`；48份打包SVG/字体/许可逐字节匹配，apksigner显示v2单签名有效，v1/v3/v3.1/v4为false。精确三文件白名单确认后临时副本已删除，草稿Release保留可恢复。
+
+本机Windows C++/Developer Mode仍受远程/UAC限制，不声称本机Windows构建或安装成功；GitHub Windows runner成功也不替代目标电脑安装、辅助技术/GPU或Android真机验收。APK继续使用临时Debug签名，不是正式发布包或稳定升级密钥。
 
 ## 主要文件
 
