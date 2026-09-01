@@ -181,3 +181,11 @@ Phase3E只实现`LyricsRepository`，不同时实现LRC解析、在线歌词获�
 `lines_json`使用确定性的四字段数组对象：`startMs`、`endMs`、`text`、`translation`。读取必须拒绝非数组、未知/缺失字段、非整数时间及错误文字类型，再交由`LyricsLine/LyricsDocument`验证plain/synchronized时间一致性、同步顺序、非空行和翻译语言一致性。缓存更新时间即使未暴露给当前Domain也必须是可解析UTC毫秒；任何JSON/row/SQLite异常都转成不含歌词、TrackRef或SQL的`DomainFailure(databaseCorrupted)`。
 
 单行upsert使用既有复合主键和`insertOnConflictUpdate`，删除不存在行幂等成功。Repository默认不拥有共享`AppDatabase`，只有`.owned`在幂等dispose时关闭。AppBootstrap在Source、安全存储与Dev Fixture策略完成前仍不接线；未来解析器或来源适配器必须先构造合法LyricsDocument再保存，不能把未验证原始LRC或响应体塞入数据库。
+
+## ADR-027：MusicSourceRepository只保存公开配置与凭据引用（2026-09-01）
+
+Phase3F只实现`MusicSourceRepository`，不同时选择安全存储插件或实现REST Adapter。Drift row保存MusicSourceConfig中的公开base URL、公开Header、相对endpoint、受限字段路径、状态/延迟及`credentialRef`；Repository和mapper不得导入或接收`SensitiveCredential`。凭据引用不是凭据生命周期：替换或删除引用时如何清理安全存储必须由后续Controller协调，data层不能猜测并删除外部秘密。
+
+三个Map使用按key排序的确定性JSON；读取必须拒绝非对象、非字符串值，再重走MusicSourceConfig验证HTTPS无userinfo/query/fragment、敏感Header名、相对路径、受限映射、枚举和UTC时间。损坏JSON/row/SQLite异常只返回不含名称、URL、Header、credentialRef或SQL的`DomainFailure(databaseCorrupted)`。
+
+sourceId是稳定身份；已存sourceType或builtIn不得转换，内置来源不可删除。自定义来源删除只移除配置，Schema刻意没有从用户集合TrackRef指向music_sources的外键，因此收藏、歌单、历史、队列和歌词引用仍保留，后续Library/Controller标记不可用。Repository默认共享数据库，只有`.owned`负责关闭；AppBootstrap继续等待安全存储与Dev Fixture策略。

@@ -67,4 +67,6 @@ Phase3E本地增量：6项真实SQLite覆盖plain upsert/remove、同步双语/�
 
 Phase3E实现提交1e45532的push运行33499761224、PR运行33499787210与手动运行33500756816均为三job success。手动运行的草稿Release三资产已下载，APK为183604101字节，SHA256SUMS、metadata、API digest与`fd71936ef590dc18b1e851572c21cbf6d10f157a495298022dec3f2dd384020a`一致；48份打包资产逐字节匹配，v2单签名有效，临时副本已清理。证据只适用于该实现提交。
 
+Phase3F本地增量：8项真实SQLite覆盖REST完整往返/规范JSON、local内置、确定watch、身份/删除保护、用户引用保留、损坏配置/SQLite脱敏及shared/owned生命周期；完整189项Flutter含32 Golden、125文件format、严格分析、29项Node、24项ZIP、lockfile及生成/v1快照零差异已通过。目标提交云端证据另行记录。
+
 Actions 固定 SHA，来源为维护者公开 refs 和说明：[checkout](https://github.com/actions/checkout)、[setup-node](https://github.com/actions/setup-node)、[setup-java](https://github.com/actions/setup-java)、[flutter-action](https://github.com/subosito/flutter-action)。静态配置验证不代表远程工作流已经通过；私有 CI 结果必须可读取后才记录成功。
