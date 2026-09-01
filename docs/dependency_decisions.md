@@ -54,3 +54,16 @@ Inter/Noto Sans SC以Google Fonts固定提交原文件进入应用assets，OFL�
 ## Phase 3A 依赖结果
 
 Domain模型、Repository合同、SecureCredentialGateway和测试Fake只使用Dart/Flutter SDK已有类型，没有修改pubspec或lockfile。Drift仍是Phase3数据库候选而不是已安装决定；版本、生成器、SQLite原生库和双平台构建证据将在独立Schema/Migration批次按当时官方资料重新核验。当前不得用Fake或接口存在冒充数据库已完成。
+
+## Phase 3B 数据库选择（2026-09-01）
+
+| 包 | 选择 | 双平台/维护/License | 使用边界与回退 |
+| --- | --- | --- | --- |
+| `drift` | `^2.34.3` | 官方pub.dev当前稳定版；Android/Windows；MIT | 只在`data/database`，生成row不进入Domain/UI；若build hook或迁移证据失败则本批停止，不退回只支持Android的sqflite |
+| `sqlite3` | `^3.5.2` | 官方当前稳定版；Android/Windows预编译库；MIT；默认二进制有SHA-256与SLSA3说明 | 直接依赖以锁定原生引擎合同；使用默认SQLite，不启用SQLCipher/Multiple Ciphers或外部下载功能 |
+| `path_provider` / `path` | `^2.1.6` / `^1.9.1` | Flutter官方插件支持Android SDK24+与Windows10+；BSD-3-Clause / Dart基础包 | 仅默认数据库路径；测试注入内存executor，不调用平台目录。失败时允许调用方注入自有数据库路径 |
+| `drift_dev` / `build_runner` | `^2.34.5` / `^2.16.0` | 官方生成/迁移工具；MIT / BSD-3-Clause；仅开发依赖 | 生成代码和schema快照提交并受测试保护；业务运行时不得调用生成器 |
+
+官方Drift原生平台文档说明2.32起`NativeDatabase`在Android/Windows无需`sqlite3_flutter_libs`等额外原生包，SQLite由`sqlite3` build hooks随应用打包；因此不选`drift_flutter`及旧原生库组合，避免重复或过时二进制。默认文件通过`getApplicationSupportDirectory()`定位，使用`NativeDatabase.createInBackground`避免SQLite I/O阻塞UI isolate；应用本批不接线，不会在启动时创建数据库。
+
+依赖来源：[Drift](https://pub.dev/packages/drift)、[原生平台说明](https://drift.simonbinder.eu/platforms/vm/)、[SQLite build hooks](https://pub.dev/documentation/sqlite3/latest/topics/hook-topic.html)、[path_provider](https://pub.dev/packages/path_provider)、[迁移测试](https://drift.simonbinder.eu/migrations/tests/)。本批不新增网络、媒体、存储权限；SQLite文件属于应用私有支持目录，敏感凭据仍只允许SecureCredentialGateway保存。
