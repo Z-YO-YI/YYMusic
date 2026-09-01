@@ -1,6 +1,6 @@
 # PR 草稿：Drift schema and initial migration
 
-Head：`feat/database-schema-migrations`；Base：`feat/domain-model-contracts@9ebee65`。Draft PR编号待推送后记录；不自动合并、不改写历史。
+Head：`feat/database-schema-migrations`；Base：`feat/domain-model-contracts@9ebee65`。Draft PR [#10](https://github.com/Z-YO-YI/YYMusic/pull/10)；不自动合并、不改写历史。
 
 ## 变更
 
@@ -13,7 +13,8 @@ Head：`feat/database-schema-migrations`；Base：`feat/domain-model-contracts@9
 
 - 定向8项数据库测试已通过；官方Schema自验证、外键/级联/约束、来源删除引用保留、敏感列和后台文件均覆盖。
 - g.dart/v1 JSON二次生成SHA不变；lockfile、113文件format、strict analyze、155项Flutter/32 Golden、29项Node和ZIP24项全部通过。
-- GitHub push、PR、手动Android+Windows及草稿Release待目标实现提交后记录。
+- 实现提交`31121d4`的push 33484750785、PR 33484779370和手动 33485752421均为三job success，Android/Windows Debug均通过。
+- 手动运行草稿Release三资产已复核；APK为183603621字节，SHA-256为`3bdd3a74f8344df0c5124ffe25eee8c01d0d8985639ed91ff9084dac67defc69`，metadata/SHA256SUMS/API digest一致，48份资产匹配且v2单签名有效。
 
 ## 影响与未验收项
 

@@ -32,7 +32,11 @@
 
 ## 云端与限制
 
-实现提交、push/PR/手动运行、Windows/Android Debug和本批APK尚未创建，不能沿用Phase3A APK作为证据。本机Windows C++/Developer Mode仍无法远程确认，不声称本机构建或安装成功。
+实现提交`31121d4af12f6164ad16ad89164bae7e3ad5b2e2`已推送。push运行[33484750785](https://github.com/Z-YO-YI/YYMusic/actions/runs/33484750785)、Draft PR #10运行[33484779370](https://github.com/Z-YO-YI/YYMusic/actions/runs/33484779370)和手动运行[33485752421](https://github.com/Z-YO-YI/YYMusic/actions/runs/33485752421)均为三job success：Ubuntu源码/生成/测试门禁、Windows2025 Debug+宿主Golden与Android Debug+验签/资产核验全部通过。
+
+手动运行创建了标签字段`ci-debug-33485752421-1`的[私有草稿/prerelease](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-fede995dd640f1fdc4f6)，target_commitish精确等于实现提交，且只有`build-metadata.json`、`SHA256SUMS`和`YYMusic-debug.apk`三资产。下载后独立复核APK为183603621字节，metadata、SHA256SUMS、本地计算与API digest均为`3bdd3a74f8344df0c5124ffe25eee8c01d0d8985639ed91ff9084dac67defc69`；48份打包SVG/字体/许可逐字节匹配，apksigner显示v2单签名有效，v1/v3/v3.1/v4为false。临时下载副本已安全删除，草稿Release保留可恢复。
+
+本机Windows C++/Developer Mode仍无法远程确认，不声称本机构建或安装成功。
 
 SQLite Schema存在不代表正式Repository或用户数据持久化已完成。公开Header JSON的内容校验仍需后续Repository执行；本批测试只证明Schema无敏感专用列和应用层边界未越过。
 
@@ -47,3 +51,5 @@ SQLite Schema存在不代表正式Repository或用户数据持久化已完成。
 - CI代码生成零差异门禁、ADR、依赖、架构、矩阵和状态文档
 
 下一批应实现Database↔Domain映射和首个正式LibraryRepository小批次，先覆盖事务/分页/流/不可用引用；不得一次接完Collection/Source/Controller/UI或音频。
+
+Draft PR：[#10](https://github.com/Z-YO-YI/YYMusic/pull/10)，保持待审核，不自动合并。
