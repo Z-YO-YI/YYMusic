@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-01 — Phase 2G 跨平台弹层原语
+
+- 新增受控原生`YYContextMenu`、`YYDialog`、`YYBottomSheet`与`YYToast`；不使用Material默认弹层，不创建业务Overlay/Route/计时器。
+- Context Menu保留224/244宽、20圆角、7内边距、30模糊并提升到44dp菜单命中；Dialog/Sheet使用不透明30圆角表面与72dp头尾，Toast保持42/420/14和live region。
+- Android/Windows Gallery新增明确标注的本地Fixture；右键/长按、锚点避让、Toast队列/时长、播放/歌单/设备动作及正式业务弹层仍未接入。
+- 新增6项Widget和3张1280×720/130%弹层组件板，三张已逐张视觉审计；既有20张Golden未更新。75文件格式、严格分析、完整104项Flutter、23张Golden、28项Node和24份ZIP字节核验均通过；GitHub结果以本阶段报告最终记录为准。
+- a56d4aa的push、PR、手动运行均为三job success；草稿Release三资产已下载复核，APK为175818389字节，SHA-256/API digest为`836e97c46aef2ed0036aaec085b8fb6113beeb2fe363749a7dfa3e817f648a88`且v2签名有效。
+
 ## 2026-09-01 — Phase 2F 跨平台播放器表面
 
 - 新增受控`YYMiniPlayer`、`YYDesktopPlayerBar`与只读`YYNowPlayingViewData`，复用最终SVG、Slider、Artwork、Theme和Glass；保留Mini64、Desktop88/76、封面54/50/48及44dp动作命中。

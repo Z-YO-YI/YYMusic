@@ -176,12 +176,16 @@ class YYIconButton extends StatelessWidget {
     required this.onPressed,
     this.selected = false,
     this.style = YYButtonStyle.secondary,
+    this.loading = false,
+    this.focusNode,
   });
   final YYGlyph glyph;
   final String label;
   final VoidCallback? onPressed;
   final bool selected;
   final YYButtonStyle style;
+  final bool loading;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) => YYButton(
@@ -190,6 +194,8 @@ class YYIconButton extends StatelessWidget {
     onPressed: onPressed,
     selected: selected,
     style: style,
+    loading: loading,
+    focusNode: focusNode,
     iconOnly: true,
   );
 }

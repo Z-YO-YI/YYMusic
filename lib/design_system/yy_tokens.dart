@@ -139,6 +139,7 @@ abstract final class YYRadius {
   static const button = 16.0, iconButton = 13.0, surface = 20.0;
   static const navigation = 14.0, panel = 24.0, dock = 26.0;
   static const hero = 28.0, dialog = 30.0, phoneNavigation = 32.0;
+  static const contextMenu = 20.0, toast = 14.0;
   static const albumArtwork = 20.0, trackArtwork = 10.0, trackRow = 14.0;
 }
 
@@ -229,6 +230,18 @@ abstract final class YYPlayerMetrics {
   static const primaryControlVisual = 42.0;
 }
 
+/// Overlay primitive geometry from the final composed reference.
+abstract final class YYOverlayMetrics {
+  static const contextMenuWidth = 224.0;
+  static const phoneContextMenuWidth = 244.0;
+  static const contextMenuPadding = 7.0;
+  static const contextMenuItemHeight = 44.0;
+  static const dialogMaxWidth = 680.0;
+  static const dialogSectionMinHeight = 72.0;
+  static const toastMinHeight = 42.0;
+  static const toastMaxWidth = 420.0;
+}
+
 /// Small visual geometry is deliberately separate from the 44dp hit area.
 abstract final class YYSliderMetrics {
   static const trackHeight = 3.0, thumbDiameter = 14.0, outerRing = 3.0;
@@ -264,5 +277,8 @@ abstract final class YYShadows {
       offset: Offset(0, brightness == Brightness.dark ? 16 : 14),
       blurRadius: brightness == Brightness.dark ? 48 : 44,
     ),
+  ];
+  static const dialog = [
+    BoxShadow(color: Color(0x4D000000), offset: Offset(0, 28), blurRadius: 90),
   ];
 }

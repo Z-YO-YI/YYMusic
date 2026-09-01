@@ -20,6 +20,8 @@
 
 附加交互层：trackContextMenu（6动作）、toast（aria-live polite）、connectionNotice、scanProgress、source/playlist动态列表；不是另外四个主页面，也不计入七个Overlay。
 
+Phase2G已实现`YYContextMenu`、`YYDialog`、Phone适配`YYBottomSheet`与`YYToast`的受控原语，但本表中的路由、Controller、右键/长按触发、菜单锚定、Toast队列/时长及真实业务动作仍是后续实现。Gallery内联Fixture不得被计作上述Overlay流程已交付。
+
 ## 六条核心流程与行为边界
 
 | 流程 | 网页真实实现 | Flutter替代 |

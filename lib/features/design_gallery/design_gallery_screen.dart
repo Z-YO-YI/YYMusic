@@ -12,6 +12,7 @@ import '../../design_system/yy_tokens.dart';
 import 'gallery_content_cards.dart';
 import 'gallery_input_controls.dart';
 import 'gallery_media_controls.dart';
+import 'gallery_overlay_primitives.dart';
 import 'gallery_player_surfaces.dart';
 import 'gallery_windows_chrome.dart';
 
@@ -122,7 +123,7 @@ class _DesignGalleryScreenState extends State<DesignGalleryScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Phase 2E · 跨平台原生组件\n仅验证设计与交互，尚未接入音乐库或播放。',
+                      'Phase 2G · 跨平台原生组件\n仅验证设计与交互，尚未接入音乐库或播放。',
                       style: YYTypography.caption.copyWith(
                         color: colors.secondary,
                       ),
@@ -462,6 +463,8 @@ class _DesignGalleryScreenState extends State<DesignGalleryScreen> {
                         },
                       ),
                     ),
+                    const SizedBox(height: 24),
+                    GalleryOverlayPrimitives(platform: widget.platform),
                     const SizedBox(height: 24),
                     Text(
                       'Inter / Noto Sans SC · 应用内字体\n参考网页视觉对照与 Android 真机验收仍待完成。',

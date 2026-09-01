@@ -1,6 +1,6 @@
 # 实施状态
 
-更新：2026-09-01。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。当前推进到Phase2F：受控Mini/Desktop播放器表面及跨平台Gallery Fixture已完成本地与GitHub双平台验证；本批云端APK、校验和、metadata、digest与v2签名已独立复核。这不是完整客户端或整个Phase2已完成。
+更新：2026-09-01。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。当前推进到Phase2G：受控Context Menu、Dialog、Phone Bottom Sheet、Toast及跨平台Gallery Fixture已完成本地与GitHub双平台验证；本批云端APK、校验和、metadata、digest与v2签名已独立复核。这不是完整客户端或整个Phase2已完成。
 
 | 阶段/能力 | 状态 |
 | --- | --- |
@@ -12,25 +12,26 @@
 | Phase 2D Android内容组件 | AlbumCard、TrackTile及Gallery Fixture已实现/测试；见phase_2d_android_report.md |
 | Phase 2E Windows导航基础 | 42工具区、240/72侧栏、1440/1024/840布局、跨平台Gallery及Windows Chrome Fixture已实现/测试；见phase_2e_cross_platform_report.md |
 | Phase 2F 跨平台播放器表面 | Mini64与Desktop88/76受控组件、Android/Windows Gallery Fixture已实现；真实音频和正式Shell接线不在本阶段，见phase_2f_player_surfaces_report.md |
-| Phase 2 后续组件及视觉对照 | 菜单/弹层、更多基础组件及业务页未实现；网页对照和设备性能待验 |
+| Phase 2G 跨平台弹层原语 | ContextMenu/Dialog/BottomSheet/Toast及Android/Windows Gallery Fixture已实现；业务Overlay编排、路由、锚定、计时器和真实动作不在本阶段，见phase_2g_overlay_primitives_report.md |
+| Phase 2 后续组件及视觉对照 | 更多基础组件及业务页未实现；网页对照和设备性能待验 |
 | Phase 3 Domain/数据库/状态 | 未开始；只有边界决策 |
 | Phase 4 双平台音频 | 仅 POC 计划；没有真实播放验证 |
 | 后续页面、歌词、导入、来源、平台集成 | 未开始 |
-| GitHub APK交付 | a1eacd9的运行33462929516完成编译、验签、资源核验及草稿Release三资产下载复核；见phase_2f_player_surfaces_report.md |
+| GitHub APK交付 | a56d4aa的运行33466396076完成编译、验签、资源核验及草稿Release三资产下载复核；见phase_2g_overlay_primitives_report.md |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
-| Flutter format/analyze/test | 69文件格式无变更、严格分析0问题、完整95项含20张原生Golden全部通过；见phase_2f_player_surfaces_report.md |
-| Windows / Android Debug构建 | Phase2F实现提交的push、PR及手动运行三组均在GitHub两平台成功；本机Windows C++工具链仍受UAC限制 |
+| Flutter format/analyze/test | 75文件格式无变更、严格分析0问题、完整104项含23张原生Golden全部通过；见phase_2g_overlay_primitives_report.md |
+| Windows / Android Debug构建 | Phase2G实现提交的push、PR及手动运行三组均在GitHub两平台成功；本机Windows C++工具链仍受UAC限制 |
 
 ## 保留的验收缺口与后续边界
 
 1. 已执行安全归档：13个旧原型文件移入archive/sonic_gallery，指纹一致，f96197b保存；根lib是新骨架，不再是旧代码。
 2. 用户已批准补足工具链；Android命令行工具/API36/NDK已安装，Windows C++安装等待UAC确认。仍需取得双平台Debug构建成功证据，未批量接受所有Android许可。
 3. 已解析Riverpod/go_router并提交lockfile；音频后端仍等待Phase 4双平台POC。
-4. 已建立实时平台分类、三个Shell和根依赖；Windows Shell现有设计导航与跨平台Gallery，播放器组件仅存在于明确标注的Fixture，窗口Gateway、Inspector业务与正式播放器接线仍未实现。业务页面未实现，不把设计预览当成音乐业务交付。
+4. 已建立实时平台分类、三个Shell和根依赖；Windows Shell现有设计导航与跨平台Gallery，播放器与弹层组件仅存在于明确标注的Fixture，窗口Gateway、业务Overlay Manager、Inspector业务与正式播放器接线仍未实现。业务页面未实现，不把设计预览当成音乐业务交付。
 5. 为后续视觉验证准备获准且可访问的预览环境；遵守 Browser 技能边界，不绕过本轮 file: 拒绝。参考 screenshot 与 Flutter Golden 必须分别记录。
 
 ## 仓库边界
 
-开发分支：feat/cross-platform-player-surfaces，基于已拉取并同步的feat/windows-navigation-foundation@99b664a。未在main/master直接开发；旧原型保留于归档提交。本批只增加Phase2F受控播放器表面、跨平台Gallery Fixture、测试与文档。
+开发分支：feat/cross-platform-overlay-primitives，基于已拉取并同步的feat/cross-platform-player-surfaces@6ecbbd8。未在main/master直接开发；旧原型保留于归档提交。本批只增加Phase2G受控弹层原语、跨平台Gallery Fixture、测试与文档。
 
-此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问已能读取本仓库运行和PR，不修改账号权限或读取现有Git凭据。Phase2F的push/PR/手动运行、Draft PR #4及新APK均已按完整commit实际核验，证据见phase_2f_player_surfaces_report.md。
+此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问已能读取本仓库运行和PR，不修改账号权限或读取现有Git凭据。Phase2G的push/PR/手动运行、Draft PR #5及新APK均已按完整实现commit实际核验，证据见phase_2g_overlay_primitives_report.md。
