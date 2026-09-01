@@ -28,6 +28,8 @@
 
 Phase2E实现提交86d5cf5的手动[运行33459298221](https://github.com/Z-YO-YI/YYMusic/actions/runs/33459298221)三项任务全部成功；当前[私有草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-5fff7c5595429dc428bf)仍未正式发布。三资产已独立下载，APK为175767817字节，SHA-256/API digest为`ee0030157e359d959373af760a09c4c23c7c6b7a0943a0771ecaf13bbd051a08`，metadata与完整commit/run一致且v2签名有效；完整证据见[Phase2E报告](phase_2e_cross_platform_report.md)。
 
+Phase2H实现提交9f71d14的手动[运行33469832392](https://github.com/Z-YO-YI/YYMusic/actions/runs/33469832392)三项任务全部成功；[私有草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-c5e2a9460a012a4acfc7)保持draft/prerelease且只含三项白名单资产。APK为175828689字节，SHA-256/API digest为`b9494ff75b5176b97ac11360a4b496c5182acdc5b0e875087a25d299989f6231`，metadata与完整commit/run一致且v2签名有效；完整证据见[Phase2H报告](phase_2h_state_surfaces_report.md)。
+
 API访问仅限YYMusic；访问凭据只通过无回显输入进入短生命周期进程内存，不写入仓库、配置、环境持久值或构建产物，不读取现有本机Git凭据。必须取得目标commit的成功run、draft Release及三个资产记录并下载复核后，才可宣称“GitHub APK交付成功”；推送成功、YAML测试通过或旧本机APK都不能替代。
 
 依据：[GitHub CLI创建Release](https://cli.github.com/manual/gh_release_create)、[GitHub GITHUB_TOKEN说明](https://docs.github.com/en/actions/concepts/security/github_token)、[GitHub Release管理](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository)。

@@ -7,6 +7,7 @@ import '../../design_system/yy_icon.dart';
 import '../../design_system/yy_profile_header.dart';
 import '../../design_system/yy_surface.dart';
 import '../../design_system/yy_theme.dart';
+import '../../design_system/yy_theme_swatch.dart';
 import '../../design_system/yy_toggle.dart';
 import '../../design_system/yy_tokens.dart';
 import 'gallery_content_cards.dart';
@@ -14,6 +15,7 @@ import 'gallery_input_controls.dart';
 import 'gallery_media_controls.dart';
 import 'gallery_overlay_primitives.dart';
 import 'gallery_player_surfaces.dart';
+import 'gallery_state_surfaces.dart';
 import 'gallery_windows_chrome.dart';
 
 /// An explicitly labelled component preview, not a fixture-backed music page.
@@ -123,7 +125,7 @@ class _DesignGalleryScreenState extends State<DesignGalleryScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Phase 2G · 跨平台原生组件\n仅验证设计与交互，尚未接入音乐库或播放。',
+                      'Phase 2H · 跨平台原生组件\n仅验证设计与交互，尚未接入音乐库或播放。',
                       style: YYTypography.caption.copyWith(
                         color: colors.secondary,
                       ),
@@ -169,13 +171,11 @@ class _DesignGalleryScreenState extends State<DesignGalleryScreen> {
                             runSpacing: 8,
                             children: [
                               for (final preset in YYAccentPreset.values)
-                                YYButton(
+                                YYThemeSwatch(
                                   key: ValueKey('accent-${preset.name}'),
                                   label: preset.label,
+                                  color: Color(preset.argb),
                                   selected: appearance.accent.preset == preset,
-                                  glyph: appearance.accent.preset == preset
-                                      ? YYGlyph.check
-                                      : null,
                                   onPressed: () => appearance.setPreset(preset),
                                 ),
                             ],
@@ -465,6 +465,8 @@ class _DesignGalleryScreenState extends State<DesignGalleryScreen> {
                     ),
                     const SizedBox(height: 24),
                     GalleryOverlayPrimitives(platform: widget.platform),
+                    const SizedBox(height: 24),
+                    const GalleryStateSurfaces(),
                     const SizedBox(height: 24),
                     Text(
                       'Inter / Noto Sans SC · 应用内字体\n参考网页视觉对照与 Android 真机验收仍待完成。',

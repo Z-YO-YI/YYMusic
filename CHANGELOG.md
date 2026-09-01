@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-01 — Phase 2H 跨平台状态与反馈原语
+
+- 新增受控`YYThemeSwatch`、`YYEmptyState`、`YYErrorBanner`与`YYSkeleton`；Gallery五个强调色入口改用30px视觉/44dp命中的Swatch。
+- Empty State保留28/16内边距、24图标与10px/1.6文字；Error Banner复用12/14/15 notice几何和error token；Skeleton为静止纯色、默认填宽且无渐变。
+- Android/Windows共享本地状态Fixture；重试只更新说明文字，不访问网络、Repository、计时器、持久化或生成假数据。
+- 新增6项Widget与3张1280×720/130%状态组件板，三张逐张审计并修复默认Skeleton宽度；旧23张Golden未更新。80文件格式、严格分析、完整113项Flutter、26张Golden、28项Node和24份ZIP字节核验均通过。
+- 9f71d14的push、PR、手动运行均为三job success；草稿Release三资产已下载复核，APK为175828689字节，SHA-256/API digest为`b9494ff75b5176b97ac11360a4b496c5182acdc5b0e875087a25d299989f6231`且v2签名有效。
+
 ## 2026-09-01 — Phase 2G 跨平台弹层原语
 
 - 新增受控原生`YYContextMenu`、`YYDialog`、`YYBottomSheet`与`YYToast`；不使用Material默认弹层，不创建业务Overlay/Route/计时器。

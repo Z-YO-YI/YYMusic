@@ -22,6 +22,8 @@
 
 Phase2G已实现`YYContextMenu`、`YYDialog`、Phone适配`YYBottomSheet`与`YYToast`的受控原语，但本表中的路由、Controller、右键/长按触发、菜单锚定、Toast队列/时长及真实业务动作仍是后续实现。Gallery内联Fixture不得被计作上述Overlay流程已交付。
 
+Phase2H已实现`YYThemeSwatch`、`YYEmptyState`、`YYErrorBanner`与`YYSkeleton`，并将Gallery五种强调色改用Swatch。它们只表达受控状态；`idle/loading/data/empty/error`的转换、真实重试、来源失败、搜索结果和扫描进度仍由后续Controller/Feature所有，静态Fixture不能计作业务异步流程。
+
 ## 六条核心流程与行为边界
 
 | 流程 | 网页真实实现 | Flutter替代 |
