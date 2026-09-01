@@ -5,13 +5,18 @@ import 'yy_tokens.dart';
 
 /// The local-account fixture is not the application name or a signed-in user.
 class YYProfileHeader extends StatelessWidget {
-  const YYProfileHeader({super.key});
+  const YYProfileHeader({super.key, this.compact = false});
+
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final colors = YYTheme.of(context).colors;
-    return MergeSemantics(
+    return Semantics(
+      label: 'YY Listener，本地账户',
+      excludeSemantics: true,
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
             width: 44,
@@ -37,22 +42,24 @@ class YYProfileHeader extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 14),
-          Flexible(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('YYListener', style: YYTypography.accountName),
-                const SizedBox(height: 2),
-                Text(
-                  '本地账户',
-                  style: YYTypography.accountSubtitle.copyWith(
-                    color: colors.secondary,
+          if (!compact) ...[
+            const SizedBox(width: 14),
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('YY Listener', style: YYTypography.accountName),
+                  const SizedBox(height: 2),
+                  Text(
+                    '本地账户',
+                    style: YYTypography.accountSubtitle.copyWith(
+                      color: colors.secondary,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );

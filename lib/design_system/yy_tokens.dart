@@ -201,6 +201,19 @@ abstract final class YYNavigationMetrics {
   static const labelSize = 11.0, iconSize = 20.0;
 }
 
+/// Desktop chrome geometry from the final composed Windows reference.
+abstract final class YYWindowsMetrics {
+  static const toolbarHeight = 42.0;
+  static const sidebarExpandedWidth = 240.0;
+  static const sidebarCompactWidth = 72.0;
+  static const inspectorWidth = 320.0;
+  static const playerHeight = 88.0;
+  static const compactPlayerHeight = 76.0;
+  static const navigationItemHeight = 46.0;
+  static const expandedGap = 14.0;
+  static const compactGap = 12.0;
+}
+
 /// Small visual geometry is deliberately separate from the 44dp hit area.
 abstract final class YYSliderMetrics {
   static const trackHeight = 3.0, thumbDiameter = 14.0, outerRing = 3.0;

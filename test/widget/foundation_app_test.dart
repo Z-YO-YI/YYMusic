@@ -6,6 +6,8 @@ import 'package:yymusic/app/app_routes.dart';
 import 'package:yymusic/app/dependency_graph.dart';
 import 'package:yymusic/app/layout_class.dart';
 import 'package:yymusic/app/yy_music_app.dart';
+import 'package:yymusic/design_system/yy_window_toolbar.dart';
+import 'package:yymusic/design_system/yy_windows_sidebar.dart';
 import 'package:yymusic/playback/playback_state.dart';
 import 'package:yymusic/shared/foundation_button.dart';
 import 'package:yymusic/shells/android_phone_shell.dart';
@@ -47,28 +49,51 @@ void main() {
   testWidgets('Windows stays Windows below Android phone width', (
     tester,
   ) async {
-    await mount(
-      tester,
-      platform: YYPlatform.windows,
-      size: const Size(1440, 900),
-    );
-    expect(
-      tester.widget<WindowsShell>(find.byType(WindowsShell)).layout,
-      YYLayoutClass.windowsExpanded,
-    );
-    for (final (width, layout) in [
-      (1024.0, YYLayoutClass.windowsStandard),
-      (840.0, YYLayoutClass.windowsNarrow),
-      (599.0, YYLayoutClass.windowsNarrow),
-    ]) {
-      tester.view.physicalSize = Size(width, 720);
-      await tester.pumpAndSettle();
+    final semantics = tester.ensureSemantics();
+    try {
+      await mount(
+        tester,
+        platform: YYPlatform.windows,
+        size: const Size(1440, 900),
+      );
       expect(
         tester.widget<WindowsShell>(find.byType(WindowsShell)).layout,
-        layout,
+        YYLayoutClass.windowsExpanded,
       );
-      expect(find.byType(AndroidPhoneShell), findsNothing);
-      expect(tester.takeException(), isNull);
+      expect(find.byType(YYWindowsSidebar), findsOneWidget);
+      expect(find.byType(YYWindowToolbar), findsOneWidget);
+      expect(tester.getSize(find.byType(YYWindowsSidebar)).width, 240);
+      expect(find.text('Inspector 结构预留 · Phase 5'), findsOneWidget);
+      expect(find.bySemanticsLabel('最小化'), findsNothing);
+      await tester.tap(find.byKey(const ValueKey('windows-nav-library')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('screen-library')), findsOneWidget);
+      for (final (width, layout) in [
+        (1024.0, YYLayoutClass.windowsStandard),
+        (840.0, YYLayoutClass.windowsNarrow),
+        (599.0, YYLayoutClass.windowsNarrow),
+      ]) {
+        tester.view.physicalSize = Size(width, 720);
+        await tester.pumpAndSettle();
+        expect(
+          tester.widget<WindowsShell>(find.byType(WindowsShell)).layout,
+          layout,
+        );
+        expect(find.byType(AndroidPhoneShell), findsNothing);
+        expect(
+          tester.getSize(find.byType(YYWindowsSidebar)).width,
+          layout == YYLayoutClass.windowsNarrow ? 72 : 240,
+        );
+        expect(
+          find.text('Inspector 结构预留 · Phase 5'),
+          layout == YYLayoutClass.windowsExpanded
+              ? findsOneWidget
+              : findsNothing,
+        );
+        expect(tester.takeException(), isNull);
+      }
+    } finally {
+      semantics.dispose();
     }
   });
 

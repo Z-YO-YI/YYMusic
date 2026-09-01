@@ -121,3 +121,91 @@ class YYGlassSurface extends StatelessWidget {
     );
   }
 }
+
+/// Glass constrained by its parent, for vertical sidebars and bounded panels.
+class YYGlassPanel extends StatelessWidget {
+  const YYGlassPanel({
+    super.key,
+    required this.child,
+    this.radius = YYRadius.panel,
+    this.padding = const EdgeInsets.all(16),
+    this.blurSigma,
+  }) : assert(blurSigma == null || blurSigma > 0);
+
+  final Widget child;
+  final double radius;
+  final EdgeInsetsGeometry padding;
+  final double? blurSigma;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = YYTheme.of(context);
+    final colors = theme.colors;
+    final sigma =
+        blurSigma ??
+        (MediaQuery.sizeOf(context).shortestSide < 600 ? 30.0 : 34.0);
+    final panel = DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.reduceGlass ? colors.elevated : colors.glassFill,
+        borderRadius: BorderRadius.circular(radius),
+        border: Border.all(
+          color: theme.reduceGlass ? colors.border : colors.glassStroke,
+        ),
+      ),
+      child: Stack(
+        fit: StackFit.passthrough,
+        children: [
+          Padding(padding: padding, child: child),
+          Positioned(
+            left: 24,
+            right: 24,
+            top: 0,
+            child: SizedBox(
+              height: 1,
+              child: ColoredBox(color: colors.glassHighlight),
+            ),
+          ),
+        ],
+      ),
+    );
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(radius),
+        boxShadow: YYShadows.floating(theme.brightness),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(radius),
+        child: theme.reduceGlass
+            ? panel
+            : BackdropFilter(
+                filter: ui.ImageFilter.compose(
+                  outer: const ui.ColorFilter.matrix([
+                    1.23622,
+                    -.21456,
+                    -.02166,
+                    0,
+                    0,
+                    -.06378,
+                    1.08544,
+                    -.02166,
+                    0,
+                    0,
+                    -.06378,
+                    -.21456,
+                    1.27834,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                  ]),
+                  inner: ui.ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
+                ),
+                child: panel,
+              ),
+      ),
+    );
+  }
+}

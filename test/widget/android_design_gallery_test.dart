@@ -166,7 +166,7 @@ void main() {
     },
   );
 
-  testWidgets('Windows retains its shell and does not expose Android gallery', (
+  testWidgets('Windows retains its shell and opens the Windows gallery', (
     tester,
   ) async {
     await mount(
@@ -174,7 +174,14 @@ void main() {
       platform: YYPlatform.windows,
       size: const Size(1024, 720),
     );
-    expect(find.byKey(const ValueKey('open-design-gallery')), findsNothing);
-    expect(find.byType(DesignGalleryScreen), findsNothing);
+    expect(find.byKey(const ValueKey('open-design-gallery')), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('open-design-gallery')));
+    await tester.pumpAndSettle();
+    expect(find.byType(DesignGalleryScreen), findsOneWidget);
+    expect(find.text('WINDOWS'), findsOneWidget);
+    expect(find.text('Windows Chrome · Fixture'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('gallery-back')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('screen-home')), findsOneWidget);
   });
 }

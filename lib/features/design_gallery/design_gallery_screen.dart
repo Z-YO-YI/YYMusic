@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../../app/layout_class.dart';
 import '../../design_system/yy_button.dart';
 import '../../design_system/yy_icon.dart';
 import '../../design_system/yy_profile_header.dart';
@@ -11,10 +12,16 @@ import '../../design_system/yy_tokens.dart';
 import 'gallery_content_cards.dart';
 import 'gallery_input_controls.dart';
 import 'gallery_media_controls.dart';
+import 'gallery_windows_chrome.dart';
 
 /// An explicitly labelled component preview, not a fixture-backed music page.
 class DesignGalleryScreen extends StatefulWidget {
-  const DesignGalleryScreen({super.key, required this.onBack});
+  const DesignGalleryScreen({
+    super.key,
+    required this.platform,
+    required this.onBack,
+  });
+  final YYPlatform platform;
   final VoidCallback onBack;
 
   @override
@@ -95,7 +102,9 @@ class _DesignGalleryScreenState extends State<DesignGalleryScreen> {
                           ),
                         ),
                         Text(
-                          'ANDROID',
+                          widget.platform == YYPlatform.windows
+                              ? 'WINDOWS'
+                              : 'ANDROID',
                           style: YYTypography.caption.copyWith(
                             color: colors.secondary,
                             letterSpacing: 1,
@@ -112,13 +121,17 @@ class _DesignGalleryScreenState extends State<DesignGalleryScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Phase 2D · 原生组件\n仅验证设计与交互，尚未接入音乐库或播放。',
+                      'Phase 2E · 跨平台原生组件\n仅验证设计与交互，尚未接入音乐库或播放。',
                       style: YYTypography.caption.copyWith(
                         color: colors.secondary,
                       ),
                     ),
                     const SizedBox(height: 24),
                     const YYSurface(child: YYProfileHeader()),
+                    if (widget.platform == YYPlatform.windows) ...[
+                      const SizedBox(height: 24),
+                      const GalleryWindowsChrome(),
+                    ],
                     const SizedBox(height: 24),
                     _Section(
                       title: '外观',

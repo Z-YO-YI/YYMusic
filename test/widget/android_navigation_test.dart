@@ -31,7 +31,7 @@ void main() {
                 width: 336,
                 child: StatefulBuilder(
                   builder: (context, setState) => YYMobileBottomNavigation(
-                    destinations: androidDestinations,
+                    destinations: primaryDestinations,
                     selectedIndex: selected,
                     onSelected: (index) => setState(() => selected = index),
                   ),
@@ -83,7 +83,7 @@ void main() {
             child: StatefulBuilder(
               builder: (context, setState) => YYTabletNavigationRail(
                 height: 140,
-                destinations: androidDestinations,
+                destinations: primaryDestinations,
                 selectedIndex: selected,
                 onSelected: (index) => setState(() => selected = index),
               ),
@@ -125,7 +125,7 @@ void main() {
             Center(
               child: YYTabletNavigationRail(
                 height: 300,
-                destinations: androidDestinations,
+                destinations: primaryDestinations,
                 selectedIndex: 0,
                 onSelected: (_) {},
               ),
@@ -191,7 +191,7 @@ void main() {
             width: 64,
             height: 64,
             child: YYNavigationItem(
-              destination: androidDestinations[0],
+              destination: primaryDestinations[0],
               selected: false,
               focusNode: focus,
               onPressed: enabled ? () => calls++ : null,

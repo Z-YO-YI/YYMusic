@@ -36,7 +36,7 @@ class AndroidTabletShell extends StatelessWidget {
                 child: LayoutBuilder(
                   builder: (context, constraints) => YYTabletNavigationRail(
                     height: constraints.maxHeight,
-                    destinations: androidDestinations,
+                    destinations: primaryDestinations,
                     selectedIndex: AppRoute.mainRoutes.indexOf(selected),
                     onSelected: (index) =>
                         navigation.goTo(AppRoute.mainRoutes[index]),

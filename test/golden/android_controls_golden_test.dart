@@ -143,7 +143,7 @@ class _ControlsBoard extends StatelessWidget {
           children: [
             YYTabletNavigationRail(
               height: 300,
-              destinations: androidDestinations,
+              destinations: primaryDestinations,
               selectedIndex: 2,
               onSelected: (_) {},
             ),
@@ -157,7 +157,7 @@ class _ControlsBoard extends StatelessWidget {
                   SizedBox(
                     width: 390,
                     child: YYMobileBottomNavigation(
-                      destinations: androidDestinations,
+                      destinations: primaryDestinations,
                       selectedIndex: 0,
                       onSelected: (_) {},
                     ),
