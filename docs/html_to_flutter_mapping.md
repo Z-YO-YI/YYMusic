@@ -32,6 +32,8 @@ Phase3A把基础HTML的catalog、favoriteIds、recentIds、playlists、queueIds�
 
 Phase3B把上述合同落为Drift v1 Schema，而不是复制localStorage对象：catalog拆为tracks/albums/artists及关联表，playlist/favorite/history/queue保存完整TrackRef，queue另存独立entryId和单行状态；sources只留公开配置JSON与credentialRef，lyrics使用lines JSON缓存。网页随机ID、默认connected、示例Token、Blob URL和用户音乐仍未写入数据库；本批没有Repository或生产Fixture。
 
+Phase3G实现平台安全凭据边界，但明确不迁移HTML `localStorage`里来源表单的auth/token示例或任何浏览器存储值。Android/Windows只保存经Domain验证的`SensitiveCredential`，对外返回不可推导随机`credentialRef`；MusicSourceRepository和Drift仍只看引用。Gateway没有网络、来源连通测试、OAuth流程或AppBootstrap接线，HTML的假延迟/假在线状态仍不进入生产运行路径。
+
 ## 六条核心流程与行为边界
 
 | 流程 | 网页真实实现 | Flutter替代 |

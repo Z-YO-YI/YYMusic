@@ -189,3 +189,13 @@ Phase3F只实现`MusicSourceRepository`，不同时选择安全存储插件或�
 三个Map使用按key排序的确定性JSON；读取必须拒绝非对象、非字符串值，再重走MusicSourceConfig验证HTTPS无userinfo/query/fragment、敏感Header名、相对路径、受限映射、枚举和UTC时间。损坏JSON/row/SQLite异常只返回不含名称、URL、Header、credentialRef或SQL的`DomainFailure(databaseCorrupted)`。
 
 sourceId是稳定身份；已存sourceType或builtIn不得转换，内置来源不可删除。自定义来源删除只移除配置，Schema刻意没有从用户集合TrackRef指向music_sources的外键，因此收藏、歌单、历史、队列和歌词引用仍保留，后续Library/Controller标记不可用。Repository默认共享数据库，只有`.owned`负责关闭；AppBootstrap继续等待安全存储与Dev Fixture策略。
+
+## ADR-028：凭据只以随机引用跨越平台安全存储边界（2026-09-01）
+
+Phase 3G选择`flutter_secure_storage 10.3.1`：其Android实现与项目现有API 36工具链一致，Windows解析为`flutter_secure_storage_windows 4.2.2`；暂不采用要求compileSdk 37的11.x。插件只能出现在`platform/secure_credentials`边界，Domain、Drift、Repository、Controller和UI不得直接依赖插件，也不得把凭据正文写入数据库、日志、异常或诊断字段。
+
+`SecureCredentialGateway`返回192位`Random.secure()`生成的不可推导引用，存储前检查碰撞且绝不覆盖已有值。正文使用带schemaVersion和kind的确定性JSON，字段按key排序，读取时拒绝未知字段、非规范编码、非法引用及超限载荷，并重新通过`SensitiveCredential`验证。所有插件、随机数和编解码失败只映射为固定的日志安全失败类型；Dart `String`无法可靠原地清零，因此调用方必须缩短凭据驻留时间且禁止缓存。
+
+Android使用独立`yymusic_credentials_v1`命名空间、RSA-OAEP/AES-GCM迁移策略，关闭resetOnError，并在Manifest明确`allowBackup=false`，避免加密数据与设备密钥分离后静默重置。Windows关闭旧版兼容迁移，使用当前Windows安全存储实现；其ATL/原生编译要求必须由GitHub Windows runner实际验证，不能以Android成功代替。
+
+本批只实现Android/Windows Gateway与可注入字符串存储适配器，不在`AppBootstrap`提前接线。后续Controller更新来源凭据时必须按“先保存新秘密、成功更新数据库credentialRef、最后幂等删除旧引用”的顺序协调；任何中间失败都不得覆盖旧秘密或产生虚假的成功状态。

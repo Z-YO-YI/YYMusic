@@ -1,13 +1,14 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 3F Drift MusicSourceRepository**。Phase2通用原语、三套Shell骨架、Phase3A Domain合同、Phase3B 17张Drift表/首版Migration，以及Library/Collection/Lyrics/Source四类正式Repository已有。Phase3F实现提交的GitHub Android/Windows及新APK均已独立复核。不是完整音乐客户端；安全存储、REST Adapter、Dev Fixture、业务Controller、播放、正式页面和平台Gateway尚未接入。
+当前阶段：**Android + Windows · Phase 3G SecureCredentialGateway**。Phase2通用原语、三套Shell骨架、Phase3A Domain合同、Phase3B 17张Drift表/首版Migration，Library/Collection/Lyrics/Source四类正式Repository和Android/Windows安全凭据平台实现已有。不是完整音乐客户端；Phase3G云端证据、启动接线、REST Adapter、Dev Fixture、业务Controller、播放和正式页面尚未完成。
 
-Phase3F门禁：8项真实SQLite MusicSourceRepository测试通过，完整189项Flutter含32张Windows宿主Golden、严格分析0问题，125文件format零变化。29项Node、24份ZIP、lockfile及生成代码/v1快照零差异全部通过；目标实现提交`22d68f2`的push、PR与唯一一次手动运行均为三job success。
+Phase3G当前本地门禁：10项安全凭据Gateway测试通过，完整199项Flutter含32张Windows宿主Golden、严格分析0问题，130文件format零变化。29项Node、24份ZIP、lockfile及生成代码/v1快照零差异全部通过。本机Android Debug已构建、v2验签、48资产及`allowBackup=false`已复核；云端必须按本批目标commit另行验证。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
 ## 开发入口
 
+- [Phase 3G安全凭据报告](docs/phase_3g_secure_credential_gateway_report.md)、[本批范围](docs/phase_3g_secure_credential_gateway_plan.md)、[本批 PR 草稿](docs/phase_3g_secure_credential_gateway_pr_draft.md)
 - [Phase 3F MusicSourceRepository报告](docs/phase_3f_music_source_repository_report.md)、[本批范围](docs/phase_3f_music_source_repository_plan.md)、[本批 PR 草稿](docs/phase_3f_music_source_repository_pr_draft.md)
 - [Phase 3E LyricsRepository报告](docs/phase_3e_lyrics_repository_report.md)、[本批范围](docs/phase_3e_lyrics_repository_plan.md)、[本批 PR 草稿](docs/phase_3e_lyrics_repository_pr_draft.md)
 - [Phase 3D CollectionRepository报告](docs/phase_3d_collection_repository_report.md)、[本批范围](docs/phase_3d_collection_repository_plan.md)、[本批 PR 草稿](docs/phase_3d_collection_repository_pr_draft.md)
@@ -61,6 +62,8 @@ Phase3E仍不新增可见页面或启动接线。DriftLyricsRepository以完整T
 
 Phase3F仍不新增可见页面或启动接线。DriftMusicSourceRepository只保存公开来源配置和credentialRef，保护稳定类型/内置身份并在删除来源时保留用户TrackRef；不接触凭据值、不测试连接、不访问网络。
 
+Phase3G仍不新增可见页面或启动接线。Android/Windows SecureCredentialGateway使用平台安全存储、严格随机引用、版本载荷与脱敏失败；不记录、不入Drift、不触发网络或伪造来源连通。当前Fake store测试不代表真机KeyStore/Credential Manager已运行。
+
 ## Phase 0 审计入口
 
 - [Phase 0 完成报告](docs/phase_0_report.md)与[阶段计划及出口](docs/phase_0_plan.md)
@@ -90,7 +93,7 @@ flutter build windows --debug --no-pub
 
 需要APK时，在[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)对目标分支手动运行工作流；成功后从该次运行生成的私有草稿Release下载。Phase3F实现提交`22d68f2`已由[运行33504877925](https://github.com/Z-YO-YI/YYMusic/actions/runs/33504877925)生成并完成[草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-9837f6cb2678f1e8c7f7)复核，APK为183604101字节，SHA-256为`db2946d4b416971b2fbb89cc754ba77cdf0c03f36aff3f84b2ad425a281c24a2`。必须确认Android任务、Release标签、metadata完整commit和SHA256SUMS一致；普通push/PR只验证构建，不创建下载产物。APK不提交Git源码，证据见[Phase3F报告](docs/phase_3f_music_source_repository_report.md)，详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
 
-无已连接真机/模拟器或本机Windows原生运行验收证据，构建成功不等于已安装运行。32张组件/原生Shell Golden使用打包字体、Flutter 3.47.2 / Windows测试宿主，精确像素比较；Linux明确跳过这32张，运行其余115项测试，Windows CI执行Golden。只在审查视觉变更后对指定测试使用`--update-goldens`，日常测试不得更新基线。
+无已连接真机/模拟器或本机Windows原生运行验收证据，构建成功不等于已安装运行。32张组件/原生Shell Golden使用打包字体、Flutter 3.47.2 / Windows测试宿主，精确像素比较；Linux对这些宿主专用测试执行明确跳过，仍运行全部非Golden回归，Windows CI另执行Golden。只在审查视觉变更后对指定测试使用`--update-goldens`，日常测试不得更新基线。
 
 ## 设计与归档完整性
 
@@ -110,7 +113,7 @@ pwsh -NoProfile -File tools/verify_reference_archive.ps1
 
 ## Git 与历史原型
 
-仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。当前开发分支`feat/music-source-repository-drift`基于已拉取并同步的`feat/lyrics-repository-drift@607267b`，未在main/master开发。此前阶段提交保留；合并前需审核完整分支差异。经用户明确授权曾恢复临时GitHub API访问，不持久化访问令牌；Git提交/推送和云端产物状态以每次交付时实际核验为准。
+仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。当前开发分支`feat/secure-credential-gateway`基于已拉取并同步的`feat/music-source-repository-drift@e0f49c6`，未在main/master开发。此前阶段提交保留；合并前需审核完整分支差异。经用户明确授权曾恢复临时GitHub API访问，不持久化访问令牌；Git提交/推送和云端产物状态以每次交付时实际核验为准。
 
 旧原型 13 个文件已原样迁入 [archive/sonic_gallery](archive/sonic_gallery/README.md)，并在 `f96197b` 单独提交；源码、两份测试、配置和图片可恢复，不再散落为根目录未跟踪文件。Phase 0 中“保留原地、未纳入提交”的说明是当时历史状态。
 

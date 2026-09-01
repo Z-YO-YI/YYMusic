@@ -57,10 +57,33 @@ test('domain contracts stay independent and UI has no direct data access', () =>
   const pubspec = read('pubspec.yaml');
   assert.match(pubspec, /^  crypto: \^3\.0\.7$/m);
   assert.match(pubspec, /^  drift: \^2\.34\.3$/m);
+  assert.match(pubspec, /^  flutter_secure_storage: \^10\.3\.1$/m);
   assert.match(pubspec, /^  sqlite3: \^3\.5\.2$/m);
   assert.match(pubspec, /^  path_provider: \^2\.1\.6$/m);
   assert.match(pubspec, /^  drift_dev: \^2\.34\.5$/m);
   assert(!/drift_flutter|sqlite3_flutter_libs|sqflite/.test(pubspec));
+
+  const credentialSources = sources.filter(path => path.startsWith('lib/platform/secure_credentials/'));
+  assert.equal(credentialSources.length, 4, 'Phase 3G secure credential implementation set changed');
+  for (const path of sources.filter(path => !path.startsWith('lib/platform/secure_credentials/'))) {
+    assert(!/package:flutter_secure_storage\//.test(read(path)), `${path} bypasses the secure credential boundary`);
+  }
+  for (const path of credentialSources) {
+    assert(!/package:(drift|sqlite3|dio|http)\/|dart:io|dart:developer|debugPrint|print\(/.test(read(path)), path);
+  }
+  const credentialCore = read('lib/platform/secure_credentials/secure_storage_credential_gateway.dart');
+  assert.match(credentialCore, /implements SecureCredentialGateway/);
+  assert.match(credentialCore, /Random\.secure\(\)/);
+  assert.match(credentialCore, /schemaVersion/);
+  assert.match(read('lib/platform/contracts/secure_credential_gateway.dart'), /details: <redacted>/);
+  const androidCredential = read('lib/platform/secure_credentials/android_secure_credential_gateway.dart');
+  assert.match(androidCredential, /final class AndroidSecureCredentialGateway/);
+  assert.match(androidCredential, /resetOnError: false/);
+  assert.match(androidCredential, /migrateWithBackup: true/);
+  assert.match(androidCredential, /storageNamespace: 'yymusic_credentials_v1'/);
+  const windowsCredential = read('lib/platform/secure_credentials/windows_secure_credential_gateway.dart');
+  assert.match(windowsCredential, /final class WindowsSecureCredentialGateway/);
+  assert.match(windowsCredential, /WindowsOptions\(useBackwardCompatibility: false\)/);
 
   const snapshot = JSON.parse(read('drift_schemas/yymusic/drift_schema_v1.json'));
   const tableNames = snapshot.entities
@@ -109,11 +132,12 @@ test('domain contracts stay independent and UI has no direct data access', () =>
   assert.match(sourceMapper, /jsonDecode/);
   assert(!/SensitiveCredential|SecureCredentialGateway|package:(dio|http)|dart:io|package:flutter/.test(sourceMapper));
   const bootstrap = read('lib/app/app_bootstrap.dart');
-  assert(!/DriftLibraryRepository|DriftCollectionRepository|DriftLyricsRepository|DriftMusicSourceRepository|AppDatabase/.test(bootstrap), 'Phase 3F must not open the database from AppBootstrap');
+  assert(!/DriftLibraryRepository|DriftCollectionRepository|DriftLyricsRepository|DriftMusicSourceRepository|AppDatabase|AndroidSecureCredentialGateway|WindowsSecureCredentialGateway|FlutterSecureStorage/.test(bootstrap), 'Phase 3G must not open production storage from AppBootstrap');
 });
 
 test('native runners are branded and Android release does not use debug signing', () => {
   assert.match(read('android/app/src/main/AndroidManifest.xml'), /android:label="YYMusic"/);
+  assert.match(read('android/app/src/main/AndroidManifest.xml'), /android:allowBackup="false"/);
   assert.match(read('windows/runner/main.cpp'), /window\.Create\(L"YYMusic"/);
   assert(!read('android/app/build.gradle.kts').includes('signingConfigs.getByName("debug")'));
 });

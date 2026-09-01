@@ -74,3 +74,11 @@ flutter build apk --debug --no-pub
 项目仍使用 compile/target SDK36、minSDK24、NDK28.2.13676358、AGP9.1.0 / Kotlin2.4.0 / Gradle9.3.1 / JVM17 字节码目标。JDK25 在 Gradle9.3.1 支持的运行版本范围内，JVM17 编译目标不意味着必须额外安装 JDK17。最终兼容性以实际构建为准，当前不构建 Release、不配置发行签名。
 
 官方来源：[Android 下载与校验值](https://developer.android.com/studio#command-line-tools-only)、[SDK Manager](https://developer.android.com/tools/sdkmanager)、[Flutter Windows 设置](https://docs.flutter.dev/platform-integration/windows/setup)、[微软安装参数](https://learn.microsoft.com/zh-cn/visualstudio/install/use-command-line-parameters-to-install-visual-studio)、[C++ Build Tools 组件](https://learn.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-build-tools)、[Gradle Java 兼容性](https://docs.gradle.org/current/userguide/compatibility.html)。
+
+## Phase 3G 原生插件构建增量（2026-09-01）
+
+引入`flutter_secure_storage 10.3.1`后，本机首次Android构建按Gradle已锁依赖自动安装Android Platform 35 revision 2和CMake 3.22.1，使用机器既有已接受许可；没有批量接受全部许可，也没有升级compile/target SDK 36、NDK或Gradle。该SDK/CMake安装属于机器工具链，不纳入Git。
+
+`flutter build apk --debug --no-pub`本机成功，APK为237658550字节，SHA-256 `801b783f15c7f235d848f5748fb2a8b1e63694d80176a13769dde629e5874a22`；合并Manifest确认包名/应用名并有`android:allowBackup=false`，48份设计资产逐字节一致，apksigner确认v2单签名。它仅是本地诊断产物，不发布、不提交，也不能替代用户要求的GitHub APK。
+
+本机Windows仍因远程无法确认UAC/Developer Mode软链接支持而未构建，不能声称本地Windows插件已验证。`flutter_secure_storage_windows 4.2.2`的FFI/ATL链路必须由GitHub Windows 2025 job实际编译；只有目标实现提交的checks、Windows和Android三个job全部成功后才能关闭此阶段的云端构建缺口。

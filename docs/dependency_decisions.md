@@ -85,3 +85,11 @@ Drift使用边界不变：事务、batch、watch和limit/offset只存在`data/re
 ## Phase 3F MusicSourceRepository依赖结果
 
 本批只复用Dart SDK内置`dart:convert`和已锁定Drift，`pubspec.yaml`与`pubspec.lock`不变；不引入HTTP、OAuth、REST Adapter或安全存储插件。公开配置Map使用排序JSON写入既有列，`credentialRef`仅作为不透明引用保存；真正的SensitiveCredential仍完全位于后续SecureCredentialGateway实现边界。
+
+## Phase 3G 安全存储选择（2026-09-01）
+
+本批新增直接依赖[flutter_secure_storage 10.3.1](https://pub.dev/packages/flutter_secure_storage/versions)，实际lockfile解析Android同版本与Windows实现`flutter_secure_storage_windows 4.2.2`、`win32 6.4.0`。10.3.1官方Android构建使用compileSdk 36/minSdk 23，与YYMusic现有compile/target SDK 36及minSDK 24兼容；11.0.0要求compileSdk 37，故不为追随major而擅自抬升项目SDK。Windows插件仍要求原生工具链/ATL，必须以GitHub Windows 2025构建结果为准，本机Android成功不能替代该证据。
+
+插件只由`platform/secure_credentials`适配器导入。Android使用独立命名空间、RSA-OAEP/AES-GCM迁移选项，并在应用Manifest禁用Auto Backup；失败不回退到SharedPreferences、文件、Drift或其他明文存储。Windows关闭旧版兼容迁移，使用平台保护存储；应用不申请网络、媒体、存储、通知或生物识别权限，也不把凭据同步到云端。
+
+参考：[10.3.1 Android配置](https://raw.githubusercontent.com/juliansteenbakker/flutter_secure_storage/v10.3.1/flutter_secure_storage/android/build.gradle)、[插件README](https://raw.githubusercontent.com/juliansteenbakker/flutter_secure_storage/v10.3.1/flutter_secure_storage/README.md)、[Windows 4.2.2 API](https://pub.dev/documentation/flutter_secure_storage_windows/latest/)、[Android Keystore](https://developer.android.com/privacy-and-security/keystore)、[Android备份规则](https://developer.android.com/identity/data/autobackup)、[Windows密码处理与DPAPI](https://learn.microsoft.com/en-us/windows/win32/secbp/handling-passwords)。本批不接AppBootstrap、REST Adapter或Controller；数据库继续只保存随机`credentialRef`。
