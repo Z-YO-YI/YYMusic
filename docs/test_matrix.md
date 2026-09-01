@@ -1,6 +1,6 @@
 # 原生基础验证矩阵
 
-保留Phase1/2A/2B共59项检查，另加云端CI合同1项、Phase2C Widget11项及Golden3项，共74项Flutter、23项Node；不包含网页视觉对照、真实音频POC或用户音乐数据。当前结果集中在phase_2c_android_report.md。
+保留此前75项Flutter检查，Phase2D新增Widget4项及Golden3项，共82项Flutter、28项Node；不包含网页视觉对照、真实音频POC或用户音乐数据。当前结果集中在phase_2d_android_report.md。
 
 | 类别 | 已有自动检查 |
 | --- | --- |
@@ -22,14 +22,15 @@
 | Slider | 3/14/44几何、两端/步进、预览/单次提交/系统取消、纵向滚动不改值、RTL/键盘/语义、禁用/Loading/零范围/拖动中禁用、ReduceMotion |
 | Artwork | 七种最终CSS背景真实像素、48/96/192尺寸、10/20/26圆角、image语义、local accent更新与Gallery本地数值 |
 | Phase2C输入 | Switch几何/语义/键盘/RTL/取消、分段可滚动与单次选择/焦点可见、IME组合区/提交/清空、复制粘贴替身、禁用/Loading/错误公告、外部状态所有权、130%/360/600/键盘insets |
-| Golden | 保留Phase2A三张与Phase2B五张；Phase2C新增浅珊瑚/深翡翠/白色输入组件390×1080/130%三张，共11张，精确像素比较 |
+| Phase2D内容组件 | Album/Track几何、Hover/Pressed/Focus/Disabled/Selected或Playing/Loading、主动作与更多动作分离、键盘/语义、130%/390/600、Phone隐藏时长与长来源省略、Gallery仅本地状态 |
+| Golden | 保留此前11张；Phase2D新增浅珊瑚/深翡翠/白色内容组件390×1080/130%三张，共14张，精确像素比较 |
 
 ## CI
 
 `.github/workflows/foundation.yml`：checks 在 Ubuntu24.04 跑 Node/PowerShell 源核验、Dart格式/严格分析/Flutter测试；checks 成功后独立 Windows2025 Debug 和 Ubuntu Android Debug 构建。push feat/fix、PR或手动运行触发，超时20/30分钟。Android执行验签/48文件比对/三文件白名单；只有手动workflow_dispatch在全部门禁后创建私有draft/prerelease，普通push/PR不创建下载产物。个人令牌不注入runner，checkout不保留凭据。
 
-11张Golden按Windows宿主标记，Linux明确跳过（非静默通过），Windows job构建前执行`flutter test --tags windows-golden`；其余63个Flutter测试仍在checks执行。没有删除或跳过原有回归，CI自动发现新增文件。远程工作流尚不可读，本地通过不冒充远程通过。
+14张Golden按Windows宿主标记，Linux明确跳过（非静默通过），Windows job构建前执行`flutter test --tags windows-golden`；其余68个Flutter测试仍在checks执行。没有删除或跳过原有回归，CI自动发现新增文件。远程状态须按目标commit单独核验，本地通过不冒充远程通过。
 
-云端交付增量：1项YAML门禁测试、4项Node元数据/拒绝本地打包测试。APK必须在build→signature→assets→package均成功后上传，不使用always/continue-on-error；metadata不复制环境变量或秘密，下载URL必须属于本run。远程状态仍待核验。
+云端交付增量：1项YAML门禁测试、4项Node元数据/拒绝本地打包测试。APK必须在build→signature→assets→package均成功后上传，不使用always/continue-on-error；metadata不复制环境变量或秘密，下载URL必须属于本run。4be8ba2的手动运行已完成既有交付复核；每个新commit仍须重新取得运行证据。
 
 Actions 固定 SHA，来源为维护者公开 refs 和说明：[checkout](https://github.com/actions/checkout)、[setup-node](https://github.com/actions/setup-node)、[setup-java](https://github.com/actions/setup-java)、[flutter-action](https://github.com/subosito/flutter-action)。静态配置验证不代表远程工作流已经通过；私有 CI 结果必须可读取后才记录成功。

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-01 — Android Phase 2D 内容卡片与曲目行
+
+- 新增受控原生`YYAlbumCard`与`YYTrackTile`，复用既有主题、字体、七种Artwork和图标；覆盖默认、Hover、Pressed、Focus、禁用、选中/播放及加载状态。
+- Track主动作与更多操作使用独立命中/语义边界，Phone隐藏时长并约束长来源标签；Album选中语义不错误声明为互斥单选组。
+- Gallery新增明确标注的本地Fixture，仅更新预览状态标签，不访问音频、数据库、网络、文件或持久化。
+- 新增4项Widget和3张390×1080/130%真实字体Golden，旧11张不改；完整82项Flutter、28项Node、严格分析与24份ZIP字节核验通过。
+
 ## 2026-09-01 — 私有草稿 Release APK 交付
 
 - 8e6915a的GitHub运行已完成Android编译、Debug验签、48项资源比对及Windows构建，但Actions产物存储额度已满，未伪称存在可下载APK。

@@ -139,6 +139,7 @@ abstract final class YYRadius {
   static const button = 16.0, iconButton = 13.0, surface = 20.0;
   static const navigation = 14.0, panel = 24.0, dock = 26.0;
   static const hero = 28.0, dialog = 30.0, phoneNavigation = 32.0;
+  static const albumArtwork = 20.0, trackArtwork = 10.0, trackRow = 14.0;
 }
 
 /// Variable axes preserve the non-hundred CSS weights instead of rounding them.
@@ -176,6 +177,12 @@ abstract final class YYTypography {
       text(size: 10, weight: 540, spacing: .05);
   static TextStyle get button => text(weight: 700, spacing: .1);
   static TextStyle get caption => text(size: 12, weight: 500);
+  static TextStyle get albumTitle =>
+      text(size: 12.5, weight: 700, spacing: -.15, height: 1.25);
+  static TextStyle get albumMeta => text(size: 10, weight: 500, height: 1.3);
+  static TextStyle get trackTitle => text(size: 12, weight: 670, height: 1.25);
+  static TextStyle get trackMeta => text(size: 10, weight: 500, height: 1.3);
+  static TextStyle get sourceChip => text(size: 9, weight: 650, height: 1.2);
 }
 
 /// Short control transitions; YYThemeData can resolve their duration to zero.
