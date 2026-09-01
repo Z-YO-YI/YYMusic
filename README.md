@@ -1,6 +1,6 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 2E Windows导航基础**。主题/字体/44 SVG、Android手机/平板导航、Windows 240/72侧栏与42工具区，以及共享组件Gallery已有。APK只由GitHub Actions构建；上一已验收云端包已完成下载、校验和、metadata及签名复核，本分支的新包以对应工作流结果为准。不是完整音乐客户端，也不代表整个Phase2完成；真实播放、数据库、窗口Gateway和正式业务页尚未接入。
+当前阶段：**Android + Windows · Phase 2E Windows导航基础**。主题/字体/44 SVG、Android手机/平板导航、Windows 240/72侧栏与42工具区，以及共享组件Gallery已有。APK只由GitHub Actions构建；本阶段实现提交的云端包已完成下载、校验和、metadata、API digest及签名复核。不是完整音乐客户端，也不代表整个Phase2完成；真实播放、数据库、窗口Gateway和正式业务页尚未接入。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
@@ -53,7 +53,7 @@ flutter build windows --debug --no-pub
 
 工具链完整后使用 `flutter run -d windows` 或 `flutter run -d <android-device-id>`。不要重新运行 flutter create 覆盖现有工程。Android 发行签名未配置，禁止使用 Debug 签名冒充 Release。
 
-需要APK时，在[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)对目标分支手动运行工作流；成功后从该次运行生成的私有草稿Release下载。当前Phase2D实现提交9a3a345已由[运行33455489191](https://github.com/Z-YO-YI/YYMusic/actions/runs/33455489191)生成并完成[草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-1af180fa49cdcbcdf3f3)复核。必须确认Android任务、Release标签、metadata完整commit和SHA256SUMS一致；普通push/PR只验证构建，不创建下载产物。旧本机APK不是本批云端产物，APK不提交Git源码。证据见[Phase2D报告](docs/phase_2d_android_report.md)，详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
+需要APK时，在[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)对目标分支手动运行工作流；成功后从该次运行生成的私有草稿Release下载。Phase2E实现提交86d5cf5已由[运行33459298221](https://github.com/Z-YO-YI/YYMusic/actions/runs/33459298221)生成并完成[草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-5fff7c5595429dc428bf)复核，APK SHA-256为`ee0030157e359d959373af760a09c4c23c7c6b7a0943a0771ecaf13bbd051a08`。必须确认Android任务、Release标签、metadata完整commit和SHA256SUMS一致；普通push/PR只验证构建，不创建下载产物。旧本机APK不是本批云端产物，APK不提交Git源码。证据见[Phase2E报告](docs/phase_2e_cross_platform_report.md)，详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
 
 无已连接真机/模拟器或本机Windows原生运行验收证据，构建成功不等于已安装运行。17张组件/原生Shell Golden使用打包字体、Flutter 3.47.2 / Windows测试宿主，精确像素比较；Linux明确跳过这17张，运行其余71项测试，Windows CI执行Golden。只在审查视觉变更后对指定测试使用`--update-goldens`，日常测试不得更新基线。
 

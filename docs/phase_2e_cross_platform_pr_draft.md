@@ -1,6 +1,6 @@
 # PR 草稿：Windows navigation foundation
 
-Head：`feat/windows-navigation-foundation`；Base：`feat/android-content-cards@f5bbf52`；Draft PR待创建。不自动合并、不改写历史。
+Head：`feat/windows-navigation-foundation`；Base：`feat/android-content-cards@f5bbf52`；[Draft PR #3](https://github.com/Z-YO-YI/YYMusic/pull/3)。不自动合并、不改写历史。
 
 ## 变更
 
@@ -13,7 +13,8 @@ Head：`feat/windows-navigation-foundation`；Base：`feat/android-content-cards
 
 - 88项Flutter测试通过，包含17张Windows宿主精确Golden；新3张逐张视觉检查，2张旧组件图仅因账户空格有记录更新，旧Android导航基线未改。
 - 严格分析0问题；28项Node测试与24个ZIP entry逐字节核验通过。
-- GitHub目标commit的push/PR双平台构建、手动APK与草稿Release复核待推送后补录。
+- 实现提交`86d5cf5`的push运行33458611100与PR运行33458660012各自三个job全部成功；手动运行33459298221的checks、Windows、Android/验签/资产核验均成功。
+- 私有草稿Release三资产已下载复核；APK为175767817字节，SHA-256/API digest为`ee0030157e359d959373af760a09c4c23c7c6b7a0943a0771ecaf13bbd051a08`，metadata身份一致且v2签名有效。
 
 ## 影响与未验收项
 

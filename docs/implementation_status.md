@@ -1,6 +1,6 @@
 # 实施状态
 
-更新：2026-09-01。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。当前推进到Phase2E：Windows 42工具区、240/72导航、响应式结构及跨平台Gallery已完成本地全量验证；目标提交的GitHub双平台构建与新APK仍须在推送后单独核验。这不是完整客户端或整个Phase2已完成。
+更新：2026-09-01。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。当前推进到Phase2E：Windows 42工具区、240/72导航、响应式结构及跨平台Gallery已完成本地及GitHub双平台验证；实现提交的云端APK、校验和、metadata、digest与v2签名已独立复核。这不是完整客户端或整个Phase2已完成。
 
 | 阶段/能力 | 状态 |
 | --- | --- |
@@ -15,10 +15,10 @@
 | Phase 3 Domain/数据库/状态 | 未开始；只有边界决策 |
 | Phase 4 双平台音频 | 仅 POC 计划；没有真实播放验证 |
 | 后续页面、歌词、导入、来源、平台集成 | 未开始 |
-| GitHub APK交付 | 9a3a345的运行33455489191完成编译、验签、资源核验及草稿Release三资产下载复核；见phase_2d_android_report.md |
+| GitHub APK交付 | 86d5cf5的运行33459298221完成编译、验签、资源核验及草稿Release三资产下载复核；见phase_2e_cross_platform_report.md |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
 | Flutter format/analyze/test | 本批88项含17张原生Golden全部通过；当前结果见phase_2e_cross_platform_report.md |
-| Windows / Android Debug构建 | Phase2D实现提交在GitHub两平台成功；Phase2E目标提交待云端运行，本机Windows C++工具链仍受UAC限制 |
+| Windows / Android Debug构建 | Phase2E实现提交的push、PR及手动运行三组均在GitHub两平台成功；本机Windows C++工具链仍受UAC限制 |
 
 ## 保留的验收缺口与后续边界
 
@@ -32,4 +32,4 @@
 
 开发分支：feat/windows-navigation-foundation，基于已拉取并同步的feat/android-content-cards@f5bbf52。未在main/master直接开发；旧原型保留于归档提交。本批只增加Phase2E Windows导航基础、跨平台Gallery、测试与文档。
 
-此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问已能读取本仓库运行和PR，不修改账号权限或读取现有Git凭据。CI修复及远程证据见ci_reference_audit_fix.md；Phase2D基于远端b0abd9d继续，实时提交、PR和新APK状态以最终交付时实际核验为准。
+此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问已能读取本仓库运行和PR，不修改账号权限或读取现有Git凭据。Phase2E的push/PR/手动运行、Draft PR #3及新APK均已按完整commit实际核验，证据见phase_2e_cross_platform_report.md。

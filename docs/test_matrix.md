@@ -34,4 +34,6 @@
 
 云端交付增量：1项YAML门禁测试、4项Node元数据/拒绝本地打包测试。APK必须在build→signature→assets→package均成功后上传，不使用always/continue-on-error；metadata不复制环境变量或秘密，下载URL必须属于本run。4be8ba2的手动运行已完成既有交付复核；每个新commit仍须重新取得运行证据。
 
+Phase2E实现提交86d5cf5的push运行33458611100、PR运行33458660012与手动运行33459298221均为三job success。手动运行的草稿Release三资产已下载，APK大小、SHA256SUMS、metadata、API digest及v2签名一致；此证据只适用于该实现提交，不扩展为本机安装或正式发布证明。
+
 Actions 固定 SHA，来源为维护者公开 refs 和说明：[checkout](https://github.com/actions/checkout)、[setup-node](https://github.com/actions/setup-node)、[setup-java](https://github.com/actions/setup-java)、[flutter-action](https://github.com/subosito/flutter-action)。静态配置验证不代表远程工作流已经通过；私有 CI 结果必须可读取后才记录成功。
