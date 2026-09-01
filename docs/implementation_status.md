@@ -1,6 +1,6 @@
 # 实施状态
 
-更新：2026-09-01。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。Phase3E的严格歌词JSON映射与正式LyricsRepository已完成实现及本地Flutter全量验证，目标提交的GitHub Android/Windows尚待验证。Source Repository、安全存储、Dev Fixture和Controller仍未实现。
+更新：2026-09-01。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。Phase3E的严格歌词JSON映射与正式LyricsRepository已完成实现、本地全量验证及目标提交的GitHub Android/Windows/APK复核。Source Repository、安全存储、Dev Fixture和Controller仍未实现。
 
 | 阶段/能力 | 状态 |
 | --- | --- |
@@ -25,15 +25,15 @@
 | Phase 3F+ Repository/状态 | Source正式Repository、安全存储、Dev Fixture及Controller待分批交付 |
 | Phase 4 双平台音频 | 仅 POC 计划；没有真实播放验证 |
 | 后续页面、歌词、导入、来源、平台集成 | 未开始 |
-| GitHub APK交付 | Phase3D 9468c2a的手动运行33496511117创建私有草稿Release；183604101字节APK的三资产、metadata、SHA256SUMS、API digest、48份包内资产及v2单签名已独立复核 |
+| GitHub APK交付 | Phase3E 1e45532的手动运行33500756816创建私有草稿Release；183604101字节APK的三资产、metadata、SHA256SUMS、API digest、48份包内资产及v2单签名已独立复核 |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
 | Flutter format/analyze/test | Phase3E 122文件格式无变更、严格分析0问题、完整181项含32张原生Golden全部通过；6项LyricsRepository真实SQLite新测试通过 |
-| Windows / Android Debug构建 | Phase3E目标实现commit尚待推送/云端验证；Phase3D云端仍为success，本机Windows C++工具链仍受UAC限制 |
+| Windows / Android Debug构建 | Phase3E实现提交1e45532的push、PR和手动运行均为三job success；本机Windows C++工具链仍受UAC限制，不声称本机构建/安装成功 |
 
 ## 保留的验收缺口与后续边界
 
 1. 已执行安全归档：13个旧原型文件移入archive/sonic_gallery，指纹一致，f96197b保存；根lib是新骨架，不再是旧代码。
-2. 用户已批准补足工具链；Android命令行工具/API36/NDK已安装，Windows C++安装等待UAC确认。GitHub Windows2025/Android的Phase3D Debug构建已成功，但不等于本机构建或安装验收；未批量接受所有Android许可。
+2. 用户已批准补足工具链；Android命令行工具/API36/NDK已安装，Windows C++安装等待UAC确认。GitHub Windows2025/Android的Phase3E Debug构建已成功，但不等于本机构建或安装验收；未批量接受所有Android许可。
 3. 已解析Riverpod/go_router并提交lockfile；音频后端仍等待Phase 4双平台POC。
 4. 已建立实时平台分类、三个Shell和根依赖；Windows Shell现有设计导航与跨平台Gallery，播放器、弹层、状态、队列及歌词组件仅存在于明确标注的Fixture，窗口Gateway、业务Overlay Manager、Inspector业务与正式播放器接线仍未实现。业务页面未实现，不把设计预览当成音乐业务交付。
 5. 为后续视觉验证准备获准且可访问的预览环境；遵守 Browser 技能边界，不绕过本轮 file: 拒绝。参考 screenshot 与 Flutter Golden 必须分别记录。
@@ -42,4 +42,4 @@
 
 开发分支：feat/lyrics-repository-drift，基于已拉取并同步的feat/collection-repository-drift@bc49b38。未在main/master直接开发；旧原型保留于归档提交。本批只增加Phase3E mapper/LyricsRepository、测试与文档，依赖和v1 Schema不变。
 
-此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问可读取本仓库运行和PR，不修改账号权限。Phase3D证据保持有效；Phase3E Draft PR、运行和APK必须按新目标commit另行核验，不复用旧APK。
+此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问可读取本仓库运行和PR，不修改账号权限。Phase3E Draft PR、三条运行与APK均已按目标实现commit独立核验，不复用旧APK。
