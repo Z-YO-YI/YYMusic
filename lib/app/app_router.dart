@@ -21,7 +21,7 @@ final class AppRouter implements AppNavigation {
       route: route,
       navigation: this,
       viewState: viewState,
-      showDesignGallery: platform == YYPlatform.android && route.isMain,
+      showDesignGallery: route.isMain,
     );
     _router = GoRouter(
       initialLocation: initialLocation,
@@ -57,14 +57,13 @@ final class AppRouter implements AppNavigation {
               child: screen(route),
             ),
           ),
-        if (platform == YYPlatform.android)
-          GoRoute(
-            path: '/design-system',
-            pageBuilder: (context, state) => NoTransitionPage<void>(
-              key: state.pageKey,
-              child: DesignGalleryScreen(onBack: back),
-            ),
+        GoRoute(
+          path: '/design-system',
+          pageBuilder: (context, state) => NoTransitionPage<void>(
+            key: state.pageKey,
+            child: DesignGalleryScreen(platform: platform, onBack: back),
           ),
+        ),
       ],
       errorBuilder: (context, state) => Center(
         child: Column(

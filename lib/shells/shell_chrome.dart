@@ -6,7 +6,7 @@ import '../design_system/yy_navigation.dart';
 import '../shared/foundation_button.dart';
 
 /// Maps the shared root routes to presentation-only navigation content.
-const androidDestinations = [
+const primaryDestinations = [
   YYNavigationDestination(id: 'home', label: '首页', glyph: YYGlyph.home),
   YYNavigationDestination(id: 'search', label: '搜索', glyph: YYGlyph.search),
   YYNavigationDestination(id: 'library', label: '音乐库', glyph: YYGlyph.library),

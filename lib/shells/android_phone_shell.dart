@@ -28,7 +28,7 @@ class AndroidPhoneShell extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: YYMobileBottomNavigation(
-            destinations: androidDestinations,
+            destinations: primaryDestinations,
             selectedIndex: AppRoute.mainRoutes.indexOf(selected),
             onSelected: (index) => navigation.goTo(AppRoute.mainRoutes[index]),
           ),

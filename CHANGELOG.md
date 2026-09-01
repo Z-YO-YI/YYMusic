@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-01 — Phase 2E Windows 导航基础与跨平台 Gallery
+
+- 新增受控`YYWindowsSidebar`、`YYWindowToolbar`和Widgets-only Tooltip；1440/1024采用240dp展开侧栏，840采用72dp紧凑侧栏，保留42工具区、320 Inspector及88/76播放结构位。
+- Windows Shell导航接入既有四条路由；正式Shell明确来源尚未接入，并在窗口Gateway存在前隐藏应用内窗口按钮，不伪造HTML的在线状态、歌曲数或系统窗口操作。
+- Windows与Android共享原生Gallery路由；Windows增加明确标注且仅更新本页状态的Chrome Fixture。账户文字按App.tsx修正为`YY Listener / 本地账户`。
+- 新增3项Windows交互测试和3张1440/1024/840原生Shell Golden；审查更新2张账户文字基线，旧Android导航几何不改。完整88项Flutter、17张Golden本地通过，云端双平台与APK证据待目标提交推送后补录。
+
 ## 2026-09-01 — Android Phase 2D 内容卡片与曲目行
 
 - 新增受控原生`YYAlbumCard`与`YYTrackTile`，复用既有主题、字体、七种Artwork和图标；覆盖默认、Hover、Pressed、Focus、禁用、选中/播放及加载状态。
