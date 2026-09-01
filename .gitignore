@@ -27,3 +27,9 @@ android/key.properties
 *.jks
 *.keystore
 android/.kotlin/
+
+# Runtime databases and journals never belong in source control.
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.db

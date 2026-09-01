@@ -44,6 +44,31 @@ test('domain contracts stay independent and UI has no direct data access', () =>
   for (const path of uiSources) {
     assert(!/package:(drift|sqlite|sqflite|dio|http)\/|import\s+['"][^'"]*\/data\//.test(read(path)), path);
   }
+  for (const path of sources.filter(path => !path.startsWith('lib/data/'))) {
+    assert(!/package:(drift|sqlite3|path_provider)\//.test(read(path)), path);
+  }
+  for (const path of sources.filter(path => path.startsWith('lib/data/'))) {
+    assert(!/import\s+['"][^'"]*\/(app|design_system|features|playback|shells)\//.test(read(path)), path);
+  }
+
+  const pubspec = read('pubspec.yaml');
+  assert.match(pubspec, /^  drift: \^2\.34\.3$/m);
+  assert.match(pubspec, /^  sqlite3: \^3\.5\.2$/m);
+  assert.match(pubspec, /^  path_provider: \^2\.1\.6$/m);
+  assert.match(pubspec, /^  drift_dev: \^2\.34\.5$/m);
+  assert(!/drift_flutter|sqlite3_flutter_libs|sqflite/.test(pubspec));
+
+  const snapshot = JSON.parse(read('drift_schemas/yymusic/drift_schema_v1.json'));
+  const tableNames = snapshot.entities
+    .filter(entity => entity.type === 'table')
+    .map(entity => entity.data.name)
+    .sort();
+  assert.deepEqual(tableNames, [
+    'album_artists', 'albums', 'app_settings', 'artists', 'favorites',
+    'local_folders', 'lyrics_cache', 'music_sources', 'play_history',
+    'playlist_entries', 'playlists', 'queue_entries', 'queue_state',
+    'schema_migrations', 'search_history', 'track_artists', 'tracks',
+  ]);
 });
 
 test('native runners are branded and Android release does not use debug signing', () => {
@@ -57,6 +82,9 @@ test('CI validates both debug targets with least-privileged, pinned actions', ()
   assert.match(workflow, /contents: read/);
   assert.match(workflow, /flutter build windows --debug --no-pub/);
   assert.match(workflow, /flutter build apk --debug --no-pub/);
+  assert.match(workflow, /dart run build_runner build/);
+  assert.match(workflow, /dart run drift_dev make-migrations/);
+  assert.match(workflow, /git diff --exit-code -- lib\/data\/database\/app_database\.g\.dart drift_schemas\//);
   const actions = [...workflow.matchAll(/uses: (\S+)/g)].map(match => match[1]);
   assert(actions.length >= 4);
   assert(actions.every(action => /@[a-f0-9]{40}$/.test(action)));

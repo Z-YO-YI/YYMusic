@@ -143,3 +143,13 @@ Phase3拆分交付。首批只建立纯Dart Domain模型、Repository/Gateway合
 `MusicSourceConfig`只保存HTTPS无userinfo/query/fragment的公开base URL、公开Header、受限字段路径和`credentialRef`；Authorization、Cookie、API Key、Token、Secret、Password、换行Header均运行时拒绝。`SensitiveCredential`只为SecureCredentialGateway提供临时内存值，字符串输出固定脱敏，不提供数据库序列化。DomainFailure只保留枚举、来源ID、retryable和日志安全diagnosticId，不携带原始异常、URL或Header。
 
 所有Controller异步状态使用显式idle/loading/data/empty/error，但Repository返回Domain数据/流而不返回UI组件。Phase4前不扩展现有PlaybackState为假播放实现；Phase3后续只负责数据库、Repository和Controller数据真相，音频状态机仍按原阶段执行。
+
+## ADR-023：Drift原生后台数据库与不可变v1快照（2026-09-01）
+
+Android和Windows共用Drift的`NativeDatabase.createInBackground`，SQLite由3.x build hooks打包；不选只支持移动端的sqflite，也不增加已被当前Drift原生路径取代的`sqlite3_flutter_libs`。路径由Flutter官方path_provider提供应用支持目录，测试注入内存executor或临时目录。只有data层可导入Drift/sqlite3/path_provider，UI、Domain和Shell继续只依赖项目接口。
+
+首版包含主指令15张建议表、独立`queue_state`和`schema_migrations`。用户集合里的TrackRef不外键指向tracks/music_sources，避免来源删除时级联丢失歌单、收藏、历史和队列；catalog内部track_artists/album_artists及playlist_entries使用外键级联。Queue位置唯一、entryId与TrackRef分离；连续性仍由Domain QueueSnapshot/Repository事务验证。
+
+schemaVersion1只处理首装`onCreate`并记录审计行，不伪造v1→v2。`make-migrations`生成的v1 JSON一经本批提交即不可覆盖；未来必须升版本、保留旧快照并用官方SchemaVerifier和数据完整性测试验证。生成的g.dart和快照在CI重新生成后要求Git零差异。
+
+普通来源配置仍可能包含公开Header JSON，但数据库没有Authorization/API Key/Token/Password等独立列，只保存`credential_ref`；所有写入必须经过后续Repository对Phase3A MusicSourceConfig的运行时验证。安全凭据永不进入Drift row、迁移Fixture或日志。

@@ -22,18 +22,21 @@ Phase2J增量：`YYQueueTile`、`YYLyricsLine`与`YYLyricsPlayerDock`只渲染�
 
 Phase3A增量：新增平台/UI无关的Track/TrackRef、Album/Artist、Playlist/Queue/Favorite/History、Lyrics、MusicSourceConfig、显式LoadState与脱敏DomainFailure。Library/Collection/Lyrics/MusicSource Repository和SecureCredentialGateway只暴露项目自有类型；测试Fake可替换。当前没有数据库、HTTP、安全存储实现或生产Fixture，PlaybackState/Controller仍保持Phase4前骨架。
 
+Phase3B增量：`data/database`使用Drift定义17张表、10个显式索引、schemaVersion1创建Migration、迁移审计与空队列状态。`database_connection.dart`是唯一`dart:io`/path_provider/NativeDatabase边界，显式调用时在Android/Windows应用支持目录后台打开；AppBootstrap不调用。Domain/UI不导入Drift row或executor，正式Repository映射留后续批次。
+
 这份文件描述已经存在的工程骨架，不把 Phase 0 的未来目录全部冒充实现。正式代码位于根 lib；旧原型和 Web 参考隔离在 archive/design_reference。
 
 | 边界 | 已有责任 | 尚未实现 |
 | --- | --- | --- |
 | app/AppBootstrap | 根 ProviderScope，拥有单一 DependencyGraph | 数据库/权限/真实来源初始化 |
-| app/DependencyGraph | 创建并释放 PlaybackController、QueueController、ViewState；可注入 AudioEngine/LibraryRepository/Gateway | 其余Phase3 Repository接线和正式数据实现、Phase4音频 |
+| app/DependencyGraph | 创建并释放 PlaybackController、QueueController、ViewState；可注入 AudioEngine/LibraryRepository/Gateway；不自动打开数据库 | 其余Phase3 Repository接线和正式数据实现、Phase4音频 |
 | app/AppRouter | 私有 go_router，四个状态保留分支，根级 /player、/lyrics及跨平台/design-system；暴露自有 AppNavigation | 业务详情、菜单层级和平台全屏返回协调 |
 | app/AdaptiveRoot | 实时 LayoutBuilder + 平台优先分类，选择三个 Shell；零尺寸时不动根依赖 | 生产级窗口约束/布局细化 |
 | shells | Android原生Phone/Tablet导航、Windows 240/72受控导航与42工具区、三端未接入播放槽位；不直接网络/DB/音频 | Windows平台窗口Gateway、Inspector业务、正式播放器接线 |
 | design_system | Theme/Token/原始SVG/按钮/Surface/Profile、Android与Windows导航、Tooltip/Toolbar、Slider/Artwork、SearchField/SegmentedControl/Toggle、AlbumCard/TrackTile、MiniPlayer/DesktopPlayerBar、ContextMenu/Dialog/BottomSheet/Toast、ThemeSwatch/EmptyState/ErrorBanner/Skeleton、SourceCard/PlaylistCard、QueueTile/LyricsLine/LyricsPlayerDock | 业务弹层编排与页面级组合 |
 | playback | 唯一事件订阅、播放状态传播、错误/销毁边界；默认后端明确 unavailable | 加载曲目、Seek、队列算法、系统媒体会话 |
-| domain / platform | 稳定TrackRef/QueueEntry、Library/Collection/Lyrics/Source模型与Repository合同、LoadState/错误分类、SecureCredential/Fullscreen Gateway | Drift Schema/Migration、正式Repository、安全存储与平台能力 |
+| domain / platform | 稳定TrackRef/QueueEntry、Library/Collection/Lyrics/Source模型与Repository合同、LoadState/错误分类、SecureCredential/Fullscreen Gateway | 正式Repository、安全存储与其余平台能力 |
+| data/database | 17张Drift表、v1创建Migration/快照、外键/约束/索引及后台双平台文件打开边界 | Domain row映射、批量事务、正式Repository、v2+保数据迁移 |
 | shared/FoundationButton | 仍用于工程骨架内容中的临时路由验证；44px命中区、Semantics/键盘激活 | 后续业务页以对应YY组件逐步替换 |
 
 Riverpod 只用于 app 注入边界，业务 Controller 不依赖它；go_router 也只出现在 app 层。WidgetsApp.router 没有 Material Scaffold/默认 Material 3 可见控件；go_router 的传递依赖含 material_ui/cupertino_ui，不表示正式 UI 使用其默认外观。

@@ -1,6 +1,6 @@
 # 实施状态
 
-更新：2026-09-01。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。当前推进到Phase3A：纯Domain模型、Repository/Gateway合同和测试Fake已完成本地及GitHub双平台验证，本批云端APK也已独立复核。Phase3数据库、Migration、正式Repository、安全存储和Dev Fixture仍未实现。
+更新：2026-09-01。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。当前推进到Phase3B：Drift v1 Schema、创建Migration、Schema快照和双平台后台打开边界已完成实现及本地全量验证，目标提交的GitHub证据待验证。正式Repository、安全存储、Dev Fixture和Controller仍未实现。
 
 | 阶段/能力 | 状态 |
 | --- | --- |
@@ -18,13 +18,14 @@
 | Phase 2J 跨平台队列与歌词原语 | QueueTile/LyricsLine/LyricsPlayerDock及Gallery Fixture已实现；队列算法、Seek、LRC、自动滚动、持久化和正式歌词页均不在本阶段，见phase_2j_queue_lyrics_primitives_report.md |
 | Phase 2 后续组合及视觉对照 | 通用组件清单已完成；正式业务页组合、网页对照和设备性能待验 |
 | Phase 3A Domain合同 | Track/Collection/Lyrics/Source模型、显式LoadState/错误分类、四类Repository及安全凭据Gateway已实现；无数据库或生产接线，见phase_3a_domain_contracts_report.md |
-| Phase 3B+ 数据库/Repository/状态 | 未开始：Drift选择、Schema、Migration、正式Repository、安全存储实现、Dev Fixture及Controller待分批交付 |
+| Phase 3B Drift Schema/Migration | 17张表、10索引、v1创建/审计/空队列状态、外键/约束、Schema快照和后台文件打开已实现；不接App启动，见phase_3b_database_schema_report.md |
+| Phase 3C+ Repository/状态 | 未开始：Domain映射、正式Repository、安全存储实现、Dev Fixture及Controller待分批交付 |
 | Phase 4 双平台音频 | 仅 POC 计划；没有真实播放验证 |
 | 后续页面、歌词、导入、来源、平台集成 | 未开始 |
 | GitHub APK交付 | Phase3A 8506afc的手动运行33481171269创建私有草稿Release；三资产、metadata、SHA256SUMS、API digest、48份包内资产及v2单签名已独立复核 |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
-| Flutter format/analyze/test | 108文件格式无变更、严格分析0问题、完整147项含32张原生Golden全部通过；见phase_3a_domain_contracts_report.md |
-| Windows / Android Debug构建 | Phase3A实现commit的push、PR、手动运行各自三个job均success；本机Windows C++工具链仍受UAC限制，不声称本机构建成功 |
+| Flutter format/analyze/test | Phase3B 113文件格式无变更、严格分析0问题、完整155项含32张原生Golden全部通过；8项新增数据库测试通过 |
+| Windows / Android Debug构建 | Phase3B目标提交尚未推送；Phase3A云端仍为success，本机Windows C++工具链仍受UAC限制 |
 
 ## 保留的验收缺口与后续边界
 
@@ -36,6 +37,6 @@
 
 ## 仓库边界
 
-开发分支：feat/domain-model-contracts，基于已拉取并同步的feat/cross-platform-queue-lyrics-primitives@3c09ed7。未在main/master直接开发；旧原型保留于归档提交。本批只增加Phase3A纯Domain模型、数据合同、测试Fake、边界测试与文档。
+开发分支：feat/database-schema-migrations，基于已拉取并同步的feat/domain-model-contracts@9ebee65。未在main/master直接开发；旧原型保留于归档提交。本批只增加Phase3B数据库依赖、Schema/Migration/快照、打开边界、测试与文档。
 
-此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问可读取本仓库运行和PR，不修改账号权限。Phase3A Draft PR #9、三组运行及新APK均已按实现提交8506afc实际核验，证据见phase_3a_domain_contracts_report.md。
+此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问可读取本仓库运行和PR，不修改账号权限。Phase3A证据保持有效；Phase3B Draft PR、运行和APK必须在目标实现提交后另行核验，当前不复用旧APK冒充。

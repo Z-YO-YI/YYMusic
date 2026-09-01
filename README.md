@@ -1,13 +1,14 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 3A Domain 模型与数据合同**。Phase2通用原语、三套Shell骨架、稳定Track/Collection/Lyrics/Source模型、Repository/Gateway合同及测试Fake已有。APK只由GitHub Actions构建；Phase3A实现提交的push、PR、手动双平台构建与云端APK已完成独立复核。不是完整音乐客户端；数据库、Migration、正式Repository/安全存储、播放、业务页和平台Gateway尚未接入。
+当前阶段：**Android + Windows · Phase 3B Drift Schema 与首版 Migration**。Phase2通用原语、三套Shell骨架、Phase3A Domain合同，以及17张Drift表/首版创建迁移/后台双平台打开函数已有。Phase3B本地门禁完成后仍需目标提交的GitHub双平台与新APK证据。不是完整音乐客户端；正式Repository/安全存储、业务Controller、播放、正式页面和平台Gateway尚未接入。
 
-Phase3A本地门禁已完成：108个Dart文件格式无变更、严格分析0问题、147项Flutter与32张Windows宿主Golden、29项Node、五份设计指纹及24份ZIP逐字节复核全部通过；目标实现commit的三组GitHub checks/Windows/Android任务也已全部成功。
+Phase3B本地门禁已完成：锁文件严格复现、113个Dart文件格式无变更、严格分析0问题、155项Flutter与32张Windows宿主Golden、29项Node、生成代码/v1快照复现及24份ZIP逐字节复核全部通过。云端状态仍必须按本批目标commit另行验证。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
 ## 开发入口
 
+- [Phase 3B 数据库报告](docs/phase_3b_database_schema_report.md)、[本批范围](docs/phase_3b_database_schema_plan.md)、[本批 PR 草稿](docs/phase_3b_database_schema_pr_draft.md)
 - [Phase 3A Domain 合同报告](docs/phase_3a_domain_contracts_report.md)、[本批范围](docs/phase_3a_domain_contracts_plan.md)、[本批 PR 草稿](docs/phase_3a_domain_contracts_pr_draft.md)
 - [Phase 2J 队列与歌词原语报告](docs/phase_2j_queue_lyrics_primitives_report.md)、[本批范围](docs/phase_2j_queue_lyrics_primitives_plan.md)、[本批 PR 草稿](docs/phase_2j_queue_lyrics_primitives_pr_draft.md)
 - [GitHub APK 构建与下载](docs/github_apk_build.md)、[CI 隐藏文件校验修复](docs/ci_reference_audit_fix.md)
@@ -45,6 +46,8 @@ Windows按1440/1024断点显示240dp展开或72dp紧凑侧栏，导航驱动同�
 “队列与歌词 · Fixture”展示标准/沉浸队列行、future/past/active双语歌词和响应式Lyrics Dock。上移/下移/移除、歌词行、Transport、进度、收藏和返回只更新本页状态；不修改真实队列、不Seek、不解析LRC、不自动滚动或推进计时。
 
 Phase3A数据合同不新增可见页面。TrackRef保留来源身份，QueueEntry使用独立ID以允许重复曲目；来源公开配置只保存credentialRef，秘密仅通过SecureCredentialGateway。当前Fake只用于测试，不会在正式Shell中伪造在线来源、歌曲、歌词或数据库成功。
+
+Phase3B仍不新增可见页面。Drift schema覆盖主指令15张建议表，并用`queue_state`保存空队列游标/更新时间、`schema_migrations`记录首版创建；SQLite文件只在显式调用后台打开函数时写入应用支持目录。当前AppBootstrap没有调用它，因此启动应用不会创建数据库或Fixture。
 
 ## Phase 0 审计入口
 
@@ -95,7 +98,7 @@ pwsh -NoProfile -File tools/verify_reference_archive.ps1
 
 ## Git 与历史原型
 
-仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。当前开发分支`feat/domain-model-contracts`基于已拉取并同步的`feat/cross-platform-queue-lyrics-primitives@3c09ed7`，未在main/master开发。此前阶段提交保留；合并前需审核完整分支差异。经用户明确授权曾恢复临时GitHub API访问，不持久化访问令牌；Git提交/推送和云端产物状态以每次交付时实际核验为准。
+仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。当前开发分支`feat/database-schema-migrations`基于已拉取并同步的`feat/domain-model-contracts@9ebee65`，未在main/master开发。此前阶段提交保留；合并前需审核完整分支差异。经用户明确授权曾恢复临时GitHub API访问，不持久化访问令牌；Git提交/推送和云端产物状态以每次交付时实际核验为准。
 
 旧原型 13 个文件已原样迁入 [archive/sonic_gallery](archive/sonic_gallery/README.md)，并在 `f96197b` 单独提交；源码、两份测试、配置和图片可恢复，不再散落为根目录未跟踪文件。Phase 0 中“保留原地、未纳入提交”的说明是当时历史状态。
 

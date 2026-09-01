@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-01 — Phase 3B Drift Schema 与首版 Migration
+
+- 新增Drift/SQLite3双平台数据层：主指令15张持久化表、单行`queue_state`与`schema_migrations`，共17张表及10个显式索引；稳定TrackRef、独立QueueEntry和用户集合引用不因来源删除级联消失。
+- schemaVersion1显式创建全部表、开启外键、记录UTC迁移审计并初始化空队列状态；关联表和歌单entry使用受控级联，位置/时间/类型/本地引用等关键约束由SQLite验证。
+- 默认数据库仅在显式调用时使用应用支持目录和`NativeDatabase.createInBackground`，AppBootstrap未接线；不实现正式Repository/Controller/UI，不写歌曲、在线来源或明文凭据Fixture。
+- 采用drift2.34.3、sqlite3 3.5.2、path_provider2.1.6、drift_dev2.34.5、build_runner2.16.0；不引入旧`sqlite3_flutter_libs`/sqflite，不新增权限。提交生成代码、v1 Schema快照并在CI重生成后要求零差异。
+- 8项数据库测试覆盖创建/官方Schema验证、表/索引、约束、队列重复、外键/级联、来源删除引用保留、敏感列白名单和后台文件打开；锁文件、113文件format、严格分析、完整155项Flutter/32 Golden、29项Node、生成复现和ZIP24项本地通过，GitHub结果待目标提交。
+
 ## 2026-09-01 — Phase 3A Domain 模型与数据合同
 
 - 新增稳定`TrackRef`、独立`QueueEntry`、Album/Artist/Playlist/Favorite/History/Lyrics/MusicSourceConfig模型；持久时间要求UTC，队列顺序连续且允许重复曲目。

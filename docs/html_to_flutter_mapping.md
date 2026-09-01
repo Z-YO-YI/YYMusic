@@ -30,6 +30,8 @@ Phase2J已实现`YYQueueTile`、`YYLyricsLine`与`YYLyricsPlayerDock`受控原�
 
 Phase3A把基础HTML的catalog、favoriteIds、recentIds、playlists、queueIds、sources和lyricsByTitle映射为正式Domain合同。网页slug/随机ID改为调用方提供的稳定TrackRef与独立QueueEntry ID；队列重复曲目不再被trackId合并。localStorage中的来源auth文案不作为秘密，正式Config只存`credentialRef`，敏感字段交给SecureCredentialGateway。按标题生成歌词、object URL、默认connected和示例延迟均不进入生产模型或Fake成功状态。本批没有数据库或UI接线。
 
+Phase3B把上述合同落为Drift v1 Schema，而不是复制localStorage对象：catalog拆为tracks/albums/artists及关联表，playlist/favorite/history/queue保存完整TrackRef，queue另存独立entryId和单行状态；sources只留公开配置JSON与credentialRef，lyrics使用lines JSON缓存。网页随机ID、默认connected、示例Token、Blob URL和用户音乐仍未写入数据库；本批没有Repository或生产Fixture。
+
 ## 六条核心流程与行为边界
 
 | 流程 | 网页真实实现 | Flutter替代 |
