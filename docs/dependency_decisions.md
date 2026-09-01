@@ -81,3 +81,7 @@ Drift使用边界不变：事务、batch、watch和limit/offset只存在`data/re
 ## Phase 3E LyricsRepository依赖结果
 
 本批只复用Dart SDK内置`dart:convert`和已锁定Drift，`pubspec.yaml`与`pubspec.lock`不变；不引入LRC解析、HTTP、文件选择、安全存储或平台插件。JSON只作为既有`lyrics_cache.lines_json`的内部确定性编码，解码后仍必须通过Domain构造验证；不会把原始在线响应或文件内容直接当成可信row。
+
+## Phase 3F MusicSourceRepository依赖结果
+
+本批只复用Dart SDK内置`dart:convert`和已锁定Drift，`pubspec.yaml`与`pubspec.lock`不变；不引入HTTP、OAuth、REST Adapter或安全存储插件。公开配置Map使用排序JSON写入既有列，`credentialRef`仅作为不透明引用保存；真正的SensitiveCredential仍完全位于后续SecureCredentialGateway实现边界。

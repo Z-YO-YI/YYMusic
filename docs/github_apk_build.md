@@ -34,6 +34,8 @@ Phase3D实现提交9468c2a的手动[运行33496511117](https://github.com/Z-YO-Y
 
 当前Phase3E实现提交1e45532的手动[运行33500756816](https://github.com/Z-YO-YI/YYMusic/actions/runs/33500756816)三项任务全部成功；[私有草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-3cd11bdc85a947cb77c1)保持draft/prerelease且只含三项白名单资产。APK为183604101字节，SHA-256/API digest为`fd71936ef590dc18b1e851572c21cbf6d10f157a495298022dec3f2dd384020a`，metadata与完整commit/run一致、48份资产匹配且v2单签名有效；完整证据见[Phase3E报告](phase_3e_lyrics_repository_report.md)。
 
+当前Phase3F实现提交22d68f2的手动[运行33504877925](https://github.com/Z-YO-YI/YYMusic/actions/runs/33504877925)三项任务全部成功；[私有草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-9837f6cb2678f1e8c7f7)保持draft/prerelease且只含三项白名单资产。APK为183604101字节，SHA-256/API digest为`db2946d4b416971b2fbb89cc754ba77cdf0c03f36aff3f84b2ad425a281c24a2`，metadata与完整commit/run一致、48份资产匹配且v2单签名有效；临时副本已删除，完整证据见[Phase3F报告](phase_3f_music_source_repository_report.md)。
+
 API访问仅限YYMusic；访问凭据只通过无回显输入进入短生命周期进程内存，不写入仓库、配置、环境持久值或构建产物，不读取现有本机Git凭据。必须取得目标commit的成功run、draft Release及三个资产记录并下载复核后，才可宣称“GitHub APK交付成功”；推送成功、YAML测试通过或旧本机APK都不能替代。
 
 依据：[GitHub CLI创建Release](https://cli.github.com/manual/gh_release_create)、[GitHub GITHUB_TOKEN说明](https://docs.github.com/en/actions/concepts/security/github_token)、[GitHub Release管理](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository)。

@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-09-01 — Phase 3F Drift MusicSourceRepository
+
+- 新增MusicSourceConfig严格JSON/row mapper与正式`DriftMusicSourceRepository`，不将Drift类型暴露到Domain/UI。
+- 公开Header/endpoint/字段映射按key排序确定编码，HTTPS URL、枚举、延迟、UTC测试时间和错误分类返回前重走Domain验证。
+- sourceType/builtIn身份不可转换，内置来源不可删除；自定义来源删除保留用户TrackRef。数据库只保存credentialRef，不接触凭据值。
+- 不修改v1 Schema/快照、不新增依赖/权限，不接AppBootstrap、安全存储/网络、Fixture、Controller、UI或播放；8项真实SQLite、189项Flutter/32 Golden、125文件format、严格分析、29项Node、24项ZIP及生成/快照零差异已通过。
+- 实现提交`22d68f2`的push运行33503815038、PR运行33503837936与手动运行33504877925均为三job success；Draft PR #14保持待审核。
+- 手动运行的私有草稿Release三资产已下载复核；APK为183604101字节，SHA-256、SHA256SUMS、metadata和API digest均为`db2946d4b416971b2fbb89cc754ba77cdf0c03f36aff3f84b2ad425a281c24a2`，48份资产匹配且v2单签名有效。
+
 ## 2026-09-01 — Phase 3E Drift LyricsRepository
 
 - 新增LyricsDocument严格JSON/row mapper与正式`DriftLyricsRepository`，不将Drift类型暴露到Domain/UI。
