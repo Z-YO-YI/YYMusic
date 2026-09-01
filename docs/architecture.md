@@ -14,6 +14,8 @@ Phase2F增量：`YYMiniPlayer`和`YYDesktopPlayerBar`接收只读`YYNowPlayingVi
 
 Phase2G增量：`YYContextMenu`、`YYDialog`、`YYBottomSheet`与`YYToast`只实现受控视觉、动作、焦点和Semantics。菜单的定位/显隐/右键/长按、Dialog/Sheet的Overlay或Route插入、Toast队列/时长仍由后续Feature编排。Dialog/Sheet使用不透明Surface，只有有界Context Menu使用Glass；Gallery以内联Fixture分别展示Windows Dialog与Android Sheet，不进入正式业务路由。
 
+Phase2H增量：`YYThemeSwatch`、`YYEmptyState`、`YYErrorBanner`与`YYSkeleton`只渲染调用方提供的受控状态。Swatch接入既有会话级Appearance Controller，但不持久化；Error action只通知调用方；Skeleton为静止纯色且不启动任务。Gallery Fixture只改变局部说明文字，不创建网络、Repository、计时器或假数据。
+
 这份文件描述已经存在的工程骨架，不把 Phase 0 的未来目录全部冒充实现。正式代码位于根 lib；旧原型和 Web 参考隔离在 archive/design_reference。
 
 | 边界 | 已有责任 | 尚未实现 |
@@ -23,7 +25,7 @@ Phase2G增量：`YYContextMenu`、`YYDialog`、`YYBottomSheet`与`YYToast`只实
 | app/AppRouter | 私有 go_router，四个状态保留分支，根级 /player、/lyrics及跨平台/design-system；暴露自有 AppNavigation | 业务详情、菜单层级和平台全屏返回协调 |
 | app/AdaptiveRoot | 实时 LayoutBuilder + 平台优先分类，选择三个 Shell；零尺寸时不动根依赖 | 生产级窗口约束/布局细化 |
 | shells | Android原生Phone/Tablet导航、Windows 240/72受控导航与42工具区、三端未接入播放槽位；不直接网络/DB/音频 | Windows平台窗口Gateway、Inspector业务、正式播放器接线 |
-| design_system | Theme/Token/原始SVG/按钮/Surface/Profile、Android与Windows导航、Tooltip/Toolbar、Slider/Artwork、SearchField/SegmentedControl/Toggle、AlbumCard/TrackTile、MiniPlayer/DesktopPlayerBar、ContextMenu/Dialog/BottomSheet/Toast | 更多表单、业务弹层编排与页面级组合 |
+| design_system | Theme/Token/原始SVG/按钮/Surface/Profile、Android与Windows导航、Tooltip/Toolbar、Slider/Artwork、SearchField/SegmentedControl/Toggle、AlbumCard/TrackTile、MiniPlayer/DesktopPlayerBar、ContextMenu/Dialog/BottomSheet/Toast、ThemeSwatch/EmptyState/ErrorBanner/Skeleton | 更多表单、业务弹层编排与页面级组合 |
 | playback | 唯一事件订阅、播放状态传播、错误/销毁边界；默认后端明确 unavailable | 加载曲目、Seek、队列算法、系统媒体会话 |
 | domain / platform | LibraryRepository、FullscreenGateway 生命周期合同 | 具体实现和平台能力 |
 | shared/FoundationButton | 仍用于工程骨架内容中的临时路由验证；44px命中区、Semantics/键盘激活 | 后续业务页以对应YY组件逐步替换 |

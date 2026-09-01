@@ -242,6 +242,16 @@ abstract final class YYOverlayMetrics {
   static const toastMaxWidth = 420.0;
 }
 
+/// Feedback geometry from the composed reference or the master component list.
+abstract final class YYFeedbackMetrics {
+  static const themeSwatchVisual = 30.0;
+  static const emptyHorizontalPadding = 16.0;
+  static const emptyVerticalPadding = 28.0;
+  static const emptyIconSize = 24.0;
+  static const bannerRadius = 15.0;
+  static const skeletonRadius = 10.0;
+}
+
 /// Small visual geometry is deliberately separate from the 44dp hit area.
 abstract final class YYSliderMetrics {
   static const trackHeight = 3.0, thumbDiameter = 14.0, outerRing = 3.0;
