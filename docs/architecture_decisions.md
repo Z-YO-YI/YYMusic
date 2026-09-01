@@ -125,3 +125,11 @@ Swatch保留基础HTML的30px视觉，但实际命中提升到44dp并增加键�
 Source沿用基础HTML的72最小高、12内边距、42图标、16卡片圆角和6状态点，并应用App.tsx最终`POLISH_CSS`的13图标圆角。Playlist采用最终20卡片圆角、14图标圆角、桌面16内边距/44图标/18标题间距；Phone沿用13内边距和40图标。Create虚线边界由纯色`CustomPainter`绘制，不使用Material默认卡片或渐变。
 
 Gallery只展示明确标注的确定性Fixture，点击只更新本页说明或选择；HTML中的“在线”“128首”等演示内容不得进入正式Shell。未来Phase3由Repository/Controller提供真实来源和歌单状态，Phase2组件不先发明Domain模型。
+
+## ADR-021：Phase 2J 队列与歌词原语不拥有播放真相（2026-09-01）
+
+`YYQueueTile`、`YYLyricsLine`与`YYLyricsPlayerDock`是受控展示组件。Queue主动作与上移、下移、移除分别拥有Semantics/Focus/命中边界；组件不修改列表或实现拖拽排序。Lyrics Line只表达future/past/active和可选动作，不解析LRC、不Seek、不自动滚动。Dock只转发Transport、进度、收藏和返回动作，不订阅AudioEngine、PlaybackController或QueueController，也不推进时间。
+
+Queue沿用基础HTML的50/7/36标准与60/9/42沉浸几何、26视觉动作，并应用App.tsx最终10封面圆角；实际动作命中仍不小于44dp。Lyrics保留future 24%、past 50%、active纯白与1.018缩放，并应用最终780字重、紧字距和6px激活外环。Dock保留82最小高、11/13内边距、50封面、34/44控制和900px两层重排；App.tsx最后的`POLISH_CSS`把各断点外圆角统一覆盖为26。Phone/低高度仅做40/38封面和控制尺寸降级。
+
+Dock歌词背景使用单一纯色Atmosphere，不使用渐变或封面模糊铺满。减少玻璃时只关闭Blur并改用不透明混合面，几何不变；减少动态时歌词缩放即时切换。Gallery只保存确定性Fixture标签与受控数值。正式QueueEntry、LyricsDocument、LRC解析、拖拽、跟随滚动、Seek、持久化及独立歌词页留给后续Domain/Feature阶段。

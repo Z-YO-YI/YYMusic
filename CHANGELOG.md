@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-01 — Phase 2J 跨平台队列与歌词原语
+
+- 新增受控`YYQueueTile`、`YYLyricsLine`与`YYLyricsPlayerDock`；队列动作、歌词状态及Dock播放展示全部由调用方提供，不接入Controller、音频或持久化。
+- Queue实现50/60密度、36/42封面、10圆角、26视觉动作与44dp命中；Lyrics实现future/past/active、双语、780字重、1.018缩放和6px环；Dock实现82最小高、50/40/38封面、34/44控制、响应式重排及最终26圆角。
+- Android/Windows共享确定性Gallery Fixture；不排序队列、不Seek、不解析LRC、不自动滚动、不启动计时器，也不使用渐变或模糊封面背景。
+- 新增7项Widget与3张1280×900/130%队列歌词板，三张已逐张审计，旧29张Golden未更新。91文件格式、严格分析、完整131项Flutter、32张Golden、28项Node和24份ZIP字节核验均通过。
+- GitHub双平台构建、Draft PR与本批云端APK将在目标实现提交推送后按commit独立核验；当前最新已复核APK仍为Phase2I，不冒充Phase2J产物。
+
 ## 2026-09-01 — Phase 2I 跨平台来源与歌单卡片
 
 - 新增受控`YYSourceCard`与`YYPlaylistCard`；来源状态标签/色调和歌单collection/create动作均由调用方提供，不创建业务模型或持久化。

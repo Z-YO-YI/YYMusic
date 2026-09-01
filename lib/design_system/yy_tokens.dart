@@ -141,6 +141,8 @@ abstract final class YYRadius {
   static const hero = 28.0, dialog = 30.0, phoneNavigation = 32.0;
   static const contextMenu = 20.0, toast = 14.0;
   static const albumArtwork = 20.0, trackArtwork = 10.0, trackRow = 14.0;
+  static const queueArtwork = 10.0, lyricsDock = 26.0;
+  static const lyricsDockArtwork = 13.0;
   static const sourceCard = 16.0, sourceIcon = 13.0;
   static const playlistCard = 20.0, playlistIcon = 14.0;
 }
@@ -192,6 +194,12 @@ abstract final class YYTypography {
   static TextStyle get playlistTitle =>
       text(size: 13, weight: 720, height: 1.25);
   static TextStyle get playlistMeta => text(size: 10, weight: 500, height: 1.3);
+  static TextStyle get queueTitle => text(size: 11, weight: 660, height: 1.25);
+  static TextStyle get queueMeta => text(size: 9, weight: 500, height: 1.3);
+  static TextStyle get lyricsDockTitle =>
+      text(size: 11, weight: 730, height: 1.25);
+  static TextStyle get lyricsDockArtist =>
+      text(size: 9, weight: 500, height: 1.3);
 }
 
 /// Short control transitions; YYThemeData can resolve their duration to zero.
@@ -273,9 +281,33 @@ abstract final class YYCollectionCardMetrics {
   static const playlistTitleGap = 18.0;
 }
 
+/// Queue and lyrics geometry from the final App.tsx composition.
+abstract final class YYQueueLyricsMetrics {
+  static const queueMinHeight = 50.0;
+  static const queueImmersiveMinHeight = 60.0;
+  static const queuePadding = 7.0;
+  static const queueImmersivePadding = 9.0;
+  static const queueArtwork = 36.0;
+  static const queueImmersiveArtwork = 42.0;
+  static const queueActionVisual = 26.0;
+  static const lyricsActiveDot = 7.0;
+  static const phoneLyricsActiveDot = 6.0;
+  static const lyricsActiveRing = 6.0;
+  static const lyricsDockMinHeight = 82.0;
+  static const lyricsDockArtwork = 50.0;
+  static const phoneLyricsDockArtwork = 40.0;
+  static const landscapeLyricsDockArtwork = 38.0;
+  static const lyricsDockControl = 34.0;
+  static const lyricsDockPrimaryControl = 44.0;
+  static const phoneLyricsDockControl = 32.0;
+  static const phoneLyricsDockPrimaryControl = 40.0;
+}
+
 /// Small visual geometry is deliberately separate from the 44dp hit area.
 abstract final class YYSliderMetrics {
   static const trackHeight = 3.0, thumbDiameter = 14.0, outerRing = 3.0;
+  static const lyricsTrackHeight = 4.0, lyricsThumbDiameter = 12.0;
+  static const lyricsThumbBorder = 2.0;
   static const horizontalInset = 12.0, hoverScale = 1.24;
   static const hoverDuration = Duration(milliseconds: 130);
 }

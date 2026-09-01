@@ -11,9 +11,11 @@ enum YYArtworkKind { orbit, tide, noon, mono, signal, quiet, local }
 enum YYArtworkRole {
   album(20),
   track(10),
+  queue(10),
   miniPlayer(12),
   desktopPlayer(14),
-  player(26);
+  player(26),
+  lyricsDock(13);
 
   const YYArtworkRole(this.radius);
   final double radius;
@@ -28,17 +30,21 @@ class YYArtworkPlaceholder extends StatelessWidget {
     this.role = YYArtworkRole.album,
     this.semanticLabel = '暂无封面',
     this.hovered = false,
-  }) : assert(dimension > 0 && dimension < double.infinity);
+    this.radius,
+  }) : assert(dimension > 0 && dimension < double.infinity),
+       assert(radius == null || (radius >= 0 && radius < double.infinity));
   final YYArtworkKind kind;
   final double dimension;
   final YYArtworkRole role;
   final String semanticLabel;
   final bool hovered;
+  final double? radius;
 
   @override
   Widget build(BuildContext context) {
     final theme = YYTheme.of(context);
     final dark = theme.brightness == Brightness.dark;
+    final resolvedRadius = radius ?? role.radius;
     final shadows = switch (role) {
       YYArtworkRole.album => [
         BoxShadow(
@@ -61,7 +67,14 @@ class YYArtworkPlaceholder extends StatelessWidget {
           blurRadius: 18,
         ),
       ],
-      YYArtworkRole.track => <BoxShadow>[],
+      YYArtworkRole.lyricsDock => const [
+        BoxShadow(
+          color: Color(0x38000000),
+          offset: Offset(0, 10),
+          blurRadius: 26,
+        ),
+      ],
+      YYArtworkRole.track || YYArtworkRole.queue => <BoxShadow>[],
     };
     return Semantics(
       image: true,
@@ -71,11 +84,11 @@ class YYArtworkPlaceholder extends StatelessWidget {
         dimension: dimension,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(role.radius),
+            borderRadius: BorderRadius.circular(resolvedRadius),
             boxShadow: shadows,
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(role.radius),
+            borderRadius: BorderRadius.circular(resolvedRadius),
             child: RepaintBoundary(
               child: CustomPaint(
                 painter: _ArtworkPainter(kind, theme.accent.color),

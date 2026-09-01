@@ -6,6 +6,8 @@ import 'package:flutter/widgets.dart';
 import 'yy_theme.dart';
 import 'yy_tokens.dart';
 
+enum YYSliderAppearance { standard, lyrics }
+
 /// Controlled native slider. Changes are previews; only onChangeEnd commits.
 /// Vertical scrolling, pointer cancellation and disabling never commit a drag.
 class YYSlider extends StatefulWidget {
@@ -23,6 +25,8 @@ class YYSlider extends StatefulWidget {
     this.semanticFormatter,
     this.focusNode,
     this.loading = false,
+    this.appearance = YYSliderAppearance.standard,
+    this.lyricsBackgroundColor = const Color(0xFF34454D),
   }) : assert(min <= max),
        assert(value >= min && value <= max),
        assert(step > 0 && step < double.infinity),
@@ -34,6 +38,8 @@ class YYSlider extends StatefulWidget {
   final String Function(double)? semanticFormatter;
   final FocusNode? focusNode;
   final bool loading;
+  final YYSliderAppearance appearance;
+  final Color lyricsBackgroundColor;
 
   @override
   State<YYSlider> createState() => _YYSliderState();
@@ -127,6 +133,13 @@ class _YYSliderState extends State<YYSlider> {
   Widget build(BuildContext context) {
     final theme = YYTheme.of(context);
     final colors = theme.colors;
+    final lyrics = widget.appearance == YYSliderAppearance.lyrics;
+    final trackHeight = lyrics
+        ? YYSliderMetrics.lyricsTrackHeight
+        : YYSliderMetrics.trackHeight;
+    final thumbDiameter = lyrics
+        ? YYSliderMetrics.lyricsThumbDiameter
+        : YYSliderMetrics.thumbDiameter;
     final rtl = Directionality.of(context) == TextDirection.rtl;
     final fraction = widget.max == widget.min
         ? 0.0
@@ -184,7 +197,9 @@ class _YYSliderState extends State<YYSlider> {
                 final x =
                     YYSliderMetrics.horizontalInset +
                     (rtl ? 1 - fraction : fraction) * travel;
-                final thumbColor = _dragValue != null
+                final thumbColor = lyrics
+                    ? const Color(0xFFFFFFFF)
+                    : _dragValue != null
                     ? theme.accent.pressed
                     : theme.accent.color;
                 // Flutter's accepted DragGestureRecognizer also ends on a raw
@@ -218,15 +233,14 @@ class _YYSliderState extends State<YYSlider> {
                             Positioned(
                               left: YYSliderMetrics.horizontalInset,
                               right: YYSliderMetrics.horizontalInset,
-                              top:
-                                  (YYSpace.touchTarget -
-                                      YYSliderMetrics.trackHeight) /
-                                  2,
+                              top: (YYSpace.touchTarget - trackHeight) / 2,
                               child: Container(
                                 key: const ValueKey('slider-track'),
-                                height: YYSliderMetrics.trackHeight,
+                                height: trackHeight,
                                 decoration: BoxDecoration(
-                                  color: colors.secondaryIcon,
+                                  color: lyrics
+                                      ? const Color(0x38FFFFFF)
+                                      : colors.secondaryIcon,
                                   borderRadius: BorderRadius.circular(2),
                                 ),
                               ),
@@ -239,24 +253,20 @@ class _YYSliderState extends State<YYSlider> {
                                   ? YYSliderMetrics.horizontalInset
                                   : null,
                               width: fraction * travel,
-                              top:
-                                  (YYSpace.touchTarget -
-                                      YYSliderMetrics.trackHeight) /
-                                  2,
+                              top: (YYSpace.touchTarget - trackHeight) / 2,
                               child: Container(
-                                height: YYSliderMetrics.trackHeight,
+                                height: trackHeight,
                                 decoration: BoxDecoration(
-                                  color: theme.accent.color,
+                                  color: lyrics
+                                      ? const Color(0xFFFFFFFF)
+                                      : theme.accent.color,
                                   borderRadius: BorderRadius.circular(2),
                                 ),
                               ),
                             ),
                             Positioned(
-                              left: x - YYSliderMetrics.thumbDiameter / 2,
-                              top:
-                                  (YYSpace.touchTarget -
-                                      YYSliderMetrics.thumbDiameter) /
-                                  2,
+                              left: x - thumbDiameter / 2,
+                              top: (YYSpace.touchTarget - thumbDiameter) / 2,
                               child: AnimatedScale(
                                 scale: _hovered && _enabled
                                     ? YYSliderMetrics.hoverScale
@@ -266,36 +276,46 @@ class _YYSliderState extends State<YYSlider> {
                                 ),
                                 child: Container(
                                   key: const ValueKey('slider-thumb'),
-                                  width: YYSliderMetrics.thumbDiameter,
-                                  height: YYSliderMetrics.thumbDiameter,
+                                  width: thumbDiameter,
+                                  height: thumbDiameter,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: thumbColor,
                                     border: Border.all(
-                                      color:
-                                          YYAccent.contrast(
-                                                thumbColor,
-                                                colors.base,
-                                              ) <
-                                              3
+                                      color: lyrics
+                                          ? widget.lyricsBackgroundColor
+                                          : YYAccent.contrast(
+                                                  thumbColor,
+                                                  colors.base,
+                                                ) <
+                                                3
                                           ? YYAccent.foregroundFor(thumbColor)
                                           : thumbColor,
+                                      width: lyrics
+                                          ? YYSliderMetrics.lyricsThumbBorder
+                                          : 1,
                                     ),
                                     boxShadow: [
                                       if (_focused && _enabled)
                                         BoxShadow(
-                                          color: colors.text,
+                                          color: lyrics
+                                              ? const Color(0xCC000000)
+                                              : colors.text,
                                           spreadRadius:
                                               YYSliderMetrics.outerRing + 2,
                                         ),
-                                      BoxShadow(
-                                        color: colors.elevated,
-                                        spreadRadius: YYSliderMetrics.outerRing,
-                                      ),
-                                      BoxShadow(
-                                        color: theme.accent.color.withValues(
-                                          alpha: .32,
+                                      if (!lyrics)
+                                        BoxShadow(
+                                          color: colors.elevated,
+                                          spreadRadius:
+                                              YYSliderMetrics.outerRing,
                                         ),
+                                      BoxShadow(
+                                        color: lyrics
+                                            ? const Color(0x38000000)
+                                            : theme.accent.color.withValues(
+                                                alpha: .32,
+                                              ),
                                         offset: const Offset(0, 3),
                                         blurRadius: 10,
                                       ),
