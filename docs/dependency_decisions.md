@@ -77,3 +77,7 @@ Drift使用边界不变：事务、batch、watch和limit/offset只存在`data/re
 ## Phase 3D CollectionRepository依赖结果
 
 本批只复用已锁定的Drift/Dart SDK，`pubspec.yaml`和`pubspec.lock`不变；不增加原生插件、网络包、权限或安全存储实现。Playlist/Queue整体替换与Favorite/History组合写入继续使用Drift事务语义；Queue watch通过`readsFrom`显式声明两张表，不引入额外stream组合库。
+
+## Phase 3E LyricsRepository依赖结果
+
+本批只复用Dart SDK内置`dart:convert`和已锁定Drift，`pubspec.yaml`与`pubspec.lock`不变；不引入LRC解析、HTTP、文件选择、安全存储或平台插件。JSON只作为既有`lyrics_cache.lines_json`的内部确定性编码，解码后仍必须通过Domain构造验证；不会把原始在线响应或文件内容直接当成可信row。

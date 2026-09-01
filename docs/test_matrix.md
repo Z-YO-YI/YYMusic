@@ -63,4 +63,8 @@ Phase3C实现提交a155d65的push运行33490505244、PR运行33490538057与手�
 
 Phase3D实现提交9468c2a的push运行33495498260、PR运行33495519334与手动运行33496511117均为三job success。手动运行的草稿Release三资产已下载，APK为183604101字节，SHA256SUMS、metadata、API digest与`d6b03be16d907103b7b3bbb421108f82a32a06e7687d115194be73a86b9fffb9`一致；48份打包资产逐字节匹配，v2单签名有效，临时副本已清理。证据只适用于该实现提交。
 
+Phase3E本地增量：6项真实SQLite覆盖plain upsert/remove、同步双语/规范JSON、完整TrackRef隔离、损坏JSON/缓存时间与SQLite异常脱敏、shared/owned生命周期；完整181项Flutter含32 Golden、122文件format、严格分析、29项Node、24项ZIP、lockfile及生成/v1快照零差异已通过。目标提交云端证据另行记录。
+
+Phase3E实现提交1e45532的push运行33499761224、PR运行33499787210与手动运行33500756816均为三job success。手动运行的草稿Release三资产已下载，APK为183604101字节，SHA256SUMS、metadata、API digest与`fd71936ef590dc18b1e851572c21cbf6d10f157a495298022dec3f2dd384020a`一致；48份打包资产逐字节匹配，v2单签名有效，临时副本已清理。证据只适用于该实现提交。
+
 Actions 固定 SHA，来源为维护者公开 refs 和说明：[checkout](https://github.com/actions/checkout)、[setup-node](https://github.com/actions/setup-node)、[setup-java](https://github.com/actions/setup-java)、[flutter-action](https://github.com/subosito/flutter-action)。静态配置验证不代表远程工作流已经通过；私有 CI 结果必须可读取后才记录成功。

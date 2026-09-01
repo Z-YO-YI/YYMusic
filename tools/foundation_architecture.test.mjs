@@ -87,8 +87,18 @@ test('domain contracts stay independent and UI has no direct data access', () =>
   assert.match(collectionRepository, /\.skip\(20\)/);
   assert.match(collectionRepository, /\.limit\(20\)/);
   assert(!/LyricsRepository|MusicSourceRepository|SecureCredentialGateway|package:flutter/.test(collectionRepository));
+  const lyricsRepository = read('lib/data/repositories/drift_lyrics_repository.dart');
+  assert.match(lyricsRepository, /implements LyricsRepository/);
+  assert.match(lyricsRepository, /insertOnConflictUpdate/);
+  assert.match(lyricsRepository, /trackSourceType\.equals\(track\.sourceType\.name\)/);
+  assert(!/LibraryRepository|CollectionRepository|MusicSourceRepository|SecureCredentialGateway|package:flutter/.test(lyricsRepository));
+  const lyricsMapper = read('lib/data/repositories/lyrics_row_mapper.dart');
+  assert.match(lyricsMapper, /jsonEncode/);
+  assert.match(lyricsMapper, /jsonDecode/);
+  assert.match(lyricsMapper, /value\.length != 4/);
+  assert(!/dart:io|package:flutter|MusicSourceRepository|SecureCredentialGateway/.test(lyricsMapper));
   const bootstrap = read('lib/app/app_bootstrap.dart');
-  assert(!/DriftLibraryRepository|DriftCollectionRepository|AppDatabase/.test(bootstrap), 'Phase 3D must not open the database from AppBootstrap');
+  assert(!/DriftLibraryRepository|DriftCollectionRepository|DriftLyricsRepository|AppDatabase/.test(bootstrap), 'Phase 3E must not open the database from AppBootstrap');
 });
 
 test('native runners are branded and Android release does not use debug signing', () => {
