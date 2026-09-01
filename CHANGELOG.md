@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-01 — Phase 2F 跨平台播放器表面
+
+- 新增受控`YYMiniPlayer`、`YYDesktopPlayerBar`与只读`YYNowPlayingViewData`，复用最终SVG、Slider、Artwork、Theme和Glass；保留Mini64、Desktop88/76、封面54/50/48及44dp动作命中。
+- 曲目信息、播放/下一首、完整Transport、进度预览/提交/取消、音量、歌词、收藏与队列均为独立动作；Repeat只表达受控视觉状态，不实现队列算法或模拟时间推进。
+- Android/Windows Gallery新增明确标注的本地Fixture；正式Shell仍不接假播放器，不访问AudioEngine、QueueController、Repository、系统媒体会话或持久化。
+- 新增4项Widget和3张1280×560/130%播放器组件板，三张已逐张视觉审计；旧17张基线不更新。69文件格式、严格分析、完整95项Flutter、20张Golden、28项Node和24份ZIP字节核验均通过；云端双平台结果以本阶段报告最终记录为准。
+
 ## 2026-09-01 — Phase 2E Windows 导航基础与跨平台 Gallery
 
 - 新增受控`YYWindowsSidebar`、`YYWindowToolbar`和Widgets-only Tooltip；1440/1024采用240dp展开侧栏，840采用72dp紧凑侧栏，保留42工具区、320 Inspector及88/76播放结构位。

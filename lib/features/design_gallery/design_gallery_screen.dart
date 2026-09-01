@@ -12,6 +12,7 @@ import '../../design_system/yy_tokens.dart';
 import 'gallery_content_cards.dart';
 import 'gallery_input_controls.dart';
 import 'gallery_media_controls.dart';
+import 'gallery_player_surfaces.dart';
 import 'gallery_windows_chrome.dart';
 
 /// An explicitly labelled component preview, not a fixture-backed music page.
@@ -132,6 +133,8 @@ class _DesignGalleryScreenState extends State<DesignGalleryScreen> {
                       const SizedBox(height: 24),
                       const GalleryWindowsChrome(),
                     ],
+                    const SizedBox(height: 24),
+                    GalleryPlayerSurfaces(platform: widget.platform),
                     const SizedBox(height: 24),
                     _Section(
                       title: '外观',

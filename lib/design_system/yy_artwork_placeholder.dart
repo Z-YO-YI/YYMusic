@@ -11,6 +11,8 @@ enum YYArtworkKind { orbit, tide, noon, mono, signal, quiet, local }
 enum YYArtworkRole {
   album(20),
   track(10),
+  miniPlayer(12),
+  desktopPlayer(14),
   player(26);
 
   const YYArtworkRole(this.radius);
@@ -50,6 +52,13 @@ class YYArtworkPlaceholder extends StatelessWidget {
           color: dark ? const Color(0x75000000) : const Color(0x330F1214),
           offset: Offset(0, dark ? 24 : 22),
           blurRadius: dark ? 58 : 50,
+        ),
+      ],
+      YYArtworkRole.miniPlayer || YYArtworkRole.desktopPlayer => const [
+        BoxShadow(
+          color: Color(0x2B0F1214),
+          offset: Offset(0, 7),
+          blurRadius: 18,
         ),
       ],
       YYArtworkRole.track => <BoxShadow>[],
