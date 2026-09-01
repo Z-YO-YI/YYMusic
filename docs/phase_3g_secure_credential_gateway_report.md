@@ -25,9 +25,11 @@
 
 ## 云端与限制
 
-实现提交、Draft PR、push/PR/手动运行、Windows/Android Debug和本批GitHub APK尚待目标commit创建后独立核验；不沿用Phase3F APK冒充。本机Windows因远程无法开启Developer Mode/符号链接支持，不声称本机Windows构建成功。
+实现提交`4daf38019b250dddf24296a771efcd5e824dd6e1`已推送；[Draft PR #15](https://github.com/Z-YO-YI/YYMusic/pull/15)以`feat/music-source-repository-drift`为base。push[运行33510086595](https://github.com/Z-YO-YI/YYMusic/actions/runs/33510086595)、PR[运行33510153174](https://github.com/Z-YO-YI/YYMusic/actions/runs/33510153174)和触发前计数为0、触发后计数为1的唯一手动[运行33511421874](https://github.com/Z-YO-YI/YYMusic/actions/runs/33511421874)均为checks/Windows Debug/Android Debug三job success。
 
-定向测试的内存store只证明编码/失败合同和Android/Windows wrapper可替换，不等于Android KeyStore或Windows Credential Manager的真机save/read/delete/重启/升级验收。本机APK不是GitHub交付物，也不是Release签名包。
+[私有草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-15023c88bca130379b81)标签`ci-debug-33511421874-1`，target为完整实现提交，保持draft/prerelease且恰有`YYMusic-debug.apk`、`SHA256SUMS`和`build-metadata.json`三资产。三资产下载到全新临时目录复核：APK为189393711字节，SHA-256、metadata、SHA256SUMS与GitHub API digest均为`2623eab9590f4f333bc7327ee4d4dea49ee5b6f6789219f129b44f1e7108bcdf`；48份资产匹配、无参考/凭据文件、Manifest确认包名/YYMusic/`allowBackup=false`，apksigner确认仅v2且1个Debug signer。临时三文件与目录已删除，Release保留。
+
+本机Windows因远程无法开启Developer Mode/符号链接支持，不声称本机Windows构建成功。定向测试的内存store和云端编译只证明编码/失败合同、wrapper可替换及原生构建兼容，不等于Android KeyStore或Windows Credential Manager的真机save/read/delete/重启/升级验收。GitHub APK仍是临时Debug签名，不是正式Release签名包。
 
 ## 主要文件
 

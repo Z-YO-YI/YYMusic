@@ -1,6 +1,6 @@
 # 原生基础验证矩阵
 
-保留Phase3F的189项Flutter检查，Phase3G新增10项Android/Windows安全凭据Gateway测试，共199项Flutter、29项Node；不包含生产AppBootstrap接线、Dev Fixture、REST Adapter、音频POC或用户音乐数据。当前本地结果集中在phase_3g_secure_credential_gateway_report.md，云端原生构建尚待目标提交验证。
+保留Phase3F的189项Flutter检查，Phase3G新增10项Android/Windows安全凭据Gateway测试，共199项Flutter、29项Node；不包含生产AppBootstrap接线、Dev Fixture、REST Adapter、音频POC或用户音乐数据。本地与目标实现提交的GitHub Windows/Android结果集中在phase_3g_secure_credential_gateway_report.md。
 
 | 类别 | 已有自动检查 |
 | --- | --- |
@@ -74,6 +74,8 @@ Phase3F本地增量：8项真实SQLite覆盖REST完整往返/规范JSON、local�
 
 Phase3F实现提交22d68f2的push运行33503815038、PR运行33503837936与手动运行33504877925均为三job success。手动运行的草稿Release三资产已下载，APK为183604101字节，SHA256SUMS、metadata、API digest与`db2946d4b416971b2fbb89cc754ba77cdf0c03f36aff3f84b2ad425a281c24a2`一致；48份打包资产逐字节匹配，v2单签名有效，临时副本已清理。证据只适用于该实现提交。
 
-Phase3G本地增量：10项安全Gateway覆盖Android/Windows生命周期、规范JSON/四类凭据、碰撞不覆盖、非法引用、损坏载荷/插件失败脱敏、并发串行及限额；完整199项Flutter含32 Golden、130文件format、严格分析、29项Node、24项ZIP、lockfile及生成/v1快照零差异均通过。本机Android Debug成功，APK为237658550字节、48份资产逐字节匹配、Manifest禁用备份且v2单签名有效；GitHub Windows/Android与新APK证据仍待目标提交，不能用本机或Phase3F结果替代。
+Phase3G本地增量：10项安全Gateway覆盖Android/Windows生命周期、规范JSON/四类凭据、碰撞不覆盖、非法引用、损坏载荷/插件失败脱敏、并发串行及限额；完整199项Flutter含32 Golden、130文件format、严格分析、29项Node、24项ZIP、lockfile及生成/v1快照零差异均通过。本机Android Debug成功，APK为237658550字节、48份资产逐字节匹配、Manifest禁用备份且v2单签名有效。
+
+Phase3G实现提交4daf380的push运行33510086595、PR运行33510153174与唯一手动运行33511421874均为三job success。手动运行的草稿Release三资产已下载，APK为189393711字节，SHA256SUMS、metadata、API digest与`2623eab9590f4f333bc7327ee4d4dea49ee5b6f6789219f129b44f1e7108bcdf`一致；48份打包资产逐字节匹配、Manifest确认`allowBackup=false`、v2单签名有效，临时副本已清理。证据只适用于该实现提交。
 
 Actions 固定 SHA，来源为维护者公开 refs 和说明：[checkout](https://github.com/actions/checkout)、[setup-node](https://github.com/actions/setup-node)、[setup-java](https://github.com/actions/setup-java)、[flutter-action](https://github.com/subosito/flutter-action)。静态配置验证不代表远程工作流已经通过；私有 CI 结果必须可读取后才记录成功。

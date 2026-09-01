@@ -1,6 +1,6 @@
 # PR 草稿：Android / Windows SecureCredentialGateway
 
-Head：`feat/secure-credential-gateway`；Base：`feat/music-source-repository-drift@e0f49c6`。Draft PR编号待推送后记录；不自动合并、不改写历史。
+Head：`feat/secure-credential-gateway`；Base：`feat/music-source-repository-drift@e0f49c6`。Draft PR #15；不自动合并、不改写历史。
 
 ## 变更
 
@@ -15,7 +15,9 @@ Head：`feat/secure-credential-gateway`；Base：`feat/music-source-repository-d
 - 10项Credential Gateway定向测试已通过。
 - 完整199项Flutter/32 Golden和strict analyze 0问题已通过。
 - lockfile严格复现；130文件format零改动、Node29、ZIP24、生成代码/v1快照零差异已通过。
-- 本机Android Debug已构建/验签/验资产，合并manifest确认`allowBackup=false`；GitHub Android/Windows待目标提交后记录。
+- 本机Android Debug已构建/验签/验资产，合并manifest确认`allowBackup=false`。
+- 目标实现`4daf380`的push运行33510086595、PR运行33510153174、唯一手动运行33511421874均为三job success；Windows插件已在Windows 2025真实编译。
+- 手动草稿Release恰含三资产；189393711字节APK的metadata/SHA256SUMS/API digest、48资产、Manifest及v2单签名已独立复核。
 
 ## 影响与未验收项
 

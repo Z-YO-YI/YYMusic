@@ -81,4 +81,4 @@ flutter build apk --debug --no-pub
 
 `flutter build apk --debug --no-pub`本机成功，APK为237658550字节，SHA-256 `801b783f15c7f235d848f5748fb2a8b1e63694d80176a13769dde629e5874a22`；合并Manifest确认包名/应用名并有`android:allowBackup=false`，48份设计资产逐字节一致，apksigner确认v2单签名。它仅是本地诊断产物，不发布、不提交，也不能替代用户要求的GitHub APK。
 
-本机Windows仍因远程无法确认UAC/Developer Mode软链接支持而未构建，不能声称本地Windows插件已验证。`flutter_secure_storage_windows 4.2.2`的FFI/ATL链路必须由GitHub Windows 2025 job实际编译；只有目标实现提交的checks、Windows和Android三个job全部成功后才能关闭此阶段的云端构建缺口。
+本机Windows仍因远程无法确认UAC/Developer Mode软链接支持而未构建，不能声称本地Windows插件已验证。`flutter_secure_storage_windows 4.2.2`的FFI/ATL链路已由目标实现提交的GitHub Windows 2025 job在push、PR和唯一手动运行中实际编译成功；这关闭云端构建缺口，但不替代本机Windows或真机凭据存储验收。

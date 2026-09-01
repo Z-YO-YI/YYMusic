@@ -1,8 +1,8 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 3G SecureCredentialGateway**。Phase2通用原语、三套Shell骨架、Phase3A Domain合同、Phase3B 17张Drift表/首版Migration，Library/Collection/Lyrics/Source四类正式Repository和Android/Windows安全凭据平台实现已有。不是完整音乐客户端；Phase3G云端证据、启动接线、REST Adapter、Dev Fixture、业务Controller、播放和正式页面尚未完成。
+当前阶段：**Android + Windows · Phase 3G SecureCredentialGateway**。Phase2通用原语、三套Shell骨架、Phase3A Domain合同、Phase3B 17张Drift表/首版Migration，Library/Collection/Lyrics/Source四类正式Repository和Android/Windows安全凭据平台实现已有。不是完整音乐客户端；启动接线、REST Adapter、Dev Fixture、业务Controller、播放和正式页面尚未完成。
 
-Phase3G当前本地门禁：10项安全凭据Gateway测试通过，完整199项Flutter含32张Windows宿主Golden、严格分析0问题，130文件format零变化。29项Node、24份ZIP、lockfile及生成代码/v1快照零差异全部通过。本机Android Debug已构建、v2验签、48资产及`allowBackup=false`已复核；云端必须按本批目标commit另行验证。
+Phase3G门禁：10项安全凭据Gateway、完整199项Flutter含32张Windows宿主Golden、严格分析0问题、130文件format零变化、29项Node、24份ZIP、lockfile及生成代码/v1快照零差异全部通过。本机Android Debug已构建；目标实现提交的GitHub push/PR/手动运行均为Windows/Android三job success，手动APK的v2签名、48资产、Manifest、metadata和SHA-256已独立复核。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
@@ -91,7 +91,7 @@ flutter build windows --debug --no-pub
 
 工具链完整后使用 `flutter run -d windows` 或 `flutter run -d <android-device-id>`。不要重新运行 flutter create 覆盖现有工程。Android 发行签名未配置，禁止使用 Debug 签名冒充 Release。
 
-需要APK时，在[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)对目标分支手动运行工作流；成功后从该次运行生成的私有草稿Release下载。Phase3F实现提交`22d68f2`已由[运行33504877925](https://github.com/Z-YO-YI/YYMusic/actions/runs/33504877925)生成并完成[草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-9837f6cb2678f1e8c7f7)复核，APK为183604101字节，SHA-256为`db2946d4b416971b2fbb89cc754ba77cdf0c03f36aff3f84b2ad425a281c24a2`。必须确认Android任务、Release标签、metadata完整commit和SHA256SUMS一致；普通push/PR只验证构建，不创建下载产物。APK不提交Git源码，证据见[Phase3F报告](docs/phase_3f_music_source_repository_report.md)，详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
+需要APK时，在[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)对目标分支手动运行工作流；成功后从该次运行生成的私有草稿Release下载。Phase3G实现提交`4daf380`已由[运行33511421874](https://github.com/Z-YO-YI/YYMusic/actions/runs/33511421874)生成并完成[草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-15023c88bca130379b81)复核，APK为189393711字节，SHA-256为`2623eab9590f4f333bc7327ee4d4dea49ee5b6f6789219f129b44f1e7108bcdf`。必须确认Android任务、Release标签、metadata完整commit和SHA256SUMS一致；普通push/PR只验证构建，不创建下载产物。APK不提交Git源码，证据见[Phase3G报告](docs/phase_3g_secure_credential_gateway_report.md)，详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
 
 无已连接真机/模拟器或本机Windows原生运行验收证据，构建成功不等于已安装运行。32张组件/原生Shell Golden使用打包字体、Flutter 3.47.2 / Windows测试宿主，精确像素比较；Linux对这些宿主专用测试执行明确跳过，仍运行全部非Golden回归，Windows CI另执行Golden。只在审查视觉变更后对指定测试使用`--update-goldens`，日常测试不得更新基线。
 
