@@ -26,6 +26,8 @@ Phase2H已实现`YYThemeSwatch`、`YYEmptyState`、`YYErrorBanner`与`YYSkeleton
 
 Phase2I已实现`YYSourceCard`与`YYPlaylistCard`的受控原语，并应用基础HTML与App.tsx最终`POLISH_CSS`的圆角覆盖及Phone尺寸。来源标签/色调、歌单选择/Create动作均由调用方提供；没有创建Source/Playlist Domain、Repository、连接测试、数据库、凭据、真实歌曲计数或持久化。Gallery的确定性内容不能计作来源页或歌单业务流程已交付。
 
+Phase2J已实现`YYQueueTile`、`YYLyricsLine`与`YYLyricsPlayerDock`受控原语。映射同时读取基础HTML的queue、fullscreen lyric、lyrics dock及900/599/低高度规则，并应用App.tsx后置`POLISH_CSS`的Queue artwork 10、歌词780字重/紧字距/6px active ring和Dock最终26圆角；图标继续取`NEW_ICON_SPRITE`的up/down/x、prev/play/pause/next/heart/music原始路径。组件没有接入QueueController、音频Seek、LRC解析、自动滚动、计时器、拖拽、数据库、持久化或独立歌词页。
+
 ## 六条核心流程与行为边界
 
 | 流程 | 网页真实实现 | Flutter替代 |

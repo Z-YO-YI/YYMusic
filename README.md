@@ -1,13 +1,14 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 2I 跨平台来源与歌单卡片**。主题/字体/44 SVG、双平台导航、受控播放器/弹层/状态原语、SourceCard/PlaylistCard及共享Gallery已有。APK只由GitHub Actions构建；Phase2I实现提交的push、PR、手动双平台构建与云端APK已完成独立复核。不是完整音乐客户端，也不代表整个Phase2完成；真实来源/歌单业务、播放、数据库、业务Overlay编排、窗口Gateway和正式业务页尚未接入。
+当前阶段：**Android + Windows · Phase 2J 跨平台队列与歌词原语**。主题/字体/44 SVG、双平台导航、受控播放器/弹层/状态/集合/队列/歌词原语及共享Gallery已有。APK只由GitHub Actions构建；Phase2J实现提交的push、PR、手动双平台构建与云端APK已完成独立复核。不是完整音乐客户端，也不代表整个Phase2完成；真实播放、队列算法、歌词解析/跟随、数据库、业务Overlay编排、窗口Gateway和正式业务页尚未接入。
 
-Phase2I本地门禁已完成：85个Dart文件格式无变更、严格分析0问题、121项Flutter与29张Windows宿主Golden、28项Node、五份设计指纹及24份ZIP逐字节复核全部通过。云端状态仍必须按目标commit另行验证。
+Phase2J本地门禁已完成：91个Dart文件格式无变更、严格分析0问题、131项Flutter与32张Windows宿主Golden、28项Node、五份设计指纹及24份ZIP逐字节复核全部通过。云端状态仍必须按目标commit另行验证。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
 ## 开发入口
 
+- [Phase 2J 队列与歌词原语报告](docs/phase_2j_queue_lyrics_primitives_report.md)、[本批范围](docs/phase_2j_queue_lyrics_primitives_plan.md)、[本批 PR 草稿](docs/phase_2j_queue_lyrics_primitives_pr_draft.md)
 - [GitHub APK 构建与下载](docs/github_apk_build.md)、[CI 隐藏文件校验修复](docs/ci_reference_audit_fix.md)
 - [Phase 2I 集合卡片报告](docs/phase_2i_collection_cards_report.md)、[本批范围](docs/phase_2i_collection_cards_plan.md)、[本批 PR 草稿](docs/phase_2i_collection_cards_pr_draft.md)
 - [Phase 2H 状态原语报告](docs/phase_2h_state_surfaces_report.md)、[本批范围](docs/phase_2h_state_surfaces_plan.md)、[本批 PR 草稿](docs/phase_2h_state_surfaces_pr_draft.md)
@@ -40,6 +41,8 @@ Windows按1440/1024断点显示240dp展开或72dp紧凑侧栏，导航驱动同�
 
 “来源与歌单 · Fixture”展示调用方控制的来源状态、普通/选中/禁用/加载歌单与Create虚线卡片。点击只更新本页说明或选择；不测试连接、不读取凭据、不创建真实歌单，也不访问Repository、数据库、队列或持久化。
 
+“队列与歌词 · Fixture”展示标准/沉浸队列行、future/past/active双语歌词和响应式Lyrics Dock。上移/下移/移除、歌词行、Transport、进度、收藏和返回只更新本页状态；不修改真实队列、不Seek、不解析LRC、不自动滚动或推进计时。
+
 ## Phase 0 审计入口
 
 - [Phase 0 完成报告](docs/phase_0_report.md)与[阶段计划及出口](docs/phase_0_plan.md)
@@ -67,9 +70,9 @@ flutter build windows --debug --no-pub
 
 工具链完整后使用 `flutter run -d windows` 或 `flutter run -d <android-device-id>`。不要重新运行 flutter create 覆盖现有工程。Android 发行签名未配置，禁止使用 Debug 签名冒充 Release。
 
-需要APK时，在[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)对目标分支手动运行工作流；成功后从该次运行生成的私有草稿Release下载。Phase2I实现提交c2948e8已由[运行33472750596](https://github.com/Z-YO-YI/YYMusic/actions/runs/33472750596)生成并完成[草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-531a214d60bd84b6ee43)复核，APK SHA-256为`3035e3b5a031ef283af098514c78ee8264a5d03ed3aa71f335d177da3ad11417`。必须确认Android任务、Release标签、metadata完整commit和SHA256SUMS一致；普通push/PR只验证构建，不创建下载产物。APK不提交Git源码，证据见[Phase2I报告](docs/phase_2i_collection_cards_report.md)，详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
+需要APK时，在[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)对目标分支手动运行工作流；成功后从该次运行生成的私有草稿Release下载。Phase2J实现提交a20e0fb已由[运行33476650469](https://github.com/Z-YO-YI/YYMusic/actions/runs/33476650469)生成并完成[草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-94db6b8c22a40fb18b24)复核，APK SHA-256为`864a557af71841280ed938e80090a07e3bd7764a8e3680a17b6eef81e19af43f`。必须确认Android任务、Release标签、metadata完整commit和SHA256SUMS一致；普通push/PR只验证构建，不创建下载产物。APK不提交Git源码，证据见[Phase2J报告](docs/phase_2j_queue_lyrics_primitives_report.md)，详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
 
-无已连接真机/模拟器或本机Windows原生运行验收证据，构建成功不等于已安装运行。29张组件/原生Shell Golden使用打包字体、Flutter 3.47.2 / Windows测试宿主，精确像素比较；Linux明确跳过这29张，运行其余92项测试，Windows CI执行Golden。只在审查视觉变更后对指定测试使用`--update-goldens`，日常测试不得更新基线。
+无已连接真机/模拟器或本机Windows原生运行验收证据，构建成功不等于已安装运行。32张组件/原生Shell Golden使用打包字体、Flutter 3.47.2 / Windows测试宿主，精确像素比较；Linux明确跳过这32张，运行其余99项测试，Windows CI执行Golden。只在审查视觉变更后对指定测试使用`--update-goldens`，日常测试不得更新基线。
 
 ## 设计与归档完整性
 
@@ -89,7 +92,7 @@ pwsh -NoProfile -File tools/verify_reference_archive.ps1
 
 ## Git 与历史原型
 
-仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。当前开发分支`feat/cross-platform-collection-cards`基于已拉取并同步的`feat/cross-platform-state-surfaces@dc2758c`，未在main/master开发。此前阶段提交保留；合并前需审核完整分支差异。经用户明确授权曾恢复临时GitHub API访问，不持久化访问令牌；Git提交/推送和云端产物状态以每次交付时实际核验为准。
+仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。当前开发分支`feat/cross-platform-queue-lyrics-primitives`基于已拉取并同步的`feat/cross-platform-collection-cards@995016a`，未在main/master开发。此前阶段提交保留；合并前需审核完整分支差异。经用户明确授权曾恢复临时GitHub API访问，不持久化访问令牌；Git提交/推送和云端产物状态以每次交付时实际核验为准。
 
 旧原型 13 个文件已原样迁入 [archive/sonic_gallery](archive/sonic_gallery/README.md)，并在 `f96197b` 单独提交；源码、两份测试、配置和图片可恢复，不再散落为根目录未跟踪文件。Phase 0 中“保留原地、未纳入提交”的说明是当时历史状态。
 
