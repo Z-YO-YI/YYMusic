@@ -6,7 +6,9 @@
 - 系统歌单唯一且不可改身份/删除；自定义歌单条目在事务内整体替换，删除歌单不删Track或来源引用。
 - 队列支持重复TrackRef/currentEntryId和跨启动快照，自定义watch同时依赖queue_state/entries且不发布事务中间状态。
 - 收藏幂等移顶；历史按完整TrackRef去重并只保留最新20条。损坏row/SQLite异常只返回脱敏DomainFailure。
-- 不修改v1 Schema/快照、不新增依赖/权限，不接AppBootstrap、Fixture、Controller、UI或播放；10项真实SQLite、175项Flutter/32 Golden、119文件format、严格分析、29项Node、24项ZIP及生成/快照零差异已通过，GitHub结果待目标提交。
+- 不修改v1 Schema/快照、不新增依赖/权限，不接AppBootstrap、Fixture、Controller、UI或播放；10项真实SQLite、175项Flutter/32 Golden、119文件format、严格分析、29项Node、24项ZIP及生成/快照零差异已通过。
+- 实现提交`9468c2a`的push运行33495498260、PR运行33495519334与手动运行33496511117均为三job success；Draft PR #12保持待审核。
+- 手动运行的私有草稿Release三资产已下载复核；APK为183604101字节，SHA-256、SHA256SUMS、metadata和API digest均为`d6b03be16d907103b7b3bbb421108f82a32a06e7687d115194be73a86b9fffb9`，48份资产匹配且v2单签名有效。
 
 ## 2026-09-01 — Phase 3C Drift LibraryRepository
 

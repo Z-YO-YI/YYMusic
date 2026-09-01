@@ -1,6 +1,6 @@
 # PR 草稿：Drift-backed CollectionRepository
 
-Head：`feat/collection-repository-drift`；Base：`feat/library-repository-drift@0fd7c0f`。Draft PR编号待推送后记录；不自动合并、不改写历史。
+Head：`feat/collection-repository-drift`；Base：`feat/library-repository-drift@0fd7c0f`。[Draft PR #12](https://github.com/Z-YO-YI/YYMusic/pull/12)保持待审核；不自动合并、不改写历史。
 
 ## 变更
 
@@ -14,7 +14,9 @@ Head：`feat/collection-repository-drift`；Base：`feat/library-repository-drif
 
 - 10项真实SQLite Repository测试已通过。
 - 完整175项Flutter/32 Golden和strict analyze 0问题已通过。
-- lockfile严格复现；119文件format零改动、Node29、ZIP24、生成代码/v1快照零差异已通过。GitHub Android/Windows待目标提交后记录。
+- lockfile严格复现；119文件format零改动、Node29、ZIP24、生成代码/v1快照零差异已通过。
+- 实现提交`9468c2a`的push运行33495498260、PR运行33495519334与手动运行33496511117均为三job success，Android/Windows Debug均通过。
+- 私有草稿Release三资产已下载复核；APK为183604101字节，SHA-256/API digest为`d6b03be16d907103b7b3bbb421108f82a32a06e7687d115194be73a86b9fffb9`，metadata身份一致、48份资产匹配且v2单签名有效。
 
 ## 影响与未验收项
 
