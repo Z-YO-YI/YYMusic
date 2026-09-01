@@ -73,3 +73,7 @@ Domain模型、Repository合同、SecureCredentialGateway和测试Fake只使用D
 `crypto` 3.0.7在Phase3B lockfile中已是pub.dev传递依赖；本批因生产mapper需要SHA-256派生可复现artist ID，将同一已锁版本声明为直接依赖。它是纯Dart、BSD-3-Clause，不新增Android/Windows插件、原生二进制、权限或运行时网络。来源：[crypto](https://pub.dev/packages/crypto)。
 
 Drift使用边界不变：事务、batch、watch和limit/offset只存在`data/repositories`，Domain/UI不导入。实现依据[transactions](https://drift.simonbinder.eu/dart_api/transactions/)、[writes](https://drift.simonbinder.eu/dart_api/writes/)、[streams](https://drift.simonbinder.eu/dart_api/streams/)和[selects](https://drift.simonbinder.eu/dart_api/selects/)；`drift_dev`继续仅属dev_dependencies，生产Repository不导入其Schema验证扩展。
+
+## Phase 3D CollectionRepository依赖结果
+
+本批只复用已锁定的Drift/Dart SDK，`pubspec.yaml`和`pubspec.lock`不变；不增加原生插件、网络包、权限或安全存储实现。Playlist/Queue整体替换与Favorite/History组合写入继续使用Drift事务语义；Queue watch通过`readsFrom`显式声明两张表，不引入额外stream组合库。
