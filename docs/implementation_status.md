@@ -1,6 +1,6 @@
 # 实施状态
 
-更新：2026-09-01。用户要求继续Android开发且APK在GitHub构建。当前组件库推进到Phase2D；AlbumCard、TrackTile及Gallery Fixture已完成本地全量验证。上一云端APK及双平台Debug构建已复核，当前分支仍须取得对应commit的新运行证据。这不是完整客户端或整个Phase2已完成。
+更新：2026-09-01。用户要求继续Android开发且APK在GitHub构建。当前组件库推进到Phase2D；AlbumCard、TrackTile及Gallery Fixture已完成本地全量验证。实现提交9a3a345的GitHub双平台Debug及草稿Release APK已完成独立复核。这不是完整客户端或整个Phase2已完成。
 
 | 阶段/能力 | 状态 |
 | --- | --- |
@@ -14,10 +14,10 @@
 | Phase 3 Domain/数据库/状态 | 未开始；只有边界决策 |
 | Phase 4 双平台音频 | 仅 POC 计划；没有真实播放验证 |
 | 后续页面、歌词、导入、来源、平台集成 | 未开始 |
-| GitHub APK交付 | 4be8ba2的手动运行已完成编译、验签、资源核验及草稿Release下载复核；当前Phase2D commit待重新运行 |
+| GitHub APK交付 | 9a3a345的运行33455489191完成编译、验签、资源核验及草稿Release三资产下载复核；见phase_2d_android_report.md |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
 | Flutter format/analyze/test | 本批82项含14张原生Golden全部通过；当前结果见phase_2d_android_report.md |
-| Windows / Android Debug构建 | 上一验收commit在GitHub两平台成功；Phase2D目标commit待云端运行，本机Windows安装等待UAC确认 |
+| Windows / Android Debug构建 | Phase2D实现提交在GitHub两平台成功；本机Windows安装仍等待UAC确认 |
 
 ## 保留的验收缺口与后续边界
 

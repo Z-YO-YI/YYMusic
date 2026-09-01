@@ -50,7 +50,7 @@ flutter build windows --debug --no-pub
 
 工具链完整后使用 `flutter run -d windows` 或 `flutter run -d <android-device-id>`。不要重新运行 flutter create 覆盖现有工程。Android 发行签名未配置，禁止使用 Debug 签名冒充 Release。
 
-需要APK时，在[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)对目标分支手动运行工作流；成功后从该次运行生成的私有草稿Release下载。当前已验收的是4be8ba2的[运行33451875605](https://github.com/Z-YO-YI/YYMusic/actions/runs/33451875605)及其[草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-9a49a12002f0c9cc058a)。必须确认Android任务、Release标签、metadata完整commit和SHA256SUMS一致；普通push/PR只验证构建，不创建下载产物。旧本机APK不是本批云端产物，APK不提交Git源码。证据见[CI记录](docs/ci_reference_audit_fix.md)，详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
+需要APK时，在[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)对目标分支手动运行工作流；成功后从该次运行生成的私有草稿Release下载。当前Phase2D实现提交9a3a345已由[运行33455489191](https://github.com/Z-YO-YI/YYMusic/actions/runs/33455489191)生成并完成[草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-1af180fa49cdcbcdf3f3)复核。必须确认Android任务、Release标签、metadata完整commit和SHA256SUMS一致；普通push/PR只验证构建，不创建下载产物。旧本机APK不是本批云端产物，APK不提交Git源码。证据见[Phase2D报告](docs/phase_2d_android_report.md)，详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
 
 无已连接真机/模拟器的验收证据，构建成功不等于已安装运行。14张组件/原生 Shell Golden 使用打包字体、Flutter 3.47.2 / Windows 测试宿主，精确像素比较；Linux明确跳过这14张，运行其余68项测试，Windows CI执行Golden。只在审查视觉变更后对指定测试使用 `--update-goldens`，日常测试不得更新基线。
 

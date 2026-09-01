@@ -35,9 +35,11 @@ Phase0的五份源指纹、完整App.tsx、基础HTML、`NEW_ICON_SPRITE`和`POL
 
 ## 云端与限制
 
-本报告先记录本地可复核事实。目标提交推送后，普通push/PR只做checks、Windows Debug和Android Debug；APK必须再由该commit的手动`workflow_dispatch`生成私有草稿Release，并下载核对metadata、SHA256SUMS和Debug签名。没有本机重建或上传旧APK。
+实现提交`9a3a3456c5e0f790846a542bb7b8012d6df5aaf1`的push运行33454810414与PR运行33454867772均成功；手动[运行33455489191](https://github.com/Z-YO-YI/YYMusic/actions/runs/33455489191)的checks、Windows Debug、Android Debug/验签/48项资源核验全部成功，并创建私有[草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-1af180fa49cdcbcdf3f3)。
 
-Golden是原生组件回归，不是网页截图或正式页面像素一致性证明。尚无Android真机/模拟器、TalkBack、IME、GPU性能或真实播放验收；Gallery状态不是用户曲库或业务实现。
+三个Release资产已独立下载：`YYMusic-debug.apk`、`SHA256SUMS`、`build-metadata.json`。metadata的仓库、完整commit、run URL、attempt、Flutter 3.47.2、Debug签名合同和175748485字节大小一致；三方SHA-256及GitHub API digest一致，APK哈希为`5e1b7ca66b8ddd801f60999e1373e858f8ce83ac4e16e6dd23e43851437cd860`。本机Android Build Tools 36.0.0再次验签，v2为true、v1/v3/v4为false。没有本机重建或上传旧APK；临时下载副本核验后已清理。
+
+Golden是原生组件回归，不是网页截图或正式页面像素一致性证明。云端构建与签名成功也不等于已在设备安装。尚无Android真机/模拟器、TalkBack、IME、GPU性能或真实播放验收；Gallery状态不是用户曲库或业务实现。Debug runner密钥不是稳定更新或正式发布签名。
 
 ## 主要文件
 

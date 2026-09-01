@@ -6,6 +6,7 @@
 - Track主动作与更多操作使用独立命中/语义边界，Phone隐藏时长并约束长来源标签；Album选中语义不错误声明为互斥单选组。
 - Gallery新增明确标注的本地Fixture，仅更新预览状态标签，不访问音频、数据库、网络、文件或持久化。
 - 新增4项Widget和3张390×1080/130%真实字体Golden，旧11张不改；完整82项Flutter、28项Node、严格分析与24份ZIP字节核验通过。
+- 9a3a345的GitHub手动运行33455489191完成checks、Android/Windows Debug、验签和资产核验；草稿Release三资产经独立下载复核，APK SHA-256为`5e1b7ca66b8ddd801f60999e1373e858f8ce83ac4e16e6dd23e43851437cd860`。
 
 ## 2026-09-01 — 私有草稿 Release APK 交付
 
