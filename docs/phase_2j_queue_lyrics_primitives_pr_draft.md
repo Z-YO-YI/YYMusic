@@ -1,6 +1,6 @@
 # PR 草稿：Cross-platform queue and lyrics primitives
 
-Head：`feat/cross-platform-queue-lyrics-primitives`；Base：`feat/cross-platform-collection-cards@995016a`。Draft PR编号待推送后记录；不自动合并、不改写历史。
+Head：`feat/cross-platform-queue-lyrics-primitives`；Base：`feat/cross-platform-collection-cards@995016a`；[Draft PR #8](https://github.com/Z-YO-YI/YYMusic/pull/8)。不自动合并、不改写历史。
 
 ## 变更
 
@@ -13,7 +13,8 @@ Head：`feat/cross-platform-queue-lyrics-primitives`；Base：`feat/cross-platfo
 
 - 91个Dart文件格式无变更，严格分析0问题；完整131项Flutter通过，包含32张Windows宿主精确Golden，三张新增图已逐张视觉审计且旧29张不更新。
 - 28项Node、五份源指纹/44 SVG/52项派生产物与24个ZIP entry逐字节核验通过。
-- GitHub push、PR、手动双平台运行及草稿Release三资产复核待目标实现提交后记录，当前不沿用Phase2I证据。
+- 实现提交`a20e0fb`的push运行33475675911、PR运行33475736751及手动运行33476650469各自三个job全部成功。
+- 私有草稿Release三资产已下载复核；APK为175880481字节，SHA-256/API digest为`864a557af71841280ed938e80090a07e3bd7764a8e3680a17b6eef81e19af43f`，metadata身份一致、48份资产匹配且v2签名有效。
 
 ## 影响与未验收项
 
