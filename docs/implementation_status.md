@@ -1,6 +1,6 @@
 # 实施状态
 
-更新：2026-09-01。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。Phase3C的Track/Album/Artist映射与正式LibraryRepository已完成本地全量、GitHub Android/Windows与APK独立验证。其余Repository、安全存储、Dev Fixture和Controller仍未实现。
+更新：2026-09-01。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。Phase3D的Playlist/Favorite/History/Queue映射与正式CollectionRepository已完成实现及本地Flutter全量验证，目标提交的GitHub Android/Windows尚待验证。Lyrics/Source Repository、安全存储、Dev Fixture和Controller仍未实现。
 
 | 阶段/能力 | 状态 |
 | --- | --- |
@@ -20,13 +20,14 @@
 | Phase 3A Domain合同 | Track/Collection/Lyrics/Source模型、显式LoadState/错误分类、四类Repository及安全凭据Gateway已实现；无数据库或生产接线，见phase_3a_domain_contracts_report.md |
 | Phase 3B Drift Schema/Migration | 17张表、10索引、v1创建/审计/空队列状态、外键/约束、Schema快照和后台文件打开已实现；不接App启动，见phase_3b_database_schema_report.md |
 | Phase 3C LibraryRepository | Track/Album/Artist双向映射、事务upsert、分页/watch/可用性及脱敏失败已实现；不接App启动，见phase_3c_library_repository_report.md |
-| Phase 3D+ Repository/状态 | Collection/Lyrics/Source正式Repository、安全存储、Dev Fixture及Controller待分批交付 |
+| Phase 3D CollectionRepository | 歌单/条目、收藏、最近20首历史和可重复TrackRef队列已用Drift事务持久化；不接App启动，见phase_3d_collection_repository_report.md |
+| Phase 3E+ Repository/状态 | Lyrics/Source正式Repository、安全存储、Dev Fixture及Controller待分批交付 |
 | Phase 4 双平台音频 | 仅 POC 计划；没有真实播放验证 |
 | 后续页面、歌词、导入、来源、平台集成 | 未开始 |
 | GitHub APK交付 | Phase3C a155d65的手动运行33491551841创建私有草稿Release；183604101字节APK的三资产、metadata、SHA256SUMS、API digest、48份包内资产及v2单签名已独立复核 |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
-| Flutter format/analyze/test | Phase3C 116文件格式无变更、严格分析0问题、完整165项含32张原生Golden全部通过；9项Repository+1项Domain新测试通过 |
-| Windows / Android Debug构建 | Phase3C a155d65的push 33490505244、PR 33490538057与手动 33491551841均为三job success；本机Windows C++工具链仍受UAC限制 |
+| Flutter format/analyze/test | Phase3D 119文件格式无变更、严格分析0问题、完整175项含32张原生Golden全部通过；10项CollectionRepository真实SQLite新测试通过 |
+| Windows / Android Debug构建 | Phase3D目标实现commit尚待推送/云端验证；Phase3C云端仍为success，本机Windows C++工具链仍受UAC限制 |
 
 ## 保留的验收缺口与后续边界
 
@@ -38,6 +39,6 @@
 
 ## 仓库边界
 
-开发分支：feat/library-repository-drift，基于已拉取并同步的feat/database-schema-migrations@8f5b369。未在main/master直接开发；旧原型保留于归档提交。本批只增加Phase3C mapper/LibraryRepository、纯Dart直接依赖声明、测试与文档，v1 Schema不变。
+开发分支：feat/collection-repository-drift，基于已拉取并同步的feat/library-repository-drift@0fd7c0f。未在main/master直接开发；旧原型保留于归档提交。本批只增加Phase3D mapper/CollectionRepository、测试与文档，依赖和v1 Schema不变。
 
-此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问可读取本仓库运行和PR，不修改账号权限。Phase3C Draft PR #11、三条运行和新APK已按`a155d65`独立核验，未复用Phase3B APK。
+此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问可读取本仓库运行和PR，不修改账号权限。Phase3C证据保持有效；Phase3D Draft PR、运行和APK必须按新目标commit另行核验，不复用旧APK。

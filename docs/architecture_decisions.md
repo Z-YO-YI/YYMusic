@@ -163,3 +163,13 @@ TrackRef仍以sourceType/sourceId/trackId为主身份。由于当前Track合同�
 upsert在一个Drift transaction中先替换Track关联，再batch conflict-update主表/关联，最后重建Album credits与计数。任一失败整批回滚，外部watch只在提交后看到一致快照。分页在limit/offset前固定标题、来源与ID排序，使用`limit + 1`判定hasMore。
 
 Repository默认不拥有共享`AppDatabase`；显式`.owned`才在dispose关闭。生产initialize只执行user_version/quick_check/foreign_keys，官方`validateDatabaseSchema`留在测试，避免生产导入dev-only `drift_dev`。AppBootstrap在Dev Fixture和其余Repository策略完成前仍不打开DB。
+
+## ADR-025：CollectionRepository保留用户引用并原子替换队列（2026-09-01）
+
+Phase3D只实现`CollectionRepository`，不同时接Lyrics/Source/安全存储/Controller。Playlist、Entry、Favorite、History和Queue从Drift row返回前重走Domain构造；损坏枚举、时间、位置、引用或SQL异常只返回不含用户数据的`DomainFailure(databaseCorrupted)`。
+
+系统歌单的`isSystem/systemType`是不可变身份，同一systemType只能有一个且不允许删除。自定义歌单删除只使用Schema已定义的playlist→entries级联，不触及catalog。歌单条目整体替换前必须验证playlistId、唯一entryId和0起始连续position，之后在单事务内delete+batch insert。
+
+队列在单事务中先清除queue_state.current引用，再整体替换entries并写回current/updated。watch query显式`readsFrom`queue_state与queue_entries，外部只观察提交后快照。QueueEntry.id仍独立于TrackRef，同一曲目可重复。收藏幂等更新addedAt；历史按完整TrackRef删旧插新并裁剪到20条。
+
+用户集合不要求catalog Track存在，来源被删除或文件失效时仍保留TrackRef，由后续Library/Source状态标记不可用。Repository默认共享`AppDatabase`，只有`.owned`在幂等dispose时关闭；AppBootstrap在其余Phase3数据策略完成前仍不接线。

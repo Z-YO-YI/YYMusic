@@ -1,6 +1,6 @@
 # 原生基础验证矩阵
 
-保留Phase3B的155项Flutter检查，Phase3C新增9项真实SQLite Repository与1项Domain测试，共165项Flutter、29项Node；不包含其余Repository、安全存储、Dev Fixture、音频POC或用户音乐数据。当前结果集中在phase_3c_library_repository_report.md。
+保留Phase3C的165项Flutter检查，Phase3D新增10项真实SQLite CollectionRepository测试，共175项Flutter、29项Node；不包含Lyrics/Source Repository、安全存储、Dev Fixture、音频POC或用户音乐数据。当前结果集中在phase_3d_collection_repository_report.md。
 
 | 类别 | 已有自动检查 |
 | --- | --- |
@@ -32,6 +32,7 @@
 | Phase3A Domain合同 | 稳定TrackRef、独立QueueEntry/重复曲目、不可变JSON、UTC/连续位置、歌词时序/翻译、HTTPS/公开Header/受限映射、凭据与失败脱敏、分页运行时校验、Fake替换及Graph释放 |
 | Phase3B数据库 | v1精确17表/10索引、user_version/迁移审计/空队列状态、官方Schema验证、Track/Queue/Playlist/歌词约束、catalog/歌单外键级联、来源删除引用保留、敏感列白名单、后台文件打开与生成快照复现 |
 | Phase3C LibraryRepository | remote/local双向row映射、递归JSON/UTC/URI/枚举、稳定TrackRef、确定分页、关联watch单次提交、事务回滚、Album/Artist聚合/替换、availability/notFound、损坏row/SQL脱敏、生命周期与owned/shared DB |
+| Phase3D CollectionRepository | 歌单确定排序/系统身份保护、混合来源entries、连续位置校验、歌单/队列事务回滚、队列重复TrackRef/current/单次流、收藏幂等、历史去重20条/清空、损坏row脱敏与shared/owned DB |
 | Golden | 保留Windows Shell及既有组件29张；新增浅珊瑚/深翡翠/自定义白ReduceGlass队列歌词板3张，总计32张精确像素比较，旧基线不改 |
 
 ## CI

@@ -80,8 +80,15 @@ test('domain contracts stay independent and UI has no direct data access', () =>
   assert.match(repository, /insertAllOnConflictUpdate/);
   assert.match(repository, /limit\(request\.limit \+ 1, offset: request\.offset\)/);
   assert(!/CollectionRepository|MusicSourceRepository|SecureCredentialGateway|package:flutter/.test(repository));
+  const collectionRepository = read('lib/data/repositories/drift_collection_repository.dart');
+  assert.match(collectionRepository, /implements CollectionRepository/);
+  assert.match(collectionRepository, /transaction\(\(\) async/g);
+  assert.match(collectionRepository, /readsFrom: \{_database\.queueStateRecords, _database\.queueEntryRecords\}/);
+  assert.match(collectionRepository, /\.skip\(20\)/);
+  assert.match(collectionRepository, /\.limit\(20\)/);
+  assert(!/LyricsRepository|MusicSourceRepository|SecureCredentialGateway|package:flutter/.test(collectionRepository));
   const bootstrap = read('lib/app/app_bootstrap.dart');
-  assert(!/DriftLibraryRepository|AppDatabase/.test(bootstrap), 'Phase 3C must not open the database from AppBootstrap');
+  assert(!/DriftLibraryRepository|DriftCollectionRepository|AppDatabase/.test(bootstrap), 'Phase 3D must not open the database from AppBootstrap');
 });
 
 test('native runners are branded and Android release does not use debug signing', () => {
