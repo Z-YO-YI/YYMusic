@@ -141,6 +141,8 @@ abstract final class YYRadius {
   static const hero = 28.0, dialog = 30.0, phoneNavigation = 32.0;
   static const contextMenu = 20.0, toast = 14.0;
   static const albumArtwork = 20.0, trackArtwork = 10.0, trackRow = 14.0;
+  static const sourceCard = 16.0, sourceIcon = 13.0;
+  static const playlistCard = 20.0, playlistIcon = 14.0;
 }
 
 /// Variable axes preserve the non-hundred CSS weights instead of rounding them.
@@ -184,6 +186,12 @@ abstract final class YYTypography {
   static TextStyle get trackTitle => text(size: 12, weight: 670, height: 1.25);
   static TextStyle get trackMeta => text(size: 10, weight: 500, height: 1.3);
   static TextStyle get sourceChip => text(size: 9, weight: 650, height: 1.2);
+  static TextStyle get sourceName => text(size: 12, weight: 690, height: 1.25);
+  static TextStyle get sourceMeta => text(size: 9, weight: 500, height: 1.3);
+  static TextStyle get sourceState => text(size: 9, weight: 680, height: 1.2);
+  static TextStyle get playlistTitle =>
+      text(size: 13, weight: 720, height: 1.25);
+  static TextStyle get playlistMeta => text(size: 10, weight: 500, height: 1.3);
 }
 
 /// Short control transitions; YYThemeData can resolve their duration to zero.
@@ -250,6 +258,19 @@ abstract final class YYFeedbackMetrics {
   static const emptyIconSize = 24.0;
   static const bannerRadius = 15.0;
   static const skeletonRadius = 10.0;
+}
+
+/// Collection-card geometry from the final composed reference.
+abstract final class YYCollectionCardMetrics {
+  static const sourceMinHeight = 72.0;
+  static const sourcePadding = 12.0;
+  static const sourceIcon = 42.0;
+  static const sourceStatusDot = 6.0;
+  static const playlistPadding = 16.0;
+  static const phonePlaylistPadding = 13.0;
+  static const playlistIcon = 44.0;
+  static const phonePlaylistIcon = 40.0;
+  static const playlistTitleGap = 18.0;
 }
 
 /// Small visual geometry is deliberately separate from the 44dp hit area.

@@ -1,6 +1,6 @@
 # 实施状态
 
-更新：2026-09-01。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。当前推进到Phase2H：受控ThemeSwatch、EmptyState、ErrorBanner、Skeleton及跨平台Gallery Fixture已完成本地与GitHub双平台验证；本批云端APK、校验和、metadata、digest与v2签名已独立复核。这不是完整客户端或整个Phase2已完成。
+更新：2026-09-01。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。当前推进到Phase2I：受控SourceCard、PlaylistCard及跨平台Gallery Fixture已完成本地与GitHub双平台验证；本批云端APK、校验和、metadata、digest与v2签名已独立复核。这不是完整客户端或整个Phase2已完成。
 
 | 阶段/能力 | 状态 |
 | --- | --- |
@@ -14,14 +14,15 @@
 | Phase 2F 跨平台播放器表面 | Mini64与Desktop88/76受控组件、Android/Windows Gallery Fixture已实现；真实音频和正式Shell接线不在本阶段，见phase_2f_player_surfaces_report.md |
 | Phase 2G 跨平台弹层原语 | ContextMenu/Dialog/BottomSheet/Toast及Android/Windows Gallery Fixture已实现；业务Overlay编排、路由、锚定、计时器和真实动作不在本阶段，见phase_2g_overlay_primitives_report.md |
 | Phase 2H 跨平台状态原语 | ThemeSwatch/EmptyState/ErrorBanner/Skeleton及Gallery Fixture已实现；真实异步状态、重试、Repository和假数据均不在本阶段，见phase_2h_state_surfaces_report.md |
+| Phase 2I 跨平台集合卡片 | SourceCard/PlaylistCard及Gallery Fixture已实现；来源连接、真实计数、歌单Repository/Create流程和持久化均不在本阶段，见phase_2i_collection_cards_report.md |
 | Phase 2 后续组件及视觉对照 | 更多基础组件及业务页未实现；网页对照和设备性能待验 |
 | Phase 3 Domain/数据库/状态 | 未开始；只有边界决策 |
 | Phase 4 双平台音频 | 仅 POC 计划；没有真实播放验证 |
 | 后续页面、歌词、导入、来源、平台集成 | 未开始 |
-| GitHub APK交付 | 9f71d14的运行33469832392完成编译、验签、资源核验及草稿Release三资产下载复核；见phase_2h_state_surfaces_report.md |
+| GitHub APK交付 | c2948e8的运行33472750596完成编译、验签、资源核验及草稿Release三资产下载复核；见phase_2i_collection_cards_report.md |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
-| Flutter format/analyze/test | 80文件格式无变更、严格分析0问题、完整113项含26张原生Golden全部通过；见phase_2h_state_surfaces_report.md |
-| Windows / Android Debug构建 | Phase2H实现提交的push、PR及手动运行三组均在GitHub两平台成功；本机Windows C++工具链仍受UAC限制 |
+| Flutter format/analyze/test | 85文件格式无变更、严格分析0问题、完整121项含29张原生Golden全部通过；见phase_2i_collection_cards_report.md |
+| Windows / Android Debug构建 | Phase2I实现提交的push、PR及手动运行三组均在GitHub两平台成功；本机Windows C++工具链仍受UAC限制 |
 
 ## 保留的验收缺口与后续边界
 
@@ -33,6 +34,6 @@
 
 ## 仓库边界
 
-开发分支：feat/cross-platform-state-surfaces，基于已拉取并同步的feat/cross-platform-overlay-primitives@6642ad0。未在main/master直接开发；旧原型保留于归档提交。本批只增加Phase2H受控状态原语、跨平台Gallery Fixture、测试与文档。
+开发分支：feat/cross-platform-collection-cards，基于已拉取并同步的feat/cross-platform-state-surfaces@dc2758c。未在main/master直接开发；旧原型保留于归档提交。本批只增加Phase2I受控集合卡片、跨平台Gallery Fixture、测试与文档。
 
-此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问已能读取本仓库运行和PR，不修改账号权限。Phase2H的push/PR/手动运行、Draft PR #6及新APK均已按完整实现commit实际核验，证据见phase_2h_state_surfaces_report.md。
+此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问已能读取本仓库运行和PR，不修改账号权限。Phase2I的push/PR/手动运行、Draft PR #7及新APK均已按完整实现commit实际核验，证据见phase_2i_collection_cards_report.md。

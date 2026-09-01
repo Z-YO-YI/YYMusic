@@ -24,6 +24,8 @@ Phase2G已实现`YYContextMenu`、`YYDialog`、Phone适配`YYBottomSheet`与`YYT
 
 Phase2H已实现`YYThemeSwatch`、`YYEmptyState`、`YYErrorBanner`与`YYSkeleton`，并将Gallery五种强调色改用Swatch。它们只表达受控状态；`idle/loading/data/empty/error`的转换、真实重试、来源失败、搜索结果和扫描进度仍由后续Controller/Feature所有，静态Fixture不能计作业务异步流程。
 
+Phase2I已实现`YYSourceCard`与`YYPlaylistCard`的受控原语，并应用基础HTML与App.tsx最终`POLISH_CSS`的圆角覆盖及Phone尺寸。来源标签/色调、歌单选择/Create动作均由调用方提供；没有创建Source/Playlist Domain、Repository、连接测试、数据库、凭据、真实歌曲计数或持久化。Gallery的确定性内容不能计作来源页或歌单业务流程已交付。
+
 ## 六条核心流程与行为边界
 
 | 流程 | 网页真实实现 | Flutter替代 |
