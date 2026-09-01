@@ -1,14 +1,15 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 2H 跨平台状态与反馈原语**。主题/字体/44 SVG、双平台导航、受控播放器/弹层、ThemeSwatch/EmptyState/ErrorBanner/Skeleton及共享Gallery已有。APK只由GitHub Actions构建；Phase2H实现提交的push、PR、手动双平台构建与云端APK已完成独立复核。不是完整音乐客户端，也不代表整个Phase2完成；真实异步业务、播放、数据库、业务Overlay编排、窗口Gateway和正式业务页尚未接入。
+当前阶段：**Android + Windows · Phase 2I 跨平台来源与歌单卡片**。主题/字体/44 SVG、双平台导航、受控播放器/弹层/状态原语、SourceCard/PlaylistCard及共享Gallery已有。APK只由GitHub Actions构建；Phase2I本地门禁已完成，云端双平台构建与本批APK复核待实现提交后执行。不是完整音乐客户端，也不代表整个Phase2完成；真实来源/歌单业务、播放、数据库、业务Overlay编排、窗口Gateway和正式业务页尚未接入。
 
-Phase2H本地门禁已完成：80个Dart文件格式无变更、严格分析0问题、113项Flutter与26张Windows宿主Golden、28项Node、五份设计指纹及24份ZIP逐字节复核全部通过。云端状态仍必须按目标commit另行验证。
+Phase2I本地门禁已完成：85个Dart文件格式无变更、严格分析0问题、121项Flutter与29张Windows宿主Golden、28项Node、五份设计指纹及24份ZIP逐字节复核全部通过。云端状态仍必须按目标commit另行验证。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
 ## 开发入口
 
 - [GitHub APK 构建与下载](docs/github_apk_build.md)、[CI 隐藏文件校验修复](docs/ci_reference_audit_fix.md)
+- [Phase 2I 集合卡片报告](docs/phase_2i_collection_cards_report.md)、[本批范围](docs/phase_2i_collection_cards_plan.md)、[本批 PR 草稿](docs/phase_2i_collection_cards_pr_draft.md)
 - [Phase 2H 状态原语报告](docs/phase_2h_state_surfaces_report.md)、[本批范围](docs/phase_2h_state_surfaces_plan.md)、[本批 PR 草稿](docs/phase_2h_state_surfaces_pr_draft.md)
 - [Phase 2G 弹层原语报告](docs/phase_2g_overlay_primitives_report.md)、[本批范围](docs/phase_2g_overlay_primitives_plan.md)、[本批 PR 草稿](docs/phase_2g_overlay_primitives_pr_draft.md)
 - [Phase 2F 播放器表面报告](docs/phase_2f_player_surfaces_report.md)、[本批范围](docs/phase_2f_player_surfaces_plan.md)、[本批 PR 草稿](docs/phase_2f_player_surfaces_pr_draft.md)
@@ -36,6 +37,8 @@ Windows按1440/1024断点显示240dp展开或72dp紧凑侧栏，导航驱动同�
 “弹层原语 · Fixture”展示最终Context Menu、Windows不透明Dialog或Android Phone Bottom Sheet，以及受控Toast；键盘/Esc/焦点与无障碍由原生Flutter组件处理。Fixture只更新本页文字，不创建正式Overlay/Route，不监听真实右键/长按，不启动Toast计时器，也不执行播放、队列、歌单或设备操作。
 
 “状态与反馈 · Fixture”展示播放队列空态、错误Banner与静止纯色Skeleton；强调色预设使用30px视觉/44dp命中的ThemeSwatch。重试只更新本页文字，不访问网络；组件不启动加载、计时器、Repository或生成假结果。
+
+“来源与歌单 · Fixture”展示调用方控制的来源状态、普通/选中/禁用/加载歌单与Create虚线卡片。点击只更新本页说明或选择；不测试连接、不读取凭据、不创建真实歌单，也不访问Repository、数据库、队列或持久化。
 
 ## Phase 0 审计入口
 
@@ -66,7 +69,7 @@ flutter build windows --debug --no-pub
 
 需要APK时，在[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)对目标分支手动运行工作流；成功后从该次运行生成的私有草稿Release下载。Phase2H实现提交9f71d14已由[运行33469832392](https://github.com/Z-YO-YI/YYMusic/actions/runs/33469832392)生成并完成[草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-c5e2a9460a012a4acfc7)复核，APK SHA-256为`b9494ff75b5176b97ac11360a4b496c5182acdc5b0e875087a25d299989f6231`。必须确认Android任务、Release标签、metadata完整commit和SHA256SUMS一致；普通push/PR只验证构建，不创建下载产物。APK不提交Git源码，证据见[Phase2H报告](docs/phase_2h_state_surfaces_report.md)，详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
 
-无已连接真机/模拟器或本机Windows原生运行验收证据，构建成功不等于已安装运行。26张组件/原生Shell Golden使用打包字体、Flutter 3.47.2 / Windows测试宿主，精确像素比较；Linux明确跳过这26张，运行其余87项测试，Windows CI执行Golden。只在审查视觉变更后对指定测试使用`--update-goldens`，日常测试不得更新基线。
+无已连接真机/模拟器或本机Windows原生运行验收证据，构建成功不等于已安装运行。29张组件/原生Shell Golden使用打包字体、Flutter 3.47.2 / Windows测试宿主，精确像素比较；Linux明确跳过这29张，运行其余92项测试，Windows CI执行Golden。只在审查视觉变更后对指定测试使用`--update-goldens`，日常测试不得更新基线。
 
 ## 设计与归档完整性
 
@@ -86,7 +89,7 @@ pwsh -NoProfile -File tools/verify_reference_archive.ps1
 
 ## Git 与历史原型
 
-仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。当前开发分支`feat/cross-platform-state-surfaces`基于已拉取并同步的`feat/cross-platform-overlay-primitives@6642ad0`，未在main/master开发。此前阶段提交保留；合并前需审核完整分支差异。经用户明确授权曾恢复临时GitHub API访问，不读取现有Git凭据、不持久化访问令牌；Git提交/推送和云端产物状态以每次交付时实际核验为准。
+仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。当前开发分支`feat/cross-platform-collection-cards`基于已拉取并同步的`feat/cross-platform-state-surfaces@dc2758c`，未在main/master开发。此前阶段提交保留；合并前需审核完整分支差异。经用户明确授权曾恢复临时GitHub API访问，不持久化访问令牌；Git提交/推送和云端产物状态以每次交付时实际核验为准。
 
 旧原型 13 个文件已原样迁入 [archive/sonic_gallery](archive/sonic_gallery/README.md)，并在 `f96197b` 单独提交；源码、两份测试、配置和图片可恢复，不再散落为根目录未跟踪文件。Phase 0 中“保留原地、未纳入提交”的说明是当时历史状态。
 

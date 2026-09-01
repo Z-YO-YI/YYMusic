@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-01 — Phase 2I 跨平台来源与歌单卡片
+
+- 新增受控`YYSourceCard`与`YYPlaylistCard`；来源状态标签/色调和歌单collection/create动作均由调用方提供，不创建业务模型或持久化。
+- Source保留72/12/42/16/6几何并应用App.tsx最终13图标圆角；Playlist应用最终20/14圆角、桌面16/44/18及Phone13/40响应式尺寸，Create使用纯色虚线边界。
+- Android/Windows共享确定性Gallery Fixture；不测试来源连接、不读取凭据、不生成真实歌曲计数、不访问Repository、数据库、队列或歌单写入。
+- 新增5项Widget与3张1280×720/130%集合卡片板，三张已逐张审计，旧26张Golden未更新。85文件格式、严格分析、完整121项Flutter、29张Golden、28项Node和24份ZIP字节核验均通过。
+- GitHub push/PR/手动双平台构建及本批APK复核待实现提交后执行，不能沿用Phase2H证据。
+
 ## 2026-09-01 — Phase 2H 跨平台状态与反馈原语
 
 - 新增受控`YYThemeSwatch`、`YYEmptyState`、`YYErrorBanner`与`YYSkeleton`；Gallery五个强调色入口改用30px视觉/44dp命中的Swatch。
