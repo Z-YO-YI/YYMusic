@@ -1,6 +1,6 @@
 # 原生基础验证矩阵
 
-保留Phase2E的88项Flutter检查，Phase2F新增播放器Widget4项及Golden3项，共95项Flutter、28项Node；不包含网页视觉对照、真实音频POC或用户音乐数据。当前结果集中在phase_2f_player_surfaces_report.md。
+保留Phase2F的95项Flutter检查，Phase2G新增弹层Widget6项及Golden3项，共104项Flutter、28项Node；不包含网页视觉对照、真实音频POC或用户音乐数据。当前结果集中在phase_2g_overlay_primitives_report.md。
 
 | 类别 | 已有自动检查 |
 | --- | --- |
@@ -25,13 +25,14 @@
 | Phase2D内容组件 | Album/Track几何、Hover/Pressed/Focus/Disabled/Selected或Playing/Loading、主动作与更多动作分离、键盘/语义、130%/390/600、Phone隐藏时长与长来源省略、Gallery仅本地状态 |
 | Phase2E Windows Chrome | 42工具区、240/72侧栏、3×18选中条、Profile/Source状态、Hover/Pressed/Focus、Tab/Enter、Tooltip、独立窗口Fixture动作；正式Shell无假窗口/在线状态 |
 | Phase2F播放器表面 | Mini64、Desktop88/76、封面54/50/48、视觉控制34/42与44命中；独立动作、语义/键盘、进度预览/提交/取消、音量、低宽降级、Loading/Disabled；不调用音频/队列/系统/持久化 |
-| Golden | 保留Windows Shell及既有组件17张；新增浅珊瑚/深翡翠/自定义白ReduceGlass播放器组件板3张，总计20张精确像素比较，旧基线不改 |
+| Phase2G弹层原语 | Context Menu 224/244/20/7/44、Dialog 680/30/72、Phone Sheet、Toast 42/420/14；受控动作、禁用/加载、方向键/Tab/Enter/Space/Esc、焦点闭环/恢复、live region、130%与Reduce Motion；不插入业务Overlay/Route/计时器 |
+| Golden | 保留Windows Shell及既有组件20张；新增浅珊瑚/深翡翠/自定义白ReduceGlass弹层组件板3张，总计23张精确像素比较，旧基线不改 |
 
 ## CI
 
 `.github/workflows/foundation.yml`：checks 在 Ubuntu24.04 跑 Node/PowerShell 源核验、Dart格式/严格分析/Flutter测试；checks 成功后独立 Windows2025 Debug 和 Ubuntu Android Debug 构建。push feat/fix、PR或手动运行触发，超时20/30分钟。Android执行验签/48文件比对/三文件白名单；只有手动workflow_dispatch在全部门禁后创建私有draft/prerelease，普通push/PR不创建下载产物。个人令牌不注入runner，checkout不保留凭据。
 
-20张Golden按Windows宿主标记，Linux明确跳过（非静默通过），Windows job构建前执行`flutter test --tags windows-golden`；其余75个Flutter测试仍在checks执行。没有删除或跳过原有回归，CI自动发现新增文件。远程状态须按目标commit单独核验，本地通过不冒充远程通过。
+23张Golden按Windows宿主标记，Linux明确跳过（非静默通过），Windows job构建前执行`flutter test --tags windows-golden`；其余81个Flutter测试仍在checks执行。没有删除或跳过原有回归，CI自动发现新增文件。远程状态须按目标commit单独核验，本地通过不冒充远程通过。
 
 云端交付增量：1项YAML门禁测试、4项Node元数据/拒绝本地打包测试。APK必须在build→signature→assets→package均成功后上传，不使用always/continue-on-error；metadata不复制环境变量或秘密，下载URL必须属于本run。4be8ba2的手动运行已完成既有交付复核；每个新commit仍须重新取得运行证据。
 
