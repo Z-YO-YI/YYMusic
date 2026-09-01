@@ -18,6 +18,7 @@ class YYControlAction extends StatefulWidget {
     this.toggled,
     this.loading = false,
     this.focusNode,
+    this.inMutuallyExclusiveGroup = true,
   });
   final String label;
   final VoidCallback? onActivate;
@@ -25,6 +26,7 @@ class YYControlAction extends StatefulWidget {
   final bool? selected, toggled;
   final bool loading;
   final FocusNode? focusNode;
+  final bool inMutuallyExclusiveGroup;
   @override
   State<YYControlAction> createState() => _YYControlActionState();
 }
@@ -48,7 +50,8 @@ class _YYControlActionState extends State<YYControlAction> {
     button: widget.toggled == null,
     toggled: widget.toggled,
     selected: widget.selected,
-    inMutuallyExclusiveGroup: widget.selected != null,
+    inMutuallyExclusiveGroup:
+        widget.selected != null && widget.inMutuallyExclusiveGroup,
     enabled: _enabled,
     focusable: _enabled,
     focused: _hasFocus,

@@ -6,6 +6,8 @@ Phase2B增量：Android Shell使用原生YYMobileBottomNavigation/YYTabletNaviga
 
 Phase2C增量：YYToggle/YYSegmentedControl共用内部YYControlAction的触控、键盘和语义，不自行持久化；选中值来自调用方。YYSearchField使用调用方TextEditingController，选择/IME/剪贴板动作由Flutter编辑层处理，不创建搜索Repository；自有FocusNode随组件释放，外部Controller/FocusNode不释放。Gallery持有示例query/filter并通过原根Controller更新外观，ScrollNotificationObserver协调选择浮层与滚动。
 
+Phase2D增量：YYAlbumCard与YYTrackTile复用Theme、Typography、Artwork、Button及内部动作层，只接收受控选中/播放/加载状态与回调。Track主动作和更多动作各自拥有语义与焦点边界，不导入播放器或菜单实现；Gallery只更新本页Fixture标签。手机隐藏时长并限制来源标签宽度，Tablet/桌面保留时长。
+
 这份文件描述已经存在的工程骨架，不把 Phase 0 的未来目录全部冒充实现。正式代码位于根 lib；旧原型和 Web 参考隔离在 archive/design_reference。
 
 | 边界 | 已有责任 | 尚未实现 |
@@ -15,7 +17,7 @@ Phase2C增量：YYToggle/YYSegmentedControl共用内部YYControlAction的触控�
 | app/AppRouter | 私有 go_router，四个状态保留分支，根级 /player 和 /lyrics；暴露自有 AppNavigation | 业务详情、菜单层级和平台全屏返回协调 |
 | app/AdaptiveRoot | 实时 LayoutBuilder + 平台优先分类，选择三个 Shell；零尺寸时不动根依赖 | 生产级窗口约束/布局细化 |
 | shells | Android原生Phone/Tablet导航、Windows骨架导航、未接入的播放槽位；不直接网络/DB/音频 | Windows正式设计导航、业务布局、MiniPlayer |
-| design_system | Theme/Token/原始SVG/按钮/Surface/Profile、导航/Slider/Artwork、SearchField/SegmentedControl/Toggle | 业务卡片、更多表单、通用菜单/弹层等 |
+| design_system | Theme/Token/原始SVG/按钮/Surface/Profile、导航/Slider/Artwork、SearchField/SegmentedControl/Toggle、AlbumCard/TrackTile | 更多表单、通用菜单/弹层、MiniPlayer等 |
 | playback | 唯一事件订阅、播放状态传播、错误/销毁边界；默认后端明确 unavailable | 加载曲目、Seek、队列算法、系统媒体会话 |
 | domain / platform | LibraryRepository、FullscreenGateway 生命周期合同 | 具体实现和平台能力 |
 | shared/FoundationButton | 仍用于工程骨架内容及Windows导航；44px 命中区、Semantics/键盘激活 | 后续业务页以对应YY组件逐步替换 |
