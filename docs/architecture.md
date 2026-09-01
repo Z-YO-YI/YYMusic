@@ -10,6 +10,8 @@ Phase2D增量：YYAlbumCard与YYTrackTile复用Theme、Typography、Artwork、Bu
 
 Phase2E增量：Windows Shell使用受控`YYWindowsSidebar`驱动四条现有路由，按1440/1024断点采用240/72dp形态；`YYWindowToolbar`保持42dp结构。正式Shell在窗口Gateway接入前隐藏应用内窗口按钮，由系统原生边框提供真实能力。Windows与Android共享`/design-system`路由，Windows额外展示明确标注的Toolbar/Sidebar Fixture。`YYGlassPanel`只服务父约束面板，既有Android `YYGlassSurface`的1dp高光占位和几何不变。
 
+Phase2F增量：`YYMiniPlayer`和`YYDesktopPlayerBar`接收只读`YYNowPlayingViewData`与独立回调，复用最终SVG、Theme、Glass、Slider和Artwork；它们不读取播放/队列Controller，也不推进时间或执行循环算法。Android/Windows Gallery各自持有明确标注的本页Fixture。正式Shell的播放槽位继续保持“未接入”，等待Phase4播放真相和Phase5平台集成后由Feature/Presenter映射，不能把Fixture接入生产路由。
+
 这份文件描述已经存在的工程骨架，不把 Phase 0 的未来目录全部冒充实现。正式代码位于根 lib；旧原型和 Web 参考隔离在 archive/design_reference。
 
 | 边界 | 已有责任 | 尚未实现 |
@@ -18,8 +20,8 @@ Phase2E增量：Windows Shell使用受控`YYWindowsSidebar`驱动四条现有路
 | app/DependencyGraph | 创建并释放 PlaybackController、QueueController、ViewState；可注入 AudioEngine/Repository/Gateway | Phase 3 模型和正式仓储、Phase 4 音频 |
 | app/AppRouter | 私有 go_router，四个状态保留分支，根级 /player、/lyrics及跨平台/design-system；暴露自有 AppNavigation | 业务详情、菜单层级和平台全屏返回协调 |
 | app/AdaptiveRoot | 实时 LayoutBuilder + 平台优先分类，选择三个 Shell；零尺寸时不动根依赖 | 生产级窗口约束/布局细化 |
-| shells | Android原生Phone/Tablet导航、Windows 240/72受控导航与42工具区、三端未接入播放槽位；不直接网络/DB/音频 | Windows平台窗口Gateway、Inspector业务、MiniPlayer |
-| design_system | Theme/Token/原始SVG/按钮/Surface/Profile、Android与Windows导航、Tooltip/Toolbar、Slider/Artwork、SearchField/SegmentedControl/Toggle、AlbumCard/TrackTile | 更多表单、通用菜单/弹层、MiniPlayer等 |
+| shells | Android原生Phone/Tablet导航、Windows 240/72受控导航与42工具区、三端未接入播放槽位；不直接网络/DB/音频 | Windows平台窗口Gateway、Inspector业务、正式播放器接线 |
+| design_system | Theme/Token/原始SVG/按钮/Surface/Profile、Android与Windows导航、Tooltip/Toolbar、Slider/Artwork、SearchField/SegmentedControl/Toggle、AlbumCard/TrackTile、MiniPlayer/DesktopPlayerBar | 更多表单、通用菜单/弹层等 |
 | playback | 唯一事件订阅、播放状态传播、错误/销毁边界；默认后端明确 unavailable | 加载曲目、Seek、队列算法、系统媒体会话 |
 | domain / platform | LibraryRepository、FullscreenGateway 生命周期合同 | 具体实现和平台能力 |
 | shared/FoundationButton | 仍用于工程骨架内容中的临时路由验证；44px命中区、Semantics/键盘激活 | 后续业务页以对应YY组件逐步替换 |

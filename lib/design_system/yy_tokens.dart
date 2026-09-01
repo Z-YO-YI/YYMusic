@@ -214,6 +214,21 @@ abstract final class YYWindowsMetrics {
   static const compactGap = 12.0;
 }
 
+/// Player bar geometry from the audited HTML; hit targets remain 44dp.
+abstract final class YYPlayerMetrics {
+  static const miniHeight = 64.0;
+  static const desktopHeight = 88.0;
+  static const desktopCompactHeight = 76.0;
+  static const miniRadius = 21.0;
+  static const desktopRadius = 24.0;
+  static const desktopCompactRadius = 22.0;
+  static const miniArtwork = 48.0;
+  static const desktopArtwork = 54.0;
+  static const desktopCompactArtwork = 50.0;
+  static const controlVisual = 34.0;
+  static const primaryControlVisual = 42.0;
+}
+
 /// Small visual geometry is deliberately separate from the 44dp hit area.
 abstract final class YYSliderMetrics {
   static const trackHeight = 3.0, thumbDiameter = 14.0, outerRing = 3.0;

@@ -1,12 +1,13 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 2E Windows导航基础**。主题/字体/44 SVG、Android手机/平板导航、Windows 240/72侧栏与42工具区，以及共享组件Gallery已有。APK只由GitHub Actions构建；本阶段实现提交的云端包已完成下载、校验和、metadata、API digest及签名复核。不是完整音乐客户端，也不代表整个Phase2完成；真实播放、数据库、窗口Gateway和正式业务页尚未接入。
+当前阶段：**Android + Windows · Phase 2F 跨平台播放器表面**。主题/字体/44 SVG、双平台导航、Mini64与Desktop88/76受控播放器，以及共享组件Gallery已有。APK只由GitHub Actions构建；本阶段目标提交的push、PR、手动双平台构建与云端APK已完成独立复核。不是完整音乐客户端，也不代表整个Phase2完成；真实播放、数据库、窗口Gateway和正式业务页尚未接入。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
 ## 开发入口
 
 - [GitHub APK 构建与下载](docs/github_apk_build.md)、[CI 隐藏文件校验修复](docs/ci_reference_audit_fix.md)
+- [Phase 2F 播放器表面报告](docs/phase_2f_player_surfaces_report.md)、[本批范围](docs/phase_2f_player_surfaces_plan.md)、[本批 PR 草稿](docs/phase_2f_player_surfaces_pr_draft.md)
 - [Phase 2E 跨平台报告](docs/phase_2e_cross_platform_report.md)、[本批范围](docs/phase_2e_cross_platform_plan.md)、[本批 PR 草稿](docs/phase_2e_cross_platform_pr_draft.md)
 - [Phase 2D 报告](docs/phase_2d_android_report.md)、[本批范围](docs/phase_2d_android_plan.md)、[本批 PR 草稿](docs/phase_2d_android_pr_draft.md)
 - [Phase 2C 报告](docs/phase_2c_android_report.md)、[本批范围](docs/phase_2c_android_plan.md)、[本批 PR 草稿](docs/phase_2c_android_pr_draft.md)
@@ -25,6 +26,8 @@ Android 启动后，底部或左侧导航可切换首页、搜索、音乐库、
 “内容组件 · Fixture”展示AlbumCard和TrackTile的默认、选中/播放、禁用与加载状态。点击专辑、曲目或更多按钮只修改预览页状态标签，不开始播放、不打开菜单，也不读取曲库；Phone隐藏时长，Tablet/桌面显示时长。
 
 Windows按1440/1024断点显示240dp展开或72dp紧凑侧栏，导航驱动同一组四条路由；1440布局额外保留320dp Inspector结构位。首页同样可进入设计预览，Windows Chrome Fixture只验证按钮、Tooltip和侧栏状态，不调用系统窗口或伪造在线音乐源。正式窗口控制继续使用系统原生边框，待后续Gateway接入。
+
+“播放器表面 · Fixture”在Android展示64dp Mini Player，在Windows展示88/76dp Desktop Player；播放、下一首、进度、音量、随机/循环、歌词、收藏和队列均为独立的受控回调，只更新预览页状态。它不调用AudioEngine、QueueController、系统媒体会话、数据库或持久化，正式Shell仍保留未接入槽位。
 
 ## Phase 0 审计入口
 
@@ -53,9 +56,9 @@ flutter build windows --debug --no-pub
 
 工具链完整后使用 `flutter run -d windows` 或 `flutter run -d <android-device-id>`。不要重新运行 flutter create 覆盖现有工程。Android 发行签名未配置，禁止使用 Debug 签名冒充 Release。
 
-需要APK时，在[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)对目标分支手动运行工作流；成功后从该次运行生成的私有草稿Release下载。Phase2E实现提交86d5cf5已由[运行33459298221](https://github.com/Z-YO-YI/YYMusic/actions/runs/33459298221)生成并完成[草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-5fff7c5595429dc428bf)复核，APK SHA-256为`ee0030157e359d959373af760a09c4c23c7c6b7a0943a0771ecaf13bbd051a08`。必须确认Android任务、Release标签、metadata完整commit和SHA256SUMS一致；普通push/PR只验证构建，不创建下载产物。旧本机APK不是本批云端产物，APK不提交Git源码。证据见[Phase2E报告](docs/phase_2e_cross_platform_report.md)，详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
+需要APK时，在[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)对目标分支手动运行工作流；成功后从该次运行生成的私有草稿Release下载。Phase2F实现提交a1eacd9已由[运行33462929516](https://github.com/Z-YO-YI/YYMusic/actions/runs/33462929516)生成并完成[草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-9d76706cca2e06858535)复核，APK SHA-256为`df0b96062e96332206630ded3cc35117f244d31c079f2ec76c3f3b3d06a3254a`。必须确认Android任务、Release标签、metadata完整commit和SHA256SUMS一致；普通push/PR只验证构建，不创建下载产物。旧本机APK不是本批云端产物，APK不提交Git源码。证据见[Phase2F报告](docs/phase_2f_player_surfaces_report.md)，详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
 
-无已连接真机/模拟器或本机Windows原生运行验收证据，构建成功不等于已安装运行。17张组件/原生Shell Golden使用打包字体、Flutter 3.47.2 / Windows测试宿主，精确像素比较；Linux明确跳过这17张，运行其余71项测试，Windows CI执行Golden。只在审查视觉变更后对指定测试使用`--update-goldens`，日常测试不得更新基线。
+无已连接真机/模拟器或本机Windows原生运行验收证据，构建成功不等于已安装运行。20张组件/原生Shell Golden使用打包字体、Flutter 3.47.2 / Windows测试宿主，精确像素比较；Linux明确跳过这20张，运行其余75项测试，Windows CI执行Golden。只在审查视觉变更后对指定测试使用`--update-goldens`，日常测试不得更新基线。
 
 ## 设计与归档完整性
 
@@ -75,7 +78,7 @@ pwsh -NoProfile -File tools/verify_reference_archive.ps1
 
 ## Git 与历史原型
 
-仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。当前开发分支`feat/windows-navigation-foundation`基于已拉取并同步的`feat/android-content-cards@f5bbf52`，未在main/master开发。此前阶段提交保留；合并前需审核完整分支差异。经用户明确授权已恢复临时GitHub API访问，不读取现有Git凭据、不持久化访问令牌；Git提交/推送和云端产物状态以每次交付时实际核验为准。
+仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。当前开发分支`feat/cross-platform-player-surfaces`基于已拉取并同步的`feat/windows-navigation-foundation@99b664a`，未在main/master开发。此前阶段提交保留；合并前需审核完整分支差异。经用户明确授权已恢复临时GitHub API访问，不读取现有Git凭据、不持久化访问令牌；Git提交/推送和云端产物状态以每次交付时实际核验为准。
 
 旧原型 13 个文件已原样迁入 [archive/sonic_gallery](archive/sonic_gallery/README.md)，并在 `f96197b` 单独提交；源码、两份测试、配置和图片可恢复，不再散落为根目录未跟踪文件。Phase 0 中“保留原地、未纳入提交”的说明是当时历史状态。
 
