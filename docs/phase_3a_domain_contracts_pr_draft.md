@@ -1,6 +1,6 @@
 # PR 草稿：Domain models and repository contracts
 
-Head：`feat/domain-model-contracts`；Base：`feat/cross-platform-queue-lyrics-primitives@3c09ed7`。Draft PR编号待推送后记录；不自动合并、不改写历史。
+Head：`feat/domain-model-contracts`；Base：`feat/cross-platform-queue-lyrics-primitives@3c09ed7`；[Draft PR #9](https://github.com/Z-YO-YI/YYMusic/pull/9)。不自动合并、不改写历史。
 
 ## 变更
 
@@ -14,7 +14,8 @@ Head：`feat/domain-model-contracts`；Base：`feat/cross-platform-queue-lyrics-
 - 108个Dart文件格式无变更，严格分析0问题；完整147项Flutter通过，既有32张Windows精确Golden未更新。
 - 16项新Domain/Repository测试覆盖不可变性、UTC、队列重复/顺序、歌词、来源安全、Fake替换和释放。
 - 29项Node、五份源指纹/44 SVG/52项派生产物与24个ZIP entry逐字节核验通过。
-- GitHub push、PR、手动双平台运行及草稿Release复核待目标实现提交后记录。
+- 实现提交`8506afc`的push运行33480316280、PR运行33480358335及手动运行33481171269各自三个job全部成功。
+- 私有草稿Release三资产已下载复核；APK为175891537字节，SHA-256/API digest为`1500bd28956befbb697cbe160c388d25a1c900e6454b180bed4335aaec05b712`，metadata身份一致、48份资产匹配且v2单签名有效。
 
 ## 影响与未验收项
 
