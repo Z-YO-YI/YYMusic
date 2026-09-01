@@ -1,6 +1,6 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 2H 跨平台状态与反馈原语**。主题/字体/44 SVG、双平台导航、受控播放器/弹层、ThemeSwatch/EmptyState/ErrorBanner/Skeleton及共享Gallery已有。APK只由GitHub Actions构建；Phase2H目标提交的双平台运行和新APK仍待推送后核验。不是完整音乐客户端，也不代表整个Phase2完成；真实异步业务、播放、数据库、业务Overlay编排、窗口Gateway和正式业务页尚未接入。
+当前阶段：**Android + Windows · Phase 2H 跨平台状态与反馈原语**。主题/字体/44 SVG、双平台导航、受控播放器/弹层、ThemeSwatch/EmptyState/ErrorBanner/Skeleton及共享Gallery已有。APK只由GitHub Actions构建；Phase2H实现提交的push、PR、手动双平台构建与云端APK已完成独立复核。不是完整音乐客户端，也不代表整个Phase2完成；真实异步业务、播放、数据库、业务Overlay编排、窗口Gateway和正式业务页尚未接入。
 
 Phase2H本地门禁已完成：80个Dart文件格式无变更、严格分析0问题、113项Flutter与26张Windows宿主Golden、28项Node、五份设计指纹及24份ZIP逐字节复核全部通过。云端状态仍必须按目标commit另行验证。
 
@@ -64,7 +64,7 @@ flutter build windows --debug --no-pub
 
 工具链完整后使用 `flutter run -d windows` 或 `flutter run -d <android-device-id>`。不要重新运行 flutter create 覆盖现有工程。Android 发行签名未配置，禁止使用 Debug 签名冒充 Release。
 
-需要APK时，在[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)对目标分支手动运行工作流；成功后从该次运行生成的私有草稿Release下载。Phase2H目标提交尚未完成手动工作流与新APK复核；不得沿用Phase2G旧APK冒充本批产物。必须确认Android任务、Release标签、metadata完整commit和SHA256SUMS一致；普通push/PR只验证构建，不创建下载产物。APK不提交Git源码，详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
+需要APK时，在[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)对目标分支手动运行工作流；成功后从该次运行生成的私有草稿Release下载。Phase2H实现提交9f71d14已由[运行33469832392](https://github.com/Z-YO-YI/YYMusic/actions/runs/33469832392)生成并完成[草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-c5e2a9460a012a4acfc7)复核，APK SHA-256为`b9494ff75b5176b97ac11360a4b496c5182acdc5b0e875087a25d299989f6231`。必须确认Android任务、Release标签、metadata完整commit和SHA256SUMS一致；普通push/PR只验证构建，不创建下载产物。APK不提交Git源码，证据见[Phase2H报告](docs/phase_2h_state_surfaces_report.md)，详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
 
 无已连接真机/模拟器或本机Windows原生运行验收证据，构建成功不等于已安装运行。26张组件/原生Shell Golden使用打包字体、Flutter 3.47.2 / Windows测试宿主，精确像素比较；Linux明确跳过这26张，运行其余87项测试，Windows CI执行Golden。只在审查视觉变更后对指定测试使用`--update-goldens`，日常测试不得更新基线。
 
