@@ -34,7 +34,11 @@ Phase0五份源指纹、完整App.tsx、基础HTML、`NEW_ICON_SPRITE`与`POLISH
 
 ## 云端与限制
 
-Phase2I实现提交、Draft PR、push/PR/手动GitHub运行和本批草稿Release尚未创建；不能使用Phase2H运行冒充本批证据。提交后需分别确认Source checks、Windows Debug（含29张Golden）和Android Debug，并独立下载三资产复核metadata、SHA256SUMS、API digest与APK v2签名。
+实现提交`c2948e8e574ae1686ac1f087c23b392f551f3a4e`的push[运行33472070037](https://github.com/Z-YO-YI/YYMusic/actions/runs/33472070037)与PR[运行33472095784](https://github.com/Z-YO-YI/YYMusic/actions/runs/33472095784)均成功；两组各自的Source checks、Windows Debug（含29张Golden）和Android Debug三个job均逐项确认success。
+
+手动[运行33472750596](https://github.com/Z-YO-YI/YYMusic/actions/runs/33472750596)同样三个job全部成功，并创建私有[草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-531a214d60bd84b6ee43)。Release为draft/prerelease，目标为完整实现commit；仅有`YYMusic-debug.apk`、`SHA256SUMS`、`build-metadata.json`三个白名单资产。三者已独立下载，metadata的repository、commit、run URL、attempt、Flutter3.47.2、Debug临时签名身份与APK字段均一致。
+
+APK为175843741字节，本地SHA-256、SHA256SUMS、metadata及GitHub API digest四方均为`3035e3b5a031ef283af098514c78ee8264a5d03ed3aa71f335d177da3ad11417`。首次本地验签启动准确暴露当前进程没有Java路径，未把该次记为通过；使用已安装Android Studio JDK的进程级路径后，Build Tools36.0.0验证v2为true，v1/v3/v3.1/v4为false，且只有一个Android Debug signer。两次临时下载目录均经解析路径边界校验后清理。
 
 本机Windows C++工具链仍受远程UAC限制，因此不声称本机`flutter build windows`或安装运行成功。GitHub Windows Runner成功也不能替代Windows系统辅助技术/GPU或Android真机TalkBack/IME验收。APK继续使用临时Debug签名，不是正式发布包。
 

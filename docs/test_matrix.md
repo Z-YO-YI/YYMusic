@@ -46,4 +46,6 @@ Phase2G实现提交a56d4aa的push运行33465720644、PR运行33465784721与手�
 
 Phase2H实现提交9f71d14的push运行33468979883、PR运行33469047182与手动运行33469832392均为三job success。手动运行的草稿Release三资产已下载，APK为175828689字节，SHA256SUMS、metadata、API digest与`b9494ff75b5176b97ac11360a4b496c5182acdc5b0e875087a25d299989f6231`一致且v2签名有效；临时副本已清理。证据只适用于该实现提交。
 
+Phase2I实现提交c2948e8的push运行33472070037、PR运行33472095784与手动运行33472750596均为三job success。手动运行的草稿Release三资产已下载，APK为175843741字节，SHA256SUMS、metadata、API digest与`3035e3b5a031ef283af098514c78ee8264a5d03ed3aa71f335d177da3ad11417`一致且v2签名有效；临时副本已清理。证据只适用于该实现提交。
+
 Actions 固定 SHA，来源为维护者公开 refs 和说明：[checkout](https://github.com/actions/checkout)、[setup-node](https://github.com/actions/setup-node)、[setup-java](https://github.com/actions/setup-java)、[flutter-action](https://github.com/subosito/flutter-action)。静态配置验证不代表远程工作流已经通过；私有 CI 结果必须可读取后才记录成功。

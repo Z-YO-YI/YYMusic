@@ -1,6 +1,6 @@
 # 实施状态
 
-更新：2026-09-01。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。当前推进到Phase2I：受控SourceCard、PlaylistCard及跨平台Gallery Fixture已完成本地验证，GitHub双平台构建与本批APK复核待实现提交后执行。这不是完整客户端或整个Phase2已完成。
+更新：2026-09-01。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。当前推进到Phase2I：受控SourceCard、PlaylistCard及跨平台Gallery Fixture已完成本地与GitHub双平台验证；本批云端APK、校验和、metadata、digest与v2签名已独立复核。这不是完整客户端或整个Phase2已完成。
 
 | 阶段/能力 | 状态 |
 | --- | --- |
@@ -19,10 +19,10 @@
 | Phase 3 Domain/数据库/状态 | 未开始；只有边界决策 |
 | Phase 4 双平台音频 | 仅 POC 计划；没有真实播放验证 |
 | 后续页面、歌词、导入、来源、平台集成 | 未开始 |
-| GitHub APK交付 | 9f71d14的运行33469832392完成编译、验签、资源核验及草稿Release三资产下载复核；见phase_2h_state_surfaces_report.md |
+| GitHub APK交付 | c2948e8的运行33472750596完成编译、验签、资源核验及草稿Release三资产下载复核；见phase_2i_collection_cards_report.md |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
 | Flutter format/analyze/test | 85文件格式无变更、严格分析0问题、完整121项含29张原生Golden全部通过；见phase_2i_collection_cards_report.md |
-| Windows / Android Debug构建 | Phase2I云端运行待实现提交；最近Phase2H的push、PR及手动运行三组均成功，本机Windows C++工具链仍受UAC限制 |
+| Windows / Android Debug构建 | Phase2I实现提交的push、PR及手动运行三组均在GitHub两平台成功；本机Windows C++工具链仍受UAC限制 |
 
 ## 保留的验收缺口与后续边界
 
@@ -36,4 +36,4 @@
 
 开发分支：feat/cross-platform-collection-cards，基于已拉取并同步的feat/cross-platform-state-surfaces@dc2758c。未在main/master直接开发；旧原型保留于归档提交。本批只增加Phase2I受控集合卡片、跨平台Gallery Fixture、测试与文档。
 
-此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问已能读取本仓库运行和PR，不修改账号权限。Phase2I的push/PR/手动运行和新APK尚未发生；最新已完成证据仍是Phase2H的Draft PR #6及phase_2h_state_surfaces_report.md。
+此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问已能读取本仓库运行和PR，不修改账号权限。Phase2I的push/PR/手动运行、Draft PR #7及新APK均已按完整实现commit实际核验，证据见phase_2i_collection_cards_report.md。

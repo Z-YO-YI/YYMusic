@@ -1,6 +1,6 @@
 # PR 草稿：Cross-platform source and playlist cards
 
-Head：`feat/cross-platform-collection-cards`；Base：`feat/cross-platform-state-surfaces@dc2758c`。Draft PR待实现提交推送后创建；不自动合并、不改写历史。
+Head：`feat/cross-platform-collection-cards`；Base：`feat/cross-platform-state-surfaces@dc2758c`；[Draft PR #7](https://github.com/Z-YO-YI/YYMusic/pull/7)。不自动合并、不改写历史。
 
 ## 变更
 
@@ -13,7 +13,8 @@ Head：`feat/cross-platform-collection-cards`；Base：`feat/cross-platform-stat
 
 - 85个Dart文件格式无变更，严格分析0问题；完整121项Flutter通过，包含29张Windows宿主精确Golden，三张新增图已逐张视觉审计且旧26张不更新。
 - 28项Node、五份源指纹/44 SVG/52项派生产物与24个ZIP entry逐字节核验通过。
-- GitHub push/PR/手动三组双平台运行与云端APK复核待实现提交后补充。
+- 实现提交`c2948e8`的push运行33472070037、PR运行33472095784及手动运行33472750596各自三个job全部成功。
+- 私有草稿Release三资产已下载复核；APK为175843741字节，SHA-256/API digest为`3035e3b5a031ef283af098514c78ee8264a5d03ed3aa71f335d177da3ad11417`，metadata身份一致且v2签名有效。
 
 ## 影响与未验收项
 
