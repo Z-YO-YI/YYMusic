@@ -82,6 +82,44 @@ void main() {
       );
       expect(_localTrack().contentUri, Uri.parse('content://media/audio/42'));
     });
+
+    test('rejects non-finite values before metadata reaches JSON storage', () {
+      expect(
+        () => Track(
+          id: 'not-finite',
+          sourceId: 'source-rest',
+          sourceType: MusicSourceType.rest,
+          title: 'Invalid metadata',
+          artists: const ['Unknown'],
+          duration: Duration.zero,
+          metadata: const {'gain': double.nan},
+        ),
+        throwsArgumentError,
+      );
+      expect(
+        () => Track(
+          id: 'album-pair',
+          sourceId: 'source-rest',
+          sourceType: MusicSourceType.rest,
+          title: 'Invalid album',
+          artists: const ['Unknown'],
+          duration: Duration.zero,
+          albumId: 'album-only',
+        ),
+        throwsArgumentError,
+      );
+      expect(
+        () => Track(
+          id: 'duplicate-artists',
+          sourceId: 'source-rest',
+          sourceType: MusicSourceType.rest,
+          title: 'Invalid artists',
+          artists: const ['Same', 'Same'],
+          duration: Duration.zero,
+        ),
+        throwsArgumentError,
+      );
+    });
   });
 
   group('Collections and queue identity', () {

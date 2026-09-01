@@ -153,3 +153,13 @@ Android和Windows共用Drift的`NativeDatabase.createInBackground`，SQLite由3.
 schemaVersion1只处理首装`onCreate`并记录审计行，不伪造v1→v2。`make-migrations`生成的v1 JSON一经本批提交即不可覆盖；未来必须升版本、保留旧快照并用官方SchemaVerifier和数据完整性测试验证。生成的g.dart和快照在CI重新生成后要求Git零差异。
 
 普通来源配置仍可能包含公开Header JSON，但数据库没有Authorization/API Key/Token/Password等独立列，只保存`credential_ref`；所有写入必须经过后续Repository对Phase3A MusicSourceConfig的运行时验证。安全凭据永不进入Drift row、迁移Fixture或日志。
+
+## ADR-024：LibraryRepository使用原子catalog事务与脱敏row映射（2026-09-01）
+
+Phase3C只实现`LibraryRepository`，不同时接Collection/Source/安全存储/Controller。Track/Album/Artist从Drift row返回前必须重走Domain构造验证；枚举、URI、JSON、时间或关联损坏统一转成无原始数据的`DomainFailure(databaseCorrupted)`，不将SQLite异常、路径、URI或metadata写入日志安全封装。
+
+TrackRef仍以sourceType/sourceId/trackId为主身份。由于当前Track合同只包含艺术家显示名，data层用`SHA-256(sourceId + NUL + exact UTF-8 name)`生成source范围内可复现的派生artist ID；禁止随机/时间ID。如来源适配器需保留真实artist ID，必须先以独立Domain升级批次解决，不暗中塞进metadata。
+
+upsert在一个Drift transaction中先替换Track关联，再batch conflict-update主表/关联，最后重建Album credits与计数。任一失败整批回滚，外部watch只在提交后看到一致快照。分页在limit/offset前固定标题、来源与ID排序，使用`limit + 1`判定hasMore。
+
+Repository默认不拥有共享`AppDatabase`；显式`.owned`才在dispose关闭。生产initialize只执行user_version/quick_check/foreign_keys，官方`validateDatabaseSchema`留在测试，避免生产导入dev-only `drift_dev`。AppBootstrap在Dev Fixture和其余Repository策略完成前仍不打开DB。

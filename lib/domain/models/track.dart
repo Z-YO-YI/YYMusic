@@ -71,6 +71,9 @@ final class Track {
     final safeAlbumTitle = albumTitle == null
         ? null
         : DomainValidation.text(albumTitle, 'albumTitle', maxLength: 1024);
+    if ((safeAlbumId == null) != (safeAlbumTitle == null)) {
+      throw ArgumentError('albumId and albumTitle must be provided together');
+    }
     final safeLocalPath = localPath == null
         ? null
         : DomainValidation.text(localPath, 'localPath', maxLength: 4096);

@@ -35,6 +35,9 @@ abstract final class DomainValidation {
     if (copy.isEmpty) {
       throw ArgumentError.value(copy, field, 'must not be empty');
     }
+    if (copy.toSet().length != copy.length) {
+      throw ArgumentError.value(copy, field, 'must not contain duplicates');
+    }
     return List<String>.unmodifiable(copy);
   }
 
@@ -71,6 +74,13 @@ abstract final class DomainValidation {
   }
 
   static Object? _jsonValue(Object? value, String field) {
+    if (value is double && !value.isFinite) {
+      throw ArgumentError.value(
+        value,
+        field,
+        'must contain only finite JSON numbers',
+      );
+    }
     if (value == null || value is bool || value is num || value is String) {
       return value;
     }

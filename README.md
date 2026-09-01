@@ -1,13 +1,14 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 3B Drift Schema 与首版 Migration**。Phase2通用原语、三套Shell骨架、Phase3A Domain合同，以及17张Drift表/首版创建迁移/后台双平台打开函数已有。Phase3B的本地门禁、GitHub Android/Windows Debug和新APK证据均已完成。不是完整音乐客户端；正式Repository/安全存储、业务Controller、播放、正式页面和平台Gateway尚未接入。
+当前阶段：**Android + Windows · Phase 3C Drift LibraryRepository**。Phase2通用原语、三套Shell骨架、Phase3A Domain合同、Phase3B 17张Drift表/首版Migration，以及Track/Album/Artist映射与首个正式LibraryRepository已有。Phase3C目标提交的GitHub Android/Windows和新APK证据已独立核验。不是完整音乐客户端；其余Repository/安全存储、Dev Fixture、业务Controller、播放、正式页面和平台Gateway尚未接入。
 
-Phase3B门禁已完成：锁文件严格复现、113个Dart文件格式无变更、严格分析0问题、155项Flutter与32张Windows宿主Golden、29项Node、生成代码/v1快照复现及24份ZIP逐字节复核全部通过；实现commit的push、PR和手动运行也均为三job success。
+Phase3C当前门禁：116个Dart文件格式无变更、严格分析0问题，9项真实SQLite Repository与1项Domain增量测试通过，完整165项Flutter含32张Windows宿主Golden、29项Node、生成代码/v1快照零差异及24份ZIP逐字节复核全部通过。实现提交`a155d65`的push、PR和手动运行均为三job success。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
 ## 开发入口
 
+- [Phase 3C LibraryRepository报告](docs/phase_3c_library_repository_report.md)、[本批范围](docs/phase_3c_library_repository_plan.md)、[本批 PR 草稿](docs/phase_3c_library_repository_pr_draft.md)
 - [Phase 3B 数据库报告](docs/phase_3b_database_schema_report.md)、[本批范围](docs/phase_3b_database_schema_plan.md)、[本批 PR 草稿](docs/phase_3b_database_schema_pr_draft.md)
 - [Phase 3A Domain 合同报告](docs/phase_3a_domain_contracts_report.md)、[本批范围](docs/phase_3a_domain_contracts_plan.md)、[本批 PR 草稿](docs/phase_3a_domain_contracts_pr_draft.md)
 - [Phase 2J 队列与歌词原语报告](docs/phase_2j_queue_lyrics_primitives_report.md)、[本批范围](docs/phase_2j_queue_lyrics_primitives_plan.md)、[本批 PR 草稿](docs/phase_2j_queue_lyrics_primitives_pr_draft.md)
@@ -49,6 +50,8 @@ Phase3A数据合同不新增可见页面。TrackRef保留来源身份，QueueEnt
 
 Phase3B仍不新增可见页面。Drift schema覆盖主指令15张建议表，并用`queue_state`保存空队列游标/更新时间、`schema_migrations`记录首版创建；SQLite文件只在显式调用后台打开函数时写入应用支持目录。当前AppBootstrap没有调用它，因此启动应用不会创建数据库或Fixture。
 
+Phase3C仍不新增可见页面或启动接线。DriftLibraryRepository提供事务upsert、确定分页、关联感知watch、TrackRef查询和availability更新；不扫描文件、不访问网络/凭据、不生成假曲库。
+
 ## Phase 0 审计入口
 
 - [Phase 0 完成报告](docs/phase_0_report.md)与[阶段计划及出口](docs/phase_0_plan.md)
@@ -76,7 +79,7 @@ flutter build windows --debug --no-pub
 
 工具链完整后使用 `flutter run -d windows` 或 `flutter run -d <android-device-id>`。不要重新运行 flutter create 覆盖现有工程。Android 发行签名未配置，禁止使用 Debug 签名冒充 Release。
 
-需要APK时，在[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)对目标分支手动运行工作流；成功后从该次运行生成的私有草稿Release下载。Phase3B实现提交`31121d4`已由[运行33485752421](https://github.com/Z-YO-YI/YYMusic/actions/runs/33485752421)生成并完成[草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-fede995dd640f1fdc4f6)复核，APK为183603621字节，SHA-256为`3bdd3a74f8344df0c5124ffe25eee8c01d0d8985639ed91ff9084dac67defc69`。必须确认Android任务、Release标签、metadata完整commit和SHA256SUMS一致；普通push/PR只验证构建，不创建下载产物。APK不提交Git源码，证据见[Phase3B报告](docs/phase_3b_database_schema_report.md)，详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
+需要APK时，在[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)对目标分支手动运行工作流；成功后从该次运行生成的私有草稿Release下载。Phase3C实现提交`a155d65`已由[运行33491551841](https://github.com/Z-YO-YI/YYMusic/actions/runs/33491551841)生成并完成[草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-9c1e5657ad5924a2461c)复核，APK为183604101字节，SHA-256为`ed964e21cbf6e4994c3829b330399d4b30a6ee31f80a8d3d1089b87f6d380be2`。必须确认Android任务、Release标签、metadata完整commit和SHA256SUMS一致；普通push/PR只验证构建，不创建下载产物。APK不提交Git源码，证据见[Phase3C报告](docs/phase_3c_library_repository_report.md)，详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
 
 无已连接真机/模拟器或本机Windows原生运行验收证据，构建成功不等于已安装运行。32张组件/原生Shell Golden使用打包字体、Flutter 3.47.2 / Windows测试宿主，精确像素比较；Linux明确跳过这32张，运行其余115项测试，Windows CI执行Golden。只在审查视觉变更后对指定测试使用`--update-goldens`，日常测试不得更新基线。
 
@@ -98,7 +101,7 @@ pwsh -NoProfile -File tools/verify_reference_archive.ps1
 
 ## Git 与历史原型
 
-仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。当前开发分支`feat/database-schema-migrations`基于已拉取并同步的`feat/domain-model-contracts@9ebee65`，未在main/master开发。此前阶段提交保留；合并前需审核完整分支差异。经用户明确授权曾恢复临时GitHub API访问，不持久化访问令牌；Git提交/推送和云端产物状态以每次交付时实际核验为准。
+仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。当前开发分支`feat/library-repository-drift`基于已拉取并同步的`feat/database-schema-migrations@8f5b369`，未在main/master开发。此前阶段提交保留；合并前需审核完整分支差异。经用户明确授权曾恢复临时GitHub API访问，不持久化访问令牌；Git提交/推送和云端产物状态以每次交付时实际核验为准。
 
 旧原型 13 个文件已原样迁入 [archive/sonic_gallery](archive/sonic_gallery/README.md)，并在 `f96197b` 单独提交；源码、两份测试、配置和图片可恢复，不再散落为根目录未跟踪文件。Phase 0 中“保留原地、未纳入提交”的说明是当时历史状态。
 

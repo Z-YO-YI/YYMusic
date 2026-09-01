@@ -67,3 +67,9 @@ Domain模型、Repository合同、SecureCredentialGateway和测试Fake只使用D
 官方Drift原生平台文档说明2.32起`NativeDatabase`在Android/Windows无需`sqlite3_flutter_libs`等额外原生包，SQLite由`sqlite3` build hooks随应用打包；因此不选`drift_flutter`及旧原生库组合，避免重复或过时二进制。默认文件通过`getApplicationSupportDirectory()`定位，使用`NativeDatabase.createInBackground`避免SQLite I/O阻塞UI isolate；应用本批不接线，不会在启动时创建数据库。
 
 依赖来源：[Drift](https://pub.dev/packages/drift)、[原生平台说明](https://drift.simonbinder.eu/platforms/vm/)、[SQLite build hooks](https://pub.dev/documentation/sqlite3/latest/topics/hook-topic.html)、[path_provider](https://pub.dev/packages/path_provider)、[迁移测试](https://drift.simonbinder.eu/migrations/tests/)。本批不新增网络、媒体、存储权限；SQLite文件属于应用私有支持目录，敏感凭据仍只允许SecureCredentialGateway保存。
+
+## Phase 3C Repository映射依赖结果
+
+`crypto` 3.0.7在Phase3B lockfile中已是pub.dev传递依赖；本批因生产mapper需要SHA-256派生可复现artist ID，将同一已锁版本声明为直接依赖。它是纯Dart、BSD-3-Clause，不新增Android/Windows插件、原生二进制、权限或运行时网络。来源：[crypto](https://pub.dev/packages/crypto)。
+
+Drift使用边界不变：事务、batch、watch和limit/offset只存在`data/repositories`，Domain/UI不导入。实现依据[transactions](https://drift.simonbinder.eu/dart_api/transactions/)、[writes](https://drift.simonbinder.eu/dart_api/writes/)、[streams](https://drift.simonbinder.eu/dart_api/streams/)和[selects](https://drift.simonbinder.eu/dart_api/selects/)；`drift_dev`继续仅属dev_dependencies，生产Repository不导入其Schema验证扩展。
