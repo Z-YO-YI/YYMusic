@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-01 — Phase 3E Drift LyricsRepository
+
+- 新增LyricsDocument严格JSON/row mapper与正式`DriftLyricsRepository`，不将Drift类型暴露到Domain/UI。
+- 缓存按完整TrackRef隔离，plain/synchronized逐行时间、双语文字、语言和偏移量可确定往返；upsert/remove不要求catalog row且删除幂等。
+- 非数组、未知/缺失字段、错误类型、kind/时间/顺序/翻译不一致、损坏缓存时间及SQLite异常统一返回脱敏DomainFailure。
+- 不修改v1 Schema/快照、不新增依赖/权限，不接AppBootstrap、LRC/网络、Fixture、Controller、UI或播放；6项真实SQLite、181项Flutter/32 Golden、122文件format、严格分析、29项Node、24项ZIP及生成/快照零差异已通过，GitHub结果待目标提交。
+
 ## 2026-09-01 — Phase 3D Drift CollectionRepository
 
 - 新增Playlist/Entry、Favorite、History和Queue严格row mapper与正式`DriftCollectionRepository`，不将Drift类型暴露到Domain/UI。
