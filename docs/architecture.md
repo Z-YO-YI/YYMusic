@@ -34,19 +34,21 @@ Phase3F增量：`data/repositories`新增MusicSource严格JSON mapper与`DriftMu
 
 Phase3G增量：`platform/secure_credentials`新增共用版本codec/串行store核心、flutter_secure_storage适配器及`AndroidSecureCredentialGateway`/`WindowsSecureCredentialGateway`。该实现只向调用者暴露`SensitiveCredential`和不透明随机引用，插件异常统一脱敏；凭据值不进Drift、preferences、日志或UI。Android禁止应用备份，Windows使用新存储路径。AppBootstrap/DependencyGraph仍不构造生产Gateway，等待Dev Fixture与凭据/来源事务策略。
 
+Phase3H增量：`AppDataServices`现在拥有单一数据库、四类正式Drift Repository和按Android/Windows选择的平台安全Gateway；`AppBootstrap`通过工厂异步建立并把项目合同注入根Graph，固定加载/失败文字且在失败、卸载和晚到完成时释放资源。默认`main.dart`只打开空白生产库，不写示例数据。独立`main_dev.dart`才使用内存数据库和禁用的`.invalid`来源，经正式Repository种入HTML审计Fixture；默认入口、UI和Shell均不能导入夹具或数据库实现。
+
 这份文件描述已经存在的工程骨架，不把 Phase 0 的未来目录全部冒充实现。正式代码位于根 lib；旧原型和 Web 参考隔离在 archive/design_reference。
 
 | 边界 | 已有责任 | 尚未实现 |
 | --- | --- | --- |
-| app/AppBootstrap | 根 ProviderScope，拥有单一 DependencyGraph | 数据库/权限/真实来源初始化 |
-| app/DependencyGraph | 创建并释放 PlaybackController、QueueController、ViewState；可注入 AudioEngine/LibraryRepository/Gateway；不自动打开数据库 | 其余Phase3 Repository接线和正式数据实现、Phase4音频 |
+| app/AppBootstrap | 异步建立Android/Windows生产数据作用域；根ProviderScope拥有单一DependencyGraph；固定、脱敏的加载/失败状态 | 权限、真实来源连接与启动恢复策略 |
+| app/DependencyGraph | 创建并释放PlaybackController、QueueController、ViewState和AppDataServices；暴露四类Repository与平台Gateway合同 | Phase4音频及后续业务Controller |
 | app/AppRouter | 私有 go_router，四个状态保留分支，根级 /player、/lyrics及跨平台/design-system；暴露自有 AppNavigation | 业务详情、菜单层级和平台全屏返回协调 |
 | app/AdaptiveRoot | 实时 LayoutBuilder + 平台优先分类，选择三个 Shell；零尺寸时不动根依赖 | 生产级窗口约束/布局细化 |
 | shells | Android原生Phone/Tablet导航、Windows 240/72受控导航与42工具区、三端未接入播放槽位；不直接网络/DB/音频 | Windows平台窗口Gateway、Inspector业务、正式播放器接线 |
 | design_system | Theme/Token/原始SVG/按钮/Surface/Profile、Android与Windows导航、Tooltip/Toolbar、Slider/Artwork、SearchField/SegmentedControl/Toggle、AlbumCard/TrackTile、MiniPlayer/DesktopPlayerBar、ContextMenu/Dialog/BottomSheet/Toast、ThemeSwatch/EmptyState/ErrorBanner/Skeleton、SourceCard/PlaylistCard、QueueTile/LyricsLine/LyricsPlayerDock | 业务弹层编排与页面级组合 |
 | playback | 唯一事件订阅、播放状态传播、错误/销毁边界；默认后端明确 unavailable | 加载曲目、Seek、队列算法、系统媒体会话 |
-| domain / platform | 稳定TrackRef/QueueEntry、Library/Collection/Lyrics/Source模型与Repository合同、LoadState/错误分类、Android/Windows SecureCredentialGateway实现、Fullscreen Gateway合同 | 安全凭据启动接线/真机验收与其余平台能力 |
-| data/database | 17张Drift表、v1创建Migration/快照、外键/约束/索引及后台双平台打开；Library/Collection/Lyrics/Source严格映射与正式Repository，仅保存credentialRef | Dev Fixture、Controller接线、v2+保数据迁移 |
+| domain / platform | 稳定TrackRef/QueueEntry、Library/Collection/Lyrics/Source模型与Repository合同、LoadState/错误分类、Android/Windows SecureCredentialGateway实现、Fullscreen Gateway合同 | 真机安全存储验收与其余平台能力 |
+| data/database | 17张Drift表、v1创建Migration/快照、外键/约束/索引及后台双平台打开；Library/Collection/Lyrics/Source严格映射与正式Repository，仅保存credentialRef；生产组合已接根启动 | Controller、真实来源Adapter、v2+保数据迁移 |
 | shared/FoundationButton | 仍用于工程骨架内容中的临时路由验证；44px命中区、Semantics/键盘激活 | 后续业务页以对应YY组件逐步替换 |
 
 Riverpod 只用于 app 注入边界，业务 Controller 不依赖它；go_router 也只出现在 app 层。WidgetsApp.router 没有 Material Scaffold/默认 Material 3 可见控件；go_router 的传递依赖含 material_ui/cupertino_ui，不表示正式 UI 使用其默认外观。

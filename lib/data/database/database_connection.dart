@@ -8,6 +8,10 @@ import 'app_database.dart';
 
 typedef SupportDirectoryProvider = Future<Directory> Function();
 
+/// Creates an isolated, ephemeral database for explicit development fixtures
+/// and repository tests. Production startup must use [openDefaultDatabase].
+AppDatabase openInMemoryDatabase() => AppDatabase(NativeDatabase.memory());
+
 /// Opens the shared Android/Windows database only when explicitly requested.
 Future<AppDatabase> openDefaultDatabase({
   SupportDirectoryProvider supportDirectory = getApplicationSupportDirectory,

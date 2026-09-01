@@ -16,6 +16,10 @@ void main() {
     expect(graph.playback.state.phase, PlaybackPhase.unavailable);
     expect(graph.queue.isAvailable, isFalse);
     expect(graph.library, isNull);
+    expect(graph.collection, isNull);
+    expect(graph.lyrics, isNull);
+    expect(graph.musicSources, isNull);
+    expect(graph.credentials, isNull);
     expect(graph.fullscreen, isNull);
     await expectLater(graph.playback.play(), throwsUnsupportedError);
     expect(graph.playback.state.phase, PlaybackPhase.unavailable);

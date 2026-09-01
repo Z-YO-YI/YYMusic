@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-09-01 — Phase 3H 生产数据引导与显式 Dev Fixture
+
+- 新增`AppDataServices`生产组合：单一数据库共享四类正式Drift Repository，并按Android/Windows构造平台安全凭据Gateway；根Graph统一拥有和幂等释放。
+- AppBootstrap异步建立生产空库，提供固定loading/脱敏failure状态；初始化中途失败、正常卸载与卸载后晚到完成均关闭所拥有资源。
+- 新增独立`main_dev.dart`和内存Seeder；四首审计HTML曲目、四组专辑/艺人、两个歌单、三项队列和十行双语歌词全部经正式Repository往返。
+- Fixture来源固定为禁用的`https://fixture.invalid`，无credentialRef、路径、媒体URI、可播放URL、收藏/历史或connected；默认`main.dart`与UI/Shell无法导入夹具/Drift实现。
+- 不修改v1 Schema/快照、依赖、权限或可见业务页面；REST Adapter、来源事务、Controller和播放留后续批次。
+- 8项新测试、完整207项Flutter/32 Golden、137文件format、严格分析、29项Node、24项ZIP、lockfile及生成/v1快照零差异已通过。
+- 本机默认生产入口Android Debug构建成功；238963881字节APK的48资产、包名/标签/备份设置和v2单Debug签名已复核。GitHub双平台和本批新APK待实现提交推送后验证。
+
 ## 2026-09-01 — Phase 3G Android / Windows SecureCredentialGateway
 
 - 新增共用版本凭据编解码/串行store核心、`FlutterSecureStringStore`与Android/Windows正式Gateway；插件类型不进入Domain/UI/Drift。

@@ -132,7 +132,43 @@ test('domain contracts stay independent and UI has no direct data access', () =>
   assert.match(sourceMapper, /jsonDecode/);
   assert(!/SensitiveCredential|SecureCredentialGateway|package:(dio|http)|dart:io|package:flutter/.test(sourceMapper));
   const bootstrap = read('lib/app/app_bootstrap.dart');
-  assert(!/DriftLibraryRepository|DriftCollectionRepository|DriftLyricsRepository|DriftMusicSourceRepository|AppDatabase|AndroidSecureCredentialGateway|WindowsSecureCredentialGateway|FlutterSecureStorage/.test(bootstrap), 'Phase 3G must not open production storage from AppBootstrap');
+  assert(!/DriftLibraryRepository|DriftCollectionRepository|DriftLyricsRepository|DriftMusicSourceRepository|AppDatabase|AndroidSecureCredentialGateway|WindowsSecureCredentialGateway|FlutterSecureStorage/.test(bootstrap), 'Phase 3H bootstrap must use the app data composition boundary');
+  assert.match(bootstrap, /createProductionAppDataServices/);
+  assert.match(bootstrap, /YYMusic 无法初始化本地数据/);
+  assert(!/package:(drift|sqlite3|flutter_secure_storage)\//.test(bootstrap));
+
+  const dataComposition = read('lib/app/database_app_data_services.dart');
+  for (const implementation of [
+    'DriftLibraryRepository',
+    'DriftCollectionRepository',
+    'DriftLyricsRepository',
+    'DriftMusicSourceRepository',
+    'AndroidSecureCredentialGateway',
+    'WindowsSecureCredentialGateway',
+  ]) {
+    assert.match(dataComposition, new RegExp(implementation));
+  }
+  assert.match(dataComposition, /await closeDatabase\(database\)/);
+  assert.match(dataComposition, /await _database\.close\(\)/);
+
+  const devFixtureSources = sources.filter(path => path.startsWith('lib/dev_fixture/'));
+  assert.equal(devFixtureSources.length, 2, 'Phase 3H dev fixture implementation set changed');
+  for (const path of sources.filter(path => !path.startsWith('lib/dev_fixture/') && path !== 'lib/main_dev.dart')) {
+    assert(!/dev_fixture\//.test(read(path)), `${path} imports development fixture code`);
+  }
+  const defaultMain = read('lib/main.dart');
+  assert(!/dev_fixture|main_dev/.test(defaultMain));
+  const devMain = read('lib/main_dev.dart');
+  assert.match(devMain, /createDevFixtureAppDataServices/);
+  const fixture = read('lib/dev_fixture/dev_fixture.dart');
+  assert.match(fixture, /https:\/\/fixture\.invalid/);
+  assert.match(fixture, /MusicSourceStatus\.disabled/);
+  assert.match(fixture, /TrackAvailability\.sourceDisabled/);
+  assert(!/SensitiveCredential|credentialRef: ['"]|MusicSourceStatus\.connected|package:(dio|http)|dart:io|PlaybackController|AudioEngine/.test(fixture));
+  const fixtureFactory = read('lib/dev_fixture/dev_fixture_app_data_services.dart');
+  assert.match(fixtureFactory, /openInMemoryDatabase\(\)/);
+  assert(!/openDefaultDatabase|SecureCredentialGateway/.test(fixtureFactory));
+  assert.match(read('lib/data/database/database_connection.dart'), /AppDatabase openInMemoryDatabase\(\).*NativeDatabase\.memory\(\)/s);
 });
 
 test('native runners are branded and Android release does not use debug signing', () => {

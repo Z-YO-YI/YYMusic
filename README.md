@@ -1,13 +1,14 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 3G SecureCredentialGateway**。Phase2通用原语、三套Shell骨架、Phase3A Domain合同、Phase3B 17张Drift表/首版Migration，Library/Collection/Lyrics/Source四类正式Repository和Android/Windows安全凭据平台实现已有。不是完整音乐客户端；启动接线、REST Adapter、Dev Fixture、业务Controller、播放和正式页面尚未完成。
+当前阶段：**Android + Windows · Phase 3H 生产数据引导与显式 Dev Fixture**。Phase2通用原语、三套Shell骨架、Phase3 Domain合同、17张Drift表/首版Migration、四类正式Repository、Android/Windows安全凭据实现，以及默认空白生产数据作用域/独立内存开发夹具已有。不是完整音乐客户端；REST Adapter、业务Controller、播放和正式页面尚未完成。
 
-Phase3G门禁：10项安全凭据Gateway、完整199项Flutter含32张Windows宿主Golden、严格分析0问题、130文件format零变化、29项Node、24份ZIP、lockfile及生成代码/v1快照零差异全部通过。本机Android Debug已构建；目标实现提交的GitHub push/PR/手动运行均为Windows/Android三job success，手动APK的v2签名、48资产、Manifest、metadata和SHA-256已独立复核。
+Phase3H本地门禁：新增8项数据组合/Fixture/Bootstrap测试，完整207项Flutter含32张Windows宿主Golden、严格分析0问题、137文件format零变化、29项Node、24份ZIP、lockfile及生成代码/v1快照零差异全部通过。本机默认生产入口Android Debug已构建并复核；本批GitHub双平台与新APK证据须绑定待推送的实现提交，尚未复用Phase3G结果冒充通过。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
 ## 开发入口
 
+- [Phase 3H数据引导与夹具报告](docs/phase_3h_dev_fixture_bootstrap_report.md)、[本批范围](docs/phase_3h_dev_fixture_bootstrap_plan.md)、[本批 PR 草稿](docs/phase_3h_dev_fixture_bootstrap_pr_draft.md)
 - [Phase 3G安全凭据报告](docs/phase_3g_secure_credential_gateway_report.md)、[本批范围](docs/phase_3g_secure_credential_gateway_plan.md)、[本批 PR 草稿](docs/phase_3g_secure_credential_gateway_pr_draft.md)
 - [Phase 3F MusicSourceRepository报告](docs/phase_3f_music_source_repository_report.md)、[本批范围](docs/phase_3f_music_source_repository_plan.md)、[本批 PR 草稿](docs/phase_3f_music_source_repository_pr_draft.md)
 - [Phase 3E LyricsRepository报告](docs/phase_3e_lyrics_repository_report.md)、[本批范围](docs/phase_3e_lyrics_repository_plan.md)、[本批 PR 草稿](docs/phase_3e_lyrics_repository_pr_draft.md)
@@ -52,9 +53,9 @@ Windows按1440/1024断点显示240dp展开或72dp紧凑侧栏，导航驱动同�
 
 Phase3A数据合同不新增可见页面。TrackRef保留来源身份，QueueEntry使用独立ID以允许重复曲目；来源公开配置只保存credentialRef，秘密仅通过SecureCredentialGateway。当前Fake只用于测试，不会在正式Shell中伪造在线来源、歌曲、歌词或数据库成功。
 
-Phase3B仍不新增可见页面。Drift schema覆盖主指令15张建议表，并用`queue_state`保存空队列游标/更新时间、`schema_migrations`记录首版创建；SQLite文件只在显式调用后台打开函数时写入应用支持目录。当前AppBootstrap没有调用它，因此启动应用不会创建数据库或Fixture。
+Phase3B批次本身不新增可见页面。Drift schema覆盖主指令15张建议表，并用`queue_state`保存空队列游标/更新时间、`schema_migrations`记录首版创建；SQLite文件只在显式调用后台打开函数时写入应用支持目录。Phase3H起默认AppBootstrap会打开该空白生产库，但仍不会写入Fixture。
 
-Phase3C仍不新增可见页面或启动接线。DriftLibraryRepository提供事务upsert、确定分页、关联感知watch、TrackRef查询和availability更新；不扫描文件、不访问网络/凭据、不生成假曲库。
+Phase3C批次不新增可见页面或启动接线。DriftLibraryRepository提供事务upsert、确定分页、关联感知watch、TrackRef查询和availability更新；不扫描文件、不访问网络/凭据、不生成假曲库，Phase3H再统一接入生产数据作用域。
 
 Phase3D仍不新增可见页面或启动接线。DriftCollectionRepository提供系统/自定义歌单保护、原子entries/队列替换、收藏和最近20首历史；不实现队列播放算法，不生成系统歌单Fixture。
 
@@ -62,7 +63,9 @@ Phase3E仍不新增可见页面或启动接线。DriftLyricsRepository以完整T
 
 Phase3F仍不新增可见页面或启动接线。DriftMusicSourceRepository只保存公开来源配置和credentialRef，保护稳定类型/内置身份并在删除来源时保留用户TrackRef；不接触凭据值、不测试连接、不访问网络。
 
-Phase3G仍不新增可见页面或启动接线。Android/Windows SecureCredentialGateway使用平台安全存储、严格随机引用、版本载荷与脱敏失败；不记录、不入Drift、不触发网络或伪造来源连通。当前Fake store测试不代表真机KeyStore/Credential Manager已运行。
+Phase3G批次不新增可见页面或启动接线。Android/Windows SecureCredentialGateway使用平台安全存储、严格随机引用、版本载荷与脱敏失败；不记录、不入Drift、不触发网络或伪造来源连通。Phase3H只构造对应平台Gateway，仍未把Fake store测试冒充真机KeyStore/Credential Manager运行验收。
+
+Phase3H仍不新增业务页面。默认入口现在异步打开空白生产数据库、四类正式Repository和当前平台安全Gateway；初始化失败只显示固定脱敏文字。开发样本只在显式`main_dev.dart`中使用内存库：四首HTML曲目、歌单、队列和歌词通过正式Repository写入，但来源为禁用的`.invalid`地址，不含凭据、路径、媒体URI、收藏/历史或假在线状态。
 
 ## Phase 0 审计入口
 
@@ -84,6 +87,8 @@ flutter pub get --enforce-lockfile
 dart format --output=none --set-exit-if-changed lib test
 flutter analyze --no-pub --fatal-infos
 flutter test --no-pub --coverage
+# 只有需要审查开发样本时才选择临时内存入口；默认入口不含样本。
+flutter run -t lib/main_dev.dart -d <windows-or-android-device-id>
 # APK交付由GitHub Actions执行；不要用旧本机APK替代云端产物。
 # Windows 工具链就绪后单独验收；本地尚未完成。
 flutter build windows --debug --no-pub
