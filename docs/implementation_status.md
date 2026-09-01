@@ -1,6 +1,6 @@
 # 实施状态
 
-更新：2026-09-01。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。Phase3C的Track/Album/Artist映射与正式LibraryRepository已完成实现及本地全量验证，目标提交的GitHub Android/Windows尚待验证。其余Repository、安全存储、Dev Fixture和Controller仍未实现。
+更新：2026-09-01。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。Phase3C的Track/Album/Artist映射与正式LibraryRepository已完成本地全量、GitHub Android/Windows与APK独立验证。其余Repository、安全存储、Dev Fixture和Controller仍未实现。
 
 | 阶段/能力 | 状态 |
 | --- | --- |
@@ -23,15 +23,15 @@
 | Phase 3D+ Repository/状态 | Collection/Lyrics/Source正式Repository、安全存储、Dev Fixture及Controller待分批交付 |
 | Phase 4 双平台音频 | 仅 POC 计划；没有真实播放验证 |
 | 后续页面、歌词、导入、来源、平台集成 | 未开始 |
-| GitHub APK交付 | Phase3B 31121d4的手动运行33485752421创建私有草稿Release；183603621字节APK的三资产、metadata、SHA256SUMS、API digest、48份包内资产及v2单签名已独立复核 |
+| GitHub APK交付 | Phase3C a155d65的手动运行33491551841创建私有草稿Release；183604101字节APK的三资产、metadata、SHA256SUMS、API digest、48份包内资产及v2单签名已独立复核 |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
 | Flutter format/analyze/test | Phase3C 116文件格式无变更、严格分析0问题、完整165项含32张原生Golden全部通过；9项Repository+1项Domain新测试通过 |
-| Windows / Android Debug构建 | Phase3C目标实现commit尚待推送/云端验证；Phase3B云端仍为success，本机Windows C++工具链仍受UAC限制 |
+| Windows / Android Debug构建 | Phase3C a155d65的push 33490505244、PR 33490538057与手动 33491551841均为三job success；本机Windows C++工具链仍受UAC限制 |
 
 ## 保留的验收缺口与后续边界
 
 1. 已执行安全归档：13个旧原型文件移入archive/sonic_gallery，指纹一致，f96197b保存；根lib是新骨架，不再是旧代码。
-2. 用户已批准补足工具链；Android命令行工具/API36/NDK已安装，Windows C++安装等待UAC确认。GitHub Windows2025/Android的Phase3B Debug构建已成功，但不等于本机构建或安装验收；未批量接受所有Android许可。
+2. 用户已批准补足工具链；Android命令行工具/API36/NDK已安装，Windows C++安装等待UAC确认。GitHub Windows2025/Android的Phase3C Debug构建已成功，但不等于本机构建或安装验收；未批量接受所有Android许可。
 3. 已解析Riverpod/go_router并提交lockfile；音频后端仍等待Phase 4双平台POC。
 4. 已建立实时平台分类、三个Shell和根依赖；Windows Shell现有设计导航与跨平台Gallery，播放器、弹层、状态、队列及歌词组件仅存在于明确标注的Fixture，窗口Gateway、业务Overlay Manager、Inspector业务与正式播放器接线仍未实现。业务页面未实现，不把设计预览当成音乐业务交付。
 5. 为后续视觉验证准备获准且可访问的预览环境；遵守 Browser 技能边界，不绕过本轮 file: 拒绝。参考 screenshot 与 Flutter Golden 必须分别记录。
@@ -40,4 +40,4 @@
 
 开发分支：feat/library-repository-drift，基于已拉取并同步的feat/database-schema-migrations@8f5b369。未在main/master直接开发；旧原型保留于归档提交。本批只增加Phase3C mapper/LibraryRepository、纯Dart直接依赖声明、测试与文档，v1 Schema不变。
 
-此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问可读取本仓库运行和PR，不修改账号权限。Phase3B证据保持有效；Phase3C Draft PR、运行和APK必须按新目标commit另行核验，不复用旧APK。
+此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问可读取本仓库运行和PR，不修改账号权限。Phase3C Draft PR #11、三条运行和新APK已按`a155d65`独立核验，未复用Phase3B APK。
