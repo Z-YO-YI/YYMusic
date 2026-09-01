@@ -133,3 +133,13 @@ Gallery只展示明确标注的确定性Fixture，点击只更新本页说明或
 Queue沿用基础HTML的50/7/36标准与60/9/42沉浸几何、26视觉动作，并应用App.tsx最终10封面圆角；实际动作命中仍不小于44dp。Lyrics保留future 24%、past 50%、active纯白与1.018缩放，并应用最终780字重、紧字距和6px激活外环。Dock保留82最小高、11/13内边距、50封面、34/44控制和900px两层重排；App.tsx最后的`POLISH_CSS`把各断点外圆角统一覆盖为26。Phone/低高度仅做40/38封面和控制尺寸降级。
 
 Dock歌词背景使用单一纯色Atmosphere，不使用渐变或封面模糊铺满。减少玻璃时只关闭Blur并改用不透明混合面，几何不变；减少动态时歌词缩放即时切换。Gallery只保存确定性Fixture标签与受控数值。正式QueueEntry、LyricsDocument、LRC解析、拖拽、跟随滚动、Seek、持久化及独立歌词页留给后续Domain/Feature阶段。
+
+## ADR-022：Phase 3A 先固定 Domain 合同再选择数据库实现（2026-09-01）
+
+Phase3拆分交付。首批只建立纯Dart Domain模型、Repository/Gateway合同和测试Fake，不安装Drift、不建表、不接UI或Controller。下一批Schema/Migration必须依赖这些项目自有类型并用内存数据库验证，不能让Drift row、SQLite句柄或平台插件类型进入Domain/UI。这样数据库候选或安全存储实现可替换，不改三套Shell。
+
+`TrackRef(trackId, sourceId, sourceType)`是跨来源稳定引用；`QueueEntry.id`与TrackRef分离，允许同一曲目重复入队。所有持久时间先规范为UTC，Queue位置连续且顺序显式。来源删除或本地文件失效只改变`TrackAvailability`，不级联抹除用户歌单、收藏、历史或队列引用。HTML按标题slug、数组trackId和object URL生成的示例状态不迁入正式模型。
+
+`MusicSourceConfig`只保存HTTPS无userinfo/query/fragment的公开base URL、公开Header、受限字段路径和`credentialRef`；Authorization、Cookie、API Key、Token、Secret、Password、换行Header均运行时拒绝。`SensitiveCredential`只为SecureCredentialGateway提供临时内存值，字符串输出固定脱敏，不提供数据库序列化。DomainFailure只保留枚举、来源ID、retryable和日志安全diagnosticId，不携带原始异常、URL或Header。
+
+所有Controller异步状态使用显式idle/loading/data/empty/error，但Repository返回Domain数据/流而不返回UI组件。Phase4前不扩展现有PlaybackState为假播放实现；Phase3后续只负责数据库、Repository和Controller数据真相，音频状态机仍按原阶段执行。

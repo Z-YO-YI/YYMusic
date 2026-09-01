@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-01 — Phase 3A Domain 模型与数据合同
+
+- 新增稳定`TrackRef`、独立`QueueEntry`、Album/Artist/Playlist/Favorite/History/Lyrics/MusicSourceConfig模型；持久时间要求UTC，队列顺序连续且允许重复曲目。
+- 新增显式idle/loading/data/empty/error、完整Domain错误分类、分页及Library/Collection/Lyrics/MusicSource Repository合同；测试Fake可替换并由根Graph释放Library Fake。
+- 来源配置只允许无凭据的HTTPS base URL、公开Header和受限字段路径；敏感Header/换行/可执行映射运行时拒绝，Credential字符串固定脱敏且不提供数据库序列化。
+- 不安装Drift、不创建Schema/Migration/数据库文件，不接UI、HTTP、安全存储、播放或生产Fixture；新增16项Flutter合同测试与1项Node架构边界。108文件格式、严格分析、完整147项Flutter/32张Golden、29项Node和24份ZIP核验均通过。
+- GitHub双平台构建、Draft PR与本批云端APK将在目标提交后按commit独立核验；当前最新已复核APK仍为Phase2J。
+
 ## 2026-09-01 — Phase 2J 跨平台队列与歌词原语
 
 - 新增受控`YYQueueTile`、`YYLyricsLine`与`YYLyricsPlayerDock`；队列动作、歌词状态及Dock播放展示全部由调用方提供，不接入Controller、音频或持久化。

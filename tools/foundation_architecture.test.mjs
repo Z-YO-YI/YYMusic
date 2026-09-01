@@ -33,6 +33,19 @@ test('routing and injection packages remain inside the app composition boundary'
   }
 });
 
+test('domain contracts stay independent and UI has no direct data access', () => {
+  const domainSources = sources.filter(path => path.startsWith('lib/domain/'));
+  assert(domainSources.length >= 10, 'Phase 3A domain contracts are missing');
+  for (const path of domainSources) {
+    assert(!/package:flutter|dart:io|package:(drift|sqlite|sqflite|dio|http)\//.test(read(path)), path);
+    assert(!/import\s+['"][^'"]*\/(app|data|platform|playback|shells|features)\//.test(read(path)), path);
+  }
+  const uiSources = sources.filter(path => /lib\/(design_system|features|shells)\//.test(path));
+  for (const path of uiSources) {
+    assert(!/package:(drift|sqlite|sqflite|dio|http)\/|import\s+['"][^'"]*\/data\//.test(read(path)), path);
+  }
+});
+
 test('native runners are branded and Android release does not use debug signing', () => {
   assert.match(read('android/app/src/main/AndroidManifest.xml'), /android:label="YYMusic"/);
   assert.match(read('windows/runner/main.cpp'), /window\.Create\(L"YYMusic"/);
