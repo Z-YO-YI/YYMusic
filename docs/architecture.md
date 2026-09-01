@@ -20,18 +20,20 @@ Phase2I增量：`YYSourceCard`与`YYPlaylistCard`只渲染调用方提供的来�
 
 Phase2J增量：`YYQueueTile`、`YYLyricsLine`与`YYLyricsPlayerDock`只渲染调用方提供的队列、歌词和播放展示状态。队列主动作与上移/下移/移除、歌词行激活、Dock Transport/进度/收藏/返回均为独立受控动作；组件不读取现有播放/队列Controller，不Seek、不推进时间、不自动滚动、不排序或持久化。Android/Windows Gallery仍只更新本页Fixture。
 
+Phase3A增量：新增平台/UI无关的Track/TrackRef、Album/Artist、Playlist/Queue/Favorite/History、Lyrics、MusicSourceConfig、显式LoadState与脱敏DomainFailure。Library/Collection/Lyrics/MusicSource Repository和SecureCredentialGateway只暴露项目自有类型；测试Fake可替换。当前没有数据库、HTTP、安全存储实现或生产Fixture，PlaybackState/Controller仍保持Phase4前骨架。
+
 这份文件描述已经存在的工程骨架，不把 Phase 0 的未来目录全部冒充实现。正式代码位于根 lib；旧原型和 Web 参考隔离在 archive/design_reference。
 
 | 边界 | 已有责任 | 尚未实现 |
 | --- | --- | --- |
 | app/AppBootstrap | 根 ProviderScope，拥有单一 DependencyGraph | 数据库/权限/真实来源初始化 |
-| app/DependencyGraph | 创建并释放 PlaybackController、QueueController、ViewState；可注入 AudioEngine/Repository/Gateway | Phase 3 模型和正式仓储、Phase 4 音频 |
+| app/DependencyGraph | 创建并释放 PlaybackController、QueueController、ViewState；可注入 AudioEngine/LibraryRepository/Gateway | 其余Phase3 Repository接线和正式数据实现、Phase4音频 |
 | app/AppRouter | 私有 go_router，四个状态保留分支，根级 /player、/lyrics及跨平台/design-system；暴露自有 AppNavigation | 业务详情、菜单层级和平台全屏返回协调 |
 | app/AdaptiveRoot | 实时 LayoutBuilder + 平台优先分类，选择三个 Shell；零尺寸时不动根依赖 | 生产级窗口约束/布局细化 |
 | shells | Android原生Phone/Tablet导航、Windows 240/72受控导航与42工具区、三端未接入播放槽位；不直接网络/DB/音频 | Windows平台窗口Gateway、Inspector业务、正式播放器接线 |
 | design_system | Theme/Token/原始SVG/按钮/Surface/Profile、Android与Windows导航、Tooltip/Toolbar、Slider/Artwork、SearchField/SegmentedControl/Toggle、AlbumCard/TrackTile、MiniPlayer/DesktopPlayerBar、ContextMenu/Dialog/BottomSheet/Toast、ThemeSwatch/EmptyState/ErrorBanner/Skeleton、SourceCard/PlaylistCard、QueueTile/LyricsLine/LyricsPlayerDock | 业务弹层编排与页面级组合 |
 | playback | 唯一事件订阅、播放状态传播、错误/销毁边界；默认后端明确 unavailable | 加载曲目、Seek、队列算法、系统媒体会话 |
-| domain / platform | LibraryRepository、FullscreenGateway 生命周期合同 | 具体实现和平台能力 |
+| domain / platform | 稳定TrackRef/QueueEntry、Library/Collection/Lyrics/Source模型与Repository合同、LoadState/错误分类、SecureCredential/Fullscreen Gateway | Drift Schema/Migration、正式Repository、安全存储与平台能力 |
 | shared/FoundationButton | 仍用于工程骨架内容中的临时路由验证；44px命中区、Semantics/键盘激活 | 后续业务页以对应YY组件逐步替换 |
 
 Riverpod 只用于 app 注入边界，业务 Controller 不依赖它；go_router 也只出现在 app 层。WidgetsApp.router 没有 Material Scaffold/默认 Material 3 可见控件；go_router 的传递依赖含 material_ui/cupertino_ui，不表示正式 UI 使用其默认外观。

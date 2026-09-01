@@ -28,6 +28,8 @@ Phase2I已实现`YYSourceCard`与`YYPlaylistCard`的受控原语，并应用基�
 
 Phase2J已实现`YYQueueTile`、`YYLyricsLine`与`YYLyricsPlayerDock`受控原语。映射同时读取基础HTML的queue、fullscreen lyric、lyrics dock及900/599/低高度规则，并应用App.tsx后置`POLISH_CSS`的Queue artwork 10、歌词780字重/紧字距/6px active ring和Dock最终26圆角；图标继续取`NEW_ICON_SPRITE`的up/down/x、prev/play/pause/next/heart/music原始路径。组件没有接入QueueController、音频Seek、LRC解析、自动滚动、计时器、拖拽、数据库、持久化或独立歌词页。
 
+Phase3A把基础HTML的catalog、favoriteIds、recentIds、playlists、queueIds、sources和lyricsByTitle映射为正式Domain合同。网页slug/随机ID改为调用方提供的稳定TrackRef与独立QueueEntry ID；队列重复曲目不再被trackId合并。localStorage中的来源auth文案不作为秘密，正式Config只存`credentialRef`，敏感字段交给SecureCredentialGateway。按标题生成歌词、object URL、默认connected和示例延迟均不进入生产模型或Fake成功状态。本批没有数据库或UI接线。
+
 ## 六条核心流程与行为边界
 
 | 流程 | 网页真实实现 | Flutter替代 |

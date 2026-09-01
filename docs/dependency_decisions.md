@@ -50,3 +50,7 @@ pub提示9个传递包存在不兼容约束的新版本，当前解析成功，�
 新增传递包：http1.6.0、path_parsing1.1.0、petitparser7.0.2、vector_graphics1.2.3、vector_graphics_codec1.1.13、vector_graphics_compiler1.3.0、xml7.0.1。http为SVG包的传递依赖，本批UI无网络请求，不新增生产网络/媒体权限。没有升级已有Riverpod/go_router或安装音频/数据库包。
 
 Inter/Noto Sans SC以Google Fonts固定提交原文件进入应用assets，OFL许可/哈希/体积详见design_assets.md；不是新增运行时字体服务依赖。UI隔离包的原则延续：flutter_svg只出现在YYIcon，业务UI使用自有组件；Riverpod/go_router仍只出现在app。
+
+## Phase 3A 依赖结果
+
+Domain模型、Repository合同、SecureCredentialGateway和测试Fake只使用Dart/Flutter SDK已有类型，没有修改pubspec或lockfile。Drift仍是Phase3数据库候选而不是已安装决定；版本、生成器、SQLite原生库和双平台构建证据将在独立Schema/Migration批次按当时官方资料重新核验。当前不得用Fake或接口存在冒充数据库已完成。

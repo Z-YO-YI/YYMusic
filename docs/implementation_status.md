@@ -1,6 +1,6 @@
 # 实施状态
 
-更新：2026-09-01。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。当前推进到Phase2J：受控QueueTile、LyricsLine、LyricsPlayerDock及跨平台Gallery Fixture已完成本地与GitHub双平台验证；本批云端APK、校验和、metadata、digest与v2签名已独立复核。这不是完整客户端或整个Phase2已完成。
+更新：2026-09-01。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。当前推进到Phase3A：纯Domain模型、Repository/Gateway合同和测试Fake已完成本地及GitHub双平台验证，本批云端APK也已独立复核。Phase3数据库、Migration、正式Repository、安全存储和Dev Fixture仍未实现。
 
 | 阶段/能力 | 状态 |
 | --- | --- |
@@ -17,13 +17,14 @@
 | Phase 2I 跨平台集合卡片 | SourceCard/PlaylistCard及Gallery Fixture已实现；来源连接、真实计数、歌单Repository/Create流程和持久化均不在本阶段，见phase_2i_collection_cards_report.md |
 | Phase 2J 跨平台队列与歌词原语 | QueueTile/LyricsLine/LyricsPlayerDock及Gallery Fixture已实现；队列算法、Seek、LRC、自动滚动、持久化和正式歌词页均不在本阶段，见phase_2j_queue_lyrics_primitives_report.md |
 | Phase 2 后续组合及视觉对照 | 通用组件清单已完成；正式业务页组合、网页对照和设备性能待验 |
-| Phase 3 Domain/数据库/状态 | 未开始；只有边界决策 |
+| Phase 3A Domain合同 | Track/Collection/Lyrics/Source模型、显式LoadState/错误分类、四类Repository及安全凭据Gateway已实现；无数据库或生产接线，见phase_3a_domain_contracts_report.md |
+| Phase 3B+ 数据库/Repository/状态 | 未开始：Drift选择、Schema、Migration、正式Repository、安全存储实现、Dev Fixture及Controller待分批交付 |
 | Phase 4 双平台音频 | 仅 POC 计划；没有真实播放验证 |
 | 后续页面、歌词、导入、来源、平台集成 | 未开始 |
-| GitHub APK交付 | a20e0fb的运行33476650469完成编译、验签、资源核验及草稿Release三资产下载复核；见phase_2j_queue_lyrics_primitives_report.md |
+| GitHub APK交付 | Phase3A 8506afc的手动运行33481171269创建私有草稿Release；三资产、metadata、SHA256SUMS、API digest、48份包内资产及v2单签名已独立复核 |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
-| Flutter format/analyze/test | 91文件格式无变更、严格分析0问题、完整131项含32张原生Golden全部通过；见phase_2j_queue_lyrics_primitives_report.md |
-| Windows / Android Debug构建 | Phase2J实现提交的push、PR及手动运行三组均在GitHub两平台成功；本机Windows C++工具链仍受UAC限制 |
+| Flutter format/analyze/test | 108文件格式无变更、严格分析0问题、完整147项含32张原生Golden全部通过；见phase_3a_domain_contracts_report.md |
+| Windows / Android Debug构建 | Phase3A实现commit的push、PR、手动运行各自三个job均success；本机Windows C++工具链仍受UAC限制，不声称本机构建成功 |
 
 ## 保留的验收缺口与后续边界
 
@@ -35,6 +36,6 @@
 
 ## 仓库边界
 
-开发分支：feat/cross-platform-queue-lyrics-primitives，基于已拉取并同步的feat/cross-platform-collection-cards@995016a。未在main/master直接开发；旧原型保留于归档提交。本批只增加Phase2J受控队列/歌词原语、跨平台Gallery Fixture、测试与文档。
+开发分支：feat/domain-model-contracts，基于已拉取并同步的feat/cross-platform-queue-lyrics-primitives@3c09ed7。未在main/master直接开发；旧原型保留于归档提交。本批只增加Phase3A纯Domain模型、数据合同、测试Fake、边界测试与文档。
 
-此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问可读取本仓库运行和PR，不修改账号权限。Phase2J的push/PR/手动运行、Draft PR #8及新APK均已按完整实现commit实际核验，证据见phase_2j_queue_lyrics_primitives_report.md。
+此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问可读取本仓库运行和PR，不修改账号权限。Phase3A Draft PR #9、三组运行及新APK均已按实现提交8506afc实际核验，证据见phase_3a_domain_contracts_report.md。

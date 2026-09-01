@@ -1,6 +1,6 @@
 # 原生基础验证矩阵
 
-保留Phase2I的121项Flutter检查，Phase2J新增队列/歌词Widget7项及Golden3项，共131项Flutter、28项Node；不包含网页视觉对照、队列/歌词业务、音频POC或用户音乐数据。当前结果集中在phase_2j_queue_lyrics_primitives_report.md。
+保留Phase2J的131项Flutter检查，Phase3A新增Domain模型/Repository合同16项，共147项Flutter、29项Node；不包含数据库/Migration、真实Repository、安全存储、音频POC或用户音乐数据。当前结果集中在phase_3a_domain_contracts_report.md。
 
 | 类别 | 已有自动检查 |
 | --- | --- |
@@ -29,13 +29,14 @@
 | Phase2H状态原语 | Swatch 30视觉/44命中及指针/键盘/语义；Empty 28/16/24；Error 12/14/15与live region、独立禁用/加载action；Skeleton纯色/填宽/无渐变；Gallery只更新本地状态 |
 | Phase2I集合卡片 | Source 72/12/42/16/13/6与四种调用方色调；Playlist桌面16/44/18、Phone13/40及最终20/14圆角；collection/create、指针/键盘/语义、选中/禁用/加载、130%响应式；无Repository/网络/持久化 |
 | Phase2J队列/歌词 | Queue标准/沉浸几何、独立动作与44dp命中；Lyrics future/past/active/双语/ReduceMotion；Dock桌面/Phone/低高度、进度提交/取消及ReduceGlass；无算法/Seek/计时器/持久化 |
+| Phase3A Domain合同 | 稳定TrackRef、独立QueueEntry/重复曲目、不可变JSON、UTC/连续位置、歌词时序/翻译、HTTPS/公开Header/受限映射、凭据与失败脱敏、分页运行时校验、Fake替换及Graph释放 |
 | Golden | 保留Windows Shell及既有组件29张；新增浅珊瑚/深翡翠/自定义白ReduceGlass队列歌词板3张，总计32张精确像素比较，旧基线不改 |
 
 ## CI
 
 `.github/workflows/foundation.yml`：checks 在 Ubuntu24.04 跑 Node/PowerShell 源核验、Dart格式/严格分析/Flutter测试；checks 成功后独立 Windows2025 Debug 和 Ubuntu Android Debug 构建。push feat/fix、PR或手动运行触发，超时20/30分钟。Android执行验签/48文件比对/三文件白名单；只有手动workflow_dispatch在全部门禁后创建私有draft/prerelease，普通push/PR不创建下载产物。个人令牌不注入runner，checkout不保留凭据。
 
-32张Golden按Windows宿主标记，Linux明确跳过（非静默通过），Windows job构建前执行`flutter test --tags windows-golden`；其余99个Flutter测试仍在checks执行。没有删除或跳过原有回归，CI自动发现新增文件。远程状态须按目标commit单独核验，本地通过不冒充远程通过。
+32张Golden按Windows宿主标记，Linux明确跳过（非静默通过），Windows job构建前执行`flutter test --tags windows-golden`；其余115个Flutter测试仍在checks执行。没有删除或跳过原有回归，CI自动发现新增文件。远程状态须按目标commit单独核验，本地通过不冒充远程通过。
 
 云端交付增量：1项YAML门禁测试、4项Node元数据/拒绝本地打包测试。APK必须在build→signature→assets→package均成功后上传，不使用always/continue-on-error；metadata不复制环境变量或秘密，下载URL必须属于本run。4be8ba2的手动运行已完成既有交付复核；每个新commit仍须重新取得运行证据。
 
@@ -50,5 +51,7 @@ Phase2H实现提交9f71d14的push运行33468979883、PR运行33469047182与手�
 Phase2I实现提交c2948e8的push运行33472070037、PR运行33472095784与手动运行33472750596均为三job success。手动运行的草稿Release三资产已下载，APK为175843741字节，SHA256SUMS、metadata、API digest与`3035e3b5a031ef283af098514c78ee8264a5d03ed3aa71f335d177da3ad11417`一致且v2签名有效；临时副本已清理。证据只适用于该实现提交。
 
 Phase2J实现提交a20e0fb的push运行33475675911、PR运行33475736751与手动运行33476650469均为三job success。手动运行的草稿Release三资产已下载，APK为175880481字节，SHA256SUMS、metadata、API digest与`864a557af71841280ed938e80090a07e3bd7764a8e3680a17b6eef81e19af43f`一致且v2签名有效；48份打包资产逐字节一致，临时副本已清理。证据只适用于该实现提交。
+
+Phase3A实现提交8506afc的push运行33480316280、PR运行33480358335与手动运行33481171269均为三job success。手动运行的草稿Release三资产已下载，APK为175891537字节，SHA256SUMS、metadata、API digest与`1500bd28956befbb697cbe160c388d25a1c900e6454b180bed4335aaec05b712`一致；48份打包资产逐字节匹配，v2单签名有效，临时副本已清理。证据只适用于该实现提交。
 
 Actions 固定 SHA，来源为维护者公开 refs 和说明：[checkout](https://github.com/actions/checkout)、[setup-node](https://github.com/actions/setup-node)、[setup-java](https://github.com/actions/setup-java)、[flutter-action](https://github.com/subosito/flutter-action)。静态配置验证不代表远程工作流已经通过；私有 CI 结果必须可读取后才记录成功。
