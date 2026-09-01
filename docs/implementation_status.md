@@ -1,6 +1,6 @@
 # 实施状态
 
-更新：2026-09-01。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。当前推进到Phase2G：受控Context Menu、Dialog、Phone Bottom Sheet、Toast及跨平台Gallery Fixture已完成本地实现与视觉验证，云端双平台构建和本批APK仍待目标提交后核验。这不是完整客户端或整个Phase2已完成。
+更新：2026-09-01。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。当前推进到Phase2G：受控Context Menu、Dialog、Phone Bottom Sheet、Toast及跨平台Gallery Fixture已完成本地与GitHub双平台验证；本批云端APK、校验和、metadata、digest与v2签名已独立复核。这不是完整客户端或整个Phase2已完成。
 
 | 阶段/能力 | 状态 |
 | --- | --- |
@@ -17,10 +17,10 @@
 | Phase 3 Domain/数据库/状态 | 未开始；只有边界决策 |
 | Phase 4 双平台音频 | 仅 POC 计划；没有真实播放验证 |
 | 后续页面、歌词、导入、来源、平台集成 | 未开始 |
-| GitHub APK交付 | Phase2G目标提交尚未触发手动交付；当前最新已复核产物仍是a1eacd9的运行33462929516，不能冒充本批APK |
+| GitHub APK交付 | a56d4aa的运行33466396076完成编译、验签、资源核验及草稿Release三资产下载复核；见phase_2g_overlay_primitives_report.md |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
 | Flutter format/analyze/test | 75文件格式无变更、严格分析0问题、完整104项含23张原生Golden全部通过；见phase_2g_overlay_primitives_report.md |
-| Windows / Android Debug构建 | Phase2G云端构建待目标提交；本机Windows C++工具链仍受UAC限制，不声称本机Windows构建成功 |
+| Windows / Android Debug构建 | Phase2G实现提交的push、PR及手动运行三组均在GitHub两平台成功；本机Windows C++工具链仍受UAC限制 |
 
 ## 保留的验收缺口与后续边界
 
@@ -34,4 +34,4 @@
 
 开发分支：feat/cross-platform-overlay-primitives，基于已拉取并同步的feat/cross-platform-player-surfaces@6ecbbd8。未在main/master直接开发；旧原型保留于归档提交。本批只增加Phase2G受控弹层原语、跨平台Gallery Fixture、测试与文档。
 
-此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问已能读取本仓库运行和PR，不修改账号权限或读取现有Git凭据。Phase2G尚未推送或创建PR，不预写远程成功；完成后只按完整commit记录实际证据。
+此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问已能读取本仓库运行和PR，不修改账号权限或读取现有Git凭据。Phase2G的push/PR/手动运行、Draft PR #5及新APK均已按完整实现commit实际核验，证据见phase_2g_overlay_primitives_report.md。

@@ -1,6 +1,6 @@
 # PR 草稿：Cross-platform overlay primitives
 
-Head：`feat/cross-platform-overlay-primitives`；Base：`feat/cross-platform-player-surfaces@6ecbbd8`；Draft PR待目标提交推送后创建。不自动合并、不改写历史。
+Head：`feat/cross-platform-overlay-primitives`；Base：`feat/cross-platform-player-surfaces@6ecbbd8`；[Draft PR #5](https://github.com/Z-YO-YI/YYMusic/pull/5)。不自动合并、不改写历史。
 
 ## 变更
 
@@ -12,7 +12,9 @@ Head：`feat/cross-platform-overlay-primitives`；Base：`feat/cross-platform-pl
 ## 测试
 
 - 75个Dart文件格式无变更，严格分析0问题；完整104项Flutter通过，包含23张Windows宿主精确Golden，三张新增图已逐张视觉审计且旧20张不更新。
-- 28项Node、五份源指纹/44 SVG/52项派生产物与24个ZIP entry逐字节核验通过；云端push/PR/手动工作流和APK证据待提交后补入。
+- 28项Node、五份源指纹/44 SVG/52项派生产物与24个ZIP entry逐字节核验通过。
+- 实现提交`a56d4aa`的push运行33465720644、PR运行33465784721及手动运行33466396076各自三个job全部成功。
+- 私有草稿Release三资产已下载复核；APK为175818389字节，SHA-256/API digest为`836e97c46aef2ed0036aaec085b8fb6113beeb2fe363749a7dfa3e817f648a88`，metadata身份一致且v2签名有效。
 
 ## 影响与未验收项
 
