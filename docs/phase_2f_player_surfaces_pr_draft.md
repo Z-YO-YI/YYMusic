@@ -1,6 +1,6 @@
 # PR 草稿：Cross-platform player surfaces
 
-Head：`feat/cross-platform-player-surfaces`；Base：`feat/windows-navigation-foundation@99b664a`。Draft PR将在首次push后创建，不自动合并、不改写历史。
+Head：`feat/cross-platform-player-surfaces`；Base：`feat/windows-navigation-foundation@99b664a`；[Draft PR #4](https://github.com/Z-YO-YI/YYMusic/pull/4)。不自动合并、不改写历史。
 
 ## 变更
 
@@ -13,7 +13,8 @@ Head：`feat/cross-platform-player-surfaces`；Base：`feat/windows-navigation-f
 
 - 69个Dart文件格式无变更，严格分析0问题；95项Flutter全部通过，包含20张Windows宿主精确Golden，新增3张逐图审计且旧17张不更新。
 - 28项Node、设计指纹/派生产物与24个ZIP entry逐字节核验通过。
-- GitHub push/PR、Windows/Android Debug及手动APK运行将在本地门禁通过后按目标commit执行并记录。
+- 实现提交`a1eacd9`的push运行33462315349与PR运行33462439635各自三个job全部成功；手动运行33462929516的checks、Windows、Android/验签/资产核验均成功。
+- 私有草稿Release三资产已下载复核；APK为175792949字节，SHA-256/API digest为`df0b96062e96332206630ded3cc35117f244d31c079f2ec76c3f3b3d06a3254a`，metadata身份一致且v2签名有效。
 
 ## 影响与未验收项
 

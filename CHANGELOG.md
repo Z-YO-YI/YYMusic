@@ -6,6 +6,7 @@
 - 曲目信息、播放/下一首、完整Transport、进度预览/提交/取消、音量、歌词、收藏与队列均为独立动作；Repeat只表达受控视觉状态，不实现队列算法或模拟时间推进。
 - Android/Windows Gallery新增明确标注的本地Fixture；正式Shell仍不接假播放器，不访问AudioEngine、QueueController、Repository、系统媒体会话或持久化。
 - 新增4项Widget和3张1280×560/130%播放器组件板，三张已逐张视觉审计；旧17张基线不更新。69文件格式、严格分析、完整95项Flutter、20张Golden、28项Node和24份ZIP字节核验均通过；云端双平台结果以本阶段报告最终记录为准。
+- a1eacd9的push、PR、手动运行均为三job success；草稿Release三资产已下载复核，APK为175792949字节，SHA-256/API digest为`df0b96062e96332206630ded3cc35117f244d31c079f2ec76c3f3b3d06a3254a`且v2签名有效。
 
 ## 2026-09-01 — Phase 2E Windows 导航基础与跨平台 Gallery
 
