@@ -62,6 +62,20 @@ final class NativeMediaKitPlayerBackend implements MediaKitPlayerBackend {
   /// has no audio endpoint. The normal factory keeps automatic device output.
   static Future<NativeMediaKitPlayerBackend>
   createWithHeadlessAudioSinkForPoc() async {
+    return _createForPoc(headlessAudio: true, allowLoopbackTls: false);
+  }
+
+  /// Controlled self-signed loopback HTTPS only; never use for real sources.
+  static Future<NativeMediaKitPlayerBackend> createForControlledHttpsPoc({
+    required bool headlessAudio,
+  }) async {
+    return _createForPoc(headlessAudio: headlessAudio, allowLoopbackTls: true);
+  }
+
+  static Future<NativeMediaKitPlayerBackend> _createForPoc({
+    required bool headlessAudio,
+    required bool allowLoopbackTls,
+  }) async {
     MediaKit.ensureInitialized();
     final player = Player();
     final platform = player.platform;
@@ -70,7 +84,11 @@ final class NativeMediaKitPlayerBackend implements MediaKitPlayerBackend {
       throw UnsupportedError('Native media_kit player is unavailable');
     }
     try {
-      await platform.setProperty('ao', 'null');
+      if (headlessAudio) await platform.setProperty('ao', 'null');
+      if (allowLoopbackTls) {
+        await platform.setProperty('tls-verify', 'no');
+        await platform.setProperty('network-timeout', '5');
+      }
       return NativeMediaKitPlayerBackend._(player);
     } catch (_) {
       await player.dispose();

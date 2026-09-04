@@ -234,8 +234,9 @@ dispose先停止接收新命令、等待已接受工作、取消订阅并幂等�
 唯一PlaybackController处理，不启用插件自己的playlist/shuffle/repeat，也不在Shell复制状态。
 
 本批刻意不在`main.dart`、AppBootstrap或DependencyGraph创建候选Player；Fake backend测试不加载
-native库，Android/Windows Debug构建仅验证打包/链接。实际本地授权文件、Android content URI、
-受控HTTPS、Seek事件与扬声器输出未完成前不得上线或称为双平台POC通过。
+native库。后续Phase4C/4D已在Windows/Android补齐本地WAV、Android content URI、受控HTTPS/Header、
+Seek事件和脱敏失败矩阵，因此受控双平台POC已通过；实体扬声器、真机生命周期和许可证仍未通过，
+候选继续不得上线。
 
 发布合规也是选型门：已解析的wrapper包带MIT文件，但Android v1.1.8四个固定JAR只含两个`.so`
 且没有LICENSE/NOTICE；Windows 1.0.9在构建时下载2023-09-24 libmpv归档。它们包含libmpv/FFmpeg，
@@ -253,5 +254,16 @@ Phase4C不向仓库加入WAV/MP3等媒体二进制，也不使用用户音乐或
 该路径只运行checks及Windows/Android两个只读job，带`contents: write`的Android发布job明确跳过。
 Windows 2025进程和Android API36 x86_64模拟器执行同一测试，不上传artifact、不创建Release。position推进与completed
 可以证明native初始化、解码、时钟和控制链工作，但无头runner不能证明扬声器可听、音质、音频焦点、
-后台或设备切换。生产`main.dart`继续使用`UnavailableAudioEngine`，且Android `content://`与受控HTTPS
-留给下一小批；许可证闭环前即使双平台测试成功也不能正式锁定或发布候选backend。
+后台或设备切换。生产`main.dart`继续使用`UnavailableAudioEngine`；Android `content://`与受控HTTPS
+已在Phase4D专用作业通过，但许可证闭环前仍不能正式锁定或发布候选backend。
+
+## ADR-033：受控来源POC使用debug-only Provider与短期loopback TLS（2026-09-04）
+
+Phase4D不访问用户文件或真实第三方源。Android只在debug source set注册不可导出、不可授权给外部应用的
+只读Provider，并仅打开cache中的固定运行时WAV；main/profile不注册。Windows/Android共用loopback HTTPS
+server，短期证书与私钥运行时生成到Git忽略目录，原始文件立即删除且专用工作流不上传artifact。
+
+POC Header是公开sentinel；网络探针只发HEAD、禁止自动重定向并将HTTP/offline/timeout/TLS映射为脱敏
+DomainFailure。自签名TLS绕过与Windows无头sink只存在于名称明确的POC构造入口，生产默认继续验证TLS并
+使用真实设备。精确提交`913f3d75`的专用运行33878710671双平台成功且零artifact/Release，关闭来源POC
+出口；该证据不授权下载/离线能力，也不替代真实API、实体设备、后台/焦点或发布许可证审核。

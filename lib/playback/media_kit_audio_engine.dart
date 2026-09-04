@@ -18,6 +18,15 @@ final class MediaKitAudioEngine implements AudioEngine {
     await NativeMediaKitPlayerBackend.createWithHeadlessAudioSinkForPoc(),
   );
 
+  /// Controlled self-signed loopback HTTPS only; production verifies TLS.
+  static Future<MediaKitAudioEngine> createForControlledHttpsPoc({
+    required bool headlessAudio,
+  }) async => MediaKitAudioEngine(
+    await NativeMediaKitPlayerBackend.createForControlledHttpsPoc(
+      headlessAudio: headlessAudio,
+    ),
+  );
+
   MediaKitAudioEngine(this._backend) {
     _snapshotSubscription = _backend.snapshots.listen(
       _acceptSnapshot,

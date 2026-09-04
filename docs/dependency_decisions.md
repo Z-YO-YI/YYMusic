@@ -37,7 +37,7 @@
 
 ## Phase 4A 合同结果（2026-09-04）
 
-尚未把任何音频候选加入pubspec。项目自有`PlayableSource`、`PlaybackSourceResolver`、`AudioEngine/AudioEngineState`、完整`PlaybackState`和`MediaSessionGateway`已确定，后续候选只能在`lib/playback`或`lib/platform`适配器内出现，不能改变UI/Domain。当前pub.dev快照仍以`media_kit 1.2.6`为优先POC候选：其维护者资料明确列出Android/Windows、本地文件、网络URL、HTTP Header、Seek和播放列表；正式选择仍取决于两平台真实受控音频矩阵、原生二进制分发/License与包体结果。
+项目已在隔离POC分支将`media_kit 1.2.6`和对应audio native libs加入pubspec，但生产组合仍未选择它。项目自有`PlayableSource`、`PlaybackSourceResolver`、`AudioEngine/AudioEngineState`、完整`PlaybackState`和`MediaSessionGateway`已确定，候选只能在`lib/playback`或`lib/platform`适配器内出现，不能改变UI/Domain。该候选现已通过Android/Windows本地文件、网络URL、HTTP Header、Seek及Android `content://`受控原生矩阵；正式选择仍取决于原生二进制分发/License、实体设备与生命周期审核。
 
 回退比较项是just_audio加Windows backend，而不是单独just_audio。`just_audio_windows 0.2.3`公开能力含本地/URL/Seek/playlist/loop/shuffle，但请求Header项为空；`just_audio_media_kit 2.1.0`支持Windows但声明忽略shuffle order。YYMusic的随机顺序已经由PlaybackController负责，因此后者限制不直接否决，但带认证Header的网络测试与原生依赖仍必须单独通过。来源：[media_kit](https://pub.dev/packages/media_kit)、[media_kit维护者仓库](https://github.com/media-kit/media-kit)、[just_audio_windows](https://pub.dev/packages/just_audio_windows)、[just_audio_media_kit](https://pub.dev/packages/just_audio_media_kit)。
 
@@ -58,6 +58,10 @@ entry，没有LICENSE/NOTICE；Windows插件则固定下载2023-09-24、mpv comm
 对应源码提供和用户替换策略仍须完成；在这项发布审核与真实双平台播放矩阵都通过前，候选保持
 Draft POC，不进入生产Bootstrap，也不为该实现触发手动APK Release。回退候选B仍保留，不因
 media_kit能编译就取消比较。
+
+Phase4C/4D随后补齐受控原生运行矩阵：Windows与Android本地WAV、双平台HTTPS/Header、Android
+`content://`及HTTP/offline/timeout/TLS脱敏失败均通过，同一专用运行无artifact或Release。该结果解除
+“仅编译未运行”的阻断项，但不改变上述传递许可证阻断，也不证明实体设备输出、后台/焦点或真实API。
 
 来源：[media_kit 1.2.6](https://pub.dev/packages/media_kit)、
 [media_kit API](https://pub.dev/documentation/media_kit/latest/)、

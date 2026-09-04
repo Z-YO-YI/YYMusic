@@ -1,14 +1,17 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 4C 原生本地音频运行 POC已关闭，准备Phase 4D**。Phase2通用原语、三套Shell骨架、完整Phase3数据层，以及正式播放状态、可替换音频/来源/媒体会话合同、持久队列算法已经存在。`media_kit`继续只存在于隔离候选层；运行时短WAV已在Windows与Android云端原生进程通过，生产组合、传递许可证闭环、REST Adapter、正式播放器接线和业务页面仍未完成。
+当前阶段：**Android + Windows · Phase 4D 原生来源 POC 已关闭，进入正式后端选择前审计**。Phase2通用原语、三套Shell骨架、完整Phase3数据层，以及正式播放状态、可替换音频/来源/媒体会话合同、持久队列算法已经存在。`media_kit`仍只存在于隔离候选层；本地WAV、Android content URI和双平台受控HTTPS原生POC均已通过，生产组合、传递许可证闭环、REST Adapter、正式播放器接线和业务页面仍未完成。
 
 Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭、只允许手动选择、`contents: read`且不上传产物的Windows/Android原生集成模式。完整221项Flutter含32张Windows宿主Golden、严格分析0问题、31项Node、24项ZIP、lockfile及生成代码/v1快照零差异已通过；本机Android Debug也完成资产与v2单Debug签名复核。精确提交`622408e`的专用运行33862786766 attempt 2已在Windows与Android成功，且没有artifact或Release；普通push另提供保留14天的完整Windows Debug portable bundle。
+
+Phase4D实现提交`913f3d75`增加HEAD-only脱敏网络探针、Android debug-only只读Provider及运行时受控HTTPS测试。标准PR运行33878401743的checks、Windows Debug和Android Debug均成功；专用运行33878710671在Windows完成HTTPS，在Android完成HTTPS与`content://`真实native candidate播放，失败矩阵、进度、seek和completed均通过，且无artifact或Release。生产入口、TLS验证默认值和release Manifest未改变。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
 ## 开发入口
 
 - [Phase 4C原生本地音频计划](docs/phase_4c_native_local_audio_poc_plan.md)、[本批报告](docs/phase_4c_native_local_audio_poc_report.md)、[本批 PR 草稿](docs/phase_4c_native_local_audio_poc_pr_draft.md)
+- [Phase 4D Content URI与受控HTTPS音频计划](docs/phase_4d_native_audio_sources_plan.md)、[本批报告](docs/phase_4d_native_audio_sources_report.md)、[本批 PR 草稿](docs/phase_4d_native_audio_sources_pr_draft.md)
 - [Phase 4B候选适配器计划](docs/phase_4b_media_kit_audio_adapter_plan.md)、[本批报告](docs/phase_4b_media_kit_audio_adapter_report.md)、[本批 PR 草稿](docs/phase_4b_media_kit_audio_adapter_pr_draft.md)
 - [Phase 4A播放核心报告](docs/phase_4a_playback_core_contracts_report.md)、[本批范围](docs/phase_4a_playback_core_contracts_plan.md)、[本批 PR 草稿](docs/phase_4a_playback_core_contracts_pr_draft.md)
 - [Phase 3H数据引导与夹具报告](docs/phase_3h_dev_fixture_bootstrap_report.md)、[本批范围](docs/phase_3h_dev_fixture_bootstrap_plan.md)、[本批 PR 草稿](docs/phase_3h_dev_fixture_bootstrap_pr_draft.md)

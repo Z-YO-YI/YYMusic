@@ -1,6 +1,6 @@
 # 原生基础验证矩阵
 
-保留Phase4B的219项Flutter检查，Phase4C新增2项确定性WAV单元测试和1项Node工作流边界，共221项Flutter、31项Node；不包含用户音乐、在线密钥或媒体二进制。真实原生运行只由手动、只读、不上传产物的Windows/Android专用工作流取得。
+保留Phase4C的221项Flutter检查，Phase4D新增4项网络探针单元测试，共225项Flutter、31项Node；不包含用户音乐、在线密钥、媒体二进制、证书或私钥。真实原生运行只由手动、只读、不上传产物的Windows/Android专用工作流取得。
 
 | 类别 | 已有自动检查 |
 | --- | --- |
@@ -40,6 +40,7 @@
 | Phase4A 播放核心 | 三种PlayableSource验证/全量脱敏、八阶段Engine/Playback状态、值与队列一致性、load/状态流/Seek夹紧/音量/速率、重复entry队列操作/持久恢复、随机一轮、repeat off/all/one、自然下一首、错误脱敏、MediaSession回调、根幂等释放 |
 | Phase4B media_kit候选 | file/content/HTTPS与Header瞬时映射、open不自动播放、八阶段snapshot合成、0–1/0–100音量、transport/Seek/rate、命令/异步错误脱敏、并发dispose/幂等、插件只在单一playback backend文件；Fake不冒充native播放 |
 | Phase4C 原生本地WAV | 运行时固定PCM16/mono/16kHz/3秒字节与SHA、参数拒绝；Windows/Android同一集成测试验证load不自动播放、duration、play/position、seek、pause、volume/rate、completed、stop/idle、无error和dispose；不提交媒体二进制 |
+| Phase4D 原生来源 | HEAD-only HTTPS探针、禁止自动重定向/响应持久化、HTTP与offline/timeout/TLS脱敏映射；Android debug-only只读Provider；双平台受控HTTPS及Android content URI真实candidate集成测试 |
 | Golden | 保留Windows Shell及既有组件29张；新增浅珊瑚/深翡翠/自定义白ReduceGlass队列歌词板3张，总计32张精确像素比较，旧基线不改 |
 
 ## CI
@@ -47,6 +48,8 @@
 `.github/workflows/foundation.yml`：checks 在 Ubuntu24.04 跑 Node/PowerShell 源核验、Dart格式/严格分析/Flutter测试；checks 成功后独立 Windows2025 Debug 和 Ubuntu Android Debug 构建。push feat/fix、PR或手动运行触发，超时20/30分钟。Android执行验签/48文件比对/三文件白名单；只有手动workflow_dispatch在全部门禁后创建私有draft/prerelease，普通push/PR不创建下载产物。个人令牌不注入runner，checkout不保留凭据。
 
 `.github/workflows/foundation.yml`的`run_native_audio_poc`布尔输入默认关闭；只有显式手动设为`true`才在Windows 2025和Ubuntu 24.04 Android API36 x86_64模拟器运行同一生成WAV测试，并跳过具有写权限的Android发布job。Emulator action固定完整提交SHA；native路径不使用Secret、不上传artifact、不构建/发布APK且不创建Release。普通push的Windows Debug另上传保留14天的完整portable bundle，PR不重复上传。结果只适用于被触发的精确提交。
+
+Phase4D另使用默认关闭的`run_native_audio_source_poc`；显式手动选择后才生成忽略的短期loopback TLS defines，并运行Windows受控HTTPS与Android content URI/受控HTTPS作业。原始cert/key生成后立即删除，专用作业仍为`contents: read`且无artifact/Release；标准push/PR不生成TLS材料。
 
 32张Golden按Windows宿主标记，Linux明确跳过（非静默通过）并运行完整非Golden回归，Windows job构建前执行`flutter test --tags windows-golden`。checks在分析前重跑build_runner与make-migrations，并要求g.dart/v1快照Git零差异。没有删除或跳过原有回归，远程状态须按目标commit单独核验。
 
@@ -99,5 +102,7 @@ Phase4B实现提交b7e0b0f的push运行33853006353与PR运行33853041607均为�
 Phase4C本地增量：2项生成器测试锁定96,044字节WAV与SHA-256 `571edd11f9568729867f4a1db7b5f4318e3868024e41253f5c5ca4a09787d51e`并拒绝非法参数；完整221项Flutter含32张Windows宿主Golden、149文件format、严格分析0问题、31项Node、24项ZIP、lockfile及生成/v1快照零差异均通过。本机Android Debug成功，APK为279,083,994字节、诊断SHA-256为`91bee6ec8cc76c324bf009e011a9dd38658bdbbf3f7e32971489af604caa065e`；48份资产匹配且v2单Debug签名有效。
 
 Phase4C实现提交`622408e`的标准push运行33861562956与PR运行33861566379均为checks、Windows Debug、Android Debug成功。专用运行33862786766 attempt 2整体成功：Windows load 62 ms/首进度197 ms/seek 2 ms，Android load 580 ms/首进度155 ms/seek 4 ms；均报告duration 3000 ms、completed和`All tests passed!`。该attempt的普通构建/发布job按设计跳过，artifact总数0、匹配Release总数0。attempt 1的账单/spending limit拦截发生在runner分配前，不计作代码失败；用户授权公开仓库后重跑取得上述证据。Phase4C原生本地WAV出口关闭，但不外推为实体扬声器、真机、后台/焦点、`content://`或HTTPS验证。
+
+Phase4D实现提交`913f3d75`的标准PR运行33878401743整体成功，checks、Windows Debug与Android Debug均成功；同提交push运行33878342752因并发组被PR运行替代而cancelled。专用运行33878710671整体成功：Windows HTTPS load 77 ms/首进度244 ms/seek 2 ms；Android HTTPS为110/143/3 ms，`content://`为56/151/2 ms；全部completed、失败矩阵通过且两端报告`All tests passed!`。专用运行只读、artifact总数0、匹配Release总数0。Phase4D出口关闭，但不证明真实第三方API、跨站重定向、实体设备、MediaStore/SAF持久授权、后台/焦点、系统媒体会话或许可证闭环。
 
 Actions 固定 SHA，来源为维护者公开 refs 和说明：[checkout](https://github.com/actions/checkout)、[setup-node](https://github.com/actions/setup-node)、[setup-java](https://github.com/actions/setup-java)、[flutter-action](https://github.com/subosito/flutter-action)。静态配置验证不代表远程工作流已经通过；每个目标提交仍须单独取得并记录远程结果。

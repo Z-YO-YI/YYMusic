@@ -40,6 +40,8 @@ Phase4A增量：`PlayableSource`把Windows绝对路径、Android content URI和H
 
 Phase4B增量：`MediaKitAudioEngine`以项目自有接口包装`media_kit`候选，插件类型被限制在`media_kit_audio_backend.dart`。适配层把Windows绝对路径转换为file URI，原样传递Android content URI，并只在HTTPS `open(play: false)`期间传递Header；状态、错误和释放都回到既有AudioEngine合同。生产`DependencyGraph`仍构造`UnavailableAudioEngine`，所以本批不改变运行时功能。Android/Windows Debug构建只验证audio-only依赖的编译与打包；真实解码/输出、系统媒体会话和传递许可证闭环仍是Phase4C前置门禁。
 
+Phase4C/4D增量：隔离的integration harness已在Windows 2025与Android API36 x86_64真实native candidate上通过运行时本地WAV；随后通过双平台受控HTTPS、瞬时Header、脱敏HTTP/offline/timeout/TLS矩阵及Android debug-only只读`content://` Provider。POC专用Windows无头音频sink和自签名TLS绕过均由名称明确的测试构造入口隔离，默认candidate不继承这些设置。生产`DependencyGraph`仍构造`UnavailableAudioEngine`，发布许可证、实体设备与正式后端选择未完成。
+
 这份文件描述已经存在的工程骨架，不把 Phase 0 的未来目录全部冒充实现。正式代码位于根 lib；旧原型和 Web 参考隔离在 archive/design_reference。
 
 | 边界 | 已有责任 | 尚未实现 |
@@ -50,7 +52,7 @@ Phase4B增量：`MediaKitAudioEngine`以项目自有接口包装`media_kit`候�
 | app/AdaptiveRoot | 实时 LayoutBuilder + 平台优先分类，选择三个 Shell；零尺寸时不动根依赖 | 生产级窗口约束/布局细化 |
 | shells | Android原生Phone/Tablet导航、Windows 240/72受控导航与42工具区、三端未接入播放槽位；不直接网络/DB/音频 | Windows平台窗口Gateway、Inspector业务、正式播放器接线 |
 | design_system | Theme/Token/原始SVG/按钮/Surface/Profile、Android与Windows导航、Tooltip/Toolbar、Slider/Artwork、SearchField/SegmentedControl/Toggle、AlbumCard/TrackTile、MiniPlayer/DesktopPlayerBar、ContextMenu/Dialog/BottomSheet/Toast、ThemeSwatch/EmptyState/ErrorBanner/Skeleton、SourceCard/PlaylistCard、QueueTile/LyricsLine/LyricsPlayerDock | 业务弹层编排与页面级组合 |
-| playback | 脱敏PlayableSource/Resolver、独立EngineState、完整PlaybackState；唯一Controller串行播放命令、持久队列/随机/循环/自动下一首及错误映射；QueueController只委托；media_kit候选被插件隔离且未接生产 | 真实双平台文件/content/HTTPS/Seek运行POC、native许可证闭环、正式后端选择、历史与UI接线 |
+| playback | 脱敏PlayableSource/Resolver、独立EngineState、完整PlaybackState；唯一Controller串行播放命令、持久队列/随机/循环/自动下一首及错误映射；QueueController只委托；media_kit候选已通过双平台本地/HTTPS及Android content POC但未接生产 | native许可证闭环、实体设备/生命周期验证、正式后端选择、历史与UI接线 |
 | domain / platform | 稳定TrackRef/QueueEntry、四Repository合同、LoadState/错误分类、Android/Windows SecureCredentialGateway实现，以及MediaSession/Fullscreen项目合同 | 真机安全存储、Android MediaSession、Windows SMTC与其余平台实现 |
 | data/database | 17张Drift表、v1创建Migration/快照、外键/约束/索引及后台双平台打开；Library/Collection/Lyrics/Source严格映射与正式Repository，仅保存credentialRef；生产组合已接根启动 | Controller、真实来源Adapter、v2+保数据迁移 |
 | shared/FoundationButton | 仍用于工程骨架内容中的临时路由验证；44px命中区、Semantics/键盘激活 | 后续业务页以对应YY组件逐步替换 |
@@ -65,7 +67,7 @@ player → lyrics → back 返回 player；主页面 → lyrics → back 返回�
 
 AppViewState 保存会话内选中项和每路由滚动偏移，Shell 重建不清空。宽度变大使文本重排时，偏移只裁剪到新滚动范围；不是强行保留已越界的像素位置。它不是持久化仓储，重启恢复属于 Phase 3。
 
-DependencyGraph 在 ProviderScope 销毁时释放一次；Shell 切换不创建/释放引擎。AppBootstrap只恢复队列，不自动解析、加载或播放。默认 UnavailableAudioEngine 的全部命令明确失败，不发布假 playing 状态；Phase4B的MediaKitAudioEngine只能由专用POC显式创建，测试Fake backend也不能成为生产依赖。
+DependencyGraph 在 ProviderScope 销毁时释放一次；Shell 切换不创建/释放引擎。AppBootstrap只恢复队列，不自动解析、加载或播放。默认 UnavailableAudioEngine 的全部命令明确失败，不发布假 playing 状态；Phase4B—4D的MediaKitAudioEngine仍只能由专用POC显式创建，测试Fake/backend也不能成为生产依赖。
 
 ## 当前限制
 
