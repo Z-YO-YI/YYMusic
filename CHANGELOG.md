@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-09-04 — Phase 4C 原生本地音频运行 POC
+
+- 新增运行时确定性PCM16 WAV生成器，不提交用户音乐、媒体二进制或真实路径；固定3秒/16kHz/mono格式、96,044字节和SHA-256。
+- 新增Windows/Android共用原生集成测试，覆盖load不自动播放、duration、play/position、seek、pause、volume/rate、completed、stop与dispose；生产入口继续不可用。
+- 在已注册的foundation工作流增加默认关闭的只读双平台手动模式；Android emulator action固定完整SHA，不使用Secret、不上传产物、不创建Release。
+- 普通push的Windows Debug上传保留14天的完整portable bundle，便于远程下载测试；PR不重复上传。
+- 完整221项Flutter含32张Windows宿主Golden、149文件format、严格分析0问题、31项Node、24项ZIP、lockfile及生成/v1快照零差异通过；本机Android Debug和v2单Debug签名/48资产复核通过。
+- 修复Windows托管runner无音频端点时position不推进：仅POC使用libmpv null sink，Android和生产默认创建路径不变。
+- `622408e`专用运行33862786766 attempt 2在Windows/Android均成功；两边均完成load/play/seek/completed，专用运行无artifact/Release。用户明确授权将仓库设为公开后，账单限制不再阻塞标准runner。
+- 无头运行不冒充实体扬声器、真机、后台/焦点、content URI或HTTPS验证；native许可证未闭合，候选仍不进入生产或发布。
+
 ## 2026-09-04 — Phase 4B media_kit 候选适配与原生打包验证
 
 - 精确加入`media_kit 1.2.6`与`media_kit_libs_audio 1.0.7`；lockfile解析Android audio 1.3.8和Windows audio 1.0.9，未混入video库。

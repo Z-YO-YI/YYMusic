@@ -12,6 +12,12 @@ final class MediaKitAudioEngine implements AudioEngine {
   factory MediaKitAudioEngine.create() =>
       MediaKitAudioEngine(NativeMediaKitPlayerBackend.create());
 
+  /// Headless Windows POC only; production keeps automatic device output.
+  static Future<MediaKitAudioEngine>
+  createWithHeadlessAudioSinkForPoc() async => MediaKitAudioEngine(
+    await NativeMediaKitPlayerBackend.createWithHeadlessAudioSinkForPoc(),
+  );
+
   MediaKitAudioEngine(this._backend) {
     _snapshotSubscription = _backend.snapshots.listen(
       _acceptSnapshot,

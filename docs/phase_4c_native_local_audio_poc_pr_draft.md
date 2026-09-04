@@ -1,0 +1,43 @@
+# PR 草稿：Windows/Android 原生本地音频运行 POC
+
+Head：`feat/native-audio-local-poc`；Base：`feat/media-kit-audio-poc@e1c50ca`。
+创建为Draft，不自动合并、不改写历史。
+
+## 变更
+
+- 运行时生成固定3秒PCM16单声道WAV；不提交音频二进制、用户音乐或路径。
+- Windows/Android使用同一Flutter集成测试真实创建候选Player，覆盖load不自动播放、duration、
+  play/position、seek、pause、volume/rate、completed、stop与dispose。
+- 在默认分支已注册的`foundation.yml`增加默认关闭的`run_native_audio_poc`手动模式；该模式只运行
+  read-only checks和双平台native job，跳过Android发布job。Emulator action固定完整SHA，不上传
+  artifact、不创建Release、不使用Secret。
+- 普通push完成Windows Debug后上传保留14天的完整portable bundle，远程用户可下载测试；PR不重复上传。
+- 生产入口、Shell、权限、数据库Schema和可见UI不变，正式AudioEngine仍不可用。
+
+## 测试
+
+- 2项WAV生成器测试通过；固定96,044字节和SHA-256
+  `571edd11f9568729867f4a1db7b5f4318e3868024e41253f5c5ca4a09787d51e`。
+- 149文件format 0变化、严格analyze 0问题、完整221项Flutter含32张Windows宿主Golden通过。
+- 31项Node、24项ZIP通过；lockfile严格复现，build_runner/Drift后g.dart/v1快照零差异。
+- 本机Android Debug成功；279,083,994字节APK的48资产和v2单Debug签名通过，诊断SHA-256为
+  `91bee6ec8cc76c324bf009e011a9dd38658bdbbf3f7e32971489af604caa065e`。
+- 精确实现提交`622408e`的push运行33861562956与PR运行33861566379均为checks、Windows Debug、
+  Android Debug成功；push运行另产出完整Windows portable artifact `9932648060`。
+- 专用运行33862786766 attempt 2整体成功：Windows load 62 ms/首进度197 ms/seek 2 ms，Android
+  load 580 ms/首进度155 ms/seek 4 ms；两边duration均为3000 ms且到达completed，测试通过。
+- attempt 1被GitHub账单/spending limit在runner分配前拦截；用户授权公开仓库后重跑成功。专用运行
+  artifact为0、匹配Release为0，普通构建/发布job按设计跳过。
+
+## 影响与未验收项
+
+本批不改变正式应用行为。无头runner的position/completed不能证明实体扬声器、音质、真机、后台、
+焦点、媒体会话或设备切换；本批也不覆盖Android `content://`、SAF、受控HTTPS/Header及失败矩阵。
+native LICENSE/NOTICE链仍未闭合，候选不进入生产组合，本PR不触发手动APK Release。
+
+## 仓库与PR
+
+- 仓库：`Z-YO-YI/YYMusic`，用户于2026-09-04明确授权从private改为public。
+- Head：`feat/native-audio-local-poc@622408e`；Base：`feat/media-kit-audio-poc@e1c50ca`。
+- Draft PR：[Z-YO-YI/YYMusic#19](https://github.com/Z-YO-YI/YYMusic/pull/19)，保持open/draft，
+  不自动合并、不改写历史。
