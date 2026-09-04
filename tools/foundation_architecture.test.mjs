@@ -302,5 +302,18 @@ test('native audio POC runs only on explicit read-only dual-platform CI', () => 
   const integrationFiles = walk('integration_test');
   assert(integrationFiles.every(path => path.endsWith('.dart')));
   assert(!integrationFiles.some(path => /\.(?:wav|mp3|flac|aac|m4a|ogg)$/i.test(path)));
+  const headlessHook = 'createWithHeadlessAudioSinkForPoc';
+  const hookFiles = [...sources, ...integrationFiles]
+    .filter(path => read(path).includes(headlessHook))
+    .sort();
+  assert.deepEqual(hookFiles, [
+    'integration_test/native_local_audio_poc_test.dart',
+    'lib/playback/media_kit_audio_backend.dart',
+    'lib/playback/media_kit_audio_engine.dart',
+  ]);
+  assert.match(
+    read('integration_test/native_local_audio_poc_test.dart'),
+    /Platform\.isWindows[\s\S]*?createWithHeadlessAudioSinkForPoc\(\)[\s\S]*?: MediaKitAudioEngine\.create\(\)/,
+  );
   assert.match(read('pubspec.yaml'), /integration_test:\s*\n\s+sdk: flutter/);
 });

@@ -56,6 +56,28 @@ final class NativeMediaKitPlayerBackend implements MediaKitPlayerBackend {
     return NativeMediaKitPlayerBackend._(Player());
   }
 
+  /// Creates the native backend with libmpv's clock-only audio sink.
+  ///
+  /// This is restricted to the headless Windows CI POC, whose hosted runner
+  /// has no audio endpoint. The normal factory keeps automatic device output.
+  static Future<NativeMediaKitPlayerBackend>
+  createWithHeadlessAudioSinkForPoc() async {
+    MediaKit.ensureInitialized();
+    final player = Player();
+    final platform = player.platform;
+    if (platform is! NativePlayer) {
+      await player.dispose();
+      throw UnsupportedError('Native media_kit player is unavailable');
+    }
+    try {
+      await platform.setProperty('ao', 'null');
+      return NativeMediaKitPlayerBackend._(player);
+    } catch (_) {
+      await player.dispose();
+      rethrow;
+    }
+  }
+
   NativeMediaKitPlayerBackend._(this._player) {
     _watch(_player.stream.playing);
     _watch(_player.stream.completed);

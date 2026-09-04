@@ -31,7 +31,9 @@ void main() {
     );
     await file.writeAsBytes(buildDeterministicPcmWav(), flush: true);
 
-    final engine = MediaKitAudioEngine.create();
+    final engine = Platform.isWindows
+        ? await MediaKitAudioEngine.createWithHeadlessAudioSinkForPoc()
+        : MediaKitAudioEngine.create();
     addTearDown(engine.dispose);
     final observed = <AudioEngineState>[];
     final subscription = engine.states.listen(observed.add);
