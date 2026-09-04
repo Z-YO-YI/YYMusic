@@ -1,6 +1,6 @@
 # Windows + Android 音频 POC 计划
 
-状态：**Phase4A合同已实现；Phase4B候选适配器与Android打包已通过，真实音频POC仍未运行**。Flutter/Dart、Android工具链与GitHub Windows 2025 runner已经可用；本机Windows C++工具链仍受远程UAC限制。Phase4B只交付隔离适配器、Fake矩阵和候选native打包，不把Fake、构建或资产Fixture冒充扬声器播放证据。
+状态：**Phase4A合同与Phase4B候选适配/打包已完成；Phase4C正在执行双平台原生本地WAV运行POC**。Flutter/Dart、Android工具链与GitHub Windows 2025 runner已经可用；本机Windows C++工具链仍受远程UAC限制。Phase4C只在专用集成测试里创建候选Player，不改变生产组合，也不把云端无头设备运行冒充实体扬声器体验。
 
 ## 候选与隔离
 
@@ -35,7 +35,7 @@ Windows audio 1.0.9。生产入口仍使用UnavailableAudioEngine；候选只可
 | sleep | 15/30/60、trackEnd、恢复/过期策略，平滑暂停不伪造支持 |
 | no-download | 没有downloadTrack/saveOffline/batchDownload，网络音频仅技术性缓冲，不形成可离线播放文件 |
 
-Phase4A已用可注入clock/random、FakeAudioEngine/Resolver/MediaSession覆盖控制器合同；Phase4B又用可注入MediaKitPlayerBackend覆盖插件适配逻辑。下一批必须用运行时生成且许可明确的音频把相同场景跑在真实Windows/Android backend。性能记录启动/seek时延、内存、CPU、持续播放事件频率；先测基线再设性能阈值，不把浏览器demo计时、编译成功或Fake事件当测试。
+Phase4A已用可注入clock/random、FakeAudioEngine/Resolver/MediaSession覆盖控制器合同；Phase4B又用可注入MediaKitPlayerBackend覆盖插件适配逻辑。Phase4C运行时生成固定SHA的3秒PCM16 WAV，在Windows进程和Android x86_64模拟器执行load/play/position/seek/pause/volume/rate/completed/stop，并记录脱敏的load/首进度/seek耗时。当前小批只覆盖应用私有临时文件；`content://`、受控HTTPS/Header、失败矩阵、内存/CPU/持续事件频率仍须分批验证，不把浏览器demo计时、编译成功或Fake事件当测试。
 
 ## 输出与否决条件
 

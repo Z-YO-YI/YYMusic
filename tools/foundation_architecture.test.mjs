@@ -259,3 +259,27 @@ test('CI validates both debug targets with least-privileged, pinned actions', ()
   assert.match(android, /if: github\.event_name == 'workflow_dispatch'/);
   assert.match(android, /GH_TOKEN: \$\{\{ github\.token \}\}/);
 });
+
+test('native audio POC runs only on explicit read-only dual-platform CI', () => {
+  const workflow = read('.github/workflows/native_audio_poc.yml');
+  assert.match(workflow, /^on:\s*\n\s+workflow_dispatch:\s*$/m);
+  assert.match(workflow, /^permissions:\s*\n\s+contents: read\s*$/m);
+  assert.match(workflow, /runs-on: windows-2025/);
+  assert.match(workflow, /runs-on: ubuntu-24\.04/);
+  assert.match(
+    workflow,
+    /ReactiveCircus\/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d/,
+  );
+  assert.equal(
+    workflow.match(/integration_test\/native_local_audio_poc_test\.dart/g)?.length,
+    2,
+  );
+  assert(!/contents: write|upload-artifact|gh release|secrets\.|pull_request_target/.test(workflow));
+  assert(!/^\s+(?:push|pull_request):/m.test(workflow));
+  assert(!/flutter build apk|flutter build appbundle/.test(workflow));
+
+  const integrationFiles = walk('integration_test');
+  assert(integrationFiles.every(path => path.endsWith('.dart')));
+  assert(!integrationFiles.some(path => /\.(?:wav|mp3|flac|aac|m4a|ogg)$/i.test(path)));
+  assert.match(read('pubspec.yaml'), /integration_test:\s*\n\s+sdk: flutter/);
+});

@@ -41,6 +41,48 @@ void main() {
         (pubspec['environment'] as YamlMap)['flutter'],
         '>=${environment['FLUTTER_VERSION']}',
       );
+
+      final nativeWorkflow = loadYaml(
+        File('.github/workflows/native_audio_poc.yml').readAsStringSync(),
+      ) as YamlMap;
+      expect((nativeWorkflow['on'] as YamlMap).keys.toSet(), {
+        'workflow_dispatch',
+      });
+      expect(nativeWorkflow['permissions'], {'contents': 'read'});
+      expect(nativeWorkflow['env'], {
+        'FLUTTER_VERSION': environment['FLUTTER_VERSION'],
+      });
+      final nativeJobs = nativeWorkflow['jobs'] as YamlMap;
+      expect(nativeJobs.keys.toSet(), {
+        'windows-native-audio',
+        'android-native-audio',
+      });
+      expect(
+        (nativeJobs['windows-native-audio'] as YamlMap)['runs-on'],
+        'windows-2025',
+      );
+      expect(
+        (nativeJobs['android-native-audio'] as YamlMap)['runs-on'],
+        'ubuntu-24.04',
+      );
+      for (final job in nativeJobs.values.cast<YamlMap>()) {
+        expect(job['permissions'], isNull);
+        final steps = (job['steps'] as YamlList).cast<YamlMap>();
+        final commands = <String>[
+          ...steps.map((step) => step['run']).whereType<String>(),
+          ...steps
+              .map((step) => step['with'])
+              .whereType<YamlMap>()
+              .map((withValues) => withValues['script'])
+              .whereType<String>(),
+        ];
+        expect(
+          commands,
+          anyElement(
+            contains('integration_test/native_local_audio_poc_test.dart'),
+          ),
+        );
+      }
     },
   );
 

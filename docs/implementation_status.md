@@ -1,6 +1,6 @@
 # 实施状态
 
-更新：2026-09-04。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。Phase 3与Phase4A已关闭；Phase4B正在验证media_kit候选的隔离适配和native打包。真实Windows+Android音频播放POC与传递native许可证仍未闭合，不能把Fake测试或编译通过称为播放通过。
+更新：2026-09-04。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。Phase 3、Phase4A与Phase4B已关闭；Phase4C正在用运行时生成的本地WAV验证Windows和Android原生进程。专用云端运行与传递native许可证仍未闭合，不能把本机编译或Fake测试称为双平台播放通过。
 
 | 阶段/能力 | 状态 |
 | --- | --- |
@@ -28,12 +28,12 @@
 | Phase 3 后续来源/状态 | 主指令Phase3本地出口已满足；REST Adapter、来源凭据事务与业务Controller按后续阶段分批交付 |
 | Phase 4A 播放核心合同 | 完整八阶段Engine/Playback状态、脱敏PlayableSource、唯一Controller、持久队列/随机/循环/自动下一首、MediaSession接口已实现；本地门禁与目标提交GitHub三类三job/草稿APK复核完成，见phase_4a_playback_core_contracts_report.md |
 | Phase 4B 候选适配/打包 POC | media_kit 1.2.6 + audio libs已解析；项目适配器、5项Fake测试、完整本地门禁、本机Android native打包及目标提交GitHub push/PR双平台三job通过；生产入口未接候选，native许可证和真实播放未闭合 |
-| Phase 4C 双平台真实音频 POC | 尚未开始；运行时生成许可音频、Windows文件/Android content URI、受控HTTPS、真实Seek/状态/错误与性能仍待验 |
+| Phase 4C 双平台原生本地音频 POC | 实现已就绪、云端运行待执行：运行时生成固定PCM16 WAV，专用Windows/Android集成测试覆盖load不自动播放、play/position/seek/pause/volume/rate/completed/stop；不接生产入口、不上传产物 |
 | 后续页面、歌词、导入、来源、平台集成 | 未开始 |
 | GitHub APK交付 | Phase4A ec508df的唯一手动运行33848236710创建私有草稿Release；190735487字节APK的三资产、metadata、SHA256SUMS、API digest、48份包内资产、Manifest及v2单签名已独立复核 |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
-| Flutter format/analyze/test | Phase4B格式检查、严格分析0问题、完整219项含32张Windows宿主Golden全部通过；5项media_kit候选适配测试通过 |
-| Windows / Android Debug构建 | Phase4B本机Android Debug含三种目标ABI audio-only原生库通过；b7e0b0f的GitHub push/PR均完成Windows/Android Debug，本机Windows C++工具链仍受UAC限制 |
+| Flutter format/analyze/test | Phase4C格式检查149文件、严格分析0问题、完整221项含32张Windows宿主Golden全部通过；31项Node和24项ZIP通过 |
+| Windows / Android Debug构建 | Phase4C本机Android Debug及验签/资产复核通过；专用GitHub Windows/Android原生运行和标准双平台构建待目标提交推送后执行，本机Windows C++工具链仍受UAC限制 |
 
 ## 保留的验收缺口与后续边界
 
@@ -45,6 +45,6 @@
 
 ## 仓库边界
 
-开发分支：feat/media-kit-audio-poc，基于已拉取并同步的feat/playback-core-contracts@3e52f94。未在main/master直接开发；旧原型保留于归档提交。本批只增加候选适配层、精确audio依赖、测试与文档，不改UI、生产Bootstrap、权限或Drift v1 Schema。Phase4A Draft PR #17与Phase4B Draft PR #18均保持open/draft。
+开发分支：feat/native-audio-local-poc，基于已拉取并同步的feat/media-kit-audio-poc@e1c50ca。未在main/master直接开发；旧原型保留于归档提交。本批只增加运行时WAV生成器、集成测试、只读手动作业和文档，不改UI、生产Bootstrap、权限或Drift v1 Schema。Phase4A Draft PR #17与Phase4B Draft PR #18均保持open/draft；Phase4C PR将在实现提交推送后创建。
 
 此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问可读取本仓库运行和PR，不修改账号权限。Phase3H Draft PR #16与APK证据仍有效但只对应`27dd76c`；Phase4A Draft PR #17与新APK证据只对应`ec508df`。

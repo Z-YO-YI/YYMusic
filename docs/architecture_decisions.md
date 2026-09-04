@@ -241,3 +241,16 @@ native库，Android/Windows Debug构建仅验证打包/链接。实际本地授�
 且没有LICENSE/NOTICE；Windows 1.0.9在构建时下载2023-09-24 libmpv归档。它们包含libmpv/FFmpeg，
 不能用wrapper的MIT声明替代传递二进制义务。补齐精确构建配置、LGPL/第三方NOTICE、可替换/源码
 提供策略并经发布审核前，不触发包含该候选的手动APK Release，也不正式锁定backend。
+
+## ADR-032：真实本地音频证据使用运行时生成材料与隔离手动作业（2026-09-04）
+
+Phase4C不向仓库加入WAV/MP3等媒体二进制，也不使用用户音乐或下载在线样本。专用测试在运行时生成
+固定3秒PCM16单声道WAV，单元测试锁定RIFF结构、长度与SHA-256，再写入测试进程私有临时目录。
+测试只把该绝对路径交给候选`MediaKitAudioEngine`，退出时依次取消状态订阅、释放Player并删除临时目录；
+日志只记录平台和三项耗时，不输出路径、URI、Header或原生错误。
+
+真实运行与普通CI分离：`native_audio_poc.yml`只允许手动触发并使用`contents: read`，在Windows 2025
+进程和Android API36 x86_64模拟器执行同一测试，不上传artifact、不创建Release。position推进与completed
+可以证明native初始化、解码、时钟和控制链工作，但无头runner不能证明扬声器可听、音质、音频焦点、
+后台或设备切换。生产`main.dart`继续使用`UnavailableAudioEngine`，且Android `content://`与受控HTTPS
+留给下一小批；许可证闭环前即使双平台测试成功也不能正式锁定或发布候选backend。
