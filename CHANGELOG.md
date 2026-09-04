@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-09-04 — Phase 4D Content URI 与受控 HTTPS 音频 POC
+
+- 新增HEAD-only HTTPS探针，禁止自动重定向和响应持久化；将HTTP状态及offline/timeout/TLS失败映射为脱敏DomainFailure。
+- 新增Android debug-only、不可导出、只读ContentProvider，仅暴露应用cache中的运行时生成WAV；main/profile不注册且不新增媒体/存储权限。
+- 新增双平台loopback HTTPS服务器和candidate集成测试；短期自签名证书/私钥只在忽略目录运行时生成，原始文件立即删除。
+- 新增仅供受控HTTPS POC使用的TLS绕过入口；默认candidate和生产Bootstrap保持不变，真实来源仍强制验证TLS。
+- `foundation.yml`新增默认关闭的只读双平台来源POC模式，不使用Secret、不上传artifact、不创建Release。
+- 153文件format、严格analyze、完整225项Flutter/32 Golden、31项Node、24项ZIP通过；Android Debug构建、48资产、Provider Manifest和v2单Debug签名通过。云端来源运行待实现提交推送后记录。
+
 ## 2026-09-04 — Phase 4C 原生本地音频运行 POC
 
 - 新增运行时确定性PCM16 WAV生成器，不提交用户音乐、媒体二进制或真实路径；固定3秒/16kHz/mono格式、96,044字节和SHA-256。

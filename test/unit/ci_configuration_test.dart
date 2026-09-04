@@ -23,10 +23,18 @@ void main() {
         'android-debug',
         'windows-native-audio',
         'android-native-audio',
+        'windows-native-audio-sources',
+        'android-native-audio-sources',
       });
       final dispatch = triggers['workflow_dispatch'] as YamlMap;
       expect((dispatch['inputs'] as YamlMap)['run_native_audio_poc'], {
         'description': 'Run the read-only Android and Windows native audio POC',
+        'required': true,
+        'default': false,
+        'type': 'boolean',
+      });
+      expect((dispatch['inputs'] as YamlMap)['run_native_audio_source_poc'], {
+        'description': 'Run the read-only content URI and HTTPS audio POC',
         'required': true,
         'default': false,
         'type': 'boolean',
@@ -36,6 +44,8 @@ void main() {
         'android-debug',
         'windows-native-audio',
         'android-native-audio',
+        'windows-native-audio-sources',
+        'android-native-audio-sources',
       ]) {
         expect((jobs[id] as YamlMap)['needs'], 'checks');
       }
@@ -96,7 +106,46 @@ void main() {
         expect(
           (jobs[id] as YamlMap)['if'],
           "github.event_name != 'workflow_dispatch' || "
-          '!inputs.run_native_audio_poc',
+          '(!inputs.run_native_audio_poc && '
+          '!inputs.run_native_audio_source_poc)',
+        );
+      }
+
+      for (final id in [
+        'windows-native-audio-sources',
+        'android-native-audio-sources',
+      ]) {
+        final job = jobs[id] as YamlMap;
+        expect(job['permissions'], isNull);
+        expect(
+          job['if'],
+          "github.event_name == 'workflow_dispatch' && "
+          'inputs.run_native_audio_source_poc',
+        );
+        final steps = (job['steps'] as YamlList).cast<YamlMap>();
+        final commands = <String>[
+          ...steps.map((step) => step['run']).whereType<String>(),
+          ...steps
+              .map((step) => step['with'])
+              .whereType<YamlMap>()
+              .map((withValues) => withValues['script'])
+              .whereType<String>(),
+        ];
+        expect(
+          commands,
+          contains('node tools/generate_native_audio_poc_tls.mjs'),
+        );
+        expect(
+          commands,
+          anyElement(
+            allOf(
+              contains('integration_test/native_audio_sources_poc_test.dart'),
+              contains(
+                '--dart-define-from-file='
+                'build/native-audio-poc/tls-defines.json',
+              ),
+            ),
+          ),
         );
       }
     },

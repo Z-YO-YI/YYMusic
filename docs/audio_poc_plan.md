@@ -1,6 +1,6 @@
 # Windows + Android 音频 POC 计划
 
-状态：**Phase4A合同、Phase4B候选适配/打包与Phase4C双平台原生本地WAV运行POC已完成；下一批为Phase4D来源/失败矩阵**。精确提交`622408e`的GitHub专用运行33862786766 attempt 2已在Windows 2025与Android API36 x86_64成功；生产组合未改变，云端无头设备结果不冒充实体扬声器体验。本机Windows C++工具链仍受远程UAC限制。
+状态：**Phase4A合同、Phase4B候选适配/打包与Phase4C双平台原生本地WAV运行POC已完成；Phase4D来源/失败矩阵本地实现完成，等待专用云端运行**。精确提交`622408e`的GitHub专用运行33862786766 attempt 2已在Windows 2025与Android API36 x86_64成功；生产组合未改变，云端无头设备结果不冒充实体扬声器体验。本机Windows C++工具链仍受远程UAC限制。
 
 ## 候选与隔离
 

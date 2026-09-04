@@ -1,6 +1,6 @@
 # 原生基础验证矩阵
 
-保留Phase4B的219项Flutter检查，Phase4C新增2项确定性WAV单元测试和1项Node工作流边界，共221项Flutter、31项Node；不包含用户音乐、在线密钥或媒体二进制。真实原生运行只由手动、只读、不上传产物的Windows/Android专用工作流取得。
+保留Phase4C的221项Flutter检查，Phase4D新增4项网络探针单元测试，共225项Flutter、31项Node；不包含用户音乐、在线密钥、媒体二进制、证书或私钥。真实原生运行只由手动、只读、不上传产物的Windows/Android专用工作流取得。
 
 | 类别 | 已有自动检查 |
 | --- | --- |
@@ -40,6 +40,7 @@
 | Phase4A 播放核心 | 三种PlayableSource验证/全量脱敏、八阶段Engine/Playback状态、值与队列一致性、load/状态流/Seek夹紧/音量/速率、重复entry队列操作/持久恢复、随机一轮、repeat off/all/one、自然下一首、错误脱敏、MediaSession回调、根幂等释放 |
 | Phase4B media_kit候选 | file/content/HTTPS与Header瞬时映射、open不自动播放、八阶段snapshot合成、0–1/0–100音量、transport/Seek/rate、命令/异步错误脱敏、并发dispose/幂等、插件只在单一playback backend文件；Fake不冒充native播放 |
 | Phase4C 原生本地WAV | 运行时固定PCM16/mono/16kHz/3秒字节与SHA、参数拒绝；Windows/Android同一集成测试验证load不自动播放、duration、play/position、seek、pause、volume/rate、completed、stop/idle、无error和dispose；不提交媒体二进制 |
+| Phase4D 原生来源 | HEAD-only HTTPS探针、禁止自动重定向/响应持久化、HTTP与offline/timeout/TLS脱敏映射；Android debug-only只读Provider；双平台受控HTTPS及Android content URI真实candidate集成测试 |
 | Golden | 保留Windows Shell及既有组件29张；新增浅珊瑚/深翡翠/自定义白ReduceGlass队列歌词板3张，总计32张精确像素比较，旧基线不改 |
 
 ## CI
@@ -47,6 +48,8 @@
 `.github/workflows/foundation.yml`：checks 在 Ubuntu24.04 跑 Node/PowerShell 源核验、Dart格式/严格分析/Flutter测试；checks 成功后独立 Windows2025 Debug 和 Ubuntu Android Debug 构建。push feat/fix、PR或手动运行触发，超时20/30分钟。Android执行验签/48文件比对/三文件白名单；只有手动workflow_dispatch在全部门禁后创建私有draft/prerelease，普通push/PR不创建下载产物。个人令牌不注入runner，checkout不保留凭据。
 
 `.github/workflows/foundation.yml`的`run_native_audio_poc`布尔输入默认关闭；只有显式手动设为`true`才在Windows 2025和Ubuntu 24.04 Android API36 x86_64模拟器运行同一生成WAV测试，并跳过具有写权限的Android发布job。Emulator action固定完整提交SHA；native路径不使用Secret、不上传artifact、不构建/发布APK且不创建Release。普通push的Windows Debug另上传保留14天的完整portable bundle，PR不重复上传。结果只适用于被触发的精确提交。
+
+Phase4D另使用默认关闭的`run_native_audio_source_poc`；显式手动选择后才生成忽略的短期loopback TLS defines，并运行Windows受控HTTPS与Android content URI/受控HTTPS作业。原始cert/key生成后立即删除，专用作业仍为`contents: read`且无artifact/Release；标准push/PR不生成TLS材料。
 
 32张Golden按Windows宿主标记，Linux明确跳过（非静默通过）并运行完整非Golden回归，Windows job构建前执行`flutter test --tags windows-golden`。checks在分析前重跑build_runner与make-migrations，并要求g.dart/v1快照Git零差异。没有删除或跳过原有回归，远程状态须按目标commit单独核验。
 

@@ -270,18 +270,26 @@ test('CI validates both debug targets with least-privileged, pinned actions', ()
   assert.match(windows, /path: build\/windows\/x64\/runner\/Debug\//);
 });
 
-test('native audio POC runs only on explicit read-only dual-platform CI', () => {
+test('native audio POCs run only on explicit read-only dual-platform CI', () => {
   const workflow = read('.github/workflows/foundation.yml');
   assert.match(workflow, /^permissions:\s*\n\s+contents: read\s*$/m);
   assert.match(
     workflow,
     /run_native_audio_poc:[\s\S]*?required: true[\s\S]*?default: false[\s\S]*?type: boolean/,
   );
+  assert.match(
+    workflow,
+    /run_native_audio_source_poc:[\s\S]*?required: true[\s\S]*?default: false[\s\S]*?type: boolean/,
+  );
   const native = workflow.slice(workflow.indexOf('\n  windows-native-audio:'));
   assert.match(native, /runs-on: windows-2025/);
   assert.match(native, /runs-on: ubuntu-24\.04/);
   assert.equal(
     native.match(/if: github\.event_name == 'workflow_dispatch' && inputs\.run_native_audio_poc/g)?.length,
+    2,
+  );
+  assert.equal(
+    native.match(/if: github\.event_name == 'workflow_dispatch' && inputs\.run_native_audio_source_poc/g)?.length,
     2,
   );
   assert.match(
@@ -292,10 +300,22 @@ test('native audio POC runs only on explicit read-only dual-platform CI', () => 
     native.match(/integration_test\/native_local_audio_poc_test\.dart/g)?.length,
     2,
   );
+  assert.equal(
+    native.match(/integration_test\/native_audio_sources_poc_test\.dart/g)?.length,
+    2,
+  );
+  assert.equal(
+    native.match(/node tools\/generate_native_audio_poc_tls\.mjs/g)?.length,
+    2,
+  );
+  assert.equal(
+    native.match(/--dart-define-from-file=build\/native-audio-poc\/tls-defines\.json/g)?.length,
+    2,
+  );
   assert(!/contents: write|upload-artifact|gh release|secrets\.|pull_request_target/.test(native));
   assert(!/flutter build apk|flutter build appbundle/.test(native));
   assert.equal(
-    workflow.match(/if: github\.event_name != 'workflow_dispatch' \|\| !inputs\.run_native_audio_poc/g)?.length,
+    workflow.match(/if: github\.event_name != 'workflow_dispatch' \|\| \(!inputs\.run_native_audio_poc && !inputs\.run_native_audio_source_poc\)/g)?.length,
     2,
   );
 
@@ -315,5 +335,49 @@ test('native audio POC runs only on explicit read-only dual-platform CI', () => 
     read('integration_test/native_local_audio_poc_test.dart'),
     /Platform\.isWindows[\s\S]*?createWithHeadlessAudioSinkForPoc\(\)[\s\S]*?: MediaKitAudioEngine\.create\(\)/,
   );
+  const sourceHook = 'createForControlledHttpsPoc';
+  const sourceHookFiles = [...sources, ...integrationFiles]
+    .filter(path => read(path).includes(sourceHook))
+    .sort();
+  assert.deepEqual(sourceHookFiles, [
+    'integration_test/native_audio_sources_poc_test.dart',
+    'lib/playback/media_kit_audio_backend.dart',
+    'lib/playback/media_kit_audio_engine.dart',
+  ]);
+  assert.match(
+    read('integration_test/native_audio_sources_poc_test.dart'),
+    /createForControlledHttpsPoc\([\s\S]*?headlessAudio: Platform\.isWindows/,
+  );
+
+  const debugManifest = read('android/app/src/debug/AndroidManifest.xml');
+  assert.match(debugManifest, /\.NativeAudioPocProvider/);
+  assert.match(debugManifest, /android:exported="false"/);
+  assert.match(debugManifest, /android:grantUriPermissions="false"/);
+  assert(!/NativeAudioPocProvider/.test(read('android/app/src/main/AndroidManifest.xml')));
+  assert(!/NativeAudioPocProvider/.test(read('android/app/src/profile/AndroidManifest.xml')));
+  const provider = read('android/app/src/debug/kotlin/io/github/z_y_o_y_i/yymusic/NativeAudioPocProvider.kt');
+  assert.match(provider, /ParcelFileDescriptor\.MODE_READ_ONLY/);
+  assert.match(provider, /appContext\.cacheDir/);
+  assert(!/externalStorage|MediaStore|READ_MEDIA|MANAGE_EXTERNAL/.test(provider));
+
+  const tlsGenerator = read('tools/generate_native_audio_poc_tls.mjs');
+  assert.match(tlsGenerator, /build', 'native-audio-poc/);
+  assert.match(tlsGenerator, /process\.argv\.length !== 2/);
+  assert.match(tlsGenerator, /rmSync\(privateKeyPath/);
+  assert(!/console\.log\([^)]*(?:CERT|KEY|base64)/i.test(tlsGenerator));
+  const sensitiveFixtureFiles = [
+    ...walk('lib'),
+    ...walk('integration_test'),
+    ...walk('android/app/src'),
+    ...walk('tools'),
+  ].filter(path => /\.(?:pem|key|p12|pfx|wav|mp3|flac|aac|m4a|ogg)$/i.test(path));
+  assert.deepEqual(sensitiveFixtureFiles, []);
+
+  const networkProbe = read('lib/playback/network_playable_source_probe.dart');
+  assert.match(networkProbe, /openUrl\('HEAD'/);
+  assert.match(networkProbe, /request\.followRedirects = false/);
+  assert.match(networkProbe, /client\.close\(force: true\)/);
+  assert(!/print\(|debugPrint|dart:developer/.test(networkProbe));
+  assert(!/NetworkPlayableSourceProbe|DartIoNetworkHeadTransport/.test(read('lib/main.dart')));
   assert.match(read('pubspec.yaml'), /integration_test:\s*\n\s+sdk: flutter/);
 });

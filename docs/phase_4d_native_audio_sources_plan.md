@@ -29,7 +29,7 @@ Phase4B的隔离候选层；生产`main.dart`、Bootstrap、Shell和可见UI不�
 ### 受控 HTTPS 与失败映射
 
 - Windows/Android测试进程启动loopback HTTPS服务器，按固定路由提供运行时生成WAV、Header校验、
-  401、403、404、429、503、延迟和损坏响应。
+  401、403、404、429、503和延迟响应。
 - CI在忽略的`build/native-audio-poc/`目录运行时生成一天有效的loopback证书和私钥，并通过
   `--dart-define-from-file`只注入集成测试构建；仓库和artifact均不保存这些材料。
 - candidate增加名称明确的POC创建入口，仅允许集成测试对loopback自签名TLS关闭验证；Windows同时
