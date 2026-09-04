@@ -1,6 +1,6 @@
 # Windows + Android 音频 POC 计划
 
-状态：**Phase4A合同、Phase4B候选适配/打包与Phase4C双平台原生本地WAV运行POC已完成；Phase4D来源/失败矩阵本地实现完成，等待专用云端运行**。精确提交`622408e`的GitHub专用运行33862786766 attempt 2已在Windows 2025与Android API36 x86_64成功；生产组合未改变，云端无头设备结果不冒充实体扬声器体验。本机Windows C++工具链仍受远程UAC限制。
+状态：**Phase4A合同、Phase4B候选适配/打包、Phase4C双平台原生本地WAV与Phase4D原生来源POC均已完成**。精确提交`913f3d75`的GitHub专用运行33878710671已在Windows 2025完成受控HTTPS，并在Android API36 x86_64完成受控HTTPS与`content://`；失败矩阵与控制链全部通过且无artifact/Release。生产组合未改变，云端无头设备结果不冒充实体扬声器体验。本机Windows C++工具链仍受远程UAC限制。
 
 ## 候选与隔离
 
@@ -35,7 +35,7 @@ Windows audio 1.0.9。生产入口仍使用UnavailableAudioEngine；候选只可
 | sleep | 15/30/60、trackEnd、恢复/过期策略，平滑暂停不伪造支持 |
 | no-download | 没有downloadTrack/saveOffline/batchDownload，网络音频仅技术性缓冲，不形成可离线播放文件 |
 
-Phase4A已用可注入clock/random、FakeAudioEngine/Resolver/MediaSession覆盖控制器合同；Phase4B又用可注入MediaKitPlayerBackend覆盖插件适配逻辑。Phase4C运行时生成固定SHA的3秒PCM16 WAV，在Windows进程和Android x86_64模拟器执行load/play/position/seek/pause/volume/rate/completed/stop；Windows记录load 62 ms/首进度197 ms/seek 2 ms，Android记录load 580 ms/首进度155 ms/seek 4 ms，两边均为duration 3000 ms并completed。该批只覆盖应用私有临时文件；`content://`、受控HTTPS/Header、失败矩阵、内存/CPU/持续事件频率仍须分批验证，不把浏览器demo计时、编译成功或Fake事件当测试。
+Phase4A已用可注入clock/random、FakeAudioEngine/Resolver/MediaSession覆盖控制器合同；Phase4B又用可注入MediaKitPlayerBackend覆盖插件适配逻辑。Phase4C运行时生成固定SHA的3秒PCM16 WAV，在Windows进程和Android x86_64模拟器执行load/play/position/seek/pause/volume/rate/completed/stop；Windows记录load 62 ms/首进度197 ms/seek 2 ms，Android记录load 580 ms/首进度155 ms/seek 4 ms，两边均为duration 3000 ms并completed。Phase4D继续验证Windows/Android受控HTTPS、瞬时Header和脱敏失败矩阵，并由Android debug-only Provider验证`content://`；Windows HTTPS为77/244/2 ms，Android HTTPS为110/143/3 ms，Android content为56/151/2 ms，三者均completed。内存/CPU/持续事件频率、实体设备输出和生命周期仍须后续验证，不把浏览器demo计时、编译成功或Fake事件当测试。
 
 ## 输出与否决条件
 

@@ -1,6 +1,6 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 4D Content URI与受控HTTPS音频 POC**。Phase2通用原语、三套Shell骨架、完整Phase3数据层，以及正式播放状态、可替换音频/来源/媒体会话合同、持久队列算法已经存在。`media_kit`继续只存在于隔离候选层；本地WAV双平台原生POC已通过，本批验证Android content URI和双平台受控HTTPS，生产组合、传递许可证闭环、REST Adapter、正式播放器接线和业务页面仍未完成。
+当前阶段：**Android + Windows · Phase 4D 原生来源 POC 已关闭，进入正式后端选择前审计**。Phase2通用原语、三套Shell骨架、完整Phase3数据层，以及正式播放状态、可替换音频/来源/媒体会话合同、持久队列算法已经存在。`media_kit`仍只存在于隔离候选层；本地WAV、Android content URI和双平台受控HTTPS原生POC均已通过，生产组合、传递许可证闭环、REST Adapter、正式播放器接线和业务页面仍未完成。
 
 Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭、只允许手动选择、`contents: read`且不上传产物的Windows/Android原生集成模式。完整221项Flutter含32张Windows宿主Golden、严格分析0问题、31项Node、24项ZIP、lockfile及生成代码/v1快照零差异已通过；本机Android Debug也完成资产与v2单Debug签名复核。精确提交`622408e`的专用运行33862786766 attempt 2已在Windows与Android成功，且没有artifact或Release；普通push另提供保留14天的完整Windows Debug portable bundle。
 
