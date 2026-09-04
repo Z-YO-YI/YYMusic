@@ -46,7 +46,7 @@
 
 `.github/workflows/foundation.yml`：checks 在 Ubuntu24.04 跑 Node/PowerShell 源核验、Dart格式/严格分析/Flutter测试；checks 成功后独立 Windows2025 Debug 和 Ubuntu Android Debug 构建。push feat/fix、PR或手动运行触发，超时20/30分钟。Android执行验签/48文件比对/三文件白名单；只有手动workflow_dispatch在全部门禁后创建私有draft/prerelease，普通push/PR不创建下载产物。个人令牌不注入runner，checkout不保留凭据。
 
-`.github/workflows/native_audio_poc.yml`只接受显式`workflow_dispatch`，全局`contents: read`，在Windows 2025和Ubuntu 24.04 Android API36 x86_64模拟器运行同一生成WAV测试。Emulator action固定完整提交SHA；作业不使用Secret、不上传artifact、不构建/发布APK且不创建Release。结果只适用于被触发的精确提交。
+`.github/workflows/foundation.yml`的`run_native_audio_poc`布尔输入默认关闭；只有显式手动设为`true`才在Windows 2025和Ubuntu 24.04 Android API36 x86_64模拟器运行同一生成WAV测试，并跳过具有写权限的Android发布job。Emulator action固定完整提交SHA；native路径不使用Secret、不上传artifact、不构建/发布APK且不创建Release。普通push的Windows Debug另上传保留14天的完整portable bundle，PR不重复上传。结果只适用于被触发的精确提交。
 
 32张Golden按Windows宿主标记，Linux明确跳过（非静默通过）并运行完整非Golden回归，Windows job构建前执行`flutter test --tags windows-golden`。checks在分析前重跑build_runner与make-migrations，并要求g.dart/v1快照Git零差异。没有删除或跳过原有回归，远程状态须按目标commit单独核验。
 

@@ -249,8 +249,9 @@ Phase4C不向仓库加入WAV/MP3等媒体二进制，也不使用用户音乐或
 测试只把该绝对路径交给候选`MediaKitAudioEngine`，退出时依次取消状态订阅、释放Player并删除临时目录；
 日志只记录平台和三项耗时，不输出路径、URI、Header或原生错误。
 
-真实运行与普通CI分离：`native_audio_poc.yml`只允许手动触发并使用`contents: read`，在Windows 2025
-进程和Android API36 x86_64模拟器执行同一测试，不上传artifact、不创建Release。position推进与completed
+真实运行复用默认分支已注册的`foundation.yml`，但只有手动输入`run_native_audio_poc=true`时才调度；
+该路径只运行checks及Windows/Android两个只读job，带`contents: write`的Android发布job明确跳过。
+Windows 2025进程和Android API36 x86_64模拟器执行同一测试，不上传artifact、不创建Release。position推进与completed
 可以证明native初始化、解码、时钟和控制链工作，但无头runner不能证明扬声器可听、音质、音频焦点、
 后台或设备切换。生产`main.dart`继续使用`UnavailableAudioEngine`，且Android `content://`与受控HTTPS
 留给下一小批；许可证闭环前即使双平台测试成功也不能正式锁定或发布候选backend。

@@ -4,7 +4,8 @@
 
 - 新增运行时确定性PCM16 WAV生成器，不提交用户音乐、媒体二进制或真实路径；固定3秒/16kHz/mono格式、96,044字节和SHA-256。
 - 新增Windows/Android共用原生集成测试，覆盖load不自动播放、duration、play/position、seek、pause、volume/rate、completed、stop与dispose；生产入口继续不可用。
-- 新增只允许手动触发、`contents: read`的双平台工作流；Android emulator action固定完整SHA，不使用Secret、不上传产物、不创建Release。
+- 在已注册的foundation工作流增加默认关闭的只读双平台手动模式；Android emulator action固定完整SHA，不使用Secret、不上传产物、不创建Release。
+- 普通push的Windows Debug上传保留14天的完整portable bundle，便于远程下载测试；PR不重复上传。
 - 完整221项Flutter含32张Windows宿主Golden、149文件format、严格分析0问题、31项Node、24项ZIP、lockfile及生成/v1快照零差异通过；本机Android Debug和v2单Debug签名/48资产复核通过。
 - 双平台原生运行证据必须以同一实现提交的专用GitHub作业为准；无头运行不冒充实体扬声器、真机、后台/焦点、content URI或HTTPS验证。
 

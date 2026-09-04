@@ -2,7 +2,7 @@
 
 当前阶段：**Android + Windows · Phase 4C 原生本地音频运行 POC**。Phase2通用原语、三套Shell骨架、完整Phase3数据层，以及正式播放状态、可替换音频/来源/媒体会话合同、持久队列算法已经存在。`media_kit`继续只存在于隔离候选层；本批用运行时生成的短WAV验证Windows与Android原生进程，生产组合、传递许可证闭环、REST Adapter、正式播放器接线和业务页面仍未完成。
 
-Phase4C本地增量：新增确定性PCM16 WAV生成器、2项单元测试，以及只允许手动触发、`contents: read`且不上传产物的Windows/Android原生集成工作流。完整221项Flutter含32张Windows宿主Golden、严格分析0问题、31项Node、24项ZIP、lockfile及生成代码/v1快照零差异已通过；本机Android Debug也完成资产与v2单Debug签名复核。双平台真实运行结果必须等同一实现提交的专用GitHub作业成功后才能记录，本机编译不冒充播放证据。
+Phase4C本地增量：新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭、只允许手动选择、`contents: read`且不上传产物的Windows/Android原生集成模式。完整221项Flutter含32张Windows宿主Golden、严格分析0问题、31项Node、24项ZIP、lockfile及生成代码/v1快照零差异已通过；本机Android Debug也完成资产与v2单Debug签名复核。普通push会上传保留14天的完整Windows Debug portable bundle；双平台真实运行结果仍必须等同一目标提交的专用GitHub作业成功后才能记录。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 

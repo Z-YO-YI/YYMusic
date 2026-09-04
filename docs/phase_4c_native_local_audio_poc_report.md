@@ -21,7 +21,11 @@ duration和completed，不输出临时路径、URI、Header或插件错误。
 
 ## CI隔离
 
-`.github/workflows/native_audio_poc.yml`只允许`workflow_dispatch`且全局权限为`contents: read`。
+GitHub要求手动作业文件先存在于默认分支，因此本批复用已经注册的`foundation.yml`，增加默认关闭的
+布尔输入`run_native_audio_poc`。只有显式传入`true`才运行两个native job；普通push/PR继续运行标准
+三job，普通手动发布仍走原有路径。native模式会跳过带写权限的Android发布job，实际运行路径只有
+全局`contents: read`的checks与两个native job。
+
 Windows使用`windows-2025`；Android使用`ubuntu-24.04`、API36/default/x86_64/pixel_6与固定NDK，
 Android Emulator Runner v2.38.0固定到完整提交
 `a421e43855164a8197daf9d8d40fe71c6996bb0d`。两个job只执行测试，不上传artifact、不构建/发布APK、
@@ -60,6 +64,6 @@ Release或可下载APK，许可证未闭合前也不触发普通foundation的手
 - `integration_test/native_local_audio_poc_test.dart`
 - `integration_test/support/deterministic_pcm_wav.dart`
 - `test/unit/deterministic_pcm_wav_test.dart`
-- `.github/workflows/native_audio_poc.yml`
+- `.github/workflows/foundation.yml`
 - `pubspec.yaml`、`pubspec.lock`
 - `tools/foundation_architecture.test.mjs`

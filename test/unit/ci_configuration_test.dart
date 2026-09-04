@@ -17,8 +17,27 @@ void main() {
       );
       expect(workflow['permissions'], {'contents': 'read'});
       final jobs = workflow['jobs'] as YamlMap;
-      expect(jobs.keys.toSet(), {'checks', 'windows-debug', 'android-debug'});
-      for (final id in ['windows-debug', 'android-debug']) {
+      expect(jobs.keys.toSet(), {
+        'checks',
+        'windows-debug',
+        'android-debug',
+        'windows-native-audio',
+        'android-native-audio',
+      });
+      final dispatch = triggers['workflow_dispatch'] as YamlMap;
+      expect((dispatch['inputs'] as YamlMap)['run_native_audio_poc'], {
+        'description':
+            'Run the read-only Android and Windows native audio POC',
+        'required': true,
+        'default': false,
+        'type': 'boolean',
+      });
+      for (final id in [
+        'windows-debug',
+        'android-debug',
+        'windows-native-audio',
+        'android-native-audio',
+      ]) {
         expect((jobs[id] as YamlMap)['needs'], 'checks');
       }
       expect((jobs['checks'] as YamlMap)['permissions'], isNull);
@@ -42,31 +61,22 @@ void main() {
         '>=${environment['FLUTTER_VERSION']}',
       );
 
-      final nativeWorkflow = loadYaml(
-        File('.github/workflows/native_audio_poc.yml').readAsStringSync(),
-      ) as YamlMap;
-      expect((nativeWorkflow['on'] as YamlMap).keys.toSet(), {
-        'workflow_dispatch',
-      });
-      expect(nativeWorkflow['permissions'], {'contents': 'read'});
-      expect(nativeWorkflow['env'], {
-        'FLUTTER_VERSION': environment['FLUTTER_VERSION'],
-      });
-      final nativeJobs = nativeWorkflow['jobs'] as YamlMap;
-      expect(nativeJobs.keys.toSet(), {
-        'windows-native-audio',
-        'android-native-audio',
-      });
       expect(
-        (nativeJobs['windows-native-audio'] as YamlMap)['runs-on'],
+        (jobs['windows-native-audio'] as YamlMap)['runs-on'],
         'windows-2025',
       );
       expect(
-        (nativeJobs['android-native-audio'] as YamlMap)['runs-on'],
+        (jobs['android-native-audio'] as YamlMap)['runs-on'],
         'ubuntu-24.04',
       );
-      for (final job in nativeJobs.values.cast<YamlMap>()) {
+      for (final id in ['windows-native-audio', 'android-native-audio']) {
+        final job = jobs[id] as YamlMap;
         expect(job['permissions'], isNull);
+        expect(
+          job['if'],
+          "github.event_name == 'workflow_dispatch' && "
+              'inputs.run_native_audio_poc',
+        );
         final steps = (job['steps'] as YamlList).cast<YamlMap>();
         final commands = <String>[
           ...steps.map((step) => step['run']).whereType<String>(),
@@ -81,6 +91,13 @@ void main() {
           anyElement(
             contains('integration_test/native_local_audio_poc_test.dart'),
           ),
+        );
+      }
+      for (final id in ['windows-debug', 'android-debug']) {
+        expect(
+          (jobs[id] as YamlMap)['if'],
+          "github.event_name != 'workflow_dispatch' || "
+              '!inputs.run_native_audio_poc',
         );
       }
     },

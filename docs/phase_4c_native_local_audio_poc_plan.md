@@ -33,7 +33,7 @@
 ## 准备修改/新增的文件
 
 - `pubspec.yaml`、`pubspec.lock`
-- `.github/workflows/native_audio_poc.yml`
+- `.github/workflows/foundation.yml`（新增显式`run_native_audio_poc`手动模式）
 - `integration_test/native_local_audio_poc_test.dart`
 - `integration_test/support/deterministic_pcm_wav.dart`
 - `test/unit/deterministic_pcm_wav_test.dart`

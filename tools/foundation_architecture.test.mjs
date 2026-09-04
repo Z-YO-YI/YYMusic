@@ -258,25 +258,46 @@ test('CI validates both debug targets with least-privileged, pinned actions', ()
   assert.match(android, /permissions:\s+contents: write/);
   assert.match(android, /if: github\.event_name == 'workflow_dispatch'/);
   assert.match(android, /GH_TOKEN: \$\{\{ github\.token \}\}/);
+  const windows = workflow.slice(
+    workflow.indexOf('\n  windows-debug:'),
+    workflow.indexOf('\n  android-debug:'),
+  );
+  assert.match(
+    windows,
+    /actions\/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a/,
+  );
+  assert.match(windows, /if: github\.event_name == 'push'/);
+  assert.match(windows, /path: build\/windows\/x64\/runner\/Debug\//);
 });
 
 test('native audio POC runs only on explicit read-only dual-platform CI', () => {
-  const workflow = read('.github/workflows/native_audio_poc.yml');
-  assert.match(workflow, /^on:\s*\n\s+workflow_dispatch:\s*$/m);
+  const workflow = read('.github/workflows/foundation.yml');
   assert.match(workflow, /^permissions:\s*\n\s+contents: read\s*$/m);
-  assert.match(workflow, /runs-on: windows-2025/);
-  assert.match(workflow, /runs-on: ubuntu-24\.04/);
   assert.match(
     workflow,
+    /run_native_audio_poc:[\s\S]*?required: true[\s\S]*?default: false[\s\S]*?type: boolean/,
+  );
+  const native = workflow.slice(workflow.indexOf('\n  windows-native-audio:'));
+  assert.match(native, /runs-on: windows-2025/);
+  assert.match(native, /runs-on: ubuntu-24\.04/);
+  assert.equal(
+    native.match(/if: github\.event_name == 'workflow_dispatch' && inputs\.run_native_audio_poc/g)?.length,
+    2,
+  );
+  assert.match(
+    native,
     /ReactiveCircus\/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d/,
   );
   assert.equal(
-    workflow.match(/integration_test\/native_local_audio_poc_test\.dart/g)?.length,
+    native.match(/integration_test\/native_local_audio_poc_test\.dart/g)?.length,
     2,
   );
-  assert(!/contents: write|upload-artifact|gh release|secrets\.|pull_request_target/.test(workflow));
-  assert(!/^\s+(?:push|pull_request):/m.test(workflow));
-  assert(!/flutter build apk|flutter build appbundle/.test(workflow));
+  assert(!/contents: write|upload-artifact|gh release|secrets\.|pull_request_target/.test(native));
+  assert(!/flutter build apk|flutter build appbundle/.test(native));
+  assert.equal(
+    workflow.match(/if: github\.event_name != 'workflow_dispatch' \|\| !inputs\.run_native_audio_poc/g)?.length,
+    2,
+  );
 
   const integrationFiles = walk('integration_test');
   assert(integrationFiles.every(path => path.endsWith('.dart')));

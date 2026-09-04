@@ -8,8 +8,10 @@ Head：`feat/native-audio-local-poc`；Base：`feat/media-kit-audio-poc@e1c50ca`
 - 运行时生成固定3秒PCM16单声道WAV；不提交音频二进制、用户音乐或路径。
 - Windows/Android使用同一Flutter集成测试真实创建候选Player，覆盖load不自动播放、duration、
   play/position、seek、pause、volume/rate、completed、stop与dispose。
-- 新增只允许手动触发、全局`contents: read`的双平台native POC工作流；Android emulator action
-  固定完整SHA，不上传artifact、不创建Release、不使用Secret。
+- 在默认分支已注册的`foundation.yml`增加默认关闭的`run_native_audio_poc`手动模式；该模式只运行
+  read-only checks和双平台native job，跳过Android发布job。Emulator action固定完整SHA，不上传
+  artifact、不创建Release、不使用Secret。
+- 普通push完成Windows Debug后上传保留14天的完整portable bundle，远程用户可下载测试；PR不重复上传。
 - 生产入口、Shell、权限、数据库Schema和可见UI不变，正式AudioEngine仍不可用。
 
 ## 测试
