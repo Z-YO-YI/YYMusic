@@ -7,7 +7,8 @@
 - 新增双平台loopback HTTPS服务器和candidate集成测试；短期自签名证书/私钥只在忽略目录运行时生成，原始文件立即删除。
 - 新增仅供受控HTTPS POC使用的TLS绕过入口；默认candidate和生产Bootstrap保持不变，真实来源仍强制验证TLS。
 - `foundation.yml`新增默认关闭的只读双平台来源POC模式，不使用Secret、不上传artifact、不创建Release。
-- 153文件format、严格analyze、完整225项Flutter/32 Golden、31项Node、24项ZIP通过；Android Debug构建、48资产、Provider Manifest和v2单Debug签名通过。云端来源运行待实现提交推送后记录。
+- 153文件format、严格analyze、完整225项Flutter/32 Golden、31项Node、24项ZIP通过；Android Debug构建、48资产、Provider Manifest和v2单Debug签名通过。
+- `913f3d75`标准PR运行33878401743的checks、Windows Debug、Android Debug均成功；专用运行33878710671的Windows HTTPS与Android HTTPS/`content://`均完成load/play/seek/completed且失败矩阵通过，artifact和匹配Release均为0。Phase4D出口关闭，但不外推为真机、实体扬声器、真实API、后台/焦点或许可证闭环。
 
 ## 2026-09-04 — Phase 4C 原生本地音频运行 POC
 

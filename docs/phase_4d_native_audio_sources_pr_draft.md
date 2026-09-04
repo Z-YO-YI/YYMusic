@@ -23,7 +23,11 @@ Head：`feat/native-audio-content-network-poc`；Base：
 - Android Debug成功：279,083,994字节、SHA-256
   `a77f94094676bf6a5ee10dd18c526e707ef59fa11c686e10c048fa2d4b3ab405`，48资产和v2单Debug签名通过。
 - Debug合并Manifest确认POC Provider不可导出/不可授权；生产source set未注册。
-- GitHub标准双平台构建和专用Windows/Android来源运行待实现提交推送后填写。
+- 实现提交`913f3d75e06a144c25c56175b5c9428d1090f44f`的标准PR运行33878401743整体成功：
+  checks、Windows Debug、Android Debug均成功；同提交push运行因并发替代而cancelled。
+- 专用运行33878710671整体成功：Windows HTTPS为load 77 ms/首进度244 ms/seek 2 ms；Android
+  HTTPS为110/143/3 ms，`content://`为56/151/2 ms；全部completed，失败矩阵通过，两端日志均为
+  `All tests passed!`。运行artifact为0，匹配Release为0。
 
 ## 影响与限制
 

@@ -103,4 +103,6 @@ Phase4C本地增量：2项生成器测试锁定96,044字节WAV与SHA-256 `571edd
 
 Phase4C实现提交`622408e`的标准push运行33861562956与PR运行33861566379均为checks、Windows Debug、Android Debug成功。专用运行33862786766 attempt 2整体成功：Windows load 62 ms/首进度197 ms/seek 2 ms，Android load 580 ms/首进度155 ms/seek 4 ms；均报告duration 3000 ms、completed和`All tests passed!`。该attempt的普通构建/发布job按设计跳过，artifact总数0、匹配Release总数0。attempt 1的账单/spending limit拦截发生在runner分配前，不计作代码失败；用户授权公开仓库后重跑取得上述证据。Phase4C原生本地WAV出口关闭，但不外推为实体扬声器、真机、后台/焦点、`content://`或HTTPS验证。
 
+Phase4D实现提交`913f3d75`的标准PR运行33878401743整体成功，checks、Windows Debug与Android Debug均成功；同提交push运行33878342752因并发组被PR运行替代而cancelled。专用运行33878710671整体成功：Windows HTTPS load 77 ms/首进度244 ms/seek 2 ms；Android HTTPS为110/143/3 ms，`content://`为56/151/2 ms；全部completed、失败矩阵通过且两端报告`All tests passed!`。专用运行只读、artifact总数0、匹配Release总数0。Phase4D出口关闭，但不证明真实第三方API、跨站重定向、实体设备、MediaStore/SAF持久授权、后台/焦点、系统媒体会话或许可证闭环。
+
 Actions 固定 SHA，来源为维护者公开 refs 和说明：[checkout](https://github.com/actions/checkout)、[setup-node](https://github.com/actions/setup-node)、[setup-java](https://github.com/actions/setup-java)、[flutter-action](https://github.com/subosito/flutter-action)。静态配置验证不代表远程工作流已经通过；每个目标提交仍须单独取得并记录远程结果。

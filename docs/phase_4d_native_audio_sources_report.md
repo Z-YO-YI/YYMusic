@@ -44,15 +44,29 @@ Release。checkout/setup-node/setup-java/flutter/emulator action均固定完整S
 | Android Debug | 构建成功，279,083,994字节，SHA-256 `a77f94094676bf6a5ee10dd18c526e707ef59fa11c686e10c048fa2d4b3ab405`；48资产逐字节匹配，v2单Debug签名有效 |
 | Manifest | Debug Provider authority固定、`exported=false`、`grantUriPermissions=false`；权限仍仅INTERNET及插件生成的not-exported receiver权限 |
 
-本机没有Android模拟器，Windows C++/Developer Mode仍受远程UAC限制，因此没有伪造content URI或HTTPS
-native运行结果。实现提交、Draft PR、标准push/PR构建和专用双平台结果待推送后填写。
+本机没有Android模拟器，Windows C++/Developer Mode仍受远程UAC限制，因此本地没有伪造content URI或
+HTTPS native运行结果。实现提交`913f3d75e06a144c25c56175b5c9428d1090f44f`已推送并创建Draft PR #20。
+该提交的标准PR运行[33878401743](https://github.com/Z-YO-YI/YYMusic/actions/runs/33878401743)
+整体成功，checks、Windows Debug和Android Debug三个job均成功；同提交的较早push运行33878342752
+因工作流并发组被该PR运行替代而cancelled，不属于代码失败。
+
+只读专用运行[33878710671](https://github.com/Z-YO-YI/YYMusic/actions/runs/33878710671)整体成功：
+
+| 平台/来源 | load | 首次进度 | seek | completed | 失败矩阵 |
+| --- | ---: | ---: | ---: | --- | --- |
+| Windows 受控HTTPS | 77 ms | 244 ms | 2 ms | true | true |
+| Android 受控HTTPS | 110 ms | 143 ms | 3 ms | true | true |
+| Android `content://` | 56 ms | 151 ms | 2 ms | true | 共用同一成功case |
+
+Windows和Android日志均报告`All tests passed!`。该运行仅有`contents: read`，标准构建/发布和Phase4C
+job按设计跳过；artifact总数0，目标为该提交或分支的Release总数0。
 
 ## 出口与保留缺口
 
-Phase4D保持打开，直到同一实现提交满足：Windows HTTPS native成功、Android HTTPS native成功、Android
-content URI native成功、失败矩阵全通过、专用运行无artifact/Release。即使通过，也只证明受控loopback
-自签名环境中的来源、Header、解码、时钟和控制链；不证明真实第三方API、跨站重定向、实体扬声器、
-MediaStore/SAF持久授权、后台/焦点、SMTC/MediaSession或native许可证闭环。候选仍不接生产、不发布。
+Phase4D出口已由同一实现提交关闭：Windows HTTPS native、Android HTTPS native、Android content URI
+native、失败矩阵和零artifact/Release均满足。该结论只证明受控loopback自签名环境中的来源、Header、
+解码、时钟和控制链；不证明真实第三方API、跨站重定向、实体扬声器、MediaStore/SAF持久授权、后台/
+焦点、SMTC/MediaSession或native许可证闭环。候选仍不接生产、不发布。
 
 ## 主要文件
 

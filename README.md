@@ -4,6 +4,8 @@
 
 Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭、只允许手动选择、`contents: read`且不上传产物的Windows/Android原生集成模式。完整221项Flutter含32张Windows宿主Golden、严格分析0问题、31项Node、24项ZIP、lockfile及生成代码/v1快照零差异已通过；本机Android Debug也完成资产与v2单Debug签名复核。精确提交`622408e`的专用运行33862786766 attempt 2已在Windows与Android成功，且没有artifact或Release；普通push另提供保留14天的完整Windows Debug portable bundle。
 
+Phase4D实现提交`913f3d75`增加HEAD-only脱敏网络探针、Android debug-only只读Provider及运行时受控HTTPS测试。标准PR运行33878401743的checks、Windows Debug和Android Debug均成功；专用运行33878710671在Windows完成HTTPS，在Android完成HTTPS与`content://`真实native candidate播放，失败矩阵、进度、seek和completed均通过，且无artifact或Release。生产入口、TLS验证默认值和release Manifest未改变。
+
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
 ## 开发入口
