@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-09-04 — Phase 4A 播放核心合同与唯一状态源
+
+- 新增脱敏`PlayableSource`与`PlaybackSourceResolver`，覆盖Windows绝对路径、Android `content://`及无userinfo的HTTPS临时流；locator/Header不进入字符串输出或持久化。
+- 将AudioEngine升级为load/play/pause/stop/seek/volume/rate及独立八阶段事件合同；默认后端仍明确不可用，不伪造播放成功。
+- `PlaybackState`覆盖当前曲目、位置、缓冲、时长、音量、速率、随机、循环、持久队列、输出设备和`DomainFailure`，对负时间、范围和错误阶段一致性做运行时验证。
+- `PlaybackController`串行化命令，组合曲目解析与引擎事件，实现指定项/上一首/下一首、Seek夹紧、重复曲目、添加/下一首插入/移动/移除/清空、随机一轮与repeat off/all/one自动完成语义。
+- `QueueController`改为同一PlaybackState的命令门面，不保存第二份队列；AppBootstrap初始化恢复CollectionRepository队列，但不自动加载或播放。
+- 新增Android MediaSession/Windows SMTC共用Gateway与回调合同；平台更新失败不停止音频，根Graph统一初始化和幂等释放。
+- 7项新增播放测试、完整214项Flutter/32 Golden、143文件format、严格分析0问题、30项Node、24项ZIP、lockfile及生成/v1快照零差异通过。
+- 本机默认生产入口Android Debug构建成功；238997827字节、SHA-256 `ea40ebd646300b0f14c1dcef9aef2971d19fba6da515e83b6f88c8e05bd66ab1`，48资产、Manifest及v2单Debug签名已复核。
+- 实现提交`ec508df`的push运行33845988715、PR运行33846020650与唯一手动运行33848236710均为三job success；私有草稿Release三资产已下载复核，APK为190735487字节，SHA-256、SHA256SUMS、metadata和API digest均为`3f95cea301d6710ac46a40a5fbfcd0d4561d91f310ca5d04506d5389a1272aa4`，48份资产匹配、Manifest禁用备份且v2单签名有效，临时副本已清理。
+- 本批不新增音频插件、权限、可播放Fixture、下载/离线能力或Shell接线；Windows/Android真实音频POC尚未通过。
+
 ## 2026-09-01 — Phase 3H 生产数据引导与显式 Dev Fixture
 
 - 新增`AppDataServices`生产组合：单一数据库共享四类正式Drift Repository，并按Android/Windows构造平台安全凭据Gateway；根Graph统一拥有和幂等释放。

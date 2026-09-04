@@ -35,6 +35,12 @@
 
 不能现在锁定：音频backend、native lib打包策略、SDK/target SDK具体版本、字体和Golden容差。双平台音频POC计划见audio_poc_plan.md；POC在Phase 4实际执行，Phase 0只制定方案。
 
+## Phase 4A 合同结果（2026-09-04）
+
+尚未把任何音频候选加入pubspec。项目自有`PlayableSource`、`PlaybackSourceResolver`、`AudioEngine/AudioEngineState`、完整`PlaybackState`和`MediaSessionGateway`已确定，后续候选只能在`lib/playback`或`lib/platform`适配器内出现，不能改变UI/Domain。当前pub.dev快照仍以`media_kit 1.2.6`为优先POC候选：其维护者资料明确列出Android/Windows、本地文件、网络URL、HTTP Header、Seek和播放列表；正式选择仍取决于两平台真实受控音频矩阵、原生二进制分发/License与包体结果。
+
+回退比较项是just_audio加Windows backend，而不是单独just_audio。`just_audio_windows 0.2.3`公开能力含本地/URL/Seek/playlist/loop/shuffle，但请求Header项为空；`just_audio_media_kit 2.1.0`支持Windows但声明忽略shuffle order。YYMusic的随机顺序已经由PlaybackController负责，因此后者限制不直接否决，但带认证Header的网络测试与原生依赖仍必须单独通过。来源：[media_kit](https://pub.dev/packages/media_kit)、[media_kit维护者仓库](https://github.com/media-kit/media-kit)、[just_audio_windows](https://pub.dev/packages/just_audio_windows)、[just_audio_media_kit](https://pub.dev/packages/just_audio_media_kit)。
+
 ## Phase 1 解析结果（2026-08-31，覆盖上面的阶段快照状态）
 
 本机已有Flutter 3.47.2 stable / Dart3.13.2；未升级SDK。实际pub解析并提交lockfile：flutter_riverpod3.4.2、go_router18.0.0；开发依赖flutter_lints6.0.0与[yaml3.1.4](https://pub.dev/packages/yaml)（MIT，维护者tools.dart.dev，仅解析CI测试配置）。没有安装数据库/音频/窗口等其余候选。

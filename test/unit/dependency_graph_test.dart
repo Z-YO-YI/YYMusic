@@ -2,9 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yymusic/app/app_routes.dart';
 import 'package:yymusic/app/dependency_graph.dart';
+import 'package:yymusic/playback/audio_engine_state.dart';
 import 'package:yymusic/playback/playback_state.dart';
 
 import '../support/fake_audio_engine.dart';
+import '../support/fake_playback_dependencies.dart';
 
 void main() {
   test('one graph per scope and unavailable production backend', () async {
@@ -13,8 +15,8 @@ void main() {
     final graph = scope.read(dependencyGraphProvider);
     expect(scope.read(dependencyGraphProvider), same(graph));
     expect(graph.playback.isAvailable, isFalse);
-    expect(graph.playback.state.phase, PlaybackPhase.unavailable);
-    expect(graph.queue.isAvailable, isFalse);
+    expect(graph.playback.state.phase, PlaybackPhase.idle);
+    expect(graph.queue.isAvailable, isTrue);
     expect(graph.library, isNull);
     expect(graph.collection, isNull);
     expect(graph.lyrics, isNull);
@@ -22,17 +24,22 @@ void main() {
     expect(graph.credentials, isNull);
     expect(graph.fullscreen, isNull);
     await expectLater(graph.playback.play(), throwsUnsupportedError);
-    expect(graph.playback.state.phase, PlaybackPhase.unavailable);
+    expect(graph.playback.state.phase, PlaybackPhase.idle);
   });
 
   test(
     'engine events drive shared state and graph disposes exactly once',
     () async {
       final engine = FakeAudioEngine();
-      final graph = DependencyGraph(audioEngine: engine);
+      final mediaSession = FakeMediaSessionGateway();
+      final graph = DependencyGraph(
+        audioEngine: engine,
+        mediaSession: mediaSession,
+      );
+      await graph.initialize();
       engine.events.add(
-        const PlaybackState(
-          phase: PlaybackPhase.paused,
+        AudioEngineState(
+          phase: AudioEnginePhase.paused,
           position: Duration(seconds: 19),
         ),
       );
@@ -43,6 +50,7 @@ void main() {
       graph.dispose();
       await Future<void>.delayed(Duration.zero);
       expect(engine.disposalCount, 1);
+      expect(mediaSession.disposalCount, 1);
       expect(engine.events.hasListener, isFalse);
     },
   );

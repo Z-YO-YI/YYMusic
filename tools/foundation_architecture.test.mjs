@@ -171,6 +171,55 @@ test('domain contracts stay independent and UI has no direct data access', () =>
   assert.match(read('lib/data/database/database_connection.dart'), /AppDatabase openInMemoryDatabase\(\).*NativeDatabase\.memory\(\)/s);
 });
 
+test('playback has one root-owned truth behind project contracts', () => {
+  const state = read('lib/playback/playback_state.dart');
+  for (const field of [
+    'phase', 'currentTrack', 'position', 'buffered', 'duration', 'volume',
+    'shuffleEnabled', 'repeatMode', 'queue', 'outputDevice', 'failure',
+  ]) {
+    assert.match(state, new RegExp(`final [^;]+ ${field};`), `PlaybackState.${field} is missing`);
+  }
+  for (const phase of [
+    'idle', 'loading', 'buffering', 'ready', 'playing', 'paused', 'completed', 'error',
+  ]) {
+    assert.match(state, new RegExp(`\\b${phase},`), `PlaybackPhase.${phase} is missing`);
+  }
+
+  const engine = read('lib/playback/audio_engine.dart');
+  for (const command of [
+    'load', 'play', 'pause', 'stop', 'seek', 'setVolume', 'setPlaybackRate', 'dispose',
+  ]) {
+    assert.match(engine, new RegExp(`Future<void> ${command}\\(`), `AudioEngine.${command} is missing`);
+  }
+  assert.match(engine, /Stream<AudioEngineState> get states/);
+  assert.match(read('lib/playback/playable_source.dart'), /locator: <redacted>, headers: <redacted>/);
+
+  const controller = read('lib/playback/playback_controller.dart');
+  assert.match(controller, /PlaybackState _state = PlaybackState\(\)/);
+  assert.match(controller, /AudioEnginePhase\.completed/);
+  assert.match(controller, /RepeatMode\.one/);
+  assert.match(controller, /_rebuildShuffleOrder/);
+  assert.match(controller, /_collectionRepository\.saveQueue|collection\.saveQueue/);
+  const queue = read('lib/playback/queue_controller.dart');
+  assert.match(queue, /QueueSnapshot get state => _playback\.state\.queue/);
+  assert(!/QueueSnapshot _state|List<QueueEntry> _/.test(queue), 'QueueController must not own a second queue');
+
+  const mediaSession = read('lib/platform/contracts/media_session_gateway.dart');
+  assert.match(mediaSession, /abstract interface class MediaSessionGateway/);
+  assert.match(mediaSession, /Future<void> updateMetadata\(Track track\)/);
+  assert.match(mediaSession, /Future<void> updatePlaybackState\(PlaybackState state\)/);
+
+  for (const path of sources.filter(path => /lib\/(design_system|features|shells)\//.test(path))) {
+    assert(!/package:(media_kit|just_audio|audio_service)\//.test(read(path)), `${path} imports an audio plugin`);
+  }
+  for (const path of sources.filter(path => path.startsWith('lib/shells/'))) {
+    assert(!/import\s+['"][^'"]*\/playback\//.test(read(path)), `${path} owns playback logic`);
+  }
+  for (const path of sources) {
+    assert(!/downloadTrack|saveOffline|batchDownload|downloadAlbum/.test(read(path)), `${path} adds a forbidden download API`);
+  }
+});
+
 test('native runners are branded and Android release does not use debug signing', () => {
   assert.match(read('android/app/src/main/AndroidManifest.xml'), /android:label="YYMusic"/);
   assert.match(read('android/app/src/main/AndroidManifest.xml'), /android:allowBackup="false"/);

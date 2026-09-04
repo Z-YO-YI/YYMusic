@@ -8,7 +8,7 @@ import 'package:yymusic/app/layout_class.dart';
 import 'package:yymusic/app/yy_music_app.dart';
 import 'package:yymusic/design_system/yy_window_toolbar.dart';
 import 'package:yymusic/design_system/yy_windows_sidebar.dart';
-import 'package:yymusic/playback/playback_state.dart';
+import 'package:yymusic/playback/audio_engine_state.dart';
 import 'package:yymusic/shared/foundation_button.dart';
 import 'package:yymusic/shells/android_phone_shell.dart';
 import 'package:yymusic/shells/android_tablet_shell.dart';
@@ -111,8 +111,8 @@ void main() {
       final playback = graph.playback;
       final queue = graph.queue;
       engine.events.add(
-        const PlaybackState(
-          phase: PlaybackPhase.paused,
+        AudioEngineState(
+          phase: AudioEnginePhase.paused,
           position: Duration(seconds: 42),
         ),
       );

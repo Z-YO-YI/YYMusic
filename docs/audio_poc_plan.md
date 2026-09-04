@@ -1,10 +1,10 @@
 # Windows + Android 音频 POC 计划
 
-状态：**仅计划，未运行**。Phase 0制定，Phase 4执行；缺少Flutter/Dart与平台runner，本轮不安装SDK、不批量创建工程、不伪造播放证据。
+状态：**Phase4A合同已实现，真实POC未运行**。Flutter/Dart、Android工具链与GitHub Windows 2025 runner已经可用；本机Windows C++工具链仍受远程UAC限制。Phase4A只交付共用合同、Fake矩阵和本机Android编译，不把Fake、构建或资产Fixture冒充扬声器播放证据。
 
 ## 候选与隔离
 
-A：media_kit + 平台audio native libs。B：just_audio + 经核验的Windows backend。共享同一AudioEngine合同/测试夹具，后台播放是Android MediaSessionGateway与Windows SMTC Gateway的独立责任。候选证据见dependency_decisions.md。
+A：[media_kit](https://pub.dev/packages/media_kit) + 对应平台audio native libs。B：[just_audio](https://pub.dev/packages/just_audio) + 经核验的Windows backend。当前优先用A做最小POC，因为同一上游明确列出Android/Windows、本地/网络/Header/Seek能力；这只是进入测试的选择，不是正式锁定。B中的`just_audio_windows`不支持请求Header，`just_audio_media_kit`文档说明shuffle order被忽略，必须在比较时记录。两者共享现有AudioEngine合同/测试夹具，后台播放是Android MediaSessionGateway与Windows SMTC Gateway的独立责任。候选证据见dependency_decisions.md。
 
 ## 准入与测试材料
 
@@ -30,7 +30,7 @@ A：media_kit + 平台audio native libs。B：just_audio + 经核验的Windows b
 | sleep | 15/30/60、trackEnd、恢复/过期策略，平滑暂停不伪造支持 |
 | no-download | 没有downloadTrack/saveOffline/batchDownload，网络音频仅技术性缓冲，不形成可离线播放文件 |
 
-用FakeClock/FakeAudioEngine覆盖Controller单测，再用相同场景跑真实Windows/Android。性能记录启动/seek时延、内存、CPU、持续播放事件频率；先测基线再设性能阈值，不把浏览器demo计时当测试。
+Phase4A已用可注入clock/random、FakeAudioEngine/Resolver/MediaSession覆盖合同级场景；下一批必须把相同场景跑在真实Windows/Android backend。性能记录启动/seek时延、内存、CPU、持续播放事件频率；先测基线再设性能阈值，不把浏览器demo计时、编译成功或Fake事件当测试。
 
 ## 输出与否决条件
 

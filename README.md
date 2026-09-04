@@ -1,13 +1,14 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 3H 生产数据引导与显式 Dev Fixture**。Phase2通用原语、三套Shell骨架、Phase3 Domain合同、17张Drift表/首版Migration、四类正式Repository、Android/Windows安全凭据实现，以及默认空白生产数据作用域/独立内存开发夹具已有。不是完整音乐客户端；REST Adapter、业务Controller、播放和正式页面尚未完成。
+当前阶段：**Android + Windows · Phase 4A 播放核心合同已闭合，准备进入 Phase 4B 真实音频 POC**。Phase2通用原语、三套Shell骨架、完整Phase3数据层，以及正式播放状态、可替换音频/来源/媒体会话合同、持久队列算法已经存在。不是完整音乐客户端；真实双平台音频后端POC、REST Adapter、正式播放器接线和业务页面尚未完成。
 
-Phase3H门禁：新增8项数据组合/Fixture/Bootstrap测试，完整207项Flutter含32张Windows宿主Golden、严格分析0问题、137文件format零变化、29项Node、24份ZIP、lockfile及生成代码/v1快照零差异全部通过。本机默认生产入口Android Debug已构建；实现提交的GitHub push/PR/唯一手动运行均为Windows/Android三job success，新APK的三项摘要、48资产、Manifest和v2单签名已独立复核。
+Phase4A本地门禁：新增7项播放合同/Controller测试，完整214项Flutter含32张Windows宿主Golden、严格分析0问题、143文件format、30项Node、24份ZIP、lockfile及生成代码/v1快照零差异全部通过。默认生产入口Android Debug已构建并复核48资产、Manifest和v2单Debug签名；实现提交`ec508df`的GitHub push、PR与唯一手动运行均为三job成功，草稿Release三资产亦已独立复核。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
 ## 开发入口
 
+- [Phase 4A播放核心报告](docs/phase_4a_playback_core_contracts_report.md)、[本批范围](docs/phase_4a_playback_core_contracts_plan.md)、[本批 PR 草稿](docs/phase_4a_playback_core_contracts_pr_draft.md)
 - [Phase 3H数据引导与夹具报告](docs/phase_3h_dev_fixture_bootstrap_report.md)、[本批范围](docs/phase_3h_dev_fixture_bootstrap_plan.md)、[本批 PR 草稿](docs/phase_3h_dev_fixture_bootstrap_pr_draft.md)
 - [Phase 3G安全凭据报告](docs/phase_3g_secure_credential_gateway_report.md)、[本批范围](docs/phase_3g_secure_credential_gateway_plan.md)、[本批 PR 草稿](docs/phase_3g_secure_credential_gateway_pr_draft.md)
 - [Phase 3F MusicSourceRepository报告](docs/phase_3f_music_source_repository_report.md)、[本批范围](docs/phase_3f_music_source_repository_plan.md)、[本批 PR 草稿](docs/phase_3f_music_source_repository_pr_draft.md)
@@ -67,6 +68,8 @@ Phase3G批次不新增可见页面或启动接线。Android/Windows SecureCreden
 
 Phase3H仍不新增业务页面。默认入口现在异步打开空白生产数据库、四类正式Repository和当前平台安全Gateway；初始化失败只显示固定脱敏文字。开发样本只在显式`main_dev.dart`中使用内存库：四首HTML曲目、歌单、队列和歌词通过正式Repository写入，但来源为禁用的`.invalid`地址，不含凭据、路径、媒体URI、收藏/历史或假在线状态。
 
+Phase4A仍不新增可见页面或真实音频插件。`PlaybackController`现在是当前曲目、引擎状态、位置/缓冲/时长、音量/速率、随机/循环、持久队列、输出设备与失败的唯一真相；`QueueController`只转发命令和同一份状态。短期网络URL/Header在`PlayableSource`中全量脱敏且不持久化，Android MediaSession与Windows SMTC先共用项目接口。默认后端继续明确不可用，不能把Fake合同测试冒充双平台POC。
+
 ## Phase 0 审计入口
 
 - [Phase 0 完成报告](docs/phase_0_report.md)与[阶段计划及出口](docs/phase_0_plan.md)
@@ -96,7 +99,7 @@ flutter build windows --debug --no-pub
 
 工具链完整后使用 `flutter run -d windows` 或 `flutter run -d <android-device-id>`。不要重新运行 flutter create 覆盖现有工程。Android 发行签名未配置，禁止使用 Debug 签名冒充 Release。
 
-需要APK时，在[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)对目标分支手动运行工作流；成功后从该次运行生成的私有草稿Release下载。Phase3H实现提交`27dd76c`已由唯一[运行33518770911](https://github.com/Z-YO-YI/YYMusic/actions/runs/33518770911)生成并完成[草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-b568f6b9cd28a74f3603)复核，APK为190701235字节，SHA-256为`e2d6e9be3d366a792c381662b3041f9ed9ac826e2d4c6bf19b8325c266e946e2`。必须确认Android任务、Release标签、metadata完整commit和SHA256SUMS一致；普通push/PR只验证构建，不创建下载产物。APK不提交Git源码，证据见[Phase3H报告](docs/phase_3h_dev_fixture_bootstrap_report.md)，详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
+需要APK时，在[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)对目标分支手动运行工作流；成功后从该次运行生成的私有草稿Release下载。Phase4A实现提交`ec508df`已由唯一[运行33848236710](https://github.com/Z-YO-YI/YYMusic/actions/runs/33848236710)生成并完成[草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-271d9f07baf51fb6bb95)复核，APK为190735487字节，SHA-256为`3f95cea301d6710ac46a40a5fbfcd0d4561d91f310ca5d04506d5389a1272aa4`。必须确认Android任务、Release标签、metadata完整commit和SHA256SUMS一致；普通push/PR只验证构建，不创建下载产物。APK不提交Git源码，证据见[Phase4A报告](docs/phase_4a_playback_core_contracts_report.md)，详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
 
 无已连接真机/模拟器或本机Windows原生运行验收证据，构建成功不等于已安装运行。32张组件/原生Shell Golden使用打包字体、Flutter 3.47.2 / Windows测试宿主，精确像素比较；Linux对这些宿主专用测试执行明确跳过，仍运行全部非Golden回归，Windows CI另执行Golden。只在审查视觉变更后对指定测试使用`--update-goldens`，日常测试不得更新基线。
 
@@ -118,7 +121,7 @@ pwsh -NoProfile -File tools/verify_reference_archive.ps1
 
 ## Git 与历史原型
 
-仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。当前开发分支`feat/secure-credential-gateway`基于已拉取并同步的`feat/music-source-repository-drift@e0f49c6`，未在main/master开发。此前阶段提交保留；合并前需审核完整分支差异。经用户明确授权曾恢复临时GitHub API访问，不持久化访问令牌；Git提交/推送和云端产物状态以每次交付时实际核验为准。
+仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。当前开发分支`feat/playback-core-contracts`基于已拉取并同步的`feat/dev-fixture-bootstrap@e5072a0`，未在main/master开发。此前阶段提交保留；合并前需审核完整分支差异。经用户明确授权曾恢复临时GitHub API访问，不持久化访问令牌；Git提交/推送和云端产物状态以每次交付时实际核验为准。
 
 旧原型 13 个文件已原样迁入 [archive/sonic_gallery](archive/sonic_gallery/README.md)，并在 `f96197b` 单独提交；源码、两份测试、配置和图片可恢复，不再散落为根目录未跟踪文件。Phase 0 中“保留原地、未纳入提交”的说明是当时历史状态。
 
