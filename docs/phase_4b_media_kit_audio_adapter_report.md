@@ -59,11 +59,19 @@ NOTICE核验。因此当前只记录工程事实，不给出法律结论；发�
 
 ## 云端状态与发布边界
 
-目标实现提交、Draft PR及GitHub push/PR三job运行号将在推送并逐项成功后补记。GitHub
-Windows 2025构建将用于补足本机受UAC限制而无法执行的Windows编译证据，但即使成功也只代表
-依赖解析、链接和打包，不代表Windows扬声器输出、SMTC、安装或设备切换通过。
+实现提交`b7e0b0f820f1f91f99db89d42cb7241edba4769d`已推送；
+[Draft PR #18](https://github.com/Z-YO-YI/YYMusic/pull/18)保持open/draft，head为
+`feat/media-kit-audio-poc`，base为`feat/playback-core-contracts@3e52f94`。
+[push运行33853006353](https://github.com/Z-YO-YI/YYMusic/actions/runs/33853006353)与
+[PR运行33853041607](https://github.com/Z-YO-YI/YYMusic/actions/runs/33853041607)均为三个job
+success，分别独立完成checks、Android Debug与Windows Debug。
 
-本阶段明确不触发`workflow_dispatch`，也不创建包含候选native库的新APK Release。Phase4A的
+精确实现SHA只存在上述push与pull_request两次运行，workflow_dispatch为0；GitHub API也确认
+没有目标为该SHA或`feat/media-kit-audio-poc`的新Release。GitHub Windows 2025成功补足了
+本机受UAC限制而无法执行的Windows编译证据，但只代表依赖解析、链接和打包，不代表Windows
+扬声器输出、SMTC、安装或设备切换通过。
+
+本阶段没有触发`workflow_dispatch`，也没有创建包含候选native库的新APK Release。Phase4A的
 既有草稿APK只对应旧实现提交，不能作为本批产物。Android/Windows真实文件/content/HTTPS
 播放、Seek状态、错误、性能、后台/焦点/系统媒体会话与native许可证闭环仍未验收。
 

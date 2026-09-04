@@ -89,6 +89,8 @@ Phase4A本地增量：7项覆盖来源脱敏、完整状态、load/Seek/音量/�
 
 Phase4A实现提交ec508df的push运行33845988715、PR运行33846020650与唯一手动运行33848236710均为三job success。手动运行的草稿Release三资产已下载，APK为190735487字节，SHA256SUMS、metadata、API digest与`3f95cea301d6710ac46a40a5fbfcd0d4561d91f310ca5d04506d5389a1272aa4`一致；48份打包资产逐字节匹配、无参考/凭据文件、Manifest确认`allowBackup=false`、v2单签名有效，临时副本已清理。证据只适用于该实现提交。
 
-Phase4B本地增量：5项Fake backend覆盖Windows file URI、Android content URI、HTTPS/Header瞬时传递、open不自动播放、八阶段合成、transport/Seek/音量/速率、命令与异步错误脱敏、并发幂等释放和非法输入；完整219项Flutter含32张Windows宿主Golden、严格分析0问题、30项Node、24项ZIP、lockfile及生成/v1快照零差异均通过。本机Android Debug成功，APK为279083792字节、SHA-256为`f3026e694c597b83297405c6587d46dc2906aa422b471838796950f776c59dd8`；48份资产逐字节匹配、Manifest确认`allowBackup=false`、仅INTERNET及生成的not-exported receiver权限、三种Flutter目标ABI仅含libmpv/libmediakitandroidhelper，v2单Debug签名有效。此证据只证明适配合同与native打包；未运行扬声器播放。GitHub目标提交证据待推送后补记，且许可证未闭合前不触发手动Release。
+Phase4B本地增量：5项Fake backend覆盖Windows file URI、Android content URI、HTTPS/Header瞬时传递、open不自动播放、八阶段合成、transport/Seek/音量/速率、命令与异步错误脱敏、并发幂等释放和非法输入；完整219项Flutter含32张Windows宿主Golden、严格分析0问题、30项Node、24项ZIP、lockfile及生成/v1快照零差异均通过。本机Android Debug成功，APK为279083792字节、SHA-256为`f3026e694c597b83297405c6587d46dc2906aa422b471838796950f776c59dd8`；48份资产逐字节匹配、Manifest确认`allowBackup=false`、仅INTERNET及生成的not-exported receiver权限、三种Flutter目标ABI仅含libmpv/libmediakitandroidhelper，v2单Debug签名有效。此证据只证明适配合同与native打包；未运行扬声器播放。
+
+Phase4B实现提交b7e0b0f的push运行33853006353与PR运行33853041607均为三job success，分别独立完成checks、Android Debug与Windows Debug。精确SHA只存在这两次运行，workflow_dispatch为0，且没有目标为该SHA或分支的新Release；许可证未闭合前不触发手动Release。证据只适用于该实现提交。
 
 Actions 固定 SHA，来源为维护者公开 refs 和说明：[checkout](https://github.com/actions/checkout)、[setup-node](https://github.com/actions/setup-node)、[setup-java](https://github.com/actions/setup-java)、[flutter-action](https://github.com/subosito/flutter-action)。静态配置验证不代表远程工作流已经通过；私有 CI 结果必须可读取后才记录成功。

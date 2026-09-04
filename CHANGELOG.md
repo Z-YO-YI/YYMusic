@@ -10,7 +10,7 @@
 - 完整219项Flutter含32张Windows宿主Golden、严格分析0问题、30项Node、24项ZIP、lockfile及生成/v1快照零差异通过。
 - 本机Android Debug打包成功，APK为279083792字节、SHA-256 `f3026e694c597b83297405c6587d46dc2906aa422b471838796950f776c59dd8`；48资产、Manifest、权限、三种目标ABI audio-only库及v2单Debug签名已复核。
 - Android原生JAR不携带LICENSE/NOTICE，Windows插件固定旧libmpv归档；传递许可证、真实双平台播放与性能未完成，因此候选不进入生产组合，本批不触发手动APK Release。
-- GitHub push/PR构建证据将在目标提交后补记；构建成功只代表解析/编译/打包，不代表扬声器输出、系统媒体会话或设备运行验收。
+- 实现提交`b7e0b0f`的push运行33853006353与PR运行33853041607均为三个job success；该SHA没有workflow_dispatch或新Release。构建成功只代表解析/编译/打包，不代表扬声器输出、系统媒体会话或设备运行验收。
 
 ## 2026-09-04 — Phase 4A 播放核心合同与唯一状态源
 

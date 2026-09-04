@@ -2,7 +2,7 @@
 
 当前阶段：**Android + Windows · Phase 4B media_kit 候选适配与原生打包验证**。Phase2通用原语、三套Shell骨架、完整Phase3数据层，以及正式播放状态、可替换音频/来源/媒体会话合同、持久队列算法已经存在。`media_kit`只进入隔离候选层，尚未接入生产组合；真实双平台音频运行POC、传递许可证闭环、REST Adapter、正式播放器接线和业务页面仍未完成。
 
-Phase4B本地增量：精确解析`media_kit 1.2.6`与`media_kit_libs_audio 1.0.7`，新增5项候选适配器测试；完整219项Flutter含32张Windows宿主Golden、严格分析0问题、30项Node、lockfile及生成代码/v1快照零差异已通过。Android Debug已实际打入三种Flutter目标ABI的audio-only原生库并完成资产、Manifest和v2单Debug签名复核。Fake测试和Debug编译不等于扬声器播放；GitHub双平台结果在目标提交后记录，原生许可证/NOTICE未闭合前不生成本阶段手动APK Release。
+Phase4B本地增量：精确解析`media_kit 1.2.6`与`media_kit_libs_audio 1.0.7`，新增5项候选适配器测试；完整219项Flutter含32张Windows宿主Golden、严格分析0问题、30项Node、lockfile及生成代码/v1快照零差异已通过。Android Debug已实际打入三种Flutter目标ABI的audio-only原生库并完成资产、Manifest和v2单Debug签名复核；实现提交`b7e0b0f`的GitHub push与PR运行也均为三job成功。Fake测试和Debug编译不等于扬声器播放；原生许可证/NOTICE未闭合前不生成本阶段手动APK Release。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 

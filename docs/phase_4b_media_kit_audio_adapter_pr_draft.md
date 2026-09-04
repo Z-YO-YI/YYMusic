@@ -21,7 +21,8 @@ Head：`feat/media-kit-audio-poc`；Base：
 - 本机Android Debug成功；279,083,792字节APK的48资产、Manifest、权限、三种目标ABI
   audio-only原生库和v2单Debug签名通过，诊断SHA-256为
   `f3026e694c597b83297405c6587d46dc2906aa422b471838796950f776c59dd8`。
-- 目标提交的GitHub push/PR双平台三job运行号将在成功后补记。
+- 实现提交`b7e0b0f`的push运行33853006353与PR运行33853041607均为三job success，分别完成
+  checks、Android Debug和Windows Debug；该SHA没有workflow_dispatch或新Release。
 
 ## 影响与未验收项
 
