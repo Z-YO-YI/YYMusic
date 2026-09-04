@@ -212,6 +212,20 @@ test('playback has one root-owned truth behind project contracts', () => {
   for (const path of sources.filter(path => /lib\/(design_system|features|shells)\//.test(path))) {
     assert(!/package:(media_kit|just_audio|audio_service)\//.test(read(path)), `${path} imports an audio plugin`);
   }
+  const pluginImports = sources.filter(path => /package:media_kit\//.test(read(path)));
+  assert.deepEqual(
+    pluginImports,
+    ['lib/playback/media_kit_audio_backend.dart'],
+    'media_kit must remain inside its playback adapter',
+  );
+  assert(!/MediaKit|NativeMediaKitPlayerBackend/.test(read('lib/main.dart')));
+  const pubspec = read('pubspec.yaml');
+  const lockfile = read('pubspec.lock');
+  assert.match(pubspec, /media_kit: 1\.2\.6/);
+  assert.match(pubspec, /media_kit_libs_audio: 1\.0\.7/);
+  assert.match(lockfile, /media_kit_libs_android_audio:[\s\S]*?version: "1\.3\.8"/);
+  assert.match(lockfile, /media_kit_libs_windows_audio:[\s\S]*?version: "1\.0\.9"/);
+  assert(!/media_kit_(?:video|libs_video)/.test(`${pubspec}\n${lockfile}`));
   for (const path of sources.filter(path => path.startsWith('lib/shells/'))) {
     assert(!/import\s+['"][^'"]*\/playback\//.test(read(path)), `${path} owns playback logic`);
   }

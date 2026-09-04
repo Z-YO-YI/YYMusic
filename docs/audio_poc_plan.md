@@ -1,10 +1,15 @@
 # Windows + Android 音频 POC 计划
 
-状态：**Phase4A合同已实现，真实POC未运行**。Flutter/Dart、Android工具链与GitHub Windows 2025 runner已经可用；本机Windows C++工具链仍受远程UAC限制。Phase4A只交付共用合同、Fake矩阵和本机Android编译，不把Fake、构建或资产Fixture冒充扬声器播放证据。
+状态：**Phase4A合同已实现；Phase4B候选适配器与Android打包已通过，真实音频POC仍未运行**。Flutter/Dart、Android工具链与GitHub Windows 2025 runner已经可用；本机Windows C++工具链仍受远程UAC限制。Phase4B只交付隔离适配器、Fake矩阵和候选native打包，不把Fake、构建或资产Fixture冒充扬声器播放证据。
 
 ## 候选与隔离
 
 A：[media_kit](https://pub.dev/packages/media_kit) + 对应平台audio native libs。B：[just_audio](https://pub.dev/packages/just_audio) + 经核验的Windows backend。当前优先用A做最小POC，因为同一上游明确列出Android/Windows、本地/网络/Header/Seek能力；这只是进入测试的选择，不是正式锁定。B中的`just_audio_windows`不支持请求Header，`just_audio_media_kit`文档说明shuffle order被忽略，必须在比较时记录。两者共享现有AudioEngine合同/测试夹具，后台播放是Android MediaSessionGateway与Windows SMTC Gateway的独立责任。候选证据见dependency_decisions.md。
+
+Phase4B已将A精确解析为`media_kit 1.2.6`、聚合audio libs 1.0.7、Android audio 1.3.8与
+Windows audio 1.0.9。生产入口仍使用UnavailableAudioEngine；候选只可从后续专用POC harness
+创建。Android native JAR缺少内嵌LICENSE/NOTICE，Windows使用旧归档，两平台传递许可证与源码
+提供策略未闭合，所以禁止因打包成功而正式选A或创建可下载候选APK。
 
 ## 准入与测试材料
 
@@ -30,7 +35,7 @@ A：[media_kit](https://pub.dev/packages/media_kit) + 对应平台audio native l
 | sleep | 15/30/60、trackEnd、恢复/过期策略，平滑暂停不伪造支持 |
 | no-download | 没有downloadTrack/saveOffline/batchDownload，网络音频仅技术性缓冲，不形成可离线播放文件 |
 
-Phase4A已用可注入clock/random、FakeAudioEngine/Resolver/MediaSession覆盖合同级场景；下一批必须把相同场景跑在真实Windows/Android backend。性能记录启动/seek时延、内存、CPU、持续播放事件频率；先测基线再设性能阈值，不把浏览器demo计时、编译成功或Fake事件当测试。
+Phase4A已用可注入clock/random、FakeAudioEngine/Resolver/MediaSession覆盖控制器合同；Phase4B又用可注入MediaKitPlayerBackend覆盖插件适配逻辑。下一批必须用运行时生成且许可明确的音频把相同场景跑在真实Windows/Android backend。性能记录启动/seek时延、内存、CPU、持续播放事件频率；先测基线再设性能阈值，不把浏览器demo计时、编译成功或Fake事件当测试。
 
 ## 输出与否决条件
 
