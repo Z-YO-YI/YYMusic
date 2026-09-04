@@ -36,12 +36,14 @@ Phase3G实现平台安全凭据边界，但明确不迁移HTML `localStorage`里
 
 Phase3H把HTML示例状态映射到独立开发入口的真实数据合同：四首曲目及专辑/艺人、两个开发歌单、三项队列和`A Quiet Orbit`十行双语时间歌词均经正式Drift Repository往返。为避免把网页的Cloud/REST/本地演示能力冒充实现，所有曲目统一标记为禁用开发来源，来源仅使用`https://fixture.invalid`且没有credentialRef、用户路径、content URI、artwork URI、可播放URL、收藏/历史或connected状态。默认`main.dart`打开空白生产库且不导入Fixture；只有显式`main_dev.dart`使用一次性内存库。
 
+Phase4A把网页的`currentTrack/playing/progress/queueIds/shuffle/repeat`全局变量替换为唯一`PlaybackState`和根级`PlaybackController`：引擎只发布独立音频事实，队列持久化到既有CollectionRepository，随机/循环/自然完成由Controller执行，QueueController不保存副本。网页object URL与demoTimer没有迁移；短期本地/Android/HTTPS引用改由全量脱敏PlayableSource在resolve后立即交给AudioEngine。真实双平台backend和历史写入尚未完成，因此当前正式入口仍不会播放Fixture或模拟进度。
+
 ## 六条核心流程与行为边界
 
 | 流程 | 网页真实实现 | Flutter替代 |
 | --- | --- | --- |
 | 本地音乐 | 文件/目录input或drop → MIME/扩展名过滤 → name/size/mtime去重 → ObjectURL → 文件名解析 → audio探测时长 → 会话catalog | LocalMusicGateway授权 → 可取消扫描 → 元数据/指纹 → Repository事务；Windows路径、Android content URI/SAF grant；禁止上传路径 |
-| 播放 | currentTrack/playing/progress全局变量 → objectUrl真实audio，否则demoTimer每秒+1 → UI与歌词同步 | SourceRepository.resolvePlayableSource → AudioEngine.load/play → PlaybackController唯一状态流；异步成功后记历史 |
+| 播放 | currentTrack/playing/progress全局变量 → objectUrl真实audio，否则demoTimer每秒+1 → UI与歌词同步 | PlaybackSourceResolver.resolve → AudioEngine.load/play → PlaybackController唯一状态流；异步成功后记历史 |
 | 来源 | 表单展示认证等字段，但仅name/type/baseUrl/auth等入localStorage；testSource假延迟/假连通 | 安全存储凭据、DB credentialRef；真实TLS/HTTP/auth/schema/mapping探测；连接成功才connected |
 | 全屏播放 | openNowPlaying普通overlay，F/add immersive → 浏览器Fullscreen；退出恢复overlay标志 | /player独立路由；OS全屏与路由两层状态；Windows恢复window bounds，Android恢复System UI |
 | 全屏歌词 | 保存lyricsReturnToPlayer、退出player浏览器全屏 → 单独lyrics overlay → timestamp高亮/居中/点击seek | /lyrics push自来源路由，pop回/player或原页；当前曲目共用；手动滚动暂停跟随，LRC解析/offset/translation |

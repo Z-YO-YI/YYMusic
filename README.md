@@ -1,13 +1,14 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 3H 生产数据引导与显式 Dev Fixture**。Phase2通用原语、三套Shell骨架、Phase3 Domain合同、17张Drift表/首版Migration、四类正式Repository、Android/Windows安全凭据实现，以及默认空白生产数据作用域/独立内存开发夹具已有。不是完整音乐客户端；REST Adapter、业务Controller、播放和正式页面尚未完成。
+当前阶段：**Android + Windows · Phase 4A 播放核心合同与唯一状态源**。Phase2通用原语、三套Shell骨架、完整Phase3数据层，以及正式播放状态、可替换音频/来源/媒体会话合同、持久队列算法已经存在。不是完整音乐客户端；真实双平台音频后端POC、REST Adapter、正式播放器接线和业务页面尚未完成。
 
-Phase3H门禁：新增8项数据组合/Fixture/Bootstrap测试，完整207项Flutter含32张Windows宿主Golden、严格分析0问题、137文件format零变化、29项Node、24份ZIP、lockfile及生成代码/v1快照零差异全部通过。本机默认生产入口Android Debug已构建；实现提交的GitHub push/PR/唯一手动运行均为Windows/Android三job success，新APK的三项摘要、48资产、Manifest和v2单签名已独立复核。
+Phase4A本地门禁：新增7项播放合同/Controller测试，完整214项Flutter含32张Windows宿主Golden、严格分析0问题、143文件format、30项Node、24份ZIP、lockfile及生成代码/v1快照零差异全部通过。默认生产入口Android Debug已构建并复核48资产、Manifest和v2单Debug签名；目标实现提交的GitHub Windows/Android与APK仍待推送后独立验证。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
 ## 开发入口
 
+- [Phase 4A播放核心报告](docs/phase_4a_playback_core_contracts_report.md)、[本批范围](docs/phase_4a_playback_core_contracts_plan.md)、[本批 PR 草稿](docs/phase_4a_playback_core_contracts_pr_draft.md)
 - [Phase 3H数据引导与夹具报告](docs/phase_3h_dev_fixture_bootstrap_report.md)、[本批范围](docs/phase_3h_dev_fixture_bootstrap_plan.md)、[本批 PR 草稿](docs/phase_3h_dev_fixture_bootstrap_pr_draft.md)
 - [Phase 3G安全凭据报告](docs/phase_3g_secure_credential_gateway_report.md)、[本批范围](docs/phase_3g_secure_credential_gateway_plan.md)、[本批 PR 草稿](docs/phase_3g_secure_credential_gateway_pr_draft.md)
 - [Phase 3F MusicSourceRepository报告](docs/phase_3f_music_source_repository_report.md)、[本批范围](docs/phase_3f_music_source_repository_plan.md)、[本批 PR 草稿](docs/phase_3f_music_source_repository_pr_draft.md)
@@ -67,6 +68,8 @@ Phase3G批次不新增可见页面或启动接线。Android/Windows SecureCreden
 
 Phase3H仍不新增业务页面。默认入口现在异步打开空白生产数据库、四类正式Repository和当前平台安全Gateway；初始化失败只显示固定脱敏文字。开发样本只在显式`main_dev.dart`中使用内存库：四首HTML曲目、歌单、队列和歌词通过正式Repository写入，但来源为禁用的`.invalid`地址，不含凭据、路径、媒体URI、收藏/历史或假在线状态。
 
+Phase4A仍不新增可见页面或真实音频插件。`PlaybackController`现在是当前曲目、引擎状态、位置/缓冲/时长、音量/速率、随机/循环、持久队列、输出设备与失败的唯一真相；`QueueController`只转发命令和同一份状态。短期网络URL/Header在`PlayableSource`中全量脱敏且不持久化，Android MediaSession与Windows SMTC先共用项目接口。默认后端继续明确不可用，不能把Fake合同测试冒充双平台POC。
+
 ## Phase 0 审计入口
 
 - [Phase 0 完成报告](docs/phase_0_report.md)与[阶段计划及出口](docs/phase_0_plan.md)
@@ -118,7 +121,7 @@ pwsh -NoProfile -File tools/verify_reference_archive.ps1
 
 ## Git 与历史原型
 
-仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。当前开发分支`feat/secure-credential-gateway`基于已拉取并同步的`feat/music-source-repository-drift@e0f49c6`，未在main/master开发。此前阶段提交保留；合并前需审核完整分支差异。经用户明确授权曾恢复临时GitHub API访问，不持久化访问令牌；Git提交/推送和云端产物状态以每次交付时实际核验为准。
+仓库：[Z-YO-YI/YYMusic](https://github.com/Z-YO-YI/YYMusic)。当前开发分支`feat/playback-core-contracts`基于已拉取并同步的`feat/dev-fixture-bootstrap@e5072a0`，未在main/master开发。此前阶段提交保留；合并前需审核完整分支差异。经用户明确授权曾恢复临时GitHub API访问，不持久化访问令牌；Git提交/推送和云端产物状态以每次交付时实际核验为准。
 
 旧原型 13 个文件已原样迁入 [archive/sonic_gallery](archive/sonic_gallery/README.md)，并在 `f96197b` 单独提交；源码、两份测试、配置和图片可恢复，不再散落为根目录未跟踪文件。Phase 0 中“保留原地、未纳入提交”的说明是当时历史状态。
 

@@ -8,9 +8,11 @@ import '../domain/repositories/library_repository.dart';
 import '../domain/repositories/lyrics_repository.dart';
 import '../domain/repositories/music_source_repository.dart';
 import '../platform/contracts/fullscreen_gateway.dart';
+import '../platform/contracts/media_session_gateway.dart';
 import '../platform/contracts/secure_credential_gateway.dart';
 import '../playback/audio_engine.dart';
 import '../playback/playback_controller.dart';
+import '../playback/playback_source_resolver.dart';
 import '../playback/queue_controller.dart';
 import 'app_data_services.dart';
 import 'app_view_state.dart';
@@ -19,6 +21,8 @@ import 'app_view_state.dart';
 final class DependencyGraph {
   DependencyGraph({
     AudioEngine? audioEngine,
+    PlaybackSourceResolver? playbackSourceResolver,
+    MediaSessionGateway? mediaSession,
     this.dataServices,
     LibraryRepository? library,
     CollectionRepository? collection,
@@ -36,15 +40,24 @@ final class DependencyGraph {
          'Inject either an owned data scope or individual contracts',
        ),
        _audioEngine = audioEngine ?? UnavailableAudioEngine(),
+       _mediaSession = mediaSession ?? const UnavailableMediaSessionGateway(),
        library = dataServices?.library ?? library,
        collection = dataServices?.collection ?? collection,
        lyrics = dataServices?.lyrics ?? lyrics,
        musicSources = dataServices?.musicSources ?? musicSources,
        credentials = dataServices?.credentials ?? credentials {
-    playback = PlaybackController(_audioEngine);
+    playback = PlaybackController(
+      _audioEngine,
+      library: this.library,
+      collection: this.collection,
+      sourceResolver: playbackSourceResolver,
+      mediaSession: _mediaSession,
+    );
+    queue = QueueController(playback);
   }
 
   final AudioEngine _audioEngine;
+  final MediaSessionGateway _mediaSession;
   final AppDataServices? dataServices;
   final LibraryRepository? library;
   final CollectionRepository? collection;
@@ -54,17 +67,20 @@ final class DependencyGraph {
   final FullscreenGateway? fullscreen;
   final viewState = AppViewState();
   final appearance = YYAppearanceController();
-  final queue = QueueController();
   late final PlaybackController playback;
+  late final QueueController queue;
   bool _disposed = false;
+
+  Future<void> initialize() => playback.initialize();
 
   void dispose() {
     if (_disposed) return;
     _disposed = true;
-    playback.dispose();
     queue.dispose();
+    playback.dispose();
     appearance.dispose();
     unawaited(_audioEngine.dispose());
+    unawaited(_mediaSession.dispose());
     final services = dataServices;
     if (services != null) {
       unawaited(services.dispose());

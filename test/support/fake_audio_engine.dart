@@ -1,24 +1,96 @@
 import 'dart:async';
 
 import 'package:yymusic/playback/audio_engine.dart';
-import 'package:yymusic/playback/playback_state.dart';
+import 'package:yymusic/playback/audio_engine_state.dart';
+import 'package:yymusic/playback/playable_source.dart';
 
 final class FakeAudioEngine implements AudioEngine {
-  final events = StreamController<PlaybackState>.broadcast(sync: true);
+  FakeAudioEngine({this.duration = const Duration(minutes: 3)});
+
+  final events = StreamController<AudioEngineState>.broadcast(sync: true);
+  final List<String> calls = [];
+  final Duration? duration;
+  PlayableSource? loadedSource;
+  Object? loadError;
+  Duration position = Duration.zero;
+  Duration buffered = Duration.zero;
+  double volume = 1;
+  double playbackRate = 1;
   int disposalCount = 0;
+
   @override
   bool get isAvailable => true;
   @override
-  Stream<PlaybackState> get states => events.stream;
+  Stream<AudioEngineState> get states => events.stream;
   @override
-  Future<void> play() async =>
-      events.add(const PlaybackState(phase: PlaybackPhase.playing));
+  Future<void> load(PlayableSource source) async {
+    calls.add('load');
+    final error = loadError;
+    if (error != null) throw error;
+    loadedSource = source;
+    position = Duration.zero;
+    buffered = Duration.zero;
+    _emit(AudioEnginePhase.loading);
+    _emit(AudioEnginePhase.ready);
+  }
+
   @override
-  Future<void> pause() async =>
-      events.add(const PlaybackState(phase: PlaybackPhase.paused));
+  Future<void> play() async {
+    calls.add('play');
+    _emit(AudioEnginePhase.playing);
+  }
+
+  @override
+  Future<void> pause() async {
+    calls.add('pause');
+    _emit(AudioEnginePhase.paused);
+  }
+
+  @override
+  Future<void> stop() async {
+    calls.add('stop');
+    position = Duration.zero;
+    buffered = Duration.zero;
+    _emit(AudioEnginePhase.idle);
+  }
+
+  @override
+  Future<void> seek(Duration value) async {
+    calls.add('seek:${value.inMilliseconds}');
+    position = value;
+    _emit(AudioEnginePhase.paused);
+  }
+
+  @override
+  Future<void> setVolume(double value) async {
+    calls.add('volume:$value');
+    volume = value;
+    _emit(AudioEnginePhase.paused);
+  }
+
+  @override
+  Future<void> setPlaybackRate(double value) async {
+    calls.add('rate:$value');
+    playbackRate = value;
+    _emit(AudioEnginePhase.paused);
+  }
+
   @override
   Future<void> dispose() async {
     disposalCount++;
     await events.close();
   }
+
+  void complete() => _emit(AudioEnginePhase.completed);
+
+  void _emit(AudioEnginePhase phase) => events.add(
+    AudioEngineState(
+      phase: phase,
+      position: position,
+      buffered: buffered,
+      duration: duration,
+      volume: volume,
+      playbackRate: playbackRate,
+    ),
+  );
 }

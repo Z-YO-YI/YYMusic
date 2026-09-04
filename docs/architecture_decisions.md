@@ -209,3 +209,13 @@ Phase 3H用`AppDataServices`定义一个明确拥有资源的数据作用域：�
 HTML四首示例曲目、两个歌单、队列和双语歌词通过正式Domain/Repository写入，但统一挂在禁用的`https://fixture.invalid`来源，曲目标记`sourceDisabled`。它不保存credentialRef、用户路径、content URI、artwork URI、可播放URL、收藏/历史或connected状态。这样可验证HTML状态到真实接口的映射，又不把网页假延迟、对象URL、在线状态或秘密冒充为生产能力。
 
 只有`data/database`可以构造Drift内存executor；除`main_dev.dart`外的生产入口不得导入`dev_fixture`，UI/Shell继续不能导入data层。REST Adapter、来源凭据替换事务与Controller仍需后续独立决策；Phase 3H只关闭主指令规定的Domain/Database/Repository/安全存储接口/Dev Fixture出口。
+
+## ADR-030：PlaybackController合成唯一播放与队列真相（2026-09-04）
+
+Phase 4A先锁定项目合同与状态语义，再选择真实音频插件。`AudioEngineState`只报告idle/loading/buffering/ready/playing/paused/completed/error、时间、音量、速率和安全失败；它不知道Track、队列或UI。根级`PlaybackController`是唯一将Library Track、短期PlayableSource、Engine事件、Collection队列和MediaSession组合为完整`PlaybackState`的对象。`QueueController`仍作为主指令列出的业务入口存在，但只委托命令并返回`playback.state.queue`，不得保存第二个QueueSnapshot。
+
+`PlayableSource`是仅在resolve到load之间存活的适配器输入：本地文件必须是绝对路径，Android引用必须是`content://`，网络必须是无userinfo的HTTPS。过期URL可能含短期query，授权Header可能含秘密，因此locator/Header在`toString`中无条件显示`<redacted>`，不得写入Drift、Fixture、公开状态或日志。插件异常由适配器优先分类；Controller对未知异常只产生固定diagnostic ID，不复制异常文字。
+
+播放命令使用单一串行队列，避免快速点击导致load/seek/queue持久化交错。随机模式生成一轮稳定entryId顺序，关闭列表循环时一轮内不重复；repeat all才开始下一轮，repeat one只处理自然completed，用户手动next仍前进。删除当前项/清空队列停止引擎并清除当前Track；删除同TrackRef的另一个重复entry不得中断。持久队列在AppBootstrap期间恢复，但不自动解析或播放，避免启动即访问用户文件/网络。
+
+MediaSessionGateway只把Android MediaSession/Windows SMTC动作转回同一Controller，并接收项目Track/PlaybackState；其失败是辅助能力退化，不能停止正在播放的音频。Phase4A不添加插件或平台实现，默认Engine仍不可用。只有后续Windows+Android对同一合同完成本地授权文件、受控HTTPS流、Seek/状态/错误和打包验证后，才可锁定正式backend并关闭Phase4出口。

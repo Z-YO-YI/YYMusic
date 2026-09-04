@@ -54,7 +54,13 @@ class _AppBootstrapState extends State<AppBootstrap> {
         await services.dispose();
         return;
       }
-      setState(() => _graph = DependencyGraph(dataServices: services));
+      final graph = DependencyGraph(dataServices: services);
+      await graph.initialize();
+      if (!mounted) {
+        graph.dispose();
+        return;
+      }
+      setState(() => _graph = graph);
     } catch (_) {
       if (mounted) setState(() => _failed = true);
     }
