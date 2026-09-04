@@ -1,6 +1,6 @@
 # 实施状态
 
-更新：2026-09-01。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。Phase3H已完成生产空库数据组合、显式内存Dev Fixture和AppBootstrap生命周期，本地全量门禁及Android验证通过；本批GitHub Windows/Android与新APK等待实现提交后验证。REST Adapter、Controller和播放仍未实现。
+更新：2026-09-04。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。Phase3H已完成生产空库数据组合、显式内存Dev Fixture、AppBootstrap生命周期、本地Android及GitHub Windows/Android验证，新APK也已独立复核。Phase 3按主指令出口关闭；REST Adapter、Controller和播放仍未实现。
 
 | 阶段/能力 | 状态 |
 | --- | --- |
@@ -28,15 +28,15 @@
 | Phase 3 后续来源/状态 | 主指令Phase3本地出口已满足；REST Adapter、来源凭据事务与业务Controller按后续阶段分批交付 |
 | Phase 4 双平台音频 | 仅 POC 计划；没有真实播放验证 |
 | 后续页面、歌词、导入、来源、平台集成 | 未开始 |
-| GitHub APK交付 | 最新已完成证据仍是Phase3G 4daf380/运行33511421874；Phase3H不能复用旧APK，须在实现提交后唯一手动构建并独立复核新Release |
+| GitHub APK交付 | Phase3H 27dd76c的唯一手动运行33518770911创建私有草稿Release；190701235字节APK的三资产、metadata、SHA256SUMS、API digest、48份包内资产、Manifest及v2单签名已独立复核 |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
 | Flutter format/analyze/test | Phase3H 137文件格式无变更、严格分析0问题、完整207项含32张原生Golden全部通过；8项数据组合/Fixture/Bootstrap新测试通过 |
-| Windows / Android Debug构建 | Phase3H本机Android默认生产入口通过；GitHub Windows/Android待实现提交后验证，本机Windows C++工具链仍受UAC限制 |
+| Windows / Android Debug构建 | Phase3H实现commit的push/PR/唯一手动三次运行均为三job success；本机Android亦通过，本机Windows C++工具链仍受UAC限制 |
 
 ## 保留的验收缺口与后续边界
 
 1. 已执行安全归档：13个旧原型文件移入archive/sonic_gallery，指纹一致，f96197b保存；根lib是新骨架，不再是旧代码。
-2. 用户已批准补足工具链；Android命令行工具/API36/35、NDK及项目要求的CMake已安装，Windows C++安装等待UAC确认。GitHub Windows2025/Android的最近已验证基线为Phase3G；Phase3H云端结果尚待实现提交。云端成功不等于本机Windows构建或安装验收。未批量接受所有Android许可。
+2. 用户已批准补足工具链；Android命令行工具/API36/35、NDK及项目要求的CMake已安装，Windows C++安装等待UAC确认。GitHub Windows2025/Android的Phase3H Debug构建均已成功，但云端成功不等于本机Windows构建或安装验收。未批量接受所有Android许可。
 3. 已解析Riverpod/go_router并提交lockfile；音频后端仍等待Phase 4双平台POC。
 4. 已建立实时平台分类、三个Shell和根依赖；Windows Shell现有设计导航与跨平台Gallery，播放器、弹层、状态、队列及歌词组件仅存在于明确标注的Fixture，窗口Gateway、业务Overlay Manager、Inspector业务与正式播放器接线仍未实现。业务页面未实现，不把设计预览当成音乐业务交付。
 5. 为后续视觉验证准备获准且可访问的预览环境；遵守 Browser 技能边界，不绕过本轮 file: 拒绝。参考 screenshot 与 Flutter Golden 必须分别记录。
@@ -45,4 +45,4 @@
 
 开发分支：feat/dev-fixture-bootstrap，基于已拉取并同步的feat/secure-credential-gateway@9fcbd00。未在main/master直接开发；旧原型保留于归档提交。本批只增加生产数据组合/生命周期、显式内存Fixture、测试与文档，依赖和Drift v1 Schema不变。
 
-此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问可读取本仓库运行和PR，不修改账号权限。Phase3G Draft PR #15和APK历史证据保持有效但不适用于Phase3H；本批提交、PR、运行与新APK均须重新按完整SHA核验。
+此前GitHub连接器404的历史边界见Phase2C报告；用户明确授权后，临时API访问可读取本仓库运行和PR，不修改账号权限。Phase3H Draft PR #16、三次运行和新APK已按完整`27dd76cb1459d9089f81c68f2ac3ebe065dcd839`独立核验，未复用旧APK。

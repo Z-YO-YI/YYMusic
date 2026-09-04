@@ -79,6 +79,8 @@ Phase3G本地增量：10项安全Gateway覆盖Android/Windows生命周期、规�
 
 Phase3G实现提交4daf380的push运行33510086595、PR运行33510153174与唯一手动运行33511421874均为三job success。手动运行的草稿Release三资产已下载，APK为189393711字节，SHA256SUMS、metadata、API digest与`2623eab9590f4f333bc7327ee4d4dea49ee5b6f6789219f129b44f1e7108bcdf`一致；48份打包资产逐字节匹配、Manifest确认`allowBackup=false`、v2单签名有效，临时副本已清理。证据只适用于该实现提交。
 
-Phase3H本地增量：8项覆盖双平台生产组合、共享数据生命周期、构造失败关闭、真实Drift Fixture/非空拒绝、Graph所有权和Bootstrap异步状态；完整207项Flutter含32 Golden、137文件format、严格分析、29项Node、24项ZIP、lockfile及生成/v1快照零差异均通过。本机默认生产入口Android Debug成功，APK为238963881字节、48份资产逐字节匹配、Manifest确认`allowBackup=false`且v2单Debug签名有效。目标实现提交的GitHub/Release证据待推送后单独记录。
+Phase3H本地增量：8项覆盖双平台生产组合、共享数据生命周期、构造失败关闭、真实Drift Fixture/非空拒绝、Graph所有权和Bootstrap异步状态；完整207项Flutter含32 Golden、137文件format、严格分析、29项Node、24项ZIP、lockfile及生成/v1快照零差异均通过。本机默认生产入口Android Debug成功，APK为238963881字节、48份资产逐字节匹配、Manifest确认`allowBackup=false`且v2单Debug签名有效。
+
+Phase3H实现提交27dd76c的push运行33517332873、PR运行33517452005与唯一手动运行33518770911均为三job success。手动运行的草稿Release三资产已下载，APK为190701235字节，SHA256SUMS、metadata、API digest与`e2d6e9be3d366a792c381662b3041f9ed9ac826e2d4c6bf19b8325c266e946e2`一致；48份打包资产逐字节匹配、无参考/凭据文件、Manifest确认`allowBackup=false`、v2单签名有效，临时副本已清理。证据只适用于该实现提交。
 
 Actions 固定 SHA，来源为维护者公开 refs 和说明：[checkout](https://github.com/actions/checkout)、[setup-node](https://github.com/actions/setup-node)、[setup-java](https://github.com/actions/setup-java)、[flutter-action](https://github.com/subosito/flutter-action)。静态配置验证不代表远程工作流已经通过；私有 CI 结果必须可读取后才记录成功。

@@ -27,7 +27,9 @@
 
 ## 云端与限制
 
-本文件随实现提交前，目标实现 commit、Draft PR、GitHub push/PR/手动工作流和私有草稿 Release 均尚未产生，因此不提前记录成功。提交推送后必须分别核验 Linux checks、Windows 2025 Debug 与 Android Debug，并且只触发一次绑定完整实现 SHA 的手动工作流。
+实现提交`27dd76cb1459d9089f81c68f2ac3ebe065dcd839`已推送；[Draft PR #16](https://github.com/Z-YO-YI/YYMusic/pull/16)以`feat/secure-credential-gateway`为base。push[运行33517332873](https://github.com/Z-YO-YI/YYMusic/actions/runs/33517332873)、PR[运行33517452005](https://github.com/Z-YO-YI/YYMusic/actions/runs/33517452005)和触发前计数为0、触发后计数为1的唯一手动[运行33518770911](https://github.com/Z-YO-YI/YYMusic/actions/runs/33518770911)均为checks/Windows Debug/Android Debug三job success。
+
+[私有草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-b568f6b9cd28a74f3603)标签`ci-debug-33518770911-1`，target为完整实现提交，保持draft/prerelease且恰有`YYMusic-debug.apk`、`SHA256SUMS`和`build-metadata.json`三资产。三资产下载到全新受控临时目录复核：APK为190,701,235字节，SHA-256、metadata、SHA256SUMS与GitHub API digest均为`e2d6e9be3d366a792c381662b3041f9ed9ac826e2d4c6bf19b8325c266e946e2`；48份资产匹配且无参考/归档/凭据文件，Manifest确认包名/YYMusic/`allowBackup=false`，apksigner确认仅v2且1个Debug signer。临时三文件与目录已删除，Release保留。
 
 本机 Windows 仍因远程环境无法完成 UAC/Developer Mode 所需的 C++ 工具链配置，不声称本机 Windows 构建或运行成功。云端编译也不等于真实 Android KeyStore/Windows Credential Manager 的保存、重启、升级与设备迁移验收。APK 是临时 Debug 签名，不是正式 Release 包。
 
@@ -43,4 +45,4 @@
 - `test/unit/dev_fixture_test.dart`
 - `test/widget/app_bootstrap_data_test.dart`
 
-GitHub 双平台和 APK 证据完成后，Phase 3 可按主指令出口关闭；下一批进入 Phase 4 Android/Windows 音频 POC，不把 REST、正式页面或来源 Controller 混入播放后端选择。
+Phase 3 已满足主指令出口：模型与Migration测试通过、正式Repository可替换Fake、HTML样本只进显式Dev Fixture且UI不直接访问数据库。下一批进入 Phase 4 Android/Windows 音频 POC，不把 REST、正式页面或来源 Controller 混入播放后端选择。

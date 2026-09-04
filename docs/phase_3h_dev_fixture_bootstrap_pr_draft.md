@@ -16,7 +16,8 @@ Head：`feat/dev-fixture-bootstrap`；Base：`feat/secure-credential-gateway@9fc
 - 完整 207 项 Flutter/32 Golden、strict analyze 0 问题、137 文件 format 零变化已通过。
 - lockfile 严格复现；Node 29、ZIP 24、build_runner/Drift v1 生成零差异已通过。
 - 本机 Android 默认生产入口 Debug 已构建；238,963,881 字节 APK 的 48 资产、Manifest 和 v2 单 Debug 签名复核通过。
-- GitHub push/PR/唯一手动运行与草稿 Release：实现提交推送后补充，不使用旧 Phase 3G 证据。
+- 实现提交`27dd76c`的push运行33517332873、PR运行33517452005与唯一手动运行33518770911均为三job success；Windows插件与默认生产入口已在Windows 2025/Ubuntu Android真实编译。
+- 手动草稿Release恰含三资产；190701235字节APK的metadata/SHA256SUMS/API digest、48资产、Manifest及v2单Debug签名已独立复核。
 
 ## 影响与未验收项
 

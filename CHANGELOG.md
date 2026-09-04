@@ -8,7 +8,9 @@
 - Fixture来源固定为禁用的`https://fixture.invalid`，无credentialRef、路径、媒体URI、可播放URL、收藏/历史或connected；默认`main.dart`与UI/Shell无法导入夹具/Drift实现。
 - 不修改v1 Schema/快照、依赖、权限或可见业务页面；REST Adapter、来源事务、Controller和播放留后续批次。
 - 8项新测试、完整207项Flutter/32 Golden、137文件format、严格分析、29项Node、24项ZIP、lockfile及生成/v1快照零差异已通过。
-- 本机默认生产入口Android Debug构建成功；238963881字节APK的48资产、包名/标签/备份设置和v2单Debug签名已复核。GitHub双平台和本批新APK待实现提交推送后验证。
+- 本机默认生产入口Android Debug构建成功；238963881字节APK的48资产、包名/标签/备份设置和v2单Debug签名已复核。
+- 实现提交`27dd76c`的push运行33517332873、PR运行33517452005与触发前0/触发后1的唯一手动运行33518770911均为三job success；Draft PR #16保持待审核。
+- 手动运行的私有草稿Release三资产已下载复核；APK为190701235字节，SHA-256、SHA256SUMS、metadata和API digest均为`e2d6e9be3d366a792c381662b3041f9ed9ac826e2d4c6bf19b8325c266e946e2`，48份资产匹配、Manifest禁用备份且v2单签名有效，临时副本已清理。
 
 ## 2026-09-01 — Phase 3G Android / Windows SecureCredentialGateway
 
