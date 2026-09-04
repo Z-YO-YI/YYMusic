@@ -9,7 +9,8 @@
 - `QueueController`改为同一PlaybackState的命令门面，不保存第二份队列；AppBootstrap初始化恢复CollectionRepository队列，但不自动加载或播放。
 - 新增Android MediaSession/Windows SMTC共用Gateway与回调合同；平台更新失败不停止音频，根Graph统一初始化和幂等释放。
 - 7项新增播放测试、完整214项Flutter/32 Golden、143文件format、严格分析0问题、30项Node、24项ZIP、lockfile及生成/v1快照零差异通过。
-- 本机默认生产入口Android Debug构建成功；238997827字节、SHA-256 `ea40ebd646300b0f14c1dcef9aef2971d19fba6da515e83b6f88c8e05bd66ab1`，48资产、Manifest及v2单Debug签名已复核。GitHub构建与APK待实现提交推送后验证。
+- 本机默认生产入口Android Debug构建成功；238997827字节、SHA-256 `ea40ebd646300b0f14c1dcef9aef2971d19fba6da515e83b6f88c8e05bd66ab1`，48资产、Manifest及v2单Debug签名已复核。
+- 实现提交`ec508df`的push运行33845988715、PR运行33846020650与唯一手动运行33848236710均为三job success；私有草稿Release三资产已下载复核，APK为190735487字节，SHA-256、SHA256SUMS、metadata和API digest均为`3f95cea301d6710ac46a40a5fbfcd0d4561d91f310ca5d04506d5389a1272aa4`，48份资产匹配、Manifest禁用备份且v2单签名有效，临时副本已清理。
 - 本批不新增音频插件、权限、可播放Fixture、下载/离线能力或Shell接线；Windows/Android真实音频POC尚未通过。
 
 ## 2026-09-01 — Phase 3H 生产数据引导与显式 Dev Fixture

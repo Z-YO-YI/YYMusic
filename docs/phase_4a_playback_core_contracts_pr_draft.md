@@ -22,7 +22,12 @@ Head：`feat/playback-core-contracts`；Base：
 - 本机Android默认生产入口Debug成功；238,997,827字节APK的48资产、Manifest和v2单Debug
   签名通过，诊断SHA-256为
   `ea40ebd646300b0f14c1dcef9aef2971d19fba6da515e83b6f88c8e05bd66ab1`。
-- GitHub push/PR/唯一手动三job与新APK证据待实现提交推送后填写。
+- 实现提交`ec508df`的push运行33845988715、PR运行33846020650与唯一手动运行
+  33848236710均为三个job success；Draft PR #17的base/head身份已复核。
+- 手动运行的私有draft/prerelease只含三项白名单资产；APK为190,735,487字节，SHA-256、
+  SHA256SUMS、metadata与API digest均为
+  `3f95cea301d6710ac46a40a5fbfcd0d4561d91f310ca5d04506d5389a1272aa4`。48资产、Manifest和
+  v2单Debug签名通过，临时下载目录已清理。
 
 ## 影响与未验收项
 

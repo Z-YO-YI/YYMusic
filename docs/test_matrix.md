@@ -1,6 +1,6 @@
 # 原生基础验证矩阵
 
-保留Phase3H的207项Flutter检查，Phase4A新增7项播放来源/状态/Controller测试，共214项Flutter、30项Node；不包含真实音频backend、用户音乐、在线密钥或设备播放证据。本地与目标实现提交的GitHub Windows/Android结果集中在phase_4a_playback_core_contracts_report.md。
+保留Phase3H的207项Flutter检查，Phase4A新增7项播放来源/状态/Controller测试，共214项Flutter、30项Node；不包含真实音频backend、用户音乐、在线密钥或设备播放证据。本地与实现提交的GitHub Windows/Android结果集中在phase_4a_playback_core_contracts_report.md。
 
 | 类别 | 已有自动检查 |
 | --- | --- |
@@ -84,6 +84,8 @@ Phase3H本地增量：8项覆盖双平台生产组合、共享数据生命周期
 
 Phase3H实现提交27dd76c的push运行33517332873、PR运行33517452005与唯一手动运行33518770911均为三job success。手动运行的草稿Release三资产已下载，APK为190701235字节，SHA256SUMS、metadata、API digest与`e2d6e9be3d366a792c381662b3041f9ed9ac826e2d4c6bf19b8325c266e946e2`一致；48份打包资产逐字节匹配、无参考/凭据文件、Manifest确认`allowBackup=false`、v2单签名有效，临时副本已清理。证据只适用于该实现提交。
 
-Phase4A本地增量：7项覆盖来源脱敏、完整状态、load/Seek/音量/速率、重复队列、随机/循环/自然完成、错误、MediaSession和持久恢复；完整214项Flutter含32 Golden、143文件format、严格分析0问题、30项Node、24项ZIP、lockfile及生成/v1快照零差异均通过。本机默认生产入口Android Debug成功，APK为238997827字节、SHA-256为`ea40ebd646300b0f14c1dcef9aef2971d19fba6da515e83b6f88c8e05bd66ab1`，48份资产匹配、Manifest正确且v2单Debug签名有效。目标提交云端证据待推送后记录。
+Phase4A本地增量：7项覆盖来源脱敏、完整状态、load/Seek/音量/速率、重复队列、随机/循环/自然完成、错误、MediaSession和持久恢复；完整214项Flutter含32 Golden、143文件format、严格分析0问题、30项Node、24项ZIP、lockfile及生成/v1快照零差异均通过。本机默认生产入口Android Debug成功，APK为238997827字节、SHA-256为`ea40ebd646300b0f14c1dcef9aef2971d19fba6da515e83b6f88c8e05bd66ab1`，48份资产匹配、Manifest正确且v2单Debug签名有效。
+
+Phase4A实现提交ec508df的push运行33845988715、PR运行33846020650与唯一手动运行33848236710均为三job success。手动运行的草稿Release三资产已下载，APK为190735487字节，SHA256SUMS、metadata、API digest与`3f95cea301d6710ac46a40a5fbfcd0d4561d91f310ca5d04506d5389a1272aa4`一致；48份打包资产逐字节匹配、无参考/凭据文件、Manifest确认`allowBackup=false`、v2单签名有效，临时副本已清理。证据只适用于该实现提交。
 
 Actions 固定 SHA，来源为维护者公开 refs 和说明：[checkout](https://github.com/actions/checkout)、[setup-node](https://github.com/actions/setup-node)、[setup-java](https://github.com/actions/setup-java)、[flutter-action](https://github.com/subosito/flutter-action)。静态配置验证不代表远程工作流已经通过；私有 CI 结果必须可读取后才记录成功。

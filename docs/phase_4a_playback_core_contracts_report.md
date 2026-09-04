@@ -48,10 +48,20 @@ Phase4主出口尚未关闭：Windows/Android真实授权音频、受控HTTPS流
 
 ## 云端与限制
 
-实现提交、Draft PR、GitHub push/PR/manual三类运行与新草稿Release尚待创建。本段在取得实际
-GitHub API结果前不填写commit/run/资产摘要，也不复用Phase3H的旧APK。每个实现提交最多触发
-一次手动APK运行；必须确认完整SHA、三个job、三个白名单资产、metadata、SHA256SUMS、API
-digest、包内48资产、Manifest与签名后才更新本报告。
+实现提交`ec508dffda97262fc16f96a78901a91b058c6dbf`已推送；[Draft PR #17](https://github.com/Z-YO-YI/YYMusic/pull/17)
+保持open/draft，head为`feat/playback-core-contracts`，base为`feat/dev-fixture-bootstrap`。
+[push运行33845988715](https://github.com/Z-YO-YI/YYMusic/actions/runs/33845988715)、
+[PR运行33846020650](https://github.com/Z-YO-YI/YYMusic/actions/runs/33846020650)与该实现提交的唯一
+[手动运行33848236710](https://github.com/Z-YO-YI/YYMusic/actions/runs/33848236710)均为三个job
+success；未对同一实现提交重复触发手动工作流。
+
+[私有草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-271d9f07baf51fb6bb95)
+标签为`ci-debug-33848236710-1`，target为完整实现提交，保持draft/prerelease且恰有
+`YYMusic-debug.apk`、`SHA256SUMS`和`build-metadata.json`三项白名单资产。三资产下载到全新
+受控临时目录复核：APK为190,735,487字节，SHA-256、metadata、SHA256SUMS与GitHub API
+digest均为`3f95cea301d6710ac46a40a5fbfcd0d4561d91f310ca5d04506d5389a1272aa4`；48份资产逐字节
+匹配且无参考/归档/凭据文件，Manifest确认包名、YYMusic与`allowBackup=false`，apksigner确认
+仅v2且1个临时Android Debug signer。临时三文件与目录已删除，Release保留。
 
 本机Windows仍因远程环境无法完成UAC/Developer Mode所需C++工具链配置，不声称本机Windows
 构建或运行成功。GitHub Windows 2025编译也不等于真实音频输出、SMTC、睡眠/唤醒或设备切换
