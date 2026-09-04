@@ -199,3 +199,13 @@ Phase 3G选择`flutter_secure_storage 10.3.1`：其Android实现与项目现有A
 Android使用独立`yymusic_credentials_v1`命名空间、RSA-OAEP/AES-GCM迁移策略，关闭resetOnError，并在Manifest明确`allowBackup=false`，避免加密数据与设备密钥分离后静默重置。Windows关闭旧版兼容迁移，使用当前Windows安全存储实现；其ATL/原生编译要求必须由GitHub Windows runner实际验证，不能以Android成功代替。
 
 本批只实现Android/Windows Gateway与可注入字符串存储适配器，不在`AppBootstrap`提前接线。后续Controller更新来源凭据时必须按“先保存新秘密、成功更新数据库credentialRef、最后幂等删除旧引用”的顺序协调；任何中间失败都不得覆盖旧秘密或产生虚假的成功状态。
+
+## ADR-029：生产空库与开发样本使用不同入口（2026-09-01）
+
+Phase 3H用`AppDataServices`定义一个明确拥有资源的数据作用域：单一`AppDatabase`供四类Drift Repository共享，Android/Windows各构造对应`SecureCredentialGateway`，根`DependencyGraph`只暴露项目自有合同。`AppBootstrap`不直接导入Drift或插件；它异步请求作用域并负责正常销毁、失败和卸载后晚到完成的关闭。平台初始化错误只显示固定文案，不把异常、路径、URL或秘密带到UI。
+
+默认`main.dart`始终使用生产工厂，在应用支持目录打开空白数据库；禁止为了让骨架“有内容”而自动填充HTML示例。独立`main_dev.dart`才调用内存数据库工厂和`DevFixtureSeeder`。Fixture写入前要求曲目、歌单、队列和来源均为空，进程结束后整体丢弃，不能指向生产文件或平台安全存储。
+
+HTML四首示例曲目、两个歌单、队列和双语歌词通过正式Domain/Repository写入，但统一挂在禁用的`https://fixture.invalid`来源，曲目标记`sourceDisabled`。它不保存credentialRef、用户路径、content URI、artwork URI、可播放URL、收藏/历史或connected状态。这样可验证HTML状态到真实接口的映射，又不把网页假延迟、对象URL、在线状态或秘密冒充为生产能力。
+
+只有`data/database`可以构造Drift内存executor；除`main_dev.dart`外的生产入口不得导入`dev_fixture`，UI/Shell继续不能导入data层。REST Adapter、来源凭据替换事务与Controller仍需后续独立决策；Phase 3H只关闭主指令规定的Domain/Database/Repository/安全存储接口/Dev Fixture出口。

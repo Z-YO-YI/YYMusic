@@ -1,13 +1,14 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 3G SecureCredentialGateway**。Phase2通用原语、三套Shell骨架、Phase3A Domain合同、Phase3B 17张Drift表/首版Migration，Library/Collection/Lyrics/Source四类正式Repository和Android/Windows安全凭据平台实现已有。不是完整音乐客户端；启动接线、REST Adapter、Dev Fixture、业务Controller、播放和正式页面尚未完成。
+当前阶段：**Android + Windows · Phase 3H 生产数据引导与显式 Dev Fixture**。Phase2通用原语、三套Shell骨架、Phase3 Domain合同、17张Drift表/首版Migration、四类正式Repository、Android/Windows安全凭据实现，以及默认空白生产数据作用域/独立内存开发夹具已有。不是完整音乐客户端；REST Adapter、业务Controller、播放和正式页面尚未完成。
 
-Phase3G门禁：10项安全凭据Gateway、完整199项Flutter含32张Windows宿主Golden、严格分析0问题、130文件format零变化、29项Node、24份ZIP、lockfile及生成代码/v1快照零差异全部通过。本机Android Debug已构建；目标实现提交的GitHub push/PR/手动运行均为Windows/Android三job success，手动APK的v2签名、48资产、Manifest、metadata和SHA-256已独立复核。
+Phase3H门禁：新增8项数据组合/Fixture/Bootstrap测试，完整207项Flutter含32张Windows宿主Golden、严格分析0问题、137文件format零变化、29项Node、24份ZIP、lockfile及生成代码/v1快照零差异全部通过。本机默认生产入口Android Debug已构建；实现提交的GitHub push/PR/唯一手动运行均为Windows/Android三job success，新APK的三项摘要、48资产、Manifest和v2单签名已独立复核。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
 ## 开发入口
 
+- [Phase 3H数据引导与夹具报告](docs/phase_3h_dev_fixture_bootstrap_report.md)、[本批范围](docs/phase_3h_dev_fixture_bootstrap_plan.md)、[本批 PR 草稿](docs/phase_3h_dev_fixture_bootstrap_pr_draft.md)
 - [Phase 3G安全凭据报告](docs/phase_3g_secure_credential_gateway_report.md)、[本批范围](docs/phase_3g_secure_credential_gateway_plan.md)、[本批 PR 草稿](docs/phase_3g_secure_credential_gateway_pr_draft.md)
 - [Phase 3F MusicSourceRepository报告](docs/phase_3f_music_source_repository_report.md)、[本批范围](docs/phase_3f_music_source_repository_plan.md)、[本批 PR 草稿](docs/phase_3f_music_source_repository_pr_draft.md)
 - [Phase 3E LyricsRepository报告](docs/phase_3e_lyrics_repository_report.md)、[本批范围](docs/phase_3e_lyrics_repository_plan.md)、[本批 PR 草稿](docs/phase_3e_lyrics_repository_pr_draft.md)
@@ -32,7 +33,7 @@ Phase3G门禁：10项安全凭据Gateway、完整199项Flutter含32张Windows宿
 
 Android 启动后，底部或左侧导航可切换首页、搜索、音乐库、设置；宽度跨越 600dp 时保留当前路由和根状态。在首页点“设计基础预览”进入 `/design-system`：切换浅色/深色/系统、五种预设/自定义 HEX、减少动态/透明，查看原生组件、滑块、七种占位封面与图标。滑块横向拖动预览、松开提交示例数值，系统取消不提交，支持键盘/无障碍增减，但不触发播放。
 
-外观仅在本次运行保留，重启恢复默认。预览页的点击/收藏/进度只是标注清楚的本页示例状态；四个业务入口仍是工程骨架，音频、数据库和平台全屏尚未接入。
+外观仅在本次运行保留，重启恢复默认。预览页的点击/收藏/进度只是标注清楚的本页示例状态；四个业务入口仍是工程骨架，生产数据库虽已由根作用域打开，但业务页面数据、音频和平台全屏尚未接入。
 
 “输入与选择”可输入中文/英文、按软键盘搜索提交本页文字、清空或长按选择/复制/粘贴，切换示例筛选和加载状态。不会发送网络查询或保存搜索历史；“减少动态/透明”开关实际更新根外观状态。分段控件支持Tab定位、Enter/Space选择和窄宽横向滚动。
 
@@ -52,9 +53,9 @@ Windows按1440/1024断点显示240dp展开或72dp紧凑侧栏，导航驱动同�
 
 Phase3A数据合同不新增可见页面。TrackRef保留来源身份，QueueEntry使用独立ID以允许重复曲目；来源公开配置只保存credentialRef，秘密仅通过SecureCredentialGateway。当前Fake只用于测试，不会在正式Shell中伪造在线来源、歌曲、歌词或数据库成功。
 
-Phase3B仍不新增可见页面。Drift schema覆盖主指令15张建议表，并用`queue_state`保存空队列游标/更新时间、`schema_migrations`记录首版创建；SQLite文件只在显式调用后台打开函数时写入应用支持目录。当前AppBootstrap没有调用它，因此启动应用不会创建数据库或Fixture。
+Phase3B批次本身不新增可见页面。Drift schema覆盖主指令15张建议表，并用`queue_state`保存空队列游标/更新时间、`schema_migrations`记录首版创建；SQLite文件只在显式调用后台打开函数时写入应用支持目录。Phase3H起默认AppBootstrap会打开该空白生产库，但仍不会写入Fixture。
 
-Phase3C仍不新增可见页面或启动接线。DriftLibraryRepository提供事务upsert、确定分页、关联感知watch、TrackRef查询和availability更新；不扫描文件、不访问网络/凭据、不生成假曲库。
+Phase3C批次不新增可见页面或启动接线。DriftLibraryRepository提供事务upsert、确定分页、关联感知watch、TrackRef查询和availability更新；不扫描文件、不访问网络/凭据、不生成假曲库，Phase3H再统一接入生产数据作用域。
 
 Phase3D仍不新增可见页面或启动接线。DriftCollectionRepository提供系统/自定义歌单保护、原子entries/队列替换、收藏和最近20首历史；不实现队列播放算法，不生成系统歌单Fixture。
 
@@ -62,7 +63,9 @@ Phase3E仍不新增可见页面或启动接线。DriftLyricsRepository以完整T
 
 Phase3F仍不新增可见页面或启动接线。DriftMusicSourceRepository只保存公开来源配置和credentialRef，保护稳定类型/内置身份并在删除来源时保留用户TrackRef；不接触凭据值、不测试连接、不访问网络。
 
-Phase3G仍不新增可见页面或启动接线。Android/Windows SecureCredentialGateway使用平台安全存储、严格随机引用、版本载荷与脱敏失败；不记录、不入Drift、不触发网络或伪造来源连通。当前Fake store测试不代表真机KeyStore/Credential Manager已运行。
+Phase3G批次不新增可见页面或启动接线。Android/Windows SecureCredentialGateway使用平台安全存储、严格随机引用、版本载荷与脱敏失败；不记录、不入Drift、不触发网络或伪造来源连通。Phase3H只构造对应平台Gateway，仍未把Fake store测试冒充真机KeyStore/Credential Manager运行验收。
+
+Phase3H仍不新增业务页面。默认入口现在异步打开空白生产数据库、四类正式Repository和当前平台安全Gateway；初始化失败只显示固定脱敏文字。开发样本只在显式`main_dev.dart`中使用内存库：四首HTML曲目、歌单、队列和歌词通过正式Repository写入，但来源为禁用的`.invalid`地址，不含凭据、路径、媒体URI、收藏/历史或假在线状态。
 
 ## Phase 0 审计入口
 
@@ -84,6 +87,8 @@ flutter pub get --enforce-lockfile
 dart format --output=none --set-exit-if-changed lib test
 flutter analyze --no-pub --fatal-infos
 flutter test --no-pub --coverage
+# 只有需要审查开发样本时才选择临时内存入口；默认入口不含样本。
+flutter run -t lib/main_dev.dart -d <windows-or-android-device-id>
 # APK交付由GitHub Actions执行；不要用旧本机APK替代云端产物。
 # Windows 工具链就绪后单独验收；本地尚未完成。
 flutter build windows --debug --no-pub
@@ -91,7 +96,7 @@ flutter build windows --debug --no-pub
 
 工具链完整后使用 `flutter run -d windows` 或 `flutter run -d <android-device-id>`。不要重新运行 flutter create 覆盖现有工程。Android 发行签名未配置，禁止使用 Debug 签名冒充 Release。
 
-需要APK时，在[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)对目标分支手动运行工作流；成功后从该次运行生成的私有草稿Release下载。Phase3G实现提交`4daf380`已由[运行33511421874](https://github.com/Z-YO-YI/YYMusic/actions/runs/33511421874)生成并完成[草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-15023c88bca130379b81)复核，APK为189393711字节，SHA-256为`2623eab9590f4f333bc7327ee4d4dea49ee5b6f6789219f129b44f1e7108bcdf`。必须确认Android任务、Release标签、metadata完整commit和SHA256SUMS一致；普通push/PR只验证构建，不创建下载产物。APK不提交Git源码，证据见[Phase3G报告](docs/phase_3g_secure_credential_gateway_report.md)，详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
+需要APK时，在[GitHub Actions](https://github.com/Z-YO-YI/YYMusic/actions/workflows/foundation.yml)对目标分支手动运行工作流；成功后从该次运行生成的私有草稿Release下载。Phase3H实现提交`27dd76c`已由唯一[运行33518770911](https://github.com/Z-YO-YI/YYMusic/actions/runs/33518770911)生成并完成[草稿Release](https://github.com/Z-YO-YI/YYMusic/releases/tag/untagged-b568f6b9cd28a74f3603)复核，APK为190701235字节，SHA-256为`e2d6e9be3d366a792c381662b3041f9ed9ac826e2d4c6bf19b8325c266e946e2`。必须确认Android任务、Release标签、metadata完整commit和SHA256SUMS一致；普通push/PR只验证构建，不创建下载产物。APK不提交Git源码，证据见[Phase3H报告](docs/phase_3h_dev_fixture_bootstrap_report.md)，详情和临时Debug签名限制见[构建说明](docs/github_apk_build.md)。
 
 无已连接真机/模拟器或本机Windows原生运行验收证据，构建成功不等于已安装运行。32张组件/原生Shell Golden使用打包字体、Flutter 3.47.2 / Windows测试宿主，精确像素比较；Linux对这些宿主专用测试执行明确跳过，仍运行全部非Golden回归，Windows CI另执行Golden。只在审查视觉变更后对指定测试使用`--update-goldens`，日常测试不得更新基线。
 

@@ -34,6 +34,8 @@ Phase3B把上述合同落为Drift v1 Schema，而不是复制localStorage对象�
 
 Phase3G实现平台安全凭据边界，但明确不迁移HTML `localStorage`里来源表单的auth/token示例或任何浏览器存储值。Android/Windows只保存经Domain验证的`SensitiveCredential`，对外返回不可推导随机`credentialRef`；MusicSourceRepository和Drift仍只看引用。Gateway没有网络、来源连通测试、OAuth流程或AppBootstrap接线，HTML的假延迟/假在线状态仍不进入生产运行路径。
 
+Phase3H把HTML示例状态映射到独立开发入口的真实数据合同：四首曲目及专辑/艺人、两个开发歌单、三项队列和`A Quiet Orbit`十行双语时间歌词均经正式Drift Repository往返。为避免把网页的Cloud/REST/本地演示能力冒充实现，所有曲目统一标记为禁用开发来源，来源仅使用`https://fixture.invalid`且没有credentialRef、用户路径、content URI、artwork URI、可播放URL、收藏/历史或connected状态。默认`main.dart`打开空白生产库且不导入Fixture；只有显式`main_dev.dart`使用一次性内存库。
+
 ## 六条核心流程与行为边界
 
 | 流程 | 网页真实实现 | Flutter替代 |

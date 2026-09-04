@@ -93,3 +93,9 @@ Drift使用边界不变：事务、batch、watch和limit/offset只存在`data/re
 插件只由`platform/secure_credentials`适配器导入。Android使用独立命名空间、RSA-OAEP/AES-GCM迁移选项，并在应用Manifest禁用Auto Backup；失败不回退到SharedPreferences、文件、Drift或其他明文存储。Windows关闭旧版兼容迁移，使用平台保护存储；应用不申请网络、媒体、存储、通知或生物识别权限，也不把凭据同步到云端。
 
 参考：[10.3.1 Android配置](https://raw.githubusercontent.com/juliansteenbakker/flutter_secure_storage/v10.3.1/flutter_secure_storage/android/build.gradle)、[插件README](https://raw.githubusercontent.com/juliansteenbakker/flutter_secure_storage/v10.3.1/flutter_secure_storage/README.md)、[Windows 4.2.2 API](https://pub.dev/documentation/flutter_secure_storage_windows/latest/)、[Android Keystore](https://developer.android.com/privacy-and-security/keystore)、[Android备份规则](https://developer.android.com/identity/data/autobackup)、[Windows密码处理与DPAPI](https://learn.microsoft.com/en-us/windows/win32/secbp/handling-passwords)。本批不接AppBootstrap、REST Adapter或Controller；数据库继续只保存随机`credentialRef`。
+
+## Phase 3H 数据组合与 Fixture 依赖结果
+
+本批不新增或升级依赖，`pubspec.yaml`和`pubspec.lock`保持Phase 3G解析。生产工厂复用已锁定的Drift/path_provider/flutter_secure_storage；显式开发入口复用`NativeDatabase.memory()`，没有引入mock数据库、fixture生成器、HTTP、音频、文件选择或额外平台插件。
+
+内存executor的构造仍封装在`data/database`，Dev Fixture只依赖应用数据作用域和Domain合同。`flutter pub get --enforce-lockfile`已严格复现，build_runner与drift_dev重新生成后g.dart/v1快照零差异；18个不兼容约束内的新版本仅由工具提示，不在本批做无关升级。
