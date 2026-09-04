@@ -38,17 +38,19 @@ Phase3H增量：`AppDataServices`现在拥有单一数据库、四类正式Drift
 
 Phase4A增量：`PlayableSource`把Windows绝对路径、Android content URI和HTTPS临时流封装在全量脱敏边界；`AudioEngineState`只表达后端音频事实，完整`PlaybackState`由根级`PlaybackController`合成。Controller串行处理解析/load/transport/Seek/音量/速率、队列持久化、随机遍历、三种循环与自然完成；`QueueController`仅委托命令并读取同一状态，不存第二份队列。`MediaSessionGateway`统一Android MediaSession与Windows SMTC回调/更新合同，真实平台实现与音频后端仍待后续POC。
 
+Phase4B增量：`MediaKitAudioEngine`以项目自有接口包装`media_kit`候选，插件类型被限制在`media_kit_audio_backend.dart`。适配层把Windows绝对路径转换为file URI，原样传递Android content URI，并只在HTTPS `open(play: false)`期间传递Header；状态、错误和释放都回到既有AudioEngine合同。生产`DependencyGraph`仍构造`UnavailableAudioEngine`，所以本批不改变运行时功能。Android/Windows Debug构建只验证audio-only依赖的编译与打包；真实解码/输出、系统媒体会话和传递许可证闭环仍是Phase4C前置门禁。
+
 这份文件描述已经存在的工程骨架，不把 Phase 0 的未来目录全部冒充实现。正式代码位于根 lib；旧原型和 Web 参考隔离在 archive/design_reference。
 
 | 边界 | 已有责任 | 尚未实现 |
 | --- | --- | --- |
 | app/AppBootstrap | 异步建立Android/Windows生产数据作用域并恢复持久队列；根ProviderScope拥有单一DependencyGraph；固定、脱敏的加载/失败状态 | 权限、真实来源连接与播放自动恢复策略 |
-| app/DependencyGraph | 创建、初始化并释放唯一PlaybackController、委托QueueController、AudioEngine、MediaSession、ViewState和AppDataServices | Phase4真实音频/媒体会话适配器及后续业务Controller |
+| app/DependencyGraph | 创建、初始化并释放唯一PlaybackController、委托QueueController、AudioEngine、MediaSession、ViewState和AppDataServices；生产仍选择UnavailableAudioEngine | Phase4候选通过运行/许可门禁后的正式音频选择、媒体会话适配器及后续业务Controller |
 | app/AppRouter | 私有 go_router，四个状态保留分支，根级 /player、/lyrics及跨平台/design-system；暴露自有 AppNavigation | 业务详情、菜单层级和平台全屏返回协调 |
 | app/AdaptiveRoot | 实时 LayoutBuilder + 平台优先分类，选择三个 Shell；零尺寸时不动根依赖 | 生产级窗口约束/布局细化 |
 | shells | Android原生Phone/Tablet导航、Windows 240/72受控导航与42工具区、三端未接入播放槽位；不直接网络/DB/音频 | Windows平台窗口Gateway、Inspector业务、正式播放器接线 |
 | design_system | Theme/Token/原始SVG/按钮/Surface/Profile、Android与Windows导航、Tooltip/Toolbar、Slider/Artwork、SearchField/SegmentedControl/Toggle、AlbumCard/TrackTile、MiniPlayer/DesktopPlayerBar、ContextMenu/Dialog/BottomSheet/Toast、ThemeSwatch/EmptyState/ErrorBanner/Skeleton、SourceCard/PlaylistCard、QueueTile/LyricsLine/LyricsPlayerDock | 业务弹层编排与页面级组合 |
-| playback | 脱敏PlayableSource/Resolver、独立EngineState、完整PlaybackState；唯一Controller串行播放命令、持久队列/随机/循环/自动下一首及错误映射；QueueController只委托 | 真实双平台AudioEngine、实际流/Seek POC、历史与正式UI接线 |
+| playback | 脱敏PlayableSource/Resolver、独立EngineState、完整PlaybackState；唯一Controller串行播放命令、持久队列/随机/循环/自动下一首及错误映射；QueueController只委托；media_kit候选被插件隔离且未接生产 | 真实双平台文件/content/HTTPS/Seek运行POC、native许可证闭环、正式后端选择、历史与UI接线 |
 | domain / platform | 稳定TrackRef/QueueEntry、四Repository合同、LoadState/错误分类、Android/Windows SecureCredentialGateway实现，以及MediaSession/Fullscreen项目合同 | 真机安全存储、Android MediaSession、Windows SMTC与其余平台实现 |
 | data/database | 17张Drift表、v1创建Migration/快照、外键/约束/索引及后台双平台打开；Library/Collection/Lyrics/Source严格映射与正式Repository，仅保存credentialRef；生产组合已接根启动 | Controller、真实来源Adapter、v2+保数据迁移 |
 | shared/FoundationButton | 仍用于工程骨架内容中的临时路由验证；44px命中区、Semantics/键盘激活 | 后续业务页以对应YY组件逐步替换 |
@@ -63,7 +65,7 @@ player → lyrics → back 返回 player；主页面 → lyrics → back 返回�
 
 AppViewState 保存会话内选中项和每路由滚动偏移，Shell 重建不清空。宽度变大使文本重排时，偏移只裁剪到新滚动范围；不是强行保留已越界的像素位置。它不是持久化仓储，重启恢复属于 Phase 3。
 
-DependencyGraph 在 ProviderScope 销毁时释放一次；Shell 切换不创建/释放引擎。AppBootstrap只恢复队列，不自动解析、加载或播放。真实音频暂不存在，默认 UnavailableAudioEngine 的全部命令明确失败，不发布假 playing 状态；测试 FakeAudioEngine/Resolver/MediaSession 仅存在 test/support。
+DependencyGraph 在 ProviderScope 销毁时释放一次；Shell 切换不创建/释放引擎。AppBootstrap只恢复队列，不自动解析、加载或播放。默认 UnavailableAudioEngine 的全部命令明确失败，不发布假 playing 状态；Phase4B的MediaKitAudioEngine只能由专用POC显式创建，测试Fake backend也不能成为生产依赖。
 
 ## 当前限制
 

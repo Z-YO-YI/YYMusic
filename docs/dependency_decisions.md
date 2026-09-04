@@ -41,6 +41,31 @@
 
 回退比较项是just_audio加Windows backend，而不是单独just_audio。`just_audio_windows 0.2.3`公开能力含本地/URL/Seek/playlist/loop/shuffle，但请求Header项为空；`just_audio_media_kit 2.1.0`支持Windows但声明忽略shuffle order。YYMusic的随机顺序已经由PlaybackController负责，因此后者限制不直接否决，但带认证Header的网络测试与原生依赖仍必须单独通过。来源：[media_kit](https://pub.dev/packages/media_kit)、[media_kit维护者仓库](https://github.com/media-kit/media-kit)、[just_audio_windows](https://pub.dev/packages/just_audio_windows)、[just_audio_media_kit](https://pub.dev/packages/just_audio_media_kit)。
 
+## Phase 4B media_kit候选解析与阻断项（2026-09-04）
+
+POC分支精确声明`media_kit 1.2.6`与`media_kit_libs_audio 1.0.7`，lockfile解析Android audio
+1.3.8、Windows audio 1.0.9；聚合包也解析iOS/macOS/Linux audio实现，但YYMusic本阶段仍只构建
+Android/Windows，未引入`media_kit_video`或`media_kit_libs_video`。官方API确认初始化先于Player、
+`open(play:false)`、文件/URL、HTTP Header、Seek、独立状态流、0–100音量和异步dispose；插件只
+进入playback backend文件，不进入Domain/UI/Shell/生产组合。
+
+本机Android构建实际下载Android v1.1.8四ABI默认JAR，package脚本只用MD5固定下载。当前APK
+包含arm64-v8a/armeabi-v7a/x86_64的`libmpv.so`与`libmediakitandroidhelper.so`，不含video库，
+权限仍只有既有Debug网络权限与Android生成的动态receiver权限。四个下载JAR各只有两个native
+entry，没有LICENSE/NOTICE；Windows插件则固定下载2023-09-24、mpv commit 652a1dd的归档。
+
+因此“wrapper为MIT”不足以批准发行。libmpv/FFmpeg精确编译flags、LGPL及其他传递库NOTICE、
+对应源码提供和用户替换策略仍须完成；在这项发布审核与真实双平台播放矩阵都通过前，候选保持
+Draft POC，不进入生产Bootstrap，也不为该实现触发手动APK Release。回退候选B仍保留，不因
+media_kit能编译就取消比较。
+
+来源：[media_kit 1.2.6](https://pub.dev/packages/media_kit)、
+[media_kit API](https://pub.dev/documentation/media_kit/latest/)、
+[media_kit_libs_audio 1.0.7](https://pub.dev/packages/media_kit_libs_audio/versions)、
+[Android audio build](https://github.com/media-kit/libmpv-android-audio-build/releases/tag/v1.1.8)、
+[Windows audio build](https://github.com/media-kit/libmpv-win32-audio-build/tree/2023-09-24)、
+[LGPL 2.1](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html)。
+
 ## Phase 1 解析结果（2026-08-31，覆盖上面的阶段快照状态）
 
 本机已有Flutter 3.47.2 stable / Dart3.13.2；未升级SDK。实际pub解析并提交lockfile：flutter_riverpod3.4.2、go_router18.0.0；开发依赖flutter_lints6.0.0与[yaml3.1.4](https://pub.dev/packages/yaml)（MIT，维护者tools.dart.dev，仅解析CI测试配置）。没有安装数据库/音频/窗口等其余候选。

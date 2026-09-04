@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-09-04 — Phase 4B media_kit 候选适配与原生打包验证
+
+- 精确加入`media_kit 1.2.6`与`media_kit_libs_audio 1.0.7`；lockfile解析Android audio 1.3.8和Windows audio 1.0.9，未混入video库。
+- 新增插件隔离的`MediaKitPlayerBackend`与项目自有`MediaKitAudioEngine`候选；只有单一backend文件导入插件类型，生产Bootstrap仍使用`UnavailableAudioEngine`。
+- 映射Windows绝对文件URI、Android `content://`及无userinfo的HTTPS/Header瞬时来源；`open`固定不自动播放，插件错误只映射为脱敏`DomainFailure`。
+- 将playing/completed/buffering/position/duration/buffer/volume/rate组合为既有八阶段Engine状态；串行化transport、Seek、音量、速率及并发幂等释放。
+- 新增5项Fake backend测试，覆盖三类来源、状态与命令、0–1/0–100音量、错误脱敏、并发释放和非法输入；Fake不计作native播放证据。
+- 完整219项Flutter含32张Windows宿主Golden、严格分析0问题、30项Node、24项ZIP、lockfile及生成/v1快照零差异通过。
+- 本机Android Debug打包成功，APK为279083792字节、SHA-256 `f3026e694c597b83297405c6587d46dc2906aa422b471838796950f776c59dd8`；48资产、Manifest、权限、三种目标ABI audio-only库及v2单Debug签名已复核。
+- Android原生JAR不携带LICENSE/NOTICE，Windows插件固定旧libmpv归档；传递许可证、真实双平台播放与性能未完成，因此候选不进入生产组合，本批不触发手动APK Release。
+- 实现提交`b7e0b0f`的push运行33853006353与PR运行33853041607均为三个job success；该SHA没有workflow_dispatch或新Release。构建成功只代表解析/编译/打包，不代表扬声器输出、系统媒体会话或设备运行验收。
+
 ## 2026-09-04 — Phase 4A 播放核心合同与唯一状态源
 
 - 新增脱敏`PlayableSource`与`PlaybackSourceResolver`，覆盖Windows绝对路径、Android `content://`及无userinfo的HTTPS临时流；locator/Header不进入字符串输出或持久化。

@@ -219,3 +219,25 @@ Phase 4A先锁定项目合同与状态语义，再选择真实音频插件。`Au
 播放命令使用单一串行队列，避免快速点击导致load/seek/queue持久化交错。随机模式生成一轮稳定entryId顺序，关闭列表循环时一轮内不重复；repeat all才开始下一轮，repeat one只处理自然completed，用户手动next仍前进。删除当前项/清空队列停止引擎并清除当前Track；删除同TrackRef的另一个重复entry不得中断。持久队列在AppBootstrap期间恢复，但不自动解析或播放，避免启动即访问用户文件/网络。
 
 MediaSessionGateway只把Android MediaSession/Windows SMTC动作转回同一Controller，并接收项目Track/PlaybackState；其失败是辅助能力退化，不能停止正在播放的音频。Phase4A不添加插件或平台实现，默认Engine仍不可用。只有后续Windows+Android对同一合同完成本地授权文件、受控HTTPS流、Seek/状态/错误和打包验证后，才可锁定正式backend并关闭Phase4出口。
+
+## ADR-031：media_kit先作为隔离候选验证，不进入生产组合（2026-09-04）
+
+Phase4B解析`media_kit 1.2.6`与`media_kit_libs_audio 1.0.7`，但它们仍是POC候选而非正式
+backend。只有`lib/playback/media_kit_audio_backend.dart`可以导入插件；该文件把Player即时状态和
+事件压成项目自有snapshot，并在边界直接丢弃原始error文字。`MediaKitAudioEngine`只依赖这个
+可注入backend与现有AudioEngine合同，Windows路径转为file URI，content URI原样传递，HTTPS
+Header只交给单次Media构造；所有open/transport/stream失败只暴露固定DomainFailure。
+
+候选Engine串行接受命令，`open`固定`play:false`，0–1项目音量与0–100插件音量在边界换算。
+loading、buffering、ready、playing、paused、completed、idle与error从同一backend snapshot组合；
+dispose先停止接收新命令、等待已接受工作、取消订阅并幂等释放Player。队列、随机和循环继续由
+唯一PlaybackController处理，不启用插件自己的playlist/shuffle/repeat，也不在Shell复制状态。
+
+本批刻意不在`main.dart`、AppBootstrap或DependencyGraph创建候选Player；Fake backend测试不加载
+native库，Android/Windows Debug构建仅验证打包/链接。实际本地授权文件、Android content URI、
+受控HTTPS、Seek事件与扬声器输出未完成前不得上线或称为双平台POC通过。
+
+发布合规也是选型门：已解析的wrapper包带MIT文件，但Android v1.1.8四个固定JAR只含两个`.so`
+且没有LICENSE/NOTICE；Windows 1.0.9在构建时下载2023-09-24 libmpv归档。它们包含libmpv/FFmpeg，
+不能用wrapper的MIT声明替代传递二进制义务。补齐精确构建配置、LGPL/第三方NOTICE、可替换/源码
+提供策略并经发布审核前，不触发包含该候选的手动APK Release，也不正式锁定backend。

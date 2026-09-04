@@ -1,6 +1,6 @@
 # 原生基础验证矩阵
 
-保留Phase3H的207项Flutter检查，Phase4A新增7项播放来源/状态/Controller测试，共214项Flutter、30项Node；不包含真实音频backend、用户音乐、在线密钥或设备播放证据。本地与实现提交的GitHub Windows/Android结果集中在phase_4a_playback_core_contracts_report.md。
+保留Phase4A的214项Flutter检查，Phase4B新增5项media_kit候选适配器测试，共219项Flutter、30项Node；不包含用户音乐、在线密钥或设备播放证据。Phase4B只证明适配逻辑与native打包，真实双平台音频结果仍未取得。
 
 | 类别 | 已有自动检查 |
 | --- | --- |
@@ -38,6 +38,7 @@
 | Phase3G SecureCredentialGateway | Android/Windows save-read-delete、确定载荷、四类凭据、碰撞不覆盖、非法引用预拒绝、损坏/插件失败脱敏、并发串行与限额fail-closed |
 | Phase3H Bootstrap/Dev Fixture | Android/Windows生产组合和平台Gateway选择、共享作用域/幂等释放、Gateway构造失败关闭、真实内存Drift样本往返、非空拒绝无突变、默认入口隔离、loading/success/脱敏失败/卸载后晚到释放 |
 | Phase4A 播放核心 | 三种PlayableSource验证/全量脱敏、八阶段Engine/Playback状态、值与队列一致性、load/状态流/Seek夹紧/音量/速率、重复entry队列操作/持久恢复、随机一轮、repeat off/all/one、自然下一首、错误脱敏、MediaSession回调、根幂等释放 |
+| Phase4B media_kit候选 | file/content/HTTPS与Header瞬时映射、open不自动播放、八阶段snapshot合成、0–1/0–100音量、transport/Seek/rate、命令/异步错误脱敏、并发dispose/幂等、插件只在单一playback backend文件；Fake不冒充native播放 |
 | Golden | 保留Windows Shell及既有组件29张；新增浅珊瑚/深翡翠/自定义白ReduceGlass队列歌词板3张，总计32张精确像素比较，旧基线不改 |
 
 ## CI
@@ -87,5 +88,9 @@ Phase3H实现提交27dd76c的push运行33517332873、PR运行33517452005与唯�
 Phase4A本地增量：7项覆盖来源脱敏、完整状态、load/Seek/音量/速率、重复队列、随机/循环/自然完成、错误、MediaSession和持久恢复；完整214项Flutter含32 Golden、143文件format、严格分析0问题、30项Node、24项ZIP、lockfile及生成/v1快照零差异均通过。本机默认生产入口Android Debug成功，APK为238997827字节、SHA-256为`ea40ebd646300b0f14c1dcef9aef2971d19fba6da515e83b6f88c8e05bd66ab1`，48份资产匹配、Manifest正确且v2单Debug签名有效。
 
 Phase4A实现提交ec508df的push运行33845988715、PR运行33846020650与唯一手动运行33848236710均为三job success。手动运行的草稿Release三资产已下载，APK为190735487字节，SHA256SUMS、metadata、API digest与`3f95cea301d6710ac46a40a5fbfcd0d4561d91f310ca5d04506d5389a1272aa4`一致；48份打包资产逐字节匹配、无参考/凭据文件、Manifest确认`allowBackup=false`、v2单签名有效，临时副本已清理。证据只适用于该实现提交。
+
+Phase4B本地增量：5项Fake backend覆盖Windows file URI、Android content URI、HTTPS/Header瞬时传递、open不自动播放、八阶段合成、transport/Seek/音量/速率、命令与异步错误脱敏、并发幂等释放和非法输入；完整219项Flutter含32张Windows宿主Golden、严格分析0问题、30项Node、24项ZIP、lockfile及生成/v1快照零差异均通过。本机Android Debug成功，APK为279083792字节、SHA-256为`f3026e694c597b83297405c6587d46dc2906aa422b471838796950f776c59dd8`；48份资产逐字节匹配、Manifest确认`allowBackup=false`、仅INTERNET及生成的not-exported receiver权限、三种Flutter目标ABI仅含libmpv/libmediakitandroidhelper，v2单Debug签名有效。此证据只证明适配合同与native打包；未运行扬声器播放。
+
+Phase4B实现提交b7e0b0f的push运行33853006353与PR运行33853041607均为三job success，分别独立完成checks、Android Debug与Windows Debug。精确SHA只存在这两次运行，workflow_dispatch为0，且没有目标为该SHA或分支的新Release；许可证未闭合前不触发手动Release。证据只适用于该实现提交。
 
 Actions 固定 SHA，来源为维护者公开 refs 和说明：[checkout](https://github.com/actions/checkout)、[setup-node](https://github.com/actions/setup-node)、[setup-java](https://github.com/actions/setup-java)、[flutter-action](https://github.com/subosito/flutter-action)。静态配置验证不代表远程工作流已经通过；私有 CI 结果必须可读取后才记录成功。
