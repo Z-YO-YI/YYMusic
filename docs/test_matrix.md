@@ -96,6 +96,8 @@ Phase4B本地增量：5项Fake backend覆盖Windows file URI、Android content U
 
 Phase4B实现提交b7e0b0f的push运行33853006353与PR运行33853041607均为三job success，分别独立完成checks、Android Debug与Windows Debug。精确SHA只存在这两次运行，workflow_dispatch为0，且没有目标为该SHA或分支的新Release；许可证未闭合前不触发手动Release。证据只适用于该实现提交。
 
-Phase4C本地增量：2项生成器测试锁定96,044字节WAV与SHA-256 `571edd11f9568729867f4a1db7b5f4318e3868024e41253f5c5ca4a09787d51e`并拒绝非法参数；完整221项Flutter含32张Windows宿主Golden、149文件format、严格分析0问题、31项Node、24项ZIP、lockfile及生成/v1快照零差异均通过。本机Android Debug成功，APK为279,083,994字节、诊断SHA-256为`91bee6ec8cc76c324bf009e011a9dd38658bdbbf3f7e32971489af604caa065e`；48份资产匹配且v2单Debug签名有效。此处仍不是Windows/Android原生运行证据。
+Phase4C本地增量：2项生成器测试锁定96,044字节WAV与SHA-256 `571edd11f9568729867f4a1db7b5f4318e3868024e41253f5c5ca4a09787d51e`并拒绝非法参数；完整221项Flutter含32张Windows宿主Golden、149文件format、严格分析0问题、31项Node、24项ZIP、lockfile及生成/v1快照零差异均通过。本机Android Debug成功，APK为279,083,994字节、诊断SHA-256为`91bee6ec8cc76c324bf009e011a9dd38658bdbbf3f7e32971489af604caa065e`；48份资产匹配且v2单Debug签名有效。
 
-Actions 固定 SHA，来源为维护者公开 refs 和说明：[checkout](https://github.com/actions/checkout)、[setup-node](https://github.com/actions/setup-node)、[setup-java](https://github.com/actions/setup-java)、[flutter-action](https://github.com/subosito/flutter-action)。静态配置验证不代表远程工作流已经通过；私有 CI 结果必须可读取后才记录成功。
+Phase4C实现提交`622408e`的标准push运行33861562956与PR运行33861566379均为checks、Windows Debug、Android Debug成功。专用运行33862786766 attempt 2整体成功：Windows load 62 ms/首进度197 ms/seek 2 ms，Android load 580 ms/首进度155 ms/seek 4 ms；均报告duration 3000 ms、completed和`All tests passed!`。该attempt的普通构建/发布job按设计跳过，artifact总数0、匹配Release总数0。attempt 1的账单/spending limit拦截发生在runner分配前，不计作代码失败；用户授权公开仓库后重跑取得上述证据。Phase4C原生本地WAV出口关闭，但不外推为实体扬声器、真机、后台/焦点、`content://`或HTTPS验证。
+
+Actions 固定 SHA，来源为维护者公开 refs 和说明：[checkout](https://github.com/actions/checkout)、[setup-node](https://github.com/actions/setup-node)、[setup-java](https://github.com/actions/setup-java)、[flutter-action](https://github.com/subosito/flutter-action)。静态配置验证不代表远程工作流已经通过；每个目标提交仍须单独取得并记录远程结果。

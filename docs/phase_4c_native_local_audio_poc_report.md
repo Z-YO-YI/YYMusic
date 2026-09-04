@@ -47,16 +47,42 @@ Android Emulator Runner v2.38.0固定到完整提交
 
 ## 云端状态
 
-实现提交、Draft PR、标准foundation push/PR运行以及专用native POC运行尚待推送后填写。出口要求
-同一实现提交的Windows和Android专用job均成功；任一失败时Phase4C保持打开。专用工作流不会产生
-Release或可下载APK，许可证未闭合前也不触发普通foundation的手动发布路径。
+Phase4C实现与修复提交依次为`6affbc6`、`d6e6b52`、`83c8b27`和
+`622408e5287db67fe004a76d7640bc751e8ba2bc`，Draft PR为
+[#19](https://github.com/Z-YO-YI/YYMusic/pull/19)。精确目标提交的标准
+[push运行33861562956](https://github.com/Z-YO-YI/YYMusic/actions/runs/33861562956)与
+[PR运行33861566379](https://github.com/Z-YO-YI/YYMusic/actions/runs/33861566379)均为checks、
+Windows Debug和Android Debug三job成功。
+
+首次native运行
+[33860103671](https://github.com/Z-YO-YI/YYMusic/actions/runs/33860103671)针对前一提交：
+Android成功，Windows在无音频端点的托管runner上等待position推进时超时。`622408e`因此加入仅供
+Windows POC使用的libmpv `ao=null`时钟输出；Android与生产默认创建路径不变。随后专用运行
+[33862786766](https://github.com/Z-YO-YI/YYMusic/actions/runs/33862786766)的attempt 1在分配runner前
+被GitHub账户付款/Actions spending limit拦截，没有执行代码。用户明确授权将仓库公开后，attempt 2
+完成且整体success：
+
+| 平台 | 原生环境 | load | 首次position推进 | seek | duration | 结果 |
+| --- | --- | ---: | ---: | ---: | ---: | --- |
+| Windows | GitHub `windows-2025`，无头null sink | 62 ms | 197 ms | 2 ms | 3000 ms | completed，测试通过 |
+| Android | Ubuntu 24.04，API36 x86_64 emulator | 580 ms | 155 ms | 4 ms | 3000 ms | completed，测试通过 |
+
+同一attempt的source integrity/analyze/tests成功；普通Windows Debug与Android发布job按native模式设计
+跳过。API复核该运行artifact为0、匹配目标提交/分支的Release为0。至此Phase4C的“双平台同一实现
+提交原生本地WAV运行成功”出口关闭；这些数据仍不是实体设备扬声器、音质或后台体验证据。
+
+标准push运行的Windows portable artifact为
+`YYMusic-windows-debug-622408e5287db67fe004a76d7640bc751e8ba2bc`（artifact
+`9932648060`，压缩73,485,163字节，保留14天）。已下载至本地忽略目录
+`build/github-artifacts/YYMusic-windows-debug-622408e.zip`并解压到
+`build/github-artifacts/622408e/`：66个文件、210,192,008字节；`yymusic.exe`隐藏启动8秒未崩溃。
 
 ## 证据边界与下一批
 
-无头Windows runner和Android模拟器中的position/completed只证明候选native初始化、WAV解码、时钟、
+无头Windows runner和Android模拟器中的position/completed已证明候选native初始化、WAV解码、时钟、
 状态及控制命令链工作，不证明扬声器可听、音质、实体Android设备、SMTC/MediaSession、音频焦点、
 后台、耳机/蓝牙或设备切换。本批只覆盖应用私有本地文件；Android `content://`、持久SAF授权、
-受控HTTPS/Header及失败矩阵进入Phase4D。native LICENSE/NOTICE链仍未闭合，因此即使本批双平台通过，
+受控HTTPS/Header及失败矩阵进入Phase4D。native LICENSE/NOTICE链仍未闭合，因此本批双平台通过后，
 候选也不进入生产组合、不视为可发布。
 
 ## 主要文件
