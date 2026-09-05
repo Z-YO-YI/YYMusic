@@ -4,6 +4,14 @@ import '../models/track.dart';
 abstract interface class CollectionRepository {
   Stream<List<Playlist>> watchPlaylists();
   Future<Playlist?> getPlaylist(String id);
+
+  /// Create a custom playlist without overwriting an existing ID.
+  Future<void> createPlaylist(Playlist playlist);
+
+  /// Rename an existing custom playlist without recreating a removed target.
+  Future<void> renamePlaylist(String id, String name);
+
+  /// Bootstrap/import upsert; interactive edits use create/rename above.
   Future<void> savePlaylist(Playlist playlist);
   Future<void> deletePlaylist(String id);
   Future<List<PlaylistEntry>> getPlaylistEntries(String playlistId);

@@ -15,6 +15,7 @@ import '../domain/repositories/search_history_repository.dart';
 import '../features/catalog_detail/common/catalog_detail_controller.dart';
 import '../features/home/common/home_controller.dart';
 import '../features/library/common/library_controller.dart';
+import '../features/playlists/common/playlist_controller.dart';
 import '../features/search/common/search_controller.dart';
 import '../platform/contracts/fullscreen_gateway.dart';
 import '../platform/contracts/media_session_gateway.dart';
@@ -100,6 +101,7 @@ final class DependencyGraph {
       sources: this.musicSources,
       collection: this.collection,
     );
+    playlists = PlaylistController(collection: this.collection);
   }
 
   final AudioEngine _audioEngine;
@@ -124,6 +126,7 @@ final class DependencyGraph {
   late final CatalogSearchController search;
   late final LibraryController libraryController;
   late final CatalogDetailSessions catalogDetails;
+  late final PlaylistController playlists;
   Future<void>? _closeFuture;
 
   Future<void> initialize() => playback.initialize();
@@ -141,6 +144,7 @@ final class DependencyGraph {
     search.dispose();
     libraryController.dispose();
     catalogDetails.dispose();
+    playlists.dispose();
     playbackPresenter.dispose();
     playback.dispose();
     appearance.dispose();
@@ -154,6 +158,7 @@ final class DependencyGraph {
       search.close,
       libraryController.close,
       catalogDetails.close,
+      playlists.close,
       playback.close,
       _audioEngine.dispose,
       _mediaSession.dispose,

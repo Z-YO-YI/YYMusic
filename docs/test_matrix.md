@@ -1,6 +1,15 @@
 # 原生基础验证矩阵
 
-Phase6G4 当前：531 Flutter（70 Golden）、80 Node、严格analyze0、273文件格式零修改。
+Phase6H1 当前：551 Flutter（70 Golden未改）、82 Node、严格analyze0、278文件格式零修改。
+新增12项Controller单位、8项真实SQLite、2项Node：无构造期读取/订阅、原子创建碰撞/并发不覆盖、
+同名不同ID、系统创建/改名/删除保护、修剪/512边界/C0与C1控制字符、未找到改名不复活、删除幂等，
+改名保留说明/创建时间/混合来源条目且updatedAt不倒退；删除只影响目标歌单及条目，曲目/收藏/历史/队列/其他歌单保留。
+真实SQLite触发器失败回滚、已有Library投影随根命令更新；重复/重入命令和根关闭排空、错误安全文案通过。
+旧根生命周期Node断言显式加入playlists关闭顺序；Schema/生成/迁移/lockfile、路由/设计/播放/平台与70张基线不变。
+ZIP24、源码/包内许可、Android Debug/48资产/v2单签名通过；本批云端精确提交结果见PR。
+前置3ac653b两组GitHub checks/Android/Windows成功已复核；本批无新UI、原生音频实机或HTML截图对照。
+
+Phase6G4 历史：531 Flutter（70 Golden）、80 Node、严格analyze0、273文件格式零修改。
 新增9项单位（含真实SQLite）、7项Widget、3张菜单Golden、2项Node：收藏按需读取/已知状态、完整来源身份、
 失效曲目、读写失败与独立重试、重复命令、离页/刷新/关闭保留已接受写入、订阅创建重入与取消排空。
 真实Android Back先关菜单、Windows右键/Tab/Enter/方向键/Esc和焦点恢复、根播放、覆盖路由后菜单消失、
