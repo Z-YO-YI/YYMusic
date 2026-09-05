@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:yymusic/domain/models/collection_models.dart';
+import 'package:yymusic/domain/models/domain_failure.dart';
 import 'package:yymusic/domain/models/library_entities.dart';
 import 'package:yymusic/domain/models/lyrics.dart';
 import 'package:yymusic/domain/models/music_source.dart';
 import 'package:yymusic/domain/models/pagination.dart';
+import 'package:yymusic/domain/models/playlist_name.dart';
 import 'package:yymusic/domain/models/sensitive_credential.dart';
 import 'package:yymusic/domain/models/track.dart';
 import 'package:yymusic/domain/repositories/collection_repository.dart';
@@ -128,7 +130,9 @@ final class FakeCollectionRepository implements CollectionRepository {
     QueueSnapshot? queue,
     Iterable<FavoriteEntry> favorites = const [],
     Iterable<PlayHistoryEntry> history = const [],
+    DateTime Function()? clock,
   }) : _playlists = List.of(playlists),
+       _playlistClock = clock ?? DateTime.now,
        _queue =
            queue ??
            QueueSnapshot(
@@ -139,6 +143,10 @@ final class FakeCollectionRepository implements CollectionRepository {
        _history = List.of(history);
 
   final Map<String, List<PlaylistEntry>> _entries = {};
+  final DateTime Function() _playlistClock;
+  Future<void> Function(String operation, String id)? onPlaylistMutation;
+  final playlistMutationCalls = <String>[];
+  int playlistWatchCount = 0, playlistReadCount = 0;
   final _playlistChanges = StreamController<List<Playlist>>.broadcast(
     sync: true,
   );
@@ -161,17 +169,69 @@ final class FakeCollectionRepository implements CollectionRepository {
 
   @override
   Stream<List<Playlist>> watchPlaylists() async* {
+    playlistWatchCount++;
     yield List.unmodifiable(_playlists);
     yield* _playlistChanges.stream;
   }
 
   @override
   Future<Playlist?> getPlaylist(String id) async {
+    playlistReadCount++;
     for (final playlist in _playlists) {
       if (playlist.id == id) return playlist;
     }
     return null;
   }
+
+  @override
+  Future<void> createPlaylist(Playlist playlist) async {
+    playlistMutationCalls.add('create');
+    await onPlaylistMutation?.call('create', playlist.id);
+    final name = PlaylistName.normalize(playlist.name);
+    if (playlist.isSystem) throw _playlistForbidden('playlist-system-create');
+    if (_playlists.any((item) => item.id == playlist.id)) {
+      throw _playlistForbidden('playlist-id-exists');
+    }
+    await savePlaylist(
+      Playlist(
+        id: playlist.id,
+        name: name,
+        description: playlist.description,
+        createdAt: playlist.createdAt,
+        updatedAt: playlist.updatedAt,
+      ),
+    );
+  }
+
+  @override
+  Future<void> renamePlaylist(String id, String name) async {
+    playlistMutationCalls.add('rename');
+    await onPlaylistMutation?.call('rename', id);
+    final normalized = PlaylistName.normalize(name);
+    final existing = _playlists.where((item) => item.id == id).firstOrNull;
+    if (existing == null) {
+      throw DomainFailure(
+        code: DomainFailureCode.notFound,
+        diagnosticId: 'collection-repository.playlist-not-found',
+      );
+    }
+    if (existing.isSystem) throw _playlistForbidden('playlist-system-rename');
+    final now = _playlistClock().toUtc();
+    await savePlaylist(
+      Playlist(
+        id: id,
+        name: normalized,
+        description: existing.description,
+        createdAt: existing.createdAt,
+        updatedAt: now.isBefore(existing.updatedAt) ? existing.updatedAt : now,
+      ),
+    );
+  }
+
+  DomainFailure _playlistForbidden(String operation) => DomainFailure(
+    code: DomainFailureCode.forbidden,
+    diagnosticId: 'collection-repository.$operation',
+  );
 
   @override
   Future<void> savePlaylist(Playlist playlist) async {
@@ -184,6 +244,11 @@ final class FakeCollectionRepository implements CollectionRepository {
 
   @override
   Future<void> deletePlaylist(String id) async {
+    playlistMutationCalls.add('delete');
+    await onPlaylistMutation?.call('delete', id);
+    if (_playlists.any((item) => item.id == id && item.isSystem)) {
+      throw _playlistForbidden('playlist-system-delete');
+    }
     _playlists = _playlists.where((item) => item.id != id).toList();
     _entries.remove(id);
     _playlistChanges.add(List.unmodifiable(_playlists));

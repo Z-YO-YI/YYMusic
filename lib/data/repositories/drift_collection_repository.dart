@@ -5,6 +5,7 @@ import 'package:drift/drift.dart';
 import '../../domain/models/collection_models.dart';
 import '../../domain/models/domain_failure.dart';
 import '../../domain/models/domain_validation.dart';
+import '../../domain/models/playlist_name.dart';
 import '../../domain/models/track.dart';
 import '../../domain/repositories/collection_repository.dart';
 import '../database/app_database.dart';
@@ -68,6 +69,57 @@ final class DriftCollectionRepository implements CollectionRepository {
         ..where((table) => table.playlistId.equals(playlistId));
       final row = await query.getSingleOrNull();
       return row == null ? null : _mapper.playlistFromRow(row);
+    });
+  }
+
+  @override
+  Future<void> createPlaylist(Playlist playlist) {
+    _requireReady();
+    final name = PlaylistName.normalize(playlist.name);
+    return _guard('create-playlist', () async {
+      await _database.transaction(() async {
+        if (playlist.isSystem) throw _forbidden('playlist-system-create');
+        final query = _database.select(_database.playlistRecords)
+          ..where((table) => table.playlistId.equals(playlist.id));
+        if (await query.getSingleOrNull() != null) {
+          throw _forbidden('playlist-id-exists');
+        }
+        await _database
+            .into(_database.playlistRecords)
+            .insert(
+              _mapper.playlistToCompanion(playlist).copyWith(name: Value(name)),
+            );
+      });
+    });
+  }
+
+  @override
+  Future<void> renamePlaylist(String id, String name) {
+    _requireReady();
+    final playlistId = DomainValidation.identifier(id, 'id');
+    final normalized = PlaylistName.normalize(name);
+    return _guard('rename-playlist', () async {
+      await _database.transaction(() async {
+        final query = _database.select(_database.playlistRecords)
+          ..where((table) => table.playlistId.equals(playlistId));
+        final row = await query.getSingleOrNull();
+        if (row == null) {
+          throw DomainFailure(
+            code: DomainFailureCode.notFound,
+            diagnosticId: 'collection-repository.playlist-not-found',
+          );
+        }
+        if (row.isSystem) throw _forbidden('playlist-system-rename');
+        final now = _clock().toUtc().millisecondsSinceEpoch;
+        await (_database.update(
+          _database.playlistRecords,
+        )..where((table) => table.playlistId.equals(playlistId))).write(
+          PlaylistRecordsCompanion(
+            name: Value(normalized),
+            updatedAtMs: Value(now < row.updatedAtMs ? row.updatedAtMs : now),
+          ),
+        );
+      });
     });
   }
 
