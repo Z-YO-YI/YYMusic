@@ -10,6 +10,7 @@ Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭
 
 ## 开发入口
 
+- [Phase 4N 原生音频许可计划](docs/phase_4n_native_notices_plan.md)、[报告](docs/phase_4n_native_notices_report.md)：当前开发批次，51个实际Android依赖坐标、POM/归档指纹及三份完整许可原文，新增双平台包内校验；本地255 Flutter/56 Node通过，云端验证中。
 - [Phase 4M 音频许可基础计划](docs/phase_4m_audio_license_plan.md)、[本批报告](docs/phase_4m_audio_license_report.md)：本批完成，最终修正`c0e3706`的两组GitHub三job通过；完整许可原文指纹与源码/双平台打包校验、参数大小写回归，不把六包覆盖当成完整发行批准。
 - [Phase 4L HTTPS 原生验证计划](docs/phase_4l_native_https_plan.md)、[本批报告](docs/phase_4l_native_https_report.md)：Android 三来源、Windows 双来源两轮真实原生测试和标准双平台构建通过；默认关闭、诊断隔离，不属于业务功能交付。
 - [Phase 4K Android本地来源原生验证计划](docs/phase_4k_android_native_sources_plan.md)、[本批报告](docs/phase_4k_android_native_sources_report.md)：WAV 复跑和只读 content URI 的失败、恢复、播放及释放已在 GitHub 通过；该原生运行无 artifact/Release。

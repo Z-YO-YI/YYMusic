@@ -38,6 +38,7 @@ flutter:
     - assets/icons/yymusic/
     - assets/fonts/inter/OFL.txt
     - assets/fonts/noto_sans_sc/OFL.txt
+    - assets/legal/android_audio/notices.json
   fonts:
     - family: Inter
       fonts:

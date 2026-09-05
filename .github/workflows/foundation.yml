@@ -162,6 +162,17 @@ jobs:
           "$sdk_manager" 'platforms;android-36' 'build-tools;36.0.0' 'ndk;28.2.13676358'
       - run: flutter pub get --enforce-lockfile
       - run: flutter build apk --debug --no-pub
+      - name: Verify resolved native audio notice coverage
+        shell: pwsh
+        run: |
+          Push-Location android
+          try {
+            ./gradlew --init-script ../tools/audio_dependencies.init.gradle :app:yyAudioDependencyReport --console=plain --quiet
+            if ($LASTEXITCODE -ne 0) { throw 'Native audio inventory failed' }
+          } finally { Pop-Location }
+          node tools/native_audio_notices.mjs build/audio-dependencies-debug.json
+          if ($LASTEXITCODE -ne 0) { throw 'Native audio source identities differ' }
+          ./tools/generate_audio_notices.ps1 -Check
       - name: Verify APK signature
         run: '"$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose build/app/outputs/flutter-apk/app-debug.apk'
       - name: Verify packaged design assets
