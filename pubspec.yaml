@@ -18,8 +18,6 @@ dependencies:
   flutter_svg: ^2.3.0
   just_audio: 0.10.6
   just_audio_windows: 0.2.3
-  media_kit: 1.2.6
-  media_kit_libs_audio: 1.0.7
   path: ^1.9.1
   path_provider: ^2.1.6
   sqlite3: ^3.5.2

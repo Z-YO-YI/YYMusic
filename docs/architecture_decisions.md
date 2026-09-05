@@ -314,3 +314,19 @@ Phase4G不以Dart wrapper的MIT许可证推断native bundle合规，也不因SO/
 `releaseApproved=false`、`productionWiringApproved=false`。不完整许可证集合不得放入应用assets；测试同时
 锁定生产`UnavailableAudioEngine`、native哈希映射和阻断项。只有自行从不可变revision与记录patch重建、
 补齐逐组件审查/NOTICE/对应源码/重新链接方案并验证双平台候选包后，才可通过新决策显式改写本门禁。
+
+## ADR-037：失败关闭的native候选必须退出活动依赖图（2026-09-05）
+
+Phase4G已经确定当前media_kit发布链无法满足来源重建、逐组件NOTICE、对应源码和重新链接材料门禁。
+继续让候选留在pubspec、生成注册和每次Debug包中不会增加有效证据，只会扩大体积与误发面。因此Phase4H
+从活动工程删除media_kit直接/传递包、隔离适配器、对应Fake/集成测试和历史专用CI job；旧代码仍可由
+Git历史复核，Phase4B—4G报告与原生哈希manifest不得删除或改写成“从未评估”。
+
+历史manifest新增`decision=rejected`和`activeDependency=false`，审计同时验证历史指纹仍完整、当前依赖与
+入口为0。Android交付校验逐ZIP entry拒绝`libmpv.so`、`libmediakitandroidhelper.so`和media_kit路径；
+Windows由生成注册门禁及GitHub干净portable bundle清单复核。该删除决定不等价于选择just_audio：后者仍须
+在真实Windows播放端点通过自己的原生POC，生产Graph继续构造`UnavailableAudioEngine`。
+
+旧Android debug-only Provider、受控TLS生成器和HEAD探针是与候选无关的受控测试基础设施，可供后续来源
+验证复用；它们不接生产、不持久化响应、不加入release Manifest。Phase4H不进入Phase5，也不增加下载、
+缓存、离线保存、WebView、后台服务、SMTC/MediaSession或新权限。

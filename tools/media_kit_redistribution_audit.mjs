@@ -42,6 +42,8 @@ export function auditMediaKitRedistribution({
 
   check(manifest.schemaVersion === 1, 'manifest schemaVersion must be 1');
   check(manifest.status === 'blocked', 'Phase 4G must remain blocked until this audit is deliberately revised');
+  check(manifest.decision === 'rejected', 'the incomplete media_kit candidate must remain rejected');
+  check(manifest.activeDependency === false, 'the rejected media_kit candidate must not be active');
   check(manifest.releaseApproved === false, 'media_kit native release must not be approved');
   check(manifest.productionWiringApproved === false, 'media_kit production wiring must not be approved');
   check(manifest.scope?.distributionMode === 'inventory-only', 'manifest must remain inventory-only');
@@ -71,13 +73,13 @@ export function auditMediaKitRedistribution({
   const lockfile = read(root, 'pubspec.lock');
   for (const [name, version] of expectedPackages) {
     check(
-      new RegExp(`^  ${name}:[\\s\\S]*?^    version: "${version.replaceAll('.', '\\.')}"$`, 'm').test(lockfile),
-      `${name} ${version} is not locked`,
+      !new RegExp(`^  ${name}:`, 'm').test(lockfile),
+      `${name} ${version} was reintroduced into the active lockfile`,
     );
   }
+  check(!/^  media_kit(?:_|:)/m.test(lockfile), 'a rejected media_kit package was reintroduced into the active lockfile');
   const pubspec = read(root, 'pubspec.yaml');
-  check(/^  media_kit: 1\.2\.6$/m.test(pubspec), 'media_kit direct version changed');
-  check(/^  media_kit_libs_audio: 1\.0\.7$/m.test(pubspec), 'media_kit_libs_audio direct version changed');
+  check(!/^  media_kit(?:_libs_audio)?:/m.test(pubspec), 'rejected media_kit direct dependency was reintroduced');
   check(!/assets\/legal\/media_kit|docs\/legal\/media_kit/.test(pubspec), 'blocked legal inventory must not be bundled');
   check(!existsSync(path.join(root, 'assets/legal/media_kit')), 'blocked app legal asset directory must not exist');
 
@@ -87,6 +89,27 @@ export function auditMediaKitRedistribution({
     const source = read(root, entrypoint);
     check(!/MediaKit|MediaKitAudioEngine|NativeMediaKitPlayerBackend/.test(source), `${entrypoint} wires media_kit into production`);
   }
+  for (const removedPath of [
+    'lib/playback/media_kit_audio_backend.dart',
+    'lib/playback/media_kit_audio_engine.dart',
+    'test/unit/media_kit_audio_engine_test.dart',
+    'integration_test/native_local_audio_poc_test.dart',
+    'integration_test/native_audio_sources_poc_test.dart',
+  ]) {
+    check(!existsSync(path.join(root, removedPath)), `${removedPath} restored a rejected active candidate`);
+  }
+  for (const generatedPath of [
+    'windows/flutter/generated_plugin_registrant.cc',
+    'windows/flutter/generated_plugins.cmake',
+  ]) {
+    check(!/media_kit/i.test(read(root, generatedPath)), `${generatedPath} still registers media_kit`);
+  }
+  check(
+    !/run_native_audio_poc|run_native_audio_source_poc|native_(?:local_audio|audio_sources)_poc_test/.test(
+      read(root, '.github/workflows/foundation.yml'),
+    ),
+    'CI still exposes a rejected media_kit POC',
+  );
 
   const android = manifest.native?.android;
   check(android?.mappingStatus === 'partial', 'Android source mapping must remain partial');
@@ -133,5 +156,5 @@ const currentFile = fileURLToPath(import.meta.url);
 if (process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === pathToFileURL(currentFile).href) {
   const result = auditMediaKitRedistribution();
   assert.deepEqual(result.errors, [], result.errors.join('\n'));
-  console.log('media_kit redistribution gate: blocked (fail-closed evidence verified)');
+  console.log('media_kit redistribution gate: rejected and absent (historical evidence verified)');
 }

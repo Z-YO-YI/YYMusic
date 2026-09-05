@@ -22,5 +22,13 @@ try {
     if (@($taskArchive.Entries | Where-Object { $_.FullName -match 'design_reference|sonic_gallery|YYMusic_HTML\.zip|(^|/)\.env($|\.)|\.(jks|keystore|pem|p12|pfx)$' }).Count -gt 0) {
         throw 'Reference, legacy or credential file unexpectedly packaged in APK'
     }
-    Write-Output 'PASS: 48 packaged SVG/font/license files match source bytes; reference and private files excluded.'
+    $taskRejectedMediaKitEntries = @($taskArchive.Entries | Where-Object {
+        $_.FullName -match '(^|/)(libmpv\.so|libmediakitandroidhelper\.so)$' -or
+        $_.FullName -match 'media_kit'
+    })
+    if ($taskRejectedMediaKitEntries.Count -gt 0) {
+        $taskRejectedNames = $taskRejectedMediaKitEntries.FullName -join ', '
+        throw "Rejected media_kit native content unexpectedly packaged in APK: $taskRejectedNames"
+    }
+    Write-Output 'PASS: 48 packaged SVG/font/license files match source bytes; reference/private files and rejected media_kit native content excluded.'
 } finally { $taskArchive.Dispose() }

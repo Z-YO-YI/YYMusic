@@ -6,7 +6,7 @@ import { auditMediaKitRedistribution } from './media_kit_redistribution_audit.mj
 const manifestPath = 'docs/legal/media_kit/manifest.json';
 const loadManifest = () => JSON.parse(readFileSync(manifestPath, 'utf8'));
 
-test('media_kit redistribution evidence is complete and fail-closed', () => {
+test('media_kit redistribution evidence is complete and rejected candidate is absent', () => {
   const result = auditMediaKitRedistribution();
   assert.equal(result.ok, true, result.errors.join('\n'));
   assert.equal(result.status, 'blocked');
@@ -15,11 +15,15 @@ test('media_kit redistribution evidence is complete and fail-closed', () => {
 test('media_kit redistribution audit rejects an unreviewed approval flip', () => {
   const manifest = loadManifest();
   manifest.status = 'approved';
+  manifest.decision = 'selected';
+  manifest.activeDependency = true;
   manifest.releaseApproved = true;
   manifest.productionWiringApproved = true;
   const result = auditMediaKitRedistribution({ manifest });
   assert.equal(result.ok, false);
   assert(result.errors.some(error => error.includes('must remain blocked')));
+  assert(result.errors.some(error => error.includes('must remain rejected')));
+  assert(result.errors.some(error => error.includes('must not be active')));
   assert(result.errors.some(error => error.includes('must not be approved')));
 });
 
