@@ -155,3 +155,12 @@ WAV为298/155/1、260/157/1 ms，HTTPS为347/94/1、330/91/1 ms，64项运行文
 四条运行整体success；产物数依次1/0/0/1，只有既有14天Debug与一天Profile诊断包，匹配Release0。
 HTTPS使用默认TLS、无代理/Header、内存限时限额指纹核验，不持久化或提交媒体，不接生产。
 此批关闭双平台无Header HTTPS原生缺口；最终候选/NOTICE、正式接线和Phase2网页视觉对照仍待完成。
+
+Phase4M新增六个音频Dart包LICENSE和两个原生构建文件指纹；源码验证精确lockfile，
+实际APK/Windows NOTICES.Z逐包验证完整原文。工具限制4 MiB压缩/16 MiB展开/10000组及严格UTF-8，
+拒绝缺失、重复、错标签、篡改、空清单和非法压缩，实际APK入口另测缺失/重复/体积及参数大小写。
+本地完整255 Flutter、51 Node、161文件格式、严格analyze、ZIP24/24、生成/Drift零差异、
+Android Debug/v2签名/48资产/六包许可与既有Windows Profile六包许可全部通过；应用字节未改变。
+初始`2143ecf`的push33956519388/PR33956538735两组三job成功，包含新的源码和两端实际打包许可校验。
+参数修正`c0e3706`的push33957029385/PR33957031070也均三job成功，实际源码与两端许可日志已独立复核。
+四条运行artifact依次1/0/1/0，均未创建Release；原生播放证据仍归属于Phase4L，不伪称本批重跑原生POC。

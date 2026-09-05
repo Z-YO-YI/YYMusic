@@ -6,8 +6,13 @@ Phase4J最新增量：`25747bc`的GitHub Profile完整诊断包已在本机Windo
 此前Windows小批A运行证据已补齐；本机缺Debug CRT导致的`0xC0000135`没有被掩盖。
 该提交的GitHub Android/Windows Debug均成功，对应 Draft PR #26；最后文档提交 `ca7b69d` 的两组 CI 也已成功。
 Phase4K 实现 `33a0b3c` 已通过 Android WAV/content URI 两项测试和标准双平台 Debug，Draft PR #27 未合并。
-当前批次为 `codex/native-https-validation` 的 Phase4L：实现 `8c4aa6e` 的 Android API36 三来源原生、标准 push/PR 双平台 Debug、完整 Windows Profile 构建四条运行均成功。同一 Profile 包在本机两个新目录各执行本地 WAV/HTTPS 两项测试，均退出0，64项运行文件前后指纹不变。完整本地255项 Flutter、46项 Node 通过；Draft PR #28 未合并。Phase4F 的无Header HTTPS 运行缺口已补齐，最终选型/NOTICE 和正式接线仍待完成。
-下文无端点/旧分支描述保留历史归属，以本段及[Phase4L报告](phase_4l_native_https_report.md)为当前状态。
+前一批为 `codex/native-https-validation` 的 Phase4L：实现 `8c4aa6e` 的 Android API36 三来源原生、标准 push/PR 双平台 Debug、完整 Windows Profile 构建四条运行均成功。同一 Profile 包在本机两个新目录各执行本地 WAV/HTTPS 两项测试，均退出0，64项运行文件前后指纹不变。完整本地255项 Flutter、46项 Node 通过；Draft PR #28 未合并。Phase4F 的无Header HTTPS 运行缺口已补齐，最终选型/NOTICE 和正式接线仍待完成。
+下文无端点/旧分支描述保留历史归属；原生证据见[Phase4L报告](phase_4l_native_https_report.md)，当前进度以下面的Phase4M为准。
+
+Phase4M本批已完成：`codex/audio-license-foundation`、实现`2143ecf`/参数修正`c0e3706`、Draft PR #29，增加六个音频Dart包的
+完整许可原文清单与源码/双平台打包门禁。本地255项Flutter、51项Node、Android Debug/48资产/六包许可/
+v2签名通过；Windows既有真实Profile包只做新增许可复核。初始实现和最终修正版各两组GitHub三job均通过，最终修正的源码/两端包内许可日志已复核，
+原生Maven传递NOTICE、用户可见许可页和生产接线仍未完成，详见[Phase4M报告](phase_4m_audio_license_report.md)。
 
 | 阶段/能力 | 状态 |
 | --- | --- |
@@ -46,10 +51,11 @@ Phase4K 实现 `33a0b3c` 已通过 Android WAV/content URI 两项测试和标准
 | Phase 4J Windows本机原生验证 | GitHub完整Profile包在本机两次真实WAV通过；248项Flutter、43项Node、源码指纹、严格分析和实现提交的GitHub双平台Debug通过。正式入口不变，见phase_4j_windows_native_validation_report.md |
 | Phase 4K Android本地来源 | 已完成本批：`33a0b3c` 的 Android API36 本地 WAV/content URI 两项原生测试及 PR 双平台 Debug 全部成功；content 缺失失败、同引擎恢复、播放/释放通过；本地 249 项 Flutter / 44 项 Node 通过；见 phase_4k_android_native_sources_report.md |
 | Phase 4L 无Header HTTPS来源 | 已完成本批：`8c4aa6e` 的 Android 三来源原生、标准双平台 Debug、Windows 完整 Profile 构建成功；同包两次本机 WAV/HTTPS 各2项通过。内存验证固定夹具 SHA/Range，默认 TLS、无代理/Header、无媒体提交；本地255 Flutter / 46 Node，见 phase_4l_native_https_report.md |
+| Phase 4M 音频许可基础 | 已完成本批：六包完整LICENSE/两个构建源指纹、源码/APK/Windows NOTICES.Z校验、有界解压/UTF-8/全文唯一与参数大小写回归；本地255 Flutter/51 Node，`c0e3706`两组GitHub三job均成功；不代表全部Maven传递NOTICE或生产接线完成 |
 | GitHub APK交付 | Phase4A ec508df的唯一手动运行33848236710创建私有草稿Release；190735487字节APK的三资产、metadata、SHA256SUMS、API digest、48份包内资产、Manifest及v2单签名已独立复核 |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
-| Flutter format/analyze/test | Phase4L格式161文件零改动、严格分析0问题、完整255项含32张Windows宿主Golden、46项Node、ZIP24/24与生成代码/Drift零差异通过 |
-| Windows / Android Debug构建 | Phase4L本机常规及集成入口Android Debug成功，恢复正式入口后230,987,069字节APK与48资产/v2签名通过；`8c4aa6e`标准push/PR均完成双平台Debug。Windows本机构建仍缺工具链，使用GitHub完整Profile包取得真实播放证据，不伪称本机构建成功 |
+| Flutter format/analyze/test | Phase4M格式161文件零改动、严格分析0问题、完整255项含32张Windows宿主Golden、51项Node、ZIP24/24与生成代码/Drift零差异通过 |
+| Windows / Android Debug构建 | Phase4M本机Android Debug成功，230,987,069字节APK、48资产/六包完整许可/v2签名通过；`c0e3706`标准push/PR均完成双平台Debug和新增许可检查。Windows本机构建仍缺工具链；原生播放证据仍归属于Phase4L完整Profile包，不伪称本批进行了新的本机构建/播放 |
 
 ## 保留的验收缺口与后续边界
 
@@ -67,6 +73,6 @@ Phase4I最终严格分析0问题、243项Flutter通过；GitHub目标提交结�
 
 ## 仓库边界
 
-Phase4H 历史分支：`refactor/remove-media-kit-candidate`，基于`feat/media-kit-license-closure@ad1774c95c1760fabb23488f61be9f352fad5674`。未在main/master直接开发；旧候选仍可由Git历史和Phase4B—4G报告复核。该批删除已拒绝候选，不改UI、生产Bootstrap、release权限或Drift v1 Schema。当前 Phase4L 的分支、PR 与精确提交见文首和本批报告；没有擅自合并或改写历史。
+Phase4H 历史分支：`refactor/remove-media-kit-candidate`，基于`feat/media-kit-license-closure@ad1774c95c1760fabb23488f61be9f352fad5674`。未在main/master直接开发；旧候选仍可由Git历史和Phase4B—4G报告复核。该批删除已拒绝候选，不改UI、生产Bootstrap、release权限或Drift v1 Schema。当前 Phase4M 的分支、PR 与精确提交见文首和本批报告；没有擅自合并或改写历史。
 
 用户于2026-09-04明确授权将`Z-YO-YI/YYMusic`由private改为public；变更前检查当前已跟踪文件及可见Git历史，未发现常见Token、私钥、`.env`或签名密钥文件。临时API访问令牌不持久化、不进入仓库。Phase3H Draft PR #16与APK证据仍只对应`27dd76c`；Phase4A Draft PR #17与APK证据只对应`ec508df`；Phase4C原生证据只对应`622408e`。
