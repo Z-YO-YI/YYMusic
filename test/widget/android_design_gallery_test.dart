@@ -7,6 +7,7 @@ import 'package:yymusic/design_system/yy_theme.dart';
 import 'package:yymusic/design_system/yy_tokens.dart';
 import 'package:yymusic/features/design_gallery/design_gallery_screen.dart';
 
+import '../support/close_graph.dart';
 import '../support/design_harness.dart';
 import '../support/fake_audio_engine.dart';
 import 'foundation_app_test.dart' show mount;
@@ -94,7 +95,7 @@ void main() {
       );
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());
-      await tester.pump();
+      await closeGraph(tester, graph);
       expect(engine.disposalCount, 1);
     },
   );

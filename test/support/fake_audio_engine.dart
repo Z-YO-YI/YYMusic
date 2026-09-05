@@ -13,6 +13,8 @@ final class FakeAudioEngine implements AudioEngine {
   PlayableSource? loadedSource;
   Object? loadError;
   Object? stopError;
+  Object? stateStreamError;
+  Object? disposeError;
   Future<void>? loadGate;
   Duration position = Duration.zero;
   Duration buffered = Duration.zero;
@@ -23,7 +25,12 @@ final class FakeAudioEngine implements AudioEngine {
   @override
   bool get isAvailable => true;
   @override
-  Stream<AudioEngineState> get states => events.stream;
+  Stream<AudioEngineState> get states {
+    final error = stateStreamError;
+    if (error != null) throw error;
+    return events.stream;
+  }
+
   @override
   Future<void> load(PlayableSource source) async {
     calls.add('load');
@@ -86,6 +93,8 @@ final class FakeAudioEngine implements AudioEngine {
   Future<void> dispose() async {
     disposalCount++;
     await events.close();
+    final error = disposeError;
+    if (error != null) throw error;
   }
 
   void complete() => _emit(AudioEnginePhase.completed);

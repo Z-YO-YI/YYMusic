@@ -1,7 +1,13 @@
 {
   "schemaVersion": 1,
   "coverage": "six-dart-audio-packages-only",
-  "productionWiringApproved": false,
+  "productionWiringApproved": true,
+  "productionDecision": "ADR-044",
+  "productionEvidence": [
+    "docs/phase_4l_native_https_report.md",
+    "docs/phase_4n_native_notices_report.md",
+    "docs/phase_4o_license_viewer_report.md"
+  ],
   "releaseApproved": false,
   "bundleAsset": "NOTICES.Z",
   "packages": [
@@ -77,7 +83,8 @@
       "licenseUrl": "https://github.com/androidx/media/blob/c35a9d62baec57118ea898e271ac66819399649b/LICENSE",
       "licenseBytes": 11358,
       "licenseSha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
-      "transitiveNoticeReviewComplete": false
+      "transitiveNoticeReviewComplete": true,
+      "transitiveNoticeManifest": "docs/legal/just_audio/native_manifest.json"
     },
     "windows": {
       "backend": "Windows Runtime MediaPlayer",
@@ -90,6 +97,6 @@
     "windows": ["local-file", "https-without-headers"],
     "requestHeaders": false,
     "proxyForHeaders": false,
-    "productionAudioConnected": false
+    "productionAudioConnected": true
   }
 }

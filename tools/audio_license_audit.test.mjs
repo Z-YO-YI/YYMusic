@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import test from 'node:test';
 import { gzipSync } from 'node:zlib';
 import { root } from './design_audit.mjs';
+import { validateNativeNotices } from './native_audio_notices.mjs';
 
 const read = path => readFileSync(join(root, path), 'utf8');
 const separator = `\n${'-'.repeat(80)}\n`;
@@ -44,7 +45,7 @@ test('audio license ledger pins all six package identities and does not approve 
   assert.equal(manifest.schemaVersion, 1);
   assert.equal(manifest.coverage, 'six-dart-audio-packages-only');
   assert.equal(manifest.bundleAsset, 'NOTICES.Z');
-  assert.equal(manifest.productionWiringApproved, false);
+  assert.equal(manifest.productionWiringApproved, true);
   assert.equal(manifest.releaseApproved, false);
   assert.deepEqual(manifest.packages.map(({ name, version, bytes }) => [name, version, bytes]), [
     ['just_audio', '0.10.6', 12644], ['just_audio_windows', '0.2.3', 1099],
@@ -59,11 +60,11 @@ test('audio license ledger pins all six package identities and does not approve 
   ]);
   assert.deepEqual(manifest.packages[0].license, ['MIT', 'Apache-2.0']);
   assert.equal(manifest.nativeEvidence.android.version, '1.4.1');
-  assert.equal(manifest.nativeEvidence.android.transitiveNoticeReviewComplete, false);
+  assert.equal(manifest.nativeEvidence.android.transitiveNoticeReviewComplete, true);
   assert.deepEqual(manifest.nativeEvidence.windows.additionalBundledPlayerLibraries, []);
   assert.equal(manifest.capabilities.requestHeaders, false);
   assert.equal(manifest.capabilities.proxyForHeaders, false);
-  assert.equal(manifest.capabilities.productionAudioConnected, false);
+  assert.equal(manifest.capabilities.productionAudioConnected, true);
   assert.deepEqual(manifest.sourceFiles.map(p => [p.package, p.path]), [
     ['just_audio', 'android/build.gradle.kts'], ['just_audio_windows', 'windows/CMakeLists.txt'],
   ]);
@@ -73,6 +74,37 @@ test('audio license ledger pins all six package identities and does not approve 
   assert.match(read('tools/verify_audio_licenses.ps1'), /\$Mode -eq 'Source'/);
   assert.match(read('tools/verify_audio_licenses.ps1'), /\$Mode -eq 'Android'/);
   assert(!/Invoke-WebRequest|Invoke-RestMethod|Start-Process|Set-Content|WriteAll/.test(read('tools/verify_audio_licenses.ps1')));
+});
+
+test('production audio selection is scoped, evidence-backed and root-owned without proxy or autoplay', () => {
+  const manifest = JSON.parse(read('docs/legal/just_audio/manifest.json'));
+  assert.equal(manifest.productionDecision, 'ADR-044');
+  assert.deepEqual(manifest.productionEvidence, [
+    'docs/phase_4l_native_https_report.md', 'docs/phase_4n_native_notices_report.md',
+    'docs/phase_4o_license_viewer_report.md',
+  ]);
+  for (const evidence of manifest.productionEvidence) assert(read(evidence).length > 200);
+  assert.equal(manifest.nativeEvidence.android.transitiveNoticeManifest, 'docs/legal/just_audio/native_manifest.json');
+  const nativeManifest = JSON.parse(read(manifest.nativeEvidence.android.transitiveNoticeManifest));
+  validateNativeNotices(readFileSync(join(root, nativeManifest.bundle.path)), nativeManifest);
+  assert.match(read('docs/architecture_decisions.md'), /ADR-044/);
+  const production = read('lib/app/production_audio.dart');
+  assert.match(production, /JustAudioEngine\.create\([\s\S]*?useProxyForRequestHeaders: false,[\s\S]*?supportsRequestHeaders: false/);
+  assert.match(production, /YYPlatform\.android => const LocalPlaybackSourceResolver\.android\(\)/);
+  assert.match(production, /YYPlatform\.windows => const LocalPlaybackSourceResolver\.windows\(\)/);
+  const bootstrap = read('lib/app/app_bootstrap.dart');
+  assert.match(bootstrap, /this\.audioEngineFactory = createProductionAudioEngine/);
+  assert.match(bootstrap, /engine = await widget\.audioEngineFactory\(platform\)/);
+  assert.match(bootstrap, /audioEngine: engine/);
+  assert.match(bootstrap, /await _release\(graph\.close\)/);
+  assert(!/\.play\(|\.load\(/.test(bootstrap));
+  assert.match(read('lib/main_dev.dart'), /audioEngineFactory: createUnavailableAudioEngine/);
+  const resolver = read('lib/playback/local_playback_source_resolver.dart');
+  assert(!/dart:io|package:|\.metadata|networkStream\(|https:\/\//.test(resolver));
+  assert.match(resolver, /playback\.remote-adapter-unavailable/);
+  assert.match(read('lib/app/app_router.dart'), /\/settings\/licenses/);
+  assert.match(read('lib/app/flutter_license_repository.dart'), /LicenseRegistry\.licenses/);
+  assert.equal(manifest.releaseApproved, false);
 });
 
 test('notice validator accepts separate or deduplicated complete package license groups', () => {

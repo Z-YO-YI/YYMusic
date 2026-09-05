@@ -1,5 +1,11 @@
 # Phase 0 依赖候选与证据
 
+2026-09-05 当前工程决策（ADR-044）：锁定的 just_audio 0.10.6 / just_audio_windows 0.2.3
+由应用 Bootstrap 正式创建一个根后端。依据 Phase4L 真实双平台运行、Phase4M/N 完整材料与包内校验、
+Phase4O 许可查看；保持无代理/Header、无下载，REST 仍需 Adapter。`media_kit` 继续 rejected/inactive。
+这不是应用发行批准；未提高原生 manifest 的 scope，不把六包许可证清单说成覆盖所有依赖。
+下文 Phase0 候选表及后续隔离候选文字均保留当时归属，最新接线以 Phase4P 报告为准。
+
 核验日期：2026-08-31。仅查询维护者发布的pub.dev页面与平台官方资料，不使用社区推荐作为平台支持证据。下表版本是**查询快照，不是安装决定/版本锁**；Phase 1选择Flutter SDK后重新解析当前兼容稳定版本并提交lockfile。本轮pubspec未改、未安装依赖、未声称插件双平台已验证。
 
 ## 12类候选

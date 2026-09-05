@@ -33,6 +33,10 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp> {
         platform: platform,
         viewState: ref.read(dependencyGraphProvider).viewState,
         licenses: ref.read(dependencyGraphProvider).licenses,
+        audioBackendSelected: ref
+            .read(dependencyGraphProvider)
+            .playback
+            .isAvailable,
         initialLocation: widget.initialLocation,
       );
     }

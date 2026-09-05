@@ -4,10 +4,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../playback/audio_engine.dart';
 import 'app_data_services.dart';
 import 'database_app_data_services.dart';
 import 'dependency_graph.dart';
 import 'layout_class.dart';
+import 'production_audio.dart';
 import 'yy_music_app.dart';
 
 typedef AppDataServicesFactory = Future<AppDataServices> Function(
@@ -19,10 +21,12 @@ class AppBootstrap extends StatefulWidget {
     super.key,
     this.platform,
     this.dataServicesFactory = createProductionAppDataServices,
+    this.audioEngineFactory = createProductionAudioEngine,
   });
 
   final YYPlatform? platform;
   final AppDataServicesFactory dataServicesFactory;
+  final AudioEngineFactory audioEngineFactory;
 
   @override
   State<AppBootstrap> createState() => _AppBootstrapState();
@@ -48,21 +52,41 @@ class _AppBootstrapState extends State<AppBootstrap> {
   }
 
   Future<void> _initialize(YYPlatform platform) async {
+    AppDataServices? services;
+    AudioEngine? engine;
+    DependencyGraph? graph;
     try {
-      final services = await widget.dataServicesFactory(platform);
-      if (!mounted) {
-        await services.dispose();
-        return;
-      }
-      final graph = DependencyGraph(dataServices: services);
+      services = await widget.dataServicesFactory(platform);
+      if (!mounted) return;
+      engine = await widget.audioEngineFactory(platform);
+      if (!mounted) return;
+      graph = DependencyGraph(
+        dataServices: services,
+        audioEngine: engine,
+        playbackSourceResolver: createProductionSourceResolver(platform),
+      );
       await graph.initialize();
-      if (!mounted) {
-        graph.dispose();
-        return;
-      }
+      if (!mounted) return;
       setState(() => _graph = graph);
     } catch (_) {
       if (mounted) setState(() => _failed = true);
+    } finally {
+      if (graph == null || !identical(_graph, graph)) {
+        if (graph != null) {
+          await _release(graph.close);
+        } else {
+          if (engine != null) await _release(engine.dispose);
+          if (services != null) await _release(services.dispose);
+        }
+      }
+    }
+  }
+
+  Future<void> _release(Future<void> Function() release) async {
+    try {
+      await release();
+    } catch (_) {
+      // Continue releasing other owned resources; never expose plugin details.
     }
   }
 
@@ -75,11 +99,11 @@ class _AppBootstrapState extends State<AppBootstrap> {
   @override
   Widget build(BuildContext context) {
     if (_failed) {
-      return const _BootstrapStatus(message: 'YYMusic 无法初始化本地数据');
+      return const _BootstrapStatus(message: 'YYMusic 无法初始化应用');
     }
     final graph = _graph;
     if (graph == null) {
-      return const _BootstrapStatus(message: 'YYMusic 正在准备本地数据');
+      return const _BootstrapStatus(message: 'YYMusic 正在准备应用');
     }
     return ProviderScope(
       overrides: [dependencyGraphProvider.overrideWithValue(graph)],

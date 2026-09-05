@@ -1,6 +1,6 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 4O 原生许可查看入口；正式播放器接线未完成**。Phase4L 已完成双平台真实音频来源验证，Phase4M/4N 的六包 Dart 许可和 51 项 Android 原生依赖材料已通过 GitHub 双平台打包核验。设置现在可以搜索开源组件、阅读完整许可、返回和失败重试。本批本地 270 项 Flutter（含 35 张 Golden）、56 项 Node、严格分析和 Android Debug 通过；云端结果见本批报告。生产仍使用 `UnavailableAudioEngine`，尚不能作为可用音乐应用交付。被拒绝的 `media_kit` 已移除；最终工程选型和共用播放器接线是下一步，Phase5—11 尚未完成。Phase2 网页截图对照仍欠验收，未改变系统工具链或权限。
+当前阶段：**Android + Windows · Phase 4P 真实音频根接线**。默认 AppBootstrap 现在创建一个 just_audio/Windows WinRT 后端，共用 PlaybackController 和本地来源解析器；退出时等待在途命令，再依次关闭播放器、媒体接口与数据。恢复队列不自动播放，main_dev 仍明确不可播放，REST 尚需 Adapter。Phase4L 已完成双平台真实来源验证，Phase4M/N/O 的完整许可材料与查看入口已通过双平台云端构建。本批本地 282 项 Flutter（35 张 Golden）、57 项 Node 与严格分析通过；构建/云端结果见本批报告。正式 Shell 播放控件与音乐业务页面仍未接通，不能作为可用音乐应用交付。Phase5—11 和 Phase2 网页截图对照仍待完成；未改变系统工具链或权限。
 
 Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭、只允许手动选择、`contents: read`且不上传产物的Windows/Android原生集成模式。完整221项Flutter含32张Windows宿主Golden、严格分析0问题、31项Node、24项ZIP、lockfile及生成代码/v1快照零差异已通过；本机Android Debug也完成资产与v2单Debug签名复核。精确提交`622408e`的专用运行33862786766 attempt 2已在Windows与Android成功，且没有artifact或Release；普通push另提供保留14天的Windows开发Debug文件包。它依赖本机Debug CRT，并非通用免安装发行包；Phase4J的Profile诊断模式与正式应用分开。
 
@@ -10,6 +10,7 @@ Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭
 
 ## 开发入口
 
+- [Phase 4P 正式音频根接线计划](docs/phase_4p_production_audio_plan.md)、[报告](docs/phase_4p_production_audio_report.md)：根单实例后端、本地引用解析、可等待的有序关闭及初始化失败清理；工程选型 ADR-044，不代表上线批准。
 - [Phase 4O 许可查看计划](docs/phase_4o_license_viewer_plan.md)、[报告](docs/phase_4o_license_viewer_report.md)：设置 → 开源许可，SDK 与原生完整原文、搜索/重试、原生模态路由和三张新视觉基线；不使用 WebView 或默认 Material 许可页面。
 - [Phase 4N 原生音频许可计划](docs/phase_4n_native_notices_plan.md)、[报告](docs/phase_4n_native_notices_report.md)：51个实际Android依赖坐标、POM/归档指纹及三份完整许可原文，新增双平台包内校验；`f324ed2` 两组云端 checks/Android/Windows 全部通过。
 - [Phase 4M 音频许可基础计划](docs/phase_4m_audio_license_plan.md)、[本批报告](docs/phase_4m_audio_license_report.md)：本批完成，最终修正`c0e3706`的两组GitHub三job通过；完整许可原文指纹与源码/双平台打包校验、参数大小写回归，不把六包覆盖当成完整发行批准。
@@ -50,7 +51,7 @@ Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭
 
 Android 启动后，底部或左侧导航可切换首页、搜索、音乐库、设置；宽度跨越 600dp 时保留当前路由和根状态。在首页点“设计基础预览”进入 `/design-system`：切换浅色/深色/系统、五种预设/自定义 HEX、减少动态/透明，查看原生组件、滑块、七种占位封面与图标。滑块横向拖动预览、松开提交示例数值，系统取消不提交，支持键盘/无障碍增减，但不触发播放。
 
-外观仅在本次运行保留，重启恢复默认。预览页的点击/收藏/进度只是标注清楚的本页示例状态；四个业务入口仍是工程骨架，生产数据库虽已由根作用域打开，但业务页面数据、音频和平台全屏尚未接入。
+外观仅在本次运行保留，重启恢复默认。预览页的点击/收藏/进度只是标注清楚的本页示例状态；四个业务入口仍是工程骨架。生产数据库和音频引擎已由根作用域管理，但业务页面数据、可见播放操作和平台全屏尚未接入。
 
 “输入与选择”可输入中文/英文、按软键盘搜索提交本页文字、清空或长按选择/复制/粘贴，切换示例筛选和加载状态。不会发送网络查询或保存搜索历史；“减少动态/透明”开关实际更新根外观状态。分段控件支持Tab定位、Enter/Space选择和窄宽横向滚动。
 

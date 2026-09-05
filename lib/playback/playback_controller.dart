@@ -61,6 +61,7 @@ final class PlaybackController extends ChangeNotifier {
   bool _completionHandled = true;
   bool _loadingSource = false;
   bool _disposed = false;
+  Future<void>? _closeFuture;
 
   PlaybackState get state => _state;
   bool get isAvailable => _engine.isAvailable;
@@ -75,6 +76,7 @@ final class PlaybackController extends ChangeNotifier {
         _publishFailure(error, 'restore-queue');
       }
     }
+    _checkNotDisposed();
     try {
       await _mediaSession.initialize(
         MediaSessionCallbacks(
@@ -86,6 +88,7 @@ final class PlaybackController extends ChangeNotifier {
           seek: seek,
         ),
       );
+      _checkNotDisposed();
       _mediaInitialized = true;
       await _queueMediaSynchronization(_state);
     } catch (_) {
@@ -631,6 +634,7 @@ final class PlaybackController extends ChangeNotifier {
       await _mediaSession.updateMetadata(track);
       _mediaTrack = track.ref;
     }
+    if (_disposed) return;
     await _mediaSession.updatePlaybackState(value);
   }
 
@@ -744,8 +748,24 @@ final class PlaybackController extends ChangeNotifier {
   void dispose() {
     if (_disposed) return;
     _disposed = true;
-    unawaited(_subscription.cancel());
+    _closeFuture = _drain();
+    unawaited(_closeFuture!.catchError((Object _) {}));
     super.dispose();
+  }
+
+  /// The owner must await this before releasing the engine, session or data.
+  Future<void> close() {
+    dispose();
+    return _closeFuture!;
+  }
+
+  Future<void> _drain() async {
+    try {
+      await _subscription.cancel();
+    } finally {
+      await _operationTail;
+      await _mediaSyncTail;
+    }
   }
 }
 

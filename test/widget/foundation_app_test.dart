@@ -14,6 +14,7 @@ import 'package:yymusic/shells/android_phone_shell.dart';
 import 'package:yymusic/shells/android_tablet_shell.dart';
 import 'package:yymusic/shells/windows_shell.dart';
 
+import '../support/close_graph.dart';
 import '../support/fake_audio_engine.dart';
 import '../support/fake_domain_repositories.dart';
 import '../support/fake_playback_dependencies.dart';
@@ -159,7 +160,7 @@ void main() {
         expect(tester.takeException(), isNull);
       }
       await tester.pumpWidget(const SizedBox.shrink());
-      await tester.pump();
+      await closeGraph(tester, graph);
       expect(engine.disposalCount, 1);
     },
   );
