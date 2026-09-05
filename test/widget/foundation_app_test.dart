@@ -9,6 +9,7 @@ import 'package:yymusic/app/yy_music_app.dart';
 import 'package:yymusic/design_system/yy_player_surface.dart';
 import 'package:yymusic/design_system/yy_window_toolbar.dart';
 import 'package:yymusic/design_system/yy_windows_sidebar.dart';
+import 'package:yymusic/features/library/common/library_screen.dart';
 import 'package:yymusic/playback/audio_engine_state.dart';
 import 'package:yymusic/shared/foundation_button.dart';
 import 'package:yymusic/shells/android_phone_shell.dart';
@@ -176,7 +177,10 @@ void main() {
     );
     await tester.tap(find.byKey(const ValueKey('nav-library')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('open-player')));
+    final libraryNavigation = tester
+        .widget<LibraryScreen>(find.byType(LibraryScreen))
+        .navigation;
+    libraryNavigation.openPlayer();
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('screen-player')), findsOneWidget);
     expect(find.byType(AndroidPhoneShell), findsNothing);
@@ -189,7 +193,7 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('screen-library')), findsOneWidget);
-    await tester.tap(find.byKey(const ValueKey('open-lyrics')));
+    libraryNavigation.openLyrics();
     await tester.pumpAndSettle();
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();

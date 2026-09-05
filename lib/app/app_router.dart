@@ -7,6 +7,8 @@ import '../domain/repositories/license_repository.dart';
 import '../features/design_gallery/design_gallery_screen.dart';
 import '../features/home/common/home_controller.dart';
 import '../features/home/common/home_screen.dart';
+import '../features/library/common/library_controller.dart';
+import '../features/library/common/library_screen.dart';
 import '../features/search/common/search_controller.dart';
 import '../features/search/common/search_screen.dart';
 import '../features/settings/common/licenses_screen.dart';
@@ -29,6 +31,7 @@ final class AppRouter implements AppNavigation {
     PlaybackPresenter? playbackPresenter,
     HomeController? homeController,
     CatalogSearchController? searchController,
+    LibraryController? libraryController,
   }) {
     Widget screen(AppRoute route) =>
         route == AppRoute.home &&
@@ -47,6 +50,16 @@ final class AppRouter implements AppNavigation {
         ? SearchScreen(
             platform: platform,
             controller: searchController,
+            playback: playbackPresenter,
+            navigation: this,
+            viewState: viewState,
+          )
+        : route == AppRoute.library &&
+              libraryController != null &&
+              playbackPresenter != null
+        ? LibraryScreen(
+            platform: platform,
+            controller: libraryController,
             playback: playbackPresenter,
             navigation: this,
             viewState: viewState,

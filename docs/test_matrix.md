@@ -1,6 +1,15 @@
 # 原生基础验证矩阵
 
-Phase6E 当前修正：425 Flutter（55 Golden未改）、71 Node、严格analyze0、237文件格式零修改。
+Phase6F 当前：452 Flutter（61 Golden）、73 Node、严格analyze0、247文件格式零修改。
+新增15项Controller/真实SQLite接线、6项Widget、6张逐张查看的Golden（原55张不变）。
+覆盖分类页保留、12种排序合同/方向、来源/不可用组合、本地强制类型、迟到取消、原始offset/
+完整身份去重/空页/200项边界、歌单独立流、根队列复用、离页取消加载、失效曲目收藏/写失败脱敏、
+关闭等待查询/写入、实际SQLite收藏、三端断点/130%、右键/长按/更多/Esc/Back/焦点恢复及惰性构建。
+旧导航用例从Foundation临时按钮改为真实Library的AppNavigation合同，保留返回目标/状态断言；
+不能据此宣称完整播放器UI入口已完成。YYTrackTile只为新Library显式开放不可播放曲目的更多菜单，
+旧调用方默认禁用行为不变。精确打包/双端云端状态见本批报告/PR；没有新音频运行验收。
+
+Phase6E 历史修正：425 Flutter（55 Golden未改）、71 Node、严格analyze0、237文件格式零修改。
 初始f053328两组CI的Windows旧首页Golden失败；Android/源码检查成功。新增2项粗/细时钟回归先失败，
 修正HomeGraphFixture一次批次时间后通过，未改生产排序/截图基线/比较阈值；修复云端结果单独核验。
 以下保留初始数据层423项验证范围。
