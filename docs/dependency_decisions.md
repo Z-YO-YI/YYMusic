@@ -134,3 +134,20 @@ Drift使用边界不变：事务、batch、watch和limit/offset只存在`data/re
 本批不新增或升级依赖，`pubspec.yaml`和`pubspec.lock`保持Phase 3G解析。生产工厂复用已锁定的Drift/path_provider/flutter_secure_storage；显式开发入口复用`NativeDatabase.memory()`，没有引入mock数据库、fixture生成器、HTTP、音频、文件选择或额外平台插件。
 
 内存executor的构造仍封装在`data/database`，Dev Fixture只依赖应用数据作用域和Domain合同。`flutter pub get --enforce-lockfile`已严格复现，build_runner与drift_dev重新生成后g.dart/v1快照零差异；18个不兼容约束内的新版本仅由工具提示，不在本批做无关升级。
+
+## Phase 4E just_audio备用候选解析结果（2026-09-05）
+
+本批精确加入`just_audio 0.10.6`和`just_audio_windows 0.2.3`，实际新增解析
+`just_audio_platform_interface 4.6.0`、`just_audio_web 0.4.16`、`audio_session 0.2.4`及
+`rxdart 0.28.0`。Android Gradle实际解析AndroidX Media3 1.4.1的ExoPlayer、DASH、HLS和
+SmoothStreaming模块；没有just_audio专属SO。Windows包构建一个WinRT MediaPlayer插件，CMake的
+bundled libraries为空，不下载或捆绑额外Windows播放器DLL。
+
+包内许可与构建文件指纹见[Phase4E清单](phase_4e_dependency_license_inventory.md)。just_audio主项目为
+MIT，但其LICENSE同时收录ExoPlayer Apache-2.0全文；rxdart为Apache-2.0，其余新增包为MIT。该记录
+不构成法律结论，最终应用仍需可复核的第三方NOTICE/许可展示。
+
+`just_audio_windows`能力表不声明直接请求Header支持。因此候选backend用显式能力标志失败关闭；
+本批不启用或评估just_audio本地代理，不增加Android cleartext配置。Android直接Header与Windows认证来源
+进入Phase4F单独验证；未通过前不能把顶层聚合能力表当成YYMusic结论。生产入口继续使用
+UnavailableAudioEngine，不添加缓存、StreamAudioSource、下载或离线API。

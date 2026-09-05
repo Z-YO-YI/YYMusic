@@ -267,3 +267,21 @@ POC Header是公开sentinel；网络探针只发HEAD、禁止自动重定向并�
 DomainFailure。自签名TLS绕过与Windows无头sink只存在于名称明确的POC构造入口，生产默认继续验证TLS并
 使用真实设备。精确提交`913f3d75`的专用运行33878710671双平台成功且零artifact/Release，关闭来源POC
 出口；该证据不授权下载/离线能力，也不替代真实API、实体设备、后台/焦点或发布许可证审核。
+
+## ADR-034：just_audio备用候选显式声明Header能力并保持生产隔离（2026-09-05）
+
+Phase4E精确解析`just_audio 0.10.6`和`just_audio_windows 0.2.3`，但只作为与media_kit比较的
+备用候选。`package:just_audio`只能由`lib/playback/just_audio_backend.dart`导入，插件对象和错误
+不得越过项目snapshot；`JustAudioEngine`继续实现既有AudioEngine合同。生产main/AppBootstrap/Graph、
+Shell、UI、数据库与Fixture均不得创建或引用该候选。
+
+`just_audio_windows`没有声明直接请求Header能力，而just_audio内置代理会引入loopback cleartext及额外
+安全审计。本阶段不默认启用两者：backend创建方必须显式声明Header是否支持，若来源带Header但能力为
+false，则在调用插件前失败关闭并只暴露固定脱敏DomainFailure。Phase4F可以分别验证Android原生Header
+和Windows无Header HTTPS；任何代理方案必须单独审计绑定地址、会话隔离、Range转发、生命周期与日志，
+不能通过静默丢弃Header换取表面成功。
+
+候选只映射一次性file/content/HTTPS来源，不使用插件playlist/shuffle/repeat，不启用
+LockCachingAudioSource、StreamAudioSource或缓存清理，不实现下载/离线保存。Debug编译和Fake合同通过只
+证明适配与打包；真实native运行、实体设备、后台/焦点、系统媒体会话及第三方NOTICE完成前不锁定正式
+backend，也不触发包含备用候选的手动APK Release。

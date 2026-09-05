@@ -1,6 +1,6 @@
 # Windows + Android 音频 POC 计划
 
-状态：**Phase4A合同、Phase4B候选适配/打包、Phase4C双平台原生本地WAV与Phase4D原生来源POC均已完成**。精确提交`913f3d75`的GitHub专用运行33878710671已在Windows 2025完成受控HTTPS，并在Android API36 x86_64完成受控HTTPS与`content://`；失败矩阵与控制链全部通过且无artifact/Release。生产组合未改变，云端无头设备结果不冒充实体扬声器体验。本机Windows C++工具链仍受远程UAC限制。
+状态：**Phase4A合同、Phase4B候选适配/打包、Phase4C双平台原生本地WAV、Phase4D原生来源POC及Phase4E备用适配/打包均已完成；下一批为Phase4F备用候选native运行比较**。`913f3d75`的专用运行已完成media_kit双平台来源POC；`a2b517b`的标准push/PR已完成just_audio候选双平台Debug。生产组合未改变，编译和云端无头设备结果都不冒充实体扬声器体验。本机Windows仍受远程UAC/Developer Mode限制。
 
 ## 候选与隔离
 
@@ -10,6 +10,11 @@ Phase4B已将A精确解析为`media_kit 1.2.6`、聚合audio libs 1.0.7、Androi
 Windows audio 1.0.9。生产入口仍使用UnavailableAudioEngine；候选只可从后续专用POC harness
 创建。Android native JAR缺少内嵌LICENSE/NOTICE，Windows使用旧归档，两平台传递许可证与源码
 提供策略未闭合，所以禁止因打包成功而正式选A或创建可下载候选APK。
+
+Phase4E已将B精确解析为`just_audio 0.10.6`和`just_audio_windows 0.2.3`，以独立
+JustAudioPlayerBackend复用同一AudioEngine合同。Windows实现未声明直接Header能力，故能力必须显式注入，
+false时在插件调用前失败关闭；不启用或暗中依赖本地代理。7项Fake测试与本机Android Debug已通过，
+修复提交`a2b517b`的Windows/Android标准CI已完成；Phase4F真实native运行尚未完成，不能据此选B或发布。
 
 ## 准入与测试材料
 

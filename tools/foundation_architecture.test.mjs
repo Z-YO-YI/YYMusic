@@ -219,6 +219,13 @@ test('playback has one root-owned truth behind project contracts', () => {
     'media_kit must remain inside its playback adapter',
   );
   assert(!/MediaKit|NativeMediaKitPlayerBackend/.test(read('lib/main.dart')));
+  const justAudioImports = sources.filter(path => /package:just_audio\//.test(read(path)));
+  assert.deepEqual(
+    justAudioImports,
+    ['lib/playback/just_audio_backend.dart'],
+    'just_audio must remain inside its playback adapter',
+  );
+  assert(!/JustAudioEngine|NativeJustAudioPlayerBackend/.test(read('lib/main.dart')));
   const pubspec = read('pubspec.yaml');
   const lockfile = read('pubspec.lock');
   assert.match(pubspec, /media_kit: 1\.2\.6/);
@@ -226,6 +233,24 @@ test('playback has one root-owned truth behind project contracts', () => {
   assert.match(lockfile, /media_kit_libs_android_audio:[\s\S]*?version: "1\.3\.8"/);
   assert.match(lockfile, /media_kit_libs_windows_audio:[\s\S]*?version: "1\.0\.9"/);
   assert(!/media_kit_(?:video|libs_video)/.test(`${pubspec}\n${lockfile}`));
+  assert.match(pubspec, /^  just_audio: 0\.10\.6$/m);
+  assert.match(pubspec, /^  just_audio_windows: 0\.2\.3$/m);
+  assert.match(lockfile, /just_audio_platform_interface:[\s\S]*?version: "4\.6\.0"/);
+  assert.match(lockfile, /audio_session:[\s\S]*?version: "0\.2\.4"/);
+  assert.match(read('windows/flutter/generated_plugin_registrant.cc'), /JustAudioWindowsPluginRegisterWithRegistrar/);
+  assert.match(read('windows/flutter/generated_plugins.cmake'), /^  just_audio_windows$/m);
+  assert.match(
+    read('windows/CMakeLists.txt'),
+    /target_compile_definitions\(just_audio_windows_plugin PRIVATE[\s\S]*?_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS/,
+  );
+  const justAudioBackend = read('lib/playback/just_audio_backend.dart');
+  assert.match(justAudioBackend, /AudioPlayer\(useProxyForRequestHeaders: useProxyForRequestHeaders\)/);
+  assert.match(justAudioBackend, /required bool supportsRequestHeaders/);
+  assert.match(justAudioBackend, /headers\.isNotEmpty && !supportsRequestHeaders/);
+  assert.match(justAudioBackend, /AudioSource\.uri\(resource, headers: ephemeralHeaders\)/);
+  for (const path of sources) {
+    assert(!/LockCachingAudioSource|clearAssetCache|StreamAudioSource/.test(read(path)), `${path} adds caching or byte-stream audio`);
+  }
   for (const path of sources.filter(path => path.startsWith('lib/shells/'))) {
     assert(!/import\s+['"][^'"]*\/playback\//.test(read(path)), `${path} owns playback logic`);
   }

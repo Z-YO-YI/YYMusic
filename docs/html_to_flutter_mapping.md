@@ -36,7 +36,7 @@ Phase3G实现平台安全凭据边界，但明确不迁移HTML `localStorage`里
 
 Phase3H把HTML示例状态映射到独立开发入口的真实数据合同：四首曲目及专辑/艺人、两个开发歌单、三项队列和`A Quiet Orbit`十行双语时间歌词均经正式Drift Repository往返。为避免把网页的Cloud/REST/本地演示能力冒充实现，所有曲目统一标记为禁用开发来源，来源仅使用`https://fixture.invalid`且没有credentialRef、用户路径、content URI、artwork URI、可播放URL、收藏/历史或connected状态。默认`main.dart`打开空白生产库且不导入Fixture；只有显式`main_dev.dart`使用一次性内存库。
 
-Phase4A把网页的`currentTrack/playing/progress/queueIds/shuffle/repeat`全局变量替换为唯一`PlaybackState`和根级`PlaybackController`：引擎只发布独立音频事实，队列持久化到既有CollectionRepository，随机/循环/自然完成由Controller执行，QueueController不保存副本。网页object URL与demoTimer没有迁移；短期本地/Android/HTTPS引用改由全量脱敏PlayableSource在resolve后立即交给AudioEngine。Phase4B新增隔离的media_kit候选适配器并通过Fake合同与Android原生打包；Phase4C/4D又在Windows/Android原生进程通过本地WAV、受控HTTPS/Header及Android `content://`。候选仍未接生产入口或取得许可证闭环，当前正式入口不会播放Fixture或模拟进度。
+Phase4A把网页的`currentTrack/playing/progress/queueIds/shuffle/repeat`全局变量替换为唯一`PlaybackState`和根级`PlaybackController`：引擎只发布独立音频事实，队列持久化到既有CollectionRepository，随机/循环/自然完成由Controller执行，QueueController不保存副本。网页object URL与demoTimer没有迁移；短期本地/Android/HTTPS引用改由全量脱敏PlayableSource在resolve后立即交给AudioEngine。Phase4B新增隔离的media_kit候选适配器并通过Fake合同与Android原生打包；Phase4C/4D又在Windows/Android原生进程通过本地WAV、受控HTTPS/Header及Android `content://`。Phase4E新增同一合同下的just_audio + Windows WinRT备用适配器，并对不支持的Header失败关闭。两个候选仍未接生产入口或取得许可证闭环，当前正式入口不会播放Fixture或模拟进度。
 
 ## 六条核心流程与行为边界
 
