@@ -74,10 +74,12 @@ void main() {
     );
     final progressWatch = Stopwatch()..start();
     await engine.play().timeout(const Duration(seconds: 10));
-    final playingState = await progressed.timeout(const Duration(seconds: 20));
-    final durationState = await durationKnown.timeout(
-      const Duration(seconds: 20),
-    );
+    final playbackEvidence = await Future.wait([
+      progressed.timeout(const Duration(seconds: 20)),
+      durationKnown.timeout(const Duration(seconds: 20)),
+    ]);
+    final playingState = playbackEvidence[0];
+    final durationState = playbackEvidence[1];
     progressWatch.stop();
     expect(playingState.volume, closeTo(0.2, 0.001));
     expect(playingState.playbackRate, closeTo(1.25, 0.001));

@@ -341,6 +341,10 @@ test('native audio POCs run only on explicit read-only dual-platform CI', () => 
     native.match(/integration_test\/just_audio_native_local_poc_test\.dart/g)?.length,
     2,
   );
+  assert.match(
+    native,
+    /Require a real Windows playback endpoint[\s\S]*?AudioEndpointBuilder[\s\S]*?Audiosrv[\s\S]*?Get-PnpDevice -Class AudioEndpoint -PresentOnly[\s\S]*?playbackEndpoints\.Count -eq 0/,
+  );
   assert.equal(
     native.match(/node tools\/generate_native_audio_poc_tls\.mjs/g)?.length,
     2,

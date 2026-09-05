@@ -130,6 +130,21 @@ void main() {
         (jobs['android-just-audio'] as YamlMap)['runs-on'],
         'ubuntu-24.04',
       );
+      final windowsJustAudioSteps =
+          ((jobs['windows-just-audio'] as YamlMap)['steps'] as YamlList)
+              .cast<YamlMap>();
+      final windowsAudioPreflight = windowsJustAudioSteps.singleWhere(
+        (step) => step['name'] == 'Require a real Windows playback endpoint',
+      );
+      expect(windowsAudioPreflight['shell'], 'pwsh');
+      expect(
+        windowsAudioPreflight['run'],
+        allOf(
+          contains("@('AudioEndpointBuilder', 'Audiosrv')"),
+          contains('Get-PnpDevice -Class AudioEndpoint -PresentOnly'),
+          contains('playbackEndpoints.Count -eq 0'),
+        ),
+      );
       for (final id in ['windows-just-audio', 'android-just-audio']) {
         final job = jobs[id] as YamlMap;
         expect(job['permissions'], isNull);

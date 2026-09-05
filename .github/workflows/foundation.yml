@@ -240,6 +240,32 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
       - run: flutter pub get --enforce-lockfile
+      - name: Require a real Windows playback endpoint
+        shell: pwsh
+        run: |
+          $serviceNames = @('AudioEndpointBuilder', 'Audiosrv')
+          foreach ($serviceName in $serviceNames) {
+            Set-Service -Name $serviceName -StartupType Manual
+            Start-Service -Name $serviceName
+          }
+
+          $services = Get-Service -Name $serviceNames
+          $playbackEndpoints = @(
+            Get-PnpDevice -Class AudioEndpoint -PresentOnly -ErrorAction SilentlyContinue |
+              Where-Object {
+                $_.Status -eq 'OK' -and
+                $_.FriendlyName -notmatch 'Microphone|Input'
+              }
+          )
+          $serviceSummary = ($services |
+            ForEach-Object { "$($_.Name)=$($_.Status)" }) -join ','
+          Write-Host "YYMUSIC_WINDOWS_AUDIO_ENV services=$serviceSummary playbackEndpoints=$($playbackEndpoints.Count)"
+          if ($services.Where({ $_.Status -ne 'Running' }).Count -ne 0) {
+            throw 'The Windows audio services are not running.'
+          }
+          if ($playbackEndpoints.Count -eq 0) {
+            throw 'No real Windows playback endpoint is available on this runner.'
+          }
       - name: Run generated WAV through the Windows just_audio backend
         run: flutter test --no-pub integration_test/just_audio_native_local_poc_test.dart -d windows --reporter expanded
 
