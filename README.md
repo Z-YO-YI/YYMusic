@@ -1,16 +1,16 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 4J Windows本机原生WAV连续两次通过；Phase 4F网络/Content URI验收待继续**。GitHub精确提交`25747bc`的完整Profile诊断包，在本机真实Windows进程通过load、play、position、seek、pause、volume、rate、completed和stop；64个运行文件启动前后指纹一致。该提交的GitHub Android/Windows Debug也通过。测试入口与正式应用隔离，生产仍使用`UnavailableAudioEngine`，尚不能作为可用音乐应用交付。Phase4H已移除被拒绝的`media_kit`候选；正式播放器接线、REST Adapter和业务页面待完成。本机C++/Debug CRT/插件链接权限和GitHub托管机缺端点的限制没有被更改。
+当前阶段：**Android + Windows · Phase 4K Android 当前候选本地 WAV / content URI 原生验证通过；Phase 4F HTTPS 与正式接线未完成**。实现提交 `33a0b3c` 的 GitHub Android API36 两项原生测试、标准 Android/Windows Debug 均通过；content URI 覆盖缺失文件脱敏失败、同引擎恢复和完整播放/释放。Phase4J 的 `25747bc` 完整 Profile 诊断包也已在本机 Windows 连续两次通过本地 WAV。测试入口与正式应用隔离，生产仍使用 `UnavailableAudioEngine`，尚不能作为可用音乐应用交付。Phase4H 已移除被拒绝的 `media_kit` 候选；HTTPS、最终候选决策、正式播放器接线、REST Adapter 和业务页面待完成。Phase2 网页截图对照仍欠验收，未改变系统工具链或权限。
 
 Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭、只允许手动选择、`contents: read`且不上传产物的Windows/Android原生集成模式。完整221项Flutter含32张Windows宿主Golden、严格分析0问题、31项Node、24项ZIP、lockfile及生成代码/v1快照零差异已通过；本机Android Debug也完成资产与v2单Debug签名复核。精确提交`622408e`的专用运行33862786766 attempt 2已在Windows与Android成功，且没有artifact或Release；普通push另提供保留14天的Windows开发Debug文件包。它依赖本机Debug CRT，并非通用免安装发行包；Phase4J的Profile诊断模式与正式应用分开。
 
-Phase4D实现提交`913f3d75`增加HEAD-only脱敏网络探针、Android debug-only只读Provider及运行时受控HTTPS测试。标准PR运行33878401743的checks、Windows Debug和Android Debug均成功；专用运行33878710671在Windows完成HTTPS，在Android完成HTTPS与`content://`真实native candidate播放，失败矩阵、进度、seek和completed均通过，且无artifact或Release。生产入口、TLS验证默认值和release Manifest未改变。
+历史 Phase4D 实现提交 `913f3d75` 增加 HEAD-only 脱敏网络探针、Android Debug-only 只读 Provider 及受控 HTTPS 测试；标准 PR 33878401743 和原生运行 33878710671 均成功。该原生证据属于后来被移除的 media_kit 候选，不能替代当前 just_audio 的 HTTPS 验收。历史记录和定位不变，生产入口、TLS 默认值及 Release Manifest 未改变。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
 ## 开发入口
 
-- [Phase 4K Android本地来源原生验证计划](docs/phase_4k_android_native_sources_plan.md)：当前批次复跑 WAV，并补只读 content URI 的失败、恢复与生命周期测试；结果以报告为准，不将待运行计为通过。
+- [Phase 4K Android本地来源原生验证计划](docs/phase_4k_android_native_sources_plan.md)、[本批报告](docs/phase_4k_android_native_sources_report.md)：WAV 复跑和只读 content URI 的失败、恢复、播放及释放已在 GitHub 通过；该原生运行无 artifact/Release。
 - [Phase 4J Windows原生诊断计划与运行方式](docs/phase_4j_windows_native_validation_plan.md)、[本批报告](docs/phase_4j_windows_native_validation_report.md)
 - [Phase 4I播放会话计划](docs/phase_4i_playback_consistency_plan.md)、[本批报告](docs/phase_4i_playback_consistency_report.md)
 - [Phase 4H media_kit候选移除计划](docs/phase_4h_media_kit_candidate_removal_plan.md)、[本批报告](docs/phase_4h_media_kit_candidate_removal_report.md)、[本批 PR 草稿](docs/phase_4h_media_kit_candidate_removal_pr_draft.md)
