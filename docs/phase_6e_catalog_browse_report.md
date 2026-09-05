@@ -44,6 +44,24 @@ Phase 2 网页对照缺口仍独立记录，未绕过此前浏览器安全限制
 
 ## GitHub 与剩余边界
 
+### Windows Golden 时钟修正
+
+`f0533282ac8d4a8e093cf76b5297d5b8637adf8f` 的 push `33980871736` / PR `33980884794`
+均通过源码检查与 Android Debug，但 Windows 在旧首页 `home_windows_narrow_sources` Golden
+失败（0.91%，6888 像素）；Windows 后续原生构建/窗口验收未执行，不能记为成功。
+首次云端失败没有上传截图产物，本机相同 Golden 命令仍 55/55 通过。
+
+检查发现 HomeGraphFixture 未传时钟，FakeLibraryRepository 构造八首样本时逐首读取系统时间。
+粗精度时钟的相同时间按 ID 升序，递增时钟按入库时间倒序，造成可见“最近添加”顺序依赖宿主。
+新增两项受控时钟测试先真实失败：读取次数 8 而非 1，同一组样本在粗/细时钟下顺序相反。
+修正只在 HomeGraphFixture 捕获一次批次时间并传给 FakeLibraryRepository；没有修改生产代码、
+排序合同、FakeLibraryRepository 的真实时间语义、PNG 基线或比较阈值。
+
+修正后 425/425 Flutter（55 Golden 不变）、71/71 Node、严格 analyze 0、237 文件格式零修改；
+两项新回归与六张 Home Golden 单独 8/8 通过。Android Debug 重新构建与 48 资产/许可验证通过，
+APK SHA-256 与上文一致。生成文件/Schema/lockfile/全部生产 lib 零差异。
+修复提交将继续推送到同一个独立分支和 Draft PR #40，精确云端结果单独回填；未把本机通过当作云端通过。
+
 前置 Phase 6D `40fb7a6` 的两组 GitHub checks / Android / Windows / Golden / 原生窗口均成功，
 已在 Phase 6D 报告与 Draft PR #39 回填精确日志，不算作本批构建成功。
 本批提交推送后以 `codex/native-search-surfaces` 为 base 创建 stacked Draft PR；

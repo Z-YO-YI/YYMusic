@@ -2,10 +2,12 @@
 
 当前增量Phase6E：正式音乐库只读查询合同，歌曲/专辑/艺术家排序、来源/可用性组合筛选、
 来源隔离详情及分页关联查询；同一根Library提供Browse/Search合同，不增数据库或播放器。
-423 Flutter（55 Golden不变）/71 Node、严格分析和本地Android Debug通过；
+425 Flutter（55 Golden不变）/71 Node、严格分析和本地Android Debug通过；
 分支`codex/catalog-browse-data`，精确APK/云端状态见[Phase6E报告](phase_6e_catalog_browse_report.md)。
 前置Phase6D `40fb7a6`、Draft PR #39两组GitHub checks/Android/Windows及真实窗口测试成功，未合并。
-本批未改UI，接下来实现音乐库原生布局/控制器。首页/搜索已接线，在线区域只查已保存REST引用；
+本批f053328两组CI的Android/源码成功、Windows旧首页Golden失败，已定位并修正测试批次时钟，
+未改PNG基线或生产代码；修正后的云端结果待验。本批未改UI，接下来实现音乐库原生布局/控制器。
+首页/搜索已接线，在线区域只查已保存REST引用；
 导入/实时REST、其余业务页、完整播放器和上线仍未完成。下方旧阶段记录保留历史归属。
 
 更新：2026-09-05。当前在 Phase 5 三套 Shell 接线；Phase 0—4 已有实现与审计产物，Phase 2 仍欠网页截图对照。Phase4L 已在同一实现提交验证 Android WAV/content URI/HTTPS 与 Windows WAV/HTTPS。Phase4G 的 `media_kit` 分发审计未通过，Phase4H 已移除该活动候选。许可材料、查看入口及 ADR-044 工程选型已完成，默认入口不再使用 UnavailableAudioEngine；独立测试 Graph/main_dev 仍保留不可用后端。正式 Shell 底栏已可控制根播放器，业务曲库/导入、完整播放页面与 Phase5 其余部分/Phase6—11 未完成，不能作为可用音乐应用交付。下文旧阶段的未接线描述保留历史归属。

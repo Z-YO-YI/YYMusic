@@ -9,7 +9,7 @@ import 'fake_playback_dependencies.dart';
 
 /// Only deterministic test labels; production Home never imports fixtures.
 final class HomeGraphFixture {
-  HomeGraphFixture({bool empty = false}) {
+  HomeGraphFixture({bool empty = false, DateTime Function()? clock}) {
     tracks = empty
         ? []
         : [
@@ -27,7 +27,10 @@ final class HomeGraphFixture {
                     : TrackAvailability.available,
               ),
           ];
-    library = FakeLibraryRepository(tracks: tracks);
+    // A fixture batch has one timestamp. Per-track wall-clock reads make the
+    // recent order depend on host clock precision and can reorder goldens.
+    final addedAt = (clock ?? DateTime.now)().toUtc();
+    library = FakeLibraryRepository(tracks: tracks, clock: () => addedAt);
     collection = FakeCollectionRepository(
       history: [
         for (final track in tracks.take(6))

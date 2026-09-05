@@ -2,6 +2,10 @@
 
 当前阶段：**Android + Windows · Phase 6E 音乐库浏览数据层**。新增歌曲/专辑/艺术家排序、来源与可用性组合筛选、完整来源身份详情和分页查询，与首页/搜索共享根数据库。423项Flutter（55张既有Golden未改）、71项Node、严格分析及本地Android Debug通过；本批GitHub状态见报告/对应Draft PR。前置Phase6D `40fb7a6`的两组GitHub Android/Windows构建与原生窗口检查均成功。音乐库原生页面是下一增量；导入/REST、后续业务页、完整播放器、Phase2网页对照和Phase11发布仍未完成，尚不是完整可用或上线版本。
 
+Phase6E 后续修正：初始云端 Android/源码成功，Windows 旧首页 Golden 因测试样本逐首读取时钟而排序不稳定。
+已固定样本批次时间；425 Flutter/71 Node 与本地 Android 通过，55 张基线和生产代码均未改。
+修复后的云端双平台结果以 [PR #40](https://github.com/Z-YO-YI/YYMusic/pull/40) 为准。
+
 Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭、只允许手动选择、`contents: read`且不上传产物的Windows/Android原生集成模式。完整221项Flutter含32张Windows宿主Golden、严格分析0问题、31项Node、24项ZIP、lockfile及生成代码/v1快照零差异已通过；本机Android Debug也完成资产与v2单Debug签名复核。精确提交`622408e`的专用运行33862786766 attempt 2已在Windows与Android成功，且没有artifact或Release；普通push另提供保留14天的Windows开发Debug文件包。它依赖本机Debug CRT，并非通用免安装发行包；Phase4J的Profile诊断模式与正式应用分开。
 
 历史 Phase4D 实现提交 `913f3d75` 增加 HEAD-only 脱敏网络探针、Android Debug-only 只读 Provider 及受控 HTTPS 测试；标准 PR 33878401743 和原生运行 33878710671 均成功。该原生证据属于后来被移除的 media_kit 候选，不能替代当前 just_audio 的 HTTPS 验收。历史记录和定位不变，生产入口、TLS 默认值及 Release Manifest 未改变。
