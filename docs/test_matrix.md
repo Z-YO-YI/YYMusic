@@ -1,6 +1,6 @@
 # 原生基础验证矩阵
 
-保留Phase4D的225项Flutter检查，Phase4E新增7项just_audio候选单元测试，共232项Flutter；Phase4G新增4项media_kit分发门禁反向测试，共35项Node。不包含用户音乐、在线密钥、媒体二进制、证书或私钥。media_kit真实原生运行只由手动、只读、不上传产物的Windows/Android专用工作流取得；just_audio的Windows真时钟证据仍因无播放端点而失败关闭。
+Phase4H删除已拒绝media_kit适配器的5项Fake测试后，保留227项Flutter检查；35项Node仍包含4项历史清单/失败关闭反向门禁。不包含用户音乐、在线密钥、媒体二进制、证书或私钥。旧media_kit原生POC job已经移除，只保留默认关闭、只读且不上传产物的just_audio双平台手动作业；其Windows真时钟证据仍因无播放端点而失败关闭。
 
 | 类别 | 已有自动检查 |
 | --- | --- |
@@ -43,17 +43,18 @@
 | Phase4D 原生来源 | HEAD-only HTTPS探针、禁止自动重定向/响应持久化、HTTP与offline/timeout/TLS脱敏映射；Android debug-only只读Provider；双平台受控HTTPS及Android content URI真实candidate集成测试 |
 | Phase4E just_audio候选 | file/content/HTTPS瞬时映射、load不自动播放、五种processing与八阶段合成、未知duration、transport/Seek/volume/rate、命令/异步错误脱敏、Header能力未声明时预拒绝、并发幂等释放；插件只在单一backend文件，生产入口不创建候选 |
 | Phase4G media_kit分发门禁 | 四个package版本/许可指纹、Android 4 JAR/8 SO与APK 6 SO、Windows 7z/DLL与Debug bundle、内嵌FFmpeg/mpv配置、来源映射/阻断；拒绝擅自approved、删除阻断、APK→JAR哈希漂移或生产接线 |
+| Phase4H 候选移除门禁 | pubspec/lockfile无任何media_kit包，活动适配器/测试/CI输入和双平台注册为0；历史manifest固定rejected/inactive；APK逐entry拒绝libmpv/helper/media_kit，生产仍Unavailable；测试数只减少已删除的5项候选Fake |
 | Golden | 保留Windows Shell及既有组件29张；新增浅珊瑚/深翡翠/自定义白ReduceGlass队列歌词板3张，总计32张精确像素比较，旧基线不改 |
 
 ## CI
 
-`.github/workflows/foundation.yml`：checks 在 Ubuntu24.04 跑 Node/PowerShell 源核验、Dart格式/严格分析/Flutter测试；checks 成功后独立 Windows2025 Debug 和 Ubuntu Android Debug 构建。push feat/fix、PR或手动运行触发，超时20/30分钟。Android执行验签/48文件比对/三文件白名单；只有手动workflow_dispatch在全部门禁后创建私有draft/prerelease，普通push/PR不创建下载产物。个人令牌不注入runner，checkout不保留凭据。
+`.github/workflows/foundation.yml`：checks 在 Ubuntu24.04 跑 Node/PowerShell 源核验、Dart格式/严格分析/Flutter测试；checks 成功后独立 Windows2025 Debug 和 Ubuntu Android Debug 构建。push feat/fix/refactor/docs、PR或手动运行触发，超时20/30分钟。Android执行验签/48文件比对/三文件白名单和被拒绝原生库排除；只有手动workflow_dispatch在全部门禁后创建私有draft/prerelease，普通push/PR不创建下载产物。个人令牌不注入runner，checkout不保留凭据。
 
-`.github/workflows/foundation.yml`的`run_native_audio_poc`布尔输入默认关闭；只有显式手动设为`true`才在Windows 2025和Ubuntu 24.04 Android API36 x86_64模拟器运行同一生成WAV测试，并跳过具有写权限的Android发布job。Emulator action固定完整提交SHA；native路径不使用Secret、不上传artifact、不构建/发布APK且不创建Release。普通push的Windows Debug另上传保留14天的完整portable bundle，PR不重复上传。结果只适用于被触发的精确提交。
-
-Phase4D另使用默认关闭的`run_native_audio_source_poc`；显式手动选择后才生成忽略的短期loopback TLS defines，并运行Windows受控HTTPS与Android content URI/受控HTTPS作业。原始cert/key生成后立即删除，专用作业仍为`contents: read`且无artifact/Release；标准push/PR不生成TLS材料。
+`.github/workflows/foundation.yml`只保留`run_just_audio_poc`手动输入；显式设为`true`后才在Windows 2025和Ubuntu 24.04 Android API36 x86_64模拟器运行同一生成WAV测试，并跳过具有写权限的Android发布job。Windows先要求真实播放端点，缺失即失败关闭。Emulator action固定完整提交SHA；native路径不使用Secret、不上传artifact、不构建/发布APK且不创建Release。普通push的Windows Debug另上传保留14天的完整portable bundle，PR不重复上传。结果只适用于被触发的精确提交。
 
 Phase4E修复提交`a2b517b`的PR运行33936726367与push运行33936724989均完成checks、Windows Debug和Android Debug。push的Windows Debug artifact按既有策略保留14天；Android签名/48资产/打包成功但Release步骤skipped，匹配新Release为0。该证据只证明备用候选编译/打包，不证明native播放。
+
+Phase4H目标提交`2ec37ef`的push运行33946021637和PR运行33946023102均完成checks、Windows Debug与Android Debug。Windows上传前排除门禁通过；push artifact下载ZIP共64项、66,407,581字节，API/download SHA-256一致且libmpv/media_kit为0。PR artifact与匹配Release均为0。该证据只证明被拒绝候选已从当前双平台包移除，不证明正式音频选型完成。
 
 32张Golden按Windows宿主标记，Linux明确跳过（非静默通过）并运行完整非Golden回归，Windows job构建前执行`flutter test --tags windows-golden`。checks在分析前重跑build_runner与make-migrations，并要求g.dart/v1快照Git零差异。没有删除或跳过原有回归，远程状态须按目标commit单独核验。
 

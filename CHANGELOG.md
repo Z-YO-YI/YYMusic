@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-09-05 — Phase 4H 移除被拒绝的 media_kit 活动候选
+
+- 从pubspec/lockfile、Windows生成注册、活动源码和CI删除`media_kit`候选及13个直接/传递包；Phase4B—4G历史证据和机器清单仍保留。
+- 删除两个候选适配器、5项Fake单元测试和两个历史集成测试；四个media_kit手动POC job/输入不再暴露，仅保留仍待Windows端点验收的`just_audio`原生POC。
+- 将历史清单锁定为`blocked`、`decision=rejected`、`activeDependency=false`，审计门禁拒绝依赖、源码、生成注册、CI或APK原生库回流。
+- Android干净Debug为194,098,216字节、SHA-256 `4f36802c6807371c383d91e9a69d320ada0f0857caa4da45f1637ba005241e69`，较279,085,047字节候选基线减少84,986,831字节；10项native entry中media_kit/libmpv为0，v2单Debug签名和48项资产通过。
+- 本地Node 35/35、Flutter 227/227、严格analyze、152文件format、生成/Schema及24/24原ZIP均通过；本机Windows仍受Developer Mode symlink限制，交由GitHub Windows 2025干净构建复核。
+- 补齐`refactor/**`与`docs/**`的push CI触发，避免符合仓库规则的非feat/fix分支漏掉Windows portable artifact。
+- 新增Windows portable bundle上传前门禁，要求应用/Flutter资产完整且libmpv/media_kit文件为0。
+- `2ec37ef`的GitHub push/PR双平台三job均成功；push Windows ZIP为66,407,581字节、64项且API digest匹配，libmpv/media_kit为0，PR artifact与匹配Release为0。
+
 ## 2026-09-05 — Phase 4G media_kit 原生分发审计（失败关闭）
 
 - 逐字节映射Android v1.1.8四个JAR/八个SO、Debug APK三ABI，以及Windows 2023-09-24归档/DLL与Phase4C GitHub bundle。

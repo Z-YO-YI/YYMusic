@@ -178,3 +178,18 @@ revision/patch无法完整映射。两个归档都缺LICENSE/NOTICE、对应源�
 `inventory-only`/`blocked`，生产仍使用UnavailableAudioEngine；完整证据见
 [Phase4G清单](phase_4g_media_kit_redistribution_inventory.md)。后续只能从不可变来源重建并承担发行材料，
 或继续与音频选型解耦的业务实现，不能把wrapper MIT或Debug构建成功当作发布许可。
+
+## Phase 4H 被拒绝候选的活动依赖处置（2026-09-05）
+
+Phase4G的`blocked`结论现在落实为工程状态：`media_kit 1.2.6`、`media_kit_libs_audio 1.0.7`
+及11个只由它们带入的传递包已从当前lockfile移除；两个适配器、对应Fake/原生测试、Windows生成注册和
+四个历史手动POC job也不再活动。Git历史、Phase4B—4G报告和原生哈希清单保留，不删改既有运行证据。
+
+机器manifest明确区分“历史审计对象”和“当前依赖”，固定`decision=rejected`与
+`activeDependency=false`。门禁要求pubspec/lockfile、生产入口、活动候选文件、双平台生成注册、CI输入和
+Android APK均不得重新出现该候选；若未来从不可变源码建立新候选，必须通过新的显式决策和完整发行审查，
+不能直接翻转历史清单。
+
+当前音频选择仍未完成。`just_audio`只保留为隔离备用候选，其Android原生POC已通过、Windows仍缺真实
+播放端点；生产继续使用`UnavailableAudioEngine`。移除media_kit不授权Phase5、不引入代理、下载、缓存、
+离线保存、WebView、后台服务或新的平台权限。

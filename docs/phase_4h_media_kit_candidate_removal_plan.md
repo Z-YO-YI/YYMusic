@@ -5,7 +5,7 @@
 Android Debug并成功；从该提交创建`refactor/remove-media-kit-candidate`，不在main/master开发。
 
 Phase4G已经证明当前`media_kit_libs_audio`原生发布链无法满足YYMusic的可复核分发门禁。继续让这些
-未获批准的SO/DLL进入每个Debug包既增加约89 MB Android体积，也会让后续误发风险持续存在。本阶段只
+未获批准的SO/DLL进入每个Debug包会增加体积，也会让后续误发风险持续存在。本阶段只
 移除被拒绝候选及其活动POC入口，保留Git历史、Phase4B—4D报告和Phase4G原始证据；不把`just_audio`
 提前标记为正式backend，也不声称Phase4双平台出口已关闭。
 
