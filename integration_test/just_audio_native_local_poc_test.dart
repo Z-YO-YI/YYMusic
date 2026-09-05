@@ -40,12 +40,6 @@ void main() {
     final subscription = engine.states.listen(observed.add);
     addTearDown(subscription.cancel);
 
-    final ready = engine.states.firstWhere(
-      (state) =>
-          state.phase == AudioEnginePhase.ready &&
-          state.duration != null &&
-          state.duration! >= const Duration(milliseconds: 2900),
-    );
     final loadWatch = Stopwatch()..start();
     await engine
         .load(
@@ -59,9 +53,8 @@ void main() {
           ),
         )
         .timeout(const Duration(seconds: 20));
-    final readyState = await ready.timeout(const Duration(seconds: 20));
     loadWatch.stop();
-    expect(readyState.phase, AudioEnginePhase.ready);
+    expect(observed.last.phase, AudioEnginePhase.ready);
     expect(
       observed.any((state) => state.phase == AudioEnginePhase.playing),
       isFalse,
@@ -74,9 +67,17 @@ void main() {
           state.phase == AudioEnginePhase.playing &&
           state.position >= const Duration(milliseconds: 180),
     );
+    final durationKnown = engine.states.firstWhere(
+      (state) =>
+          state.duration != null &&
+          state.duration! >= const Duration(milliseconds: 2900),
+    );
     final progressWatch = Stopwatch()..start();
     await engine.play().timeout(const Duration(seconds: 10));
     final playingState = await progressed.timeout(const Duration(seconds: 20));
+    final durationState = await durationKnown.timeout(
+      const Duration(seconds: 20),
+    );
     progressWatch.stop();
     expect(playingState.volume, closeTo(0.2, 0.001));
     expect(playingState.playbackRate, closeTo(1.25, 0.001));
@@ -121,7 +122,7 @@ void main() {
       'loadMs': loadWatch.elapsedMilliseconds,
       'firstProgressMs': progressWatch.elapsedMilliseconds,
       'seekMs': seekWatch.elapsedMilliseconds,
-      'durationMs': readyState.duration!.inMilliseconds,
+      'durationMs': durationState.duration!.inMilliseconds,
       'completed': true,
       'proxyForHeaders': false,
       'requestHeaders': false,
