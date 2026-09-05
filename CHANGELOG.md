@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-09-05 — Phase 4E just_audio + Windows WinRT 备用候选
+
+- 精确锁定`just_audio 0.10.6`与`just_audio_windows 0.2.3`，记录六个新增包、Android Media3 1.4.1、Windows WinRT构建和许可证文件指纹。
+- 新增隔离的JustAudioPlayerBackend/JustAudioEngine；三类来源、状态、命令、未知时长、错误脱敏、Header失败关闭和幂等释放受7项单元测试保护，生产入口保持UnavailableAudioEngine。
+- 禁止缓存/下载/离线API；Windows直接Header不支持时在插件调用前拒绝，不静默丢弃凭据。
+- 152文件format、严格analyze 0问题、完整232项Flutter/32 Golden、31项Node、24项ZIP通过；Dart lockfile严格复现。
+- 本机Android Debug为279,085,047字节、SHA-256 `bba16856f7cdbc3c909172cafa75ee07c345067cb50f66dcc6cfe21e9adbf601`；48资产、0参考源、Media3解析、权限和v2单Debug签名已核验。
+- 本机Windows因Developer Mode关闭不能创建plugin symlink；目标提交GitHub三job及无Release证据待推送后补记，不触发手动APK Release。
+
 ## 2026-09-04 — Phase 4D Content URI 与受控 HTTPS 音频 POC
 
 - 新增HEAD-only HTTPS探针，禁止自动重定向和响应持久化；将HTTP状态及offline/timeout/TLS失败映射为脱敏DomainFailure。

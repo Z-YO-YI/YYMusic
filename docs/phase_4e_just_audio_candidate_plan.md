@@ -20,7 +20,7 @@ NOTICE。这个事实不构成法律结论，但在可复核的源码、构建�
 
 - 精确解析上述两个版本，不升级Flutter或既有依赖；记录完整lockfile、许可证文件和原生依赖事实。
 - 新增项目自有`JustAudioPlayerBackend`边界，只有一个playback文件可导入`package:just_audio`；插件类型
-  不进入Domain、Controller、UI、Shell或生产组合。
+  不进入Domain、Controller、UI、Shell或生产组合。Header能力必须由创建方显式声明，未声明时在插件调用前失败关闭。
 - 新增`JustAudioEngine`候选，映射本地文件、Android `content://`、HTTPS、状态、位置、缓冲、时长、
   音量、速率、completed和脱敏错误；`load`不得自动播放。
 - 使用可注入Fake backend验证串行命令、三类来源、状态合成、参数边界、异常脱敏与幂等释放。
@@ -29,7 +29,7 @@ NOTICE。这个事实不构成法律结论，但在可复核的源码、构建�
 
 ## Header与网络约束
 
-- Android候选仅允许平台原生Header路径，不启用透明缓存或下载。
+- Android候选仅允许经后续native POC确认的平台原生Header路径，不启用透明缓存或下载；本批不预先把能力标记为可用。
 - `just_audio_windows`不支持直接Header。本批不得静默丢弃Header，也不得把带凭据URL写入日志。
 - 若后续Phase4F评估瞬时loopback relay，必须只绑定loopback、使用不可预测会话能力、支持Range、边读边转发、
   不写磁盘、不缓存、不接受任意目标，并在dispose时关闭全部socket；否则带Header的Windows来源判定不支持。
@@ -41,7 +41,7 @@ NOTICE。这个事实不构成法律结论，但在可复核的源码、构建�
 | --- | --- |
 | 依赖 | `flutter pub get --enforce-lockfile`可复现；版本与许可证清单精确，现有依赖不漂移 |
 | 隔离 | `package:just_audio`只出现在单一backend文件；生产入口和Shell不导入候选 |
-| 来源 | Windows绝对路径转file URI；Android content URI原样；HTTPS Header不得丢失或持久化 |
+| 来源 | Windows绝对路径转file URI；Android content URI原样；HTTPS Header要么显式支持并瞬时转发，要么在插件调用前失败关闭 |
 | 状态 | idle/loading/ready/buffering/playing/paused/completed/error由同一snapshot合成 |
 | 控制 | play/pause/stop/seek/volume/rate串行；非法值在插件调用前拒绝 |
 | 安全 | 原始URL、query、Header、插件异常不进入DomainFailure、日志、Drift或Fixture |

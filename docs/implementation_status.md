@@ -1,6 +1,6 @@
 # 实施状态
 
-更新：2026-09-04。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。Phase 3及Phase4A—4D已关闭；精确提交`913f3d75e06a144c25c56175b5c9428d1090f44f`已在Windows 2025与Android API36 x86_64云端原生进程完成受控HTTPS、Android `content://`、失败映射及load/play/seek/completed验证。传递native许可证仍未闭合，候选不能接入生产或发布。
+更新：2026-09-05。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。Phase 3及Phase4A—4D已关闭；Phase4E的just_audio备用候选已完成本地适配、失败关闭Header合同、完整回归和Android打包，目标提交的GitHub Windows/Android构建待推送后核验。两个候选都未接生产，传递许可证与正式选型仍未闭合。
 
 | 阶段/能力 | 状态 |
 | --- | --- |
@@ -30,23 +30,23 @@
 | Phase 4B 候选适配/打包 POC | media_kit 1.2.6 + audio libs已解析；项目适配器、5项Fake测试、完整本地门禁、本机Android native打包及目标提交GitHub push/PR双平台三job通过；生产入口未接候选，native许可证和真实播放未闭合 |
 | Phase 4C 双平台原生本地音频 POC | 已关闭：精确提交`622408e`的专用运行33862786766 attempt 2在Windows/Android均成功，覆盖固定WAV的load不自动播放、play/position/seek/pause/volume/rate/completed/stop；不接生产入口、不上传产物/Release |
 | Phase 4D Content URI与受控HTTPS音频 POC | 已关闭：实现提交`913f3d75`的标准PR三job与专用运行33878710671成功；Android debug-only Provider、双平台loopback HTTPS、Android content URI、Header与脱敏失败映射均通过；零artifact/Release，不接生产、不提交证书/音频 |
-| Phase 4E just_audio + Windows WinRT备用候选 | 已开始：先验证精确依赖、项目适配边界、Fake合同和双平台Debug打包；Windows直接Header明确不支持，不接生产、不发布 |
+| Phase 4E just_audio + Windows WinRT备用候选 | 本地实现完成：精确依赖/许可指纹、隔离适配器、7项Fake合同、Header失败关闭、完整门禁与Android Debug通过；目标提交GitHub三job待核验，不接生产、不发布 |
 | 后续页面、歌词、导入、来源、平台集成 | 未开始 |
 | GitHub APK交付 | Phase4A ec508df的唯一手动运行33848236710创建私有草稿Release；190735487字节APK的三资产、metadata、SHA256SUMS、API digest、48份包内资产、Manifest及v2单签名已独立复核 |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
-| Flutter format/analyze/test | Phase4D格式检查153文件、严格分析0问题、完整225项含32张Windows宿主Golden全部通过；31项Node和24项ZIP通过 |
-| Windows / Android Debug构建 | `913f3d75`标准PR运行33878401743的checks、Windows Debug、Android Debug均成功；专用运行33878710671的Windows HTTPS与Android HTTPS/content URI原生测试成功。本机Android Debug及验签/资产复核通过，本机Windows C++工具链仍受UAC限制；Phase4C云端portable bundle已下载并完成8秒启动探针 |
+| Flutter format/analyze/test | Phase4E格式检查152文件、严格分析0问题、完整232项含32张Windows宿主Golden全部通过；31项Node和24项ZIP通过 |
+| Windows / Android Debug构建 | Phase4E本机Android Debug成功，279,085,047字节APK的48资产、权限、Media3解析和v2单Debug签名通过；本机Windows受Developer Mode/plugin symlink限制，目标提交GitHub Windows/Android Debug仍待核验 |
 
 ## 保留的验收缺口与后续边界
 
 1. 已执行安全归档：13个旧原型文件移入archive/sonic_gallery，指纹一致，f96197b保存；根lib是新骨架，不再是旧代码。
 2. 用户已批准补足工具链；Android命令行工具/API36/35、NDK及项目要求的CMake已安装，Windows C++安装等待UAC确认。GitHub Windows2025/Android的Phase3H Debug构建均已成功，但云端成功不等于本机Windows构建或安装验收。未批量接受所有Android许可。
-3. Phase4B加入media_kit候选但未正式选择：Android native JAR未携带LICENSE/NOTICE，Windows固定旧libmpv归档；传递许可证与真实双平台播放矩阵完成前不进入生产Bootstrap、不创建该候选的可下载APK。`just_audio`+Windows backend仍保留为回退比较。
+3. Phase4B加入media_kit候选但未正式选择：Android native JAR未携带LICENSE/NOTICE，Windows固定旧libmpv归档。Phase4E已实现just_audio+Windows WinRT回退适配，但Windows直接Header、真实native运行及最终NOTICE仍未验收。两者都不进入生产Bootstrap，也不创建候选的可下载APK。
 4. 已建立实时平台分类、三个Shell和根依赖；Windows Shell现有设计导航与跨平台Gallery，播放器、弹层、状态、队列及歌词组件仅存在于明确标注的Fixture，窗口Gateway、业务Overlay Manager、Inspector业务与正式播放器接线仍未实现。业务页面未实现，不把设计预览当成音乐业务交付。
 5. 为后续视觉验证准备获准且可访问的预览环境；遵守 Browser 技能边界，不绕过本轮 file: 拒绝。参考 screenshot 与 Flutter Golden 必须分别记录。
 
 ## 仓库边界
 
-开发分支：feat/native-audio-content-network-poc，基于已拉取并同步的feat/native-audio-local-poc@faf13f4。未在main/master直接开发；旧原型保留于归档提交。本批只增加debug-only Provider、受控HTTPS探针/服务器、集成测试、只读手动作业和文档，不改UI、生产Bootstrap、release权限或Drift v1 Schema。Phase4A Draft PR #17、Phase4B Draft PR #18、Phase4C Draft PR #19与Phase4D Draft PR #20均保持open/draft。
+开发分支：feat/just-audio-native-poc，基于已拉取并同步的feat/native-audio-content-network-poc@3da2f61。未在main/master直接开发；旧原型保留于归档提交。本批只增加备用依赖、隔离适配器、测试、Windows插件登记、跨盘符Kotlin构建配置和文档，不改UI、生产Bootstrap、release权限或Drift v1 Schema。Phase4A Draft PR #17、Phase4B Draft PR #18、Phase4C Draft PR #19与Phase4D Draft PR #20均保持open/draft；Phase4E PR待创建。
 
 用户于2026-09-04明确授权将`Z-YO-YI/YYMusic`由private改为public；变更前检查当前已跟踪文件及可见Git历史，未发现常见Token、私钥、`.env`或签名密钥文件。临时API访问令牌不持久化、不进入仓库。Phase3H Draft PR #16与APK证据仍只对应`27dd76c`；Phase4A Draft PR #17与APK证据只对应`ec508df`；Phase4C原生证据只对应`622408e`。

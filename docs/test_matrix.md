@@ -1,6 +1,6 @@
 # 原生基础验证矩阵
 
-保留Phase4C的221项Flutter检查，Phase4D新增4项网络探针单元测试，共225项Flutter、31项Node；不包含用户音乐、在线密钥、媒体二进制、证书或私钥。真实原生运行只由手动、只读、不上传产物的Windows/Android专用工作流取得。
+保留Phase4D的225项Flutter检查，Phase4E新增7项just_audio候选单元测试，共232项Flutter、31项Node；不包含用户音乐、在线密钥、媒体二进制、证书或私钥。media_kit真实原生运行只由手动、只读、不上传产物的Windows/Android专用工作流取得；just_audio本批只验证适配合同与Debug打包，不冒充原生播放。
 
 | 类别 | 已有自动检查 |
 | --- | --- |
@@ -41,6 +41,7 @@
 | Phase4B media_kit候选 | file/content/HTTPS与Header瞬时映射、open不自动播放、八阶段snapshot合成、0–1/0–100音量、transport/Seek/rate、命令/异步错误脱敏、并发dispose/幂等、插件只在单一playback backend文件；Fake不冒充native播放 |
 | Phase4C 原生本地WAV | 运行时固定PCM16/mono/16kHz/3秒字节与SHA、参数拒绝；Windows/Android同一集成测试验证load不自动播放、duration、play/position、seek、pause、volume/rate、completed、stop/idle、无error和dispose；不提交媒体二进制 |
 | Phase4D 原生来源 | HEAD-only HTTPS探针、禁止自动重定向/响应持久化、HTTP与offline/timeout/TLS脱敏映射；Android debug-only只读Provider；双平台受控HTTPS及Android content URI真实candidate集成测试 |
+| Phase4E just_audio候选 | file/content/HTTPS瞬时映射、load不自动播放、五种processing与八阶段合成、未知duration、transport/Seek/volume/rate、命令/异步错误脱敏、Header能力未声明时预拒绝、并发幂等释放；插件只在单一backend文件，生产入口不创建候选 |
 | Golden | 保留Windows Shell及既有组件29张；新增浅珊瑚/深翡翠/自定义白ReduceGlass队列歌词板3张，总计32张精确像素比较，旧基线不改 |
 
 ## CI
