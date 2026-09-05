@@ -30,12 +30,14 @@ final class CatalogDetailSections {
     required this.navigation,
     required this.tab,
     required this.onTab,
+    required this.menu,
   });
   final CatalogDetailController controller;
   final PlaybackPresenter playback;
   final AppNavigation navigation;
   final CatalogDetailTab tab;
   final ValueChanged<CatalogDetailTab> onTab;
+  final ValueChanged<Track> menu;
   bool get isArtist => controller.target is ArtistDetailTarget;
 
   Widget get toolbar => Padding(
@@ -159,7 +161,7 @@ final class CatalogDetailSections {
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       if (controller.actionError case final error?) ...[
-        YYErrorBanner(title: '播放未完成', message: error),
+        YYErrorBanner(title: '操作未完成', message: error),
         const SizedBox(height: 16),
       ],
       if (isArtist)
@@ -196,21 +198,27 @@ final class CatalogDetailSections {
       itemCount: controller.tracks.items.length,
       itemBuilder: (context, index) {
         final track = controller.tracks.items[index];
-        return YYTrackTile(
-          key: ValueKey(track.ref),
-          title: track.title,
-          subtitle: track.artists.join(' / '),
-          // All rows belong to the source shown in the header. Keep the short
-          // badge for availability so missing-file warnings remain visible.
-          sourceLabel: _availability(track),
-          durationLabel:
-              '${track.duration.inMinutes}:${(track.duration.inSeconds % 60).toString().padLeft(2, '0')}',
-          artwork: YYArtworkKind.local,
-          showMore: false,
-          playing: playback.trackRef == track.ref && playback.data.playing,
-          onPressed: controller.canPlay(track.ref)
-              ? () => unawaited(controller.play(track.ref))
-              : null,
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onLongPress: () => menu(track),
+          onSecondaryTapUp: (_) => menu(track),
+          child: YYTrackTile(
+            key: ValueKey(track.ref),
+            title: track.title,
+            subtitle: track.artists.join(' / '),
+            // All rows belong to the source shown in the header. Keep the short
+            // badge for availability so missing-file warnings remain visible.
+            sourceLabel: _availability(track),
+            durationLabel:
+                '${track.duration.inMinutes}:${(track.duration.inSeconds % 60).toString().padLeft(2, '0')}',
+            artwork: YYArtworkKind.local,
+            allowMoreWhenDisabled: true,
+            onMore: () => menu(track),
+            playing: playback.trackRef == track.ref && playback.data.playing,
+            onPressed: controller.canPlay(track.ref)
+                ? () => unawaited(controller.play(track.ref))
+                : null,
+          ),
         );
       },
     ),

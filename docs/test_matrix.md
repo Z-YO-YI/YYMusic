@@ -1,6 +1,16 @@
 # 原生基础验证矩阵
 
-Phase6G3 当前：512 Flutter（67 Golden）、78 Node、严格analyze0、267文件格式零修改。
+Phase6G4 当前：531 Flutter（70 Golden）、80 Node、严格analyze0、273文件格式零修改。
+新增9项单位（含真实SQLite）、7项Widget、3张菜单Golden、2项Node：收藏按需读取/已知状态、完整来源身份、
+失效曲目、读写失败与独立重试、重复命令、离页/刷新/关闭保留已接受写入、订阅创建重入与取消排空。
+真实Android Back先关菜单、Windows右键/Tab/Enter/方向键/Esc和焦点恢复、根播放、覆盖路由后菜单消失、
+Phone/Tablet断点/低高度130%文字通过；测试关闭助手显式推进零延迟事件，不再只flush微任务。
+原67张Golden只更新3张详情歌曲列表的更多按钮，其他64张不变；三张菜单与更新图均逐张查看，阈值不变。
+普通只读详情真实SQLite查询预算不变；生成/Schema/迁移/lockfile及参考原件未改。
+ZIP24、源码/包内完整许可、Android Debug/48资产/v2单签名通过，精确云端提交结果见本批PR。
+前置4386bd4两组GitHub checks/Android/Windows成功已复核；本批无新音频实机或HTML截图对照。
+
+Phase6G3 历史：512 Flutter（67 Golden）、78 Node、严格analyze0、267文件格式零修改。
 新增6项Widget：Phone/Tablet/Windows真实搜索→连续详情→搜索，同名同ID不同来源且带URI转义、
 条件/滚动/根状态保留、Windows Tab/Enter/Esc焦点恢复、引用删除不以同名替换、覆盖搜索撤销加载中播放。
 跳转不新发搜索、不写历史、不播放；切换到艺人筛选按原合同独立新增两来源查询，返回不重复执行。

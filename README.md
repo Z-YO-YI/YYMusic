@@ -1,6 +1,6 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 6G3 搜索详情入口**。搜索结果现在可直接查看专辑/艺人，复用既有原生详情与完整来源身份；连续返回保留搜索条件、滚动和键盘焦点，不隐式播放或写历史。512项Flutter（67张Golden）、78项Node、严格分析及本地Android Debug通过；本批GitHub精确提交构建状态见报告/对应Draft PR。前置Phase6G2 `7fe2e21` 两组GitHub checks/Android/Windows均成功。详情收藏菜单、歌单编辑、导入/REST、完整播放器及发布仍未完成，尚不是完整可用或上线版本。
+当前阶段：**Android + Windows · Phase 6G4 详情曲目菜单与收藏**。专辑／艺人详情支持更多、长按或右键打开原生菜单，播放与收藏复用根服务，失效曲目也可收藏；首次打开菜单才读收藏，未知状态禁止写入，已接受写入在离页后继续完成。531项Flutter（70张Golden）、80项Node、严格分析及本地Android Debug通过；本批GitHub精确提交构建状态见报告/对应Draft PR。前置Phase6G3 `4386bd4` 两组GitHub checks/Android/Windows均成功。歌单编辑、导入/REST、完整播放器及发布仍未完成，尚不是完整可用或上线版本。
 
 Phase6E 后续修正：初始云端 Android/源码成功，Windows 旧首页 Golden 因测试样本逐首读取时钟而排序不稳定。
 已固定样本批次时间；425 Flutter/71 Node 与本地 Android 通过，55 张基线和生产代码均未改。
@@ -14,6 +14,7 @@ Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭
 
 ## 开发入口
 
+- [Phase 6G4 详情菜单计划](docs/phase_6g4_catalog_detail_actions_plan.md)、[报告](docs/phase_6g4_catalog_detail_actions_report.md)：按需收藏投影、原生菜单、返回／焦点恢复和关闭期间写入／订阅排空。
 - [Phase 6G3 搜索详情入口计划](docs/phase_6g3_search_detail_navigation_plan.md)、[报告](docs/phase_6g3_search_detail_navigation_report.md)：专辑/艺人完整引用跳转、搜索返回状态/焦点及取消安全，不改变既有搜索语义。
 - [Phase 6G2 原生详情计划](docs/phase_6g2_catalog_detail_surfaces_plan.md)、[报告](docs/phase_6g2_catalog_detail_surfaces_report.md)：完整来源路由、三端布局、保留返回/滚动状态、取消安全播放和可重试的真实状态。
 - [Phase 6G1 详情会话计划](docs/phase_6g1_catalog_detail_sessions_plan.md)、[报告](docs/phase_6g1_catalog_detail_sessions_report.md)：强类型摘要/分区、根注册与排空、真实SQLite回归和短页容量修复；不宣称详情页面已经接线。

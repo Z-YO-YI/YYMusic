@@ -141,7 +141,7 @@ void main() {
   );
 
   testWidgets(
-    'detail track action updates the sole player and unavailable rows have no fake menu',
+    'detail track action updates the sole player and unavailable rows retain real overflow actions',
     (tester) async {
       final f = CatalogDetailGraphFixture();
       await mountDetail(tester, f);
@@ -167,14 +167,16 @@ void main() {
       );
       final row = tester.widget<YYTrackTile>(find.byKey(ValueKey(missing.ref)));
       expect(row.onPressed, isNull);
-      expect(row.showMore, isFalse);
+      expect(row.showMore, isTrue);
+      expect(row.onMore, isNotNull);
+      expect(row.allowMoreWhenDisabled, isTrue);
       expect(row.sourceLabel, '文件失效');
       expect(
         find.descendant(
           of: find.byKey(ValueKey(missing.ref)),
           matching: find.byType(YYIconButton),
         ),
-        findsNothing,
+        findsOneWidget,
       );
       expect(tester.takeException(), isNull);
       await closeDetail(tester, f);

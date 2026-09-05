@@ -98,6 +98,7 @@ final class DependencyGraph {
       repository: this.catalogBrowse,
       playback: playback,
       sources: this.musicSources,
+      collection: this.collection,
     );
   }
 
