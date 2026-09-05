@@ -88,6 +88,13 @@ void main() {
       containsAllInOrder([AudioEnginePhase.loading, AudioEnginePhase.ready]),
     );
 
+    backend.emit(processing: JustAudioProcessingPhase.completed);
+    expect(
+      states.last.phase,
+      AudioEnginePhase.ready,
+      reason: 'a native zero-duration completion before play is not terminal',
+    );
+
     backend.emit(
       processing: JustAudioProcessingPhase.buffering,
       duration: const Duration(seconds: 90),
