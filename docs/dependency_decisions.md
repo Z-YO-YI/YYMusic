@@ -164,5 +164,17 @@ position、seek、pause、volume/rate、completed、stop与dispose；运行时�
 且Developer Mode关闭阻止本机构建plugin symlink。因此现有环境不能满足Windows真实端点验收，不能以Fake、
 构建成功或Android结果替代。Phase4F保持未关闭，未继续HTTPS/content URI小批，`just_audio`仍是隔离备用候选。
 
-下一批对已有双平台受控解码/时钟证据的`media_kit`补齐native分发许可证；在LGPL/NOTICE、对应源码和
-可替换策略闭合前不选为正式backend。生产入口继续使用UnavailableAudioEngine。
+## Phase 4G media_kit原生分发审计结果（2026-09-05）
+
+四个Android v1.1.8 JAR的GitHub release SHA-256与本机下载完全一致；当前APK中三ABI
+`libmpv.so`/`libmediakitandroidhelper.so`也逐entry相等。Windows固定归档的SHA-256为
+`583af5a291fc99ae2641794ede1955c368eb4c19dc05f4f0a9c7f9456edeb6a8`，其中`libmpv-2.dll`
+与Phase4C GitHub Windows bundle字节一致。实际SO/DLL内嵌配置都关闭GPL/nonfree，libav模块报告
+LGPLv3+；因此不再把许可模式当作未知猜测。
+
+发布结论仍为阻断。Android构建从可变main克隆helper，release JAR只有两个SO；Windows release前最近
+历史脚本仍启用GPL/nonfree，与实际DLL相反，workflow允许未记录自定义命令并恢复可变cache，静态组件
+revision/patch无法完整映射。两个归档都缺LICENSE/NOTICE、对应源码清单和重新链接材料。机器清单固定为
+`inventory-only`/`blocked`，生产仍使用UnavailableAudioEngine；完整证据见
+[Phase4G清单](phase_4g_media_kit_redistribution_inventory.md)。后续只能从不可变来源重建并承担发行材料，
+或继续与音频选型解耦的业务实现，不能把wrapper MIT或Debug构建成功当作发布许可。

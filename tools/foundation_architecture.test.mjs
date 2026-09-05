@@ -219,6 +219,12 @@ test('playback has one root-owned truth behind project contracts', () => {
     'media_kit must remain inside its playback adapter',
   );
   assert(!/MediaKit|NativeMediaKitPlayerBackend/.test(read('lib/main.dart')));
+  const redistribution = JSON.parse(read('docs/legal/media_kit/manifest.json'));
+  assert.equal(redistribution.status, 'blocked');
+  assert.equal(redistribution.releaseApproved, false);
+  assert.equal(redistribution.productionWiringApproved, false);
+  assert.equal(redistribution.scope.distributionMode, 'inventory-only');
+  assert(!/assets\/legal\/media_kit|docs\/legal\/media_kit/.test(read('pubspec.yaml')));
   const justAudioImports = sources.filter(path => /package:just_audio\//.test(read(path)));
   assert.deepEqual(
     justAudioImports,

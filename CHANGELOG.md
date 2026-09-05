@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-09-05 — Phase 4G media_kit 原生分发审计（失败关闭）
+
+- 逐字节映射Android v1.1.8四个JAR/八个SO、Debug APK三ABI，以及Windows 2023-09-24归档/DLL与Phase4C GitHub bundle。
+- 从实际SO/DLL确认FFmpeg与mpv关闭GPL/nonfree、使用LGPLv3+模式；不以wrapper MIT或历史脚本代替二进制证据。
+- 追溯出Android helper来自可变main；Windows release前历史脚本与DLL配置相反，构建时自定义命令、浮动依赖和cache无法恢复。
+- 新增`inventory-only`机器清单、独立审计CLI和4项反向测试；未经完整来源、NOTICE、对应源码/重新链接方案及包内复核，状态不能改为approved。
+- 不创建不完整的应用许可证assets，不提交JAR/SO/DLL/7z/源码归档；生产继续使用`UnavailableAudioEngine`且不创建候选Release。
+- 本地Node 35/35、Flutter 232/232、严格analyze、format、生成/Schema、Android Debug、48项资产和24/24原ZIP均通过。
+
 ## 2026-09-05 — Phase 4E just_audio + Windows WinRT 备用候选
 
 - 精确锁定`just_audio 0.10.6`与`just_audio_windows 0.2.3`，记录六个新增包、Android Media3 1.4.1、Windows WinRT构建和许可证文件指纹。

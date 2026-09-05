@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 1,
+  "auditId": "phase-4g-media-kit-native-redistribution",
+  "auditedAt": "2026-09-05",
+  "status": "blocked",
+  "releaseApproved": false,
+  "productionWiringApproved": false,
+  "scope": {
+    "platforms": ["android", "windows"],
+    "distributionMode": "inventory-only",
+    "legalAdvice": false
+  },
+  "dartPackages": [
+    {
+      "name": "media_kit",
+      "version": "1.2.6",
+      "licenseExpression": "MIT",
+      "licenseFileSize": 1112,
+      "licenseSha256": "2e3000f38718f050869d57540c288c661a446f64df1ba4ea4764df552b04a331"
+    },
+    {
+      "name": "media_kit_libs_audio",
+      "version": "1.0.7",
+      "licenseExpression": "MIT",
+      "licenseFileSize": 1112,
+      "licenseSha256": "2e3000f38718f050869d57540c288c661a446f64df1ba4ea4764df552b04a331"
+    },
+    {
+      "name": "media_kit_libs_android_audio",
+      "version": "1.3.8",
+      "licenseExpression": "MIT",
+      "licenseFileSize": 1112,
+      "licenseSha256": "2e3000f38718f050869d57540c288c661a446f64df1ba4ea4764df552b04a331",
+      "buildScriptSha256": "67c64a8381777ab33f9d4474bbbea6313df09b77d6466530d88c3d4d073bc58b"
+    },
+    {
+      "name": "media_kit_libs_windows_audio",
+      "version": "1.0.9",
+      "licenseExpression": "MIT",
+      "licenseFileSize": 1133,
+      "licenseSha256": "a78baa721ad6f5c0b2d8fb0c6cfff835ad8ed90393cac0087a90e8813490f2bd",
+      "buildScriptSha256": "4e2174c6800b2757e3636a919ccda20f0275835c9db2a8abda456176167690f6"
+    }
+  ],
+  "native": {
+    "android": {
+      "mappingStatus": "partial",
+      "release": {
+        "repository": "https://github.com/media-kit/libmpv-android-audio-build",
+        "tag": "v1.1.8",
+        "commit": "87744be8b337c50ed54961249b7a97c5e8cc37c9",
+        "url": "https://github.com/media-kit/libmpv-android-audio-build/releases/tag/v1.1.8"
+      },
+      "buildScripts": [
+        {
+          "path": "buildscripts/include/depinfo.sh",
+          "size": 337,
+          "sha256": "5526cce2c740f922a1ee9dedf148379bb4ca6e1002a6f1c62c4d7db85d32cdd9"
+        },
+        {
+          "path": "buildscripts/include/download-deps.sh",
+          "size": 774,
+          "sha256": "1dee1c397a32182bdeecc935861730f59d08e770f61a744c1faa5d48daa1c1bf"
+        },
+        {
+          "path": "buildscripts/scripts/ffmpeg.sh",
+          "size": 4599,
+          "sha256": "e164f4efd2e8ea13b88f849362f58bb8c90b827df89bf93cc97da7156e400f52"
+        },
+        {
+          "path": "buildscripts/scripts/mpv.sh",
+          "size": 613,
+          "sha256": "4fa75c6d2c93d7bb3ca48478b854a5a602ca11b02fdecc1103cfb3d7c4d55afe"
+        },
+        {
+          "path": "buildscripts/bundle.sh",
+          "size": 1732,
+          "sha256": "abc8a17833dca66fbc9c7f5a522f4247b0671196db4017f8f22fb6383a405c88"
+        }
+      ],
+      "sourceComponents": [
+        {
+          "name": "mpv",
+          "version": "0.35.1",
+          "commit": "140ec21c89d671d392877a7f3b91d67e7d7b9239",
+          "mapping": "pinned-by-build-script"
+        },
+        {
+          "name": "FFmpeg",
+          "version": "6.0",
+          "commit": "ea3d24bbe3c58b171e55fe2151fc7ffaca3ab3d2",
+          "mapping": "pinned-by-build-script"
+        },
+        {
+          "name": "Mbed TLS",
+          "version": "3.6.1",
+          "commit": "71c569d44bf3a8bd53d874c81ee8ac644dd6e9e3",
+          "mapping": "pinned-by-build-script"
+        },
+        {
+          "name": "libxml2",
+          "version": "2.10.3",
+          "commit": "f507d167f1755b7eaea09fb1a44d29aab828b6d1",
+          "mapping": "pinned-by-build-script"
+        },
+        {
+          "name": "media-kit-android-helper",
+          "version": null,
+          "commit": "42054e5d479f39ccbb0ae604862e2bcaf59b74c2",
+          "mapping": "time-bounded-inference-only; build script cloned mutable main"
+        }
+      ],
+      "embeddedConfiguration": {
+        "ffmpegUtf8Sha256": "bcb18b9996d24bf3b42a73629d809d35195308cc0f42003d0efb379c49d15aae",
+        "mpvUtf8Sha256": "ed2ce49b4482875e340dfd7779e56a51c2cb642cdcb6d7216ae74d5cfc6e0051",
+        "gpl": false,
+        "nonfree": false,
+        "version3": true,
+        "ffmpegReportedLicense": "LGPL version 3 or later",
+        "mpvMode": "--enable-lgpl"
+      },
+      "releaseArtifacts": [
+        {
+          "name": "default-arm64-v8a.jar",
+          "size": 2983585,
+          "sha256": "0481a64b5e246774da22573d7a4e67f9fb3d89a68630864d8819d3ff3a08bb09",
+          "nativeEntries": [
+            {"path": "lib/arm64-v8a/libmediakitandroidhelper.so", "size": 386696, "sha256": "64025bd75e5a079a26e9b7a005fe9efac0849a3d534e4e1d9c752dd67395fa3d"},
+            {"path": "lib/arm64-v8a/libmpv.so", "size": 6215848, "sha256": "328ca0ed37335f10bc85d7e2530c2478b81cb1cbca177511e00c2713c593b9ee"}
+          ]
+        },
+        {
+          "name": "default-armeabi-v7a.jar",
+          "size": 2865617,
+          "sha256": "1bba852f5b7f0098c54ab8c3a945866d2b730b9e146b472a6ffaa80fc0dceae9",
+          "nativeEntries": [
+            {"path": "lib/armeabi-v7a/libmediakitandroidhelper.so", "size": 286812, "sha256": "290d8aba8a767773fea0380c0e94042008c629826943a1b1b1c09cc0b0be95bf"},
+            {"path": "lib/armeabi-v7a/libmpv.so", "size": 5648496, "sha256": "e42cd8fdfd0143f761a76fe287ffcd2643a2a859ab81a8251e04eb284dde9203"}
+          ]
+        },
+        {
+          "name": "default-x86.jar",
+          "size": 3040597,
+          "sha256": "824deeee316dfa3085832c6308e2953425bd428ba7eeeefd59bb51101b7ce8b7",
+          "nativeEntries": [
+            {"path": "lib/x86/libmediakitandroidhelper.so", "size": 350252, "sha256": "5109232dd0d4a1b1e3244894c23ff88f6e93c3392639bfea9cef22a5ffb238bf"},
+            {"path": "lib/x86/libmpv.so", "size": 6334772, "sha256": "298292e03d942f3e0c8c593a025bb42c513cdbd86bed27bfa6d53505c81cd37d"}
+          ]
+        },
+        {
+          "name": "default-x86_64.jar",
+          "size": 3114935,
+          "sha256": "ddffa0465e2dbb42d52937dae08516dbe07c534d489e9ea995f36a02d31a7106",
+          "nativeEntries": [
+            {"path": "lib/x86_64/libmediakitandroidhelper.so", "size": 367528, "sha256": "8faa3327d5b99e50702ae77f88a5c2fc5626b311b4c73a84cfe1165f252677a2"},
+            {"path": "lib/x86_64/libmpv.so", "size": 6983648, "sha256": "98456a27774474c7db451484b3db997e0721f2274ee7fffe5aef97057ff06ad1"}
+          ]
+        }
+      ],
+      "verifiedApplicationArtifact": {
+        "kind": "debug-apk",
+        "sourceRevision": "037db44e78447e0989d75a8d885a508f42088f7f",
+        "size": 279085047,
+        "sha256": "bba16856f7cdbc3c909172cafa75ee07c345067cb50f66dcc6cfe21e9adbf601",
+        "nativeEntries": [
+          {"path": "lib/arm64-v8a/libmediakitandroidhelper.so", "size": 386696, "sha256": "64025bd75e5a079a26e9b7a005fe9efac0849a3d534e4e1d9c752dd67395fa3d"},
+          {"path": "lib/arm64-v8a/libmpv.so", "size": 6215848, "sha256": "328ca0ed37335f10bc85d7e2530c2478b81cb1cbca177511e00c2713c593b9ee"},
+          {"path": "lib/armeabi-v7a/libmediakitandroidhelper.so", "size": 286812, "sha256": "290d8aba8a767773fea0380c0e94042008c629826943a1b1b1c09cc0b0be95bf"},
+          {"path": "lib/armeabi-v7a/libmpv.so", "size": 5648496, "sha256": "e42cd8fdfd0143f761a76fe287ffcd2643a2a859ab81a8251e04eb284dde9203"},
+          {"path": "lib/x86_64/libmediakitandroidhelper.so", "size": 367528, "sha256": "8faa3327d5b99e50702ae77f88a5c2fc5626b311b4c73a84cfe1165f252677a2"},
+          {"path": "lib/x86_64/libmpv.so", "size": 6983648, "sha256": "98456a27774474c7db451484b3db997e0721f2274ee7fffe5aef97057ff06ad1"}
+        ]
+      },
+      "blockers": [
+        "media-kit-android-helper was cloned from mutable main, so the inferred helper commit is not an authoritative build input",
+        "release JARs contain native binaries but no LICENSE, NOTICE, corresponding-source manifest, or relink materials",
+        "the application has no approved native third-party notice and corresponding-source delivery plan"
+      ]
+    },
+    "windows": {
+      "mappingStatus": "blocked",
+      "release": {
+        "repository": "https://github.com/media-kit/libmpv-win32-audio-build",
+        "tag": "2023-09-24",
+        "tagCommit": "f0f6ac7483396f345820660176cc84e2dd6ba220",
+        "url": "https://github.com/media-kit/libmpv-win32-audio-build/releases/tag/2023-09-24",
+        "mpvCommit": "652a1dd90711839acdccc08004056d25514ef2d8"
+      },
+      "releaseArchive": {
+        "name": "mpv-dev-x86_64-20230924-git-652a1dd.7z",
+        "size": 5392413,
+        "md5FromPackageScript": "cd738e16e2a19626d7cfa48801524f8c",
+        "sha256": "583af5a291fc99ae2641794ede1955c368eb4c19dc05f4f0a9c7f9456edeb6a8",
+        "entries": [
+          "include/mpv/client.h",
+          "include/mpv/render.h",
+          "include/mpv/render_gl.h",
+          "include/mpv/stream_cb.h",
+          "libmpv.dll.a",
+          "libmpv-2.dll"
+        ]
+      },
+      "verifiedBinary": {
+        "path": "libmpv-2.dll",
+        "size": 15525902,
+        "sha256": "0a5a0b476866c91a639a4e511e8153968f8fa23564461b0aa09acdba816164a4",
+        "matchesPhase4cWindowsDebugArtifact": true,
+        "phase4cSourceRevision": "622408e5287db67fe004a76d7640bc751e8ba2bc"
+      },
+      "embeddedConfiguration": {
+        "ffmpegUtf8Sha256": "cc16d64375651efcf6269ebbc3ad33a3a45633f59542e2b34ea2ad1c8ce9efac",
+        "mpvUtf8Sha256": "6c530f1f852e102fcc5589e8ac8cbf493ace62370f749179f1ff105d0232a9b6",
+        "gpl": false,
+        "nonfree": false,
+        "version3": true,
+        "ffmpegReportedLicense": "LGPL version 3 or later",
+        "mpvGplOption": false,
+        "preferStatic": true
+      },
+      "detectedComponents": [
+        {"name": "mpv", "version": "652a1dd90711839acdccc08004056d25514ef2d8", "mapping": "release-name-and-upstream-commit"},
+        {"name": "FFmpeg", "version": "6.0", "mapping": "embedded-version-only"},
+        {"name": "libarchive", "version": "3.7.3dev", "mapping": "embedded-version-only"},
+        {"name": "libjpeg-turbo", "version": "3.0.1", "mapping": "embedded-version-only"},
+        {"name": "Mbed TLS", "version": null, "mapping": "embedded-feature-only"},
+        {"name": "libjxl and static dependencies", "version": null, "mapping": "embedded-feature-only"},
+        {"name": "libarchive static dependencies", "version": null, "mapping": "historical-build-graph-only"},
+        {"name": "mujs, libass, lcms2, OpenAL Soft, uchardet, zimg, zlib", "version": null, "mapping": "embedded-mpv-feature-list-only"}
+      ],
+      "rejectedSourceMapping": {
+        "nearestHistoricalBuildCommit": "f5a6f879c9b8bef6a73e52c8c0f35e51636c96e5",
+        "ffmpegScriptSha256": "504e3fcaf4fe48b254d80b0ca2f9b01d806a72c21a6a4d5f18f1d3ebbf917a2e",
+        "mpvScriptSha256": "b9f859850490dd5ea9a9b1ac55b90ad67220c142bebe88e07a7889376409b296",
+        "workflowSha256": "5edd597ddc01065f56b6d4b7c50af84040334869bf7fb1aaaf65b616d654b6c4",
+        "reason": "the committed FFmpeg script enables GPL and nonfree while the binary disables both; workflow_dispatch accepted an unrecorded custom command and restored mutable caches"
+      },
+      "blockers": [
+        "the immutable build-time command or patch set that produced the DLL is unavailable",
+        "floating source repositories and restored build caches prevent exact source revision mapping for statically linked components",
+        "the release archive has no LICENSE, NOTICE, corresponding-source manifest, build log, or relink materials",
+        "the application has no approved native third-party notice and corresponding-source delivery plan"
+      ]
+    }
+  },
+  "blockers": [
+    "Windows native source and build transformation cannot be mapped exactly to the redistributed DLL",
+    "Android helper source is inferred from time rather than pinned by the release build",
+    "native release archives omit required license, notice, corresponding-source, and relink evidence",
+    "the complete license set and distributor-owned corresponding-source strategy have not been approved",
+    "no legal material is intentionally bundled in application assets while this gate is blocked"
+  ],
+  "requiredBeforeRelease": [
+    "replace or rebuild both native bundles from immutable source revisions and recorded patches",
+    "inventory every linked component and obtain review of its exact license obligations",
+    "publish or bundle the approved license and notice set plus a durable corresponding-source and relink mechanism",
+    "verify those materials byte-for-byte in Android and Windows candidate bundles",
+    "rerun native playback, lifecycle, platform media-session, and real-device acceptance after backend selection"
+  ]
+}

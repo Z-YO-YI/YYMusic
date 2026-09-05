@@ -1,6 +1,6 @@
 # 原生基础验证矩阵
 
-保留Phase4D的225项Flutter检查，Phase4E新增7项just_audio候选单元测试，共232项Flutter、31项Node；不包含用户音乐、在线密钥、媒体二进制、证书或私钥。media_kit真实原生运行只由手动、只读、不上传产物的Windows/Android专用工作流取得；just_audio本批只验证适配合同与Debug打包，不冒充原生播放。
+保留Phase4D的225项Flutter检查，Phase4E新增7项just_audio候选单元测试，共232项Flutter；Phase4G新增4项media_kit分发门禁反向测试，共35项Node。不包含用户音乐、在线密钥、媒体二进制、证书或私钥。media_kit真实原生运行只由手动、只读、不上传产物的Windows/Android专用工作流取得；just_audio的Windows真时钟证据仍因无播放端点而失败关闭。
 
 | 类别 | 已有自动检查 |
 | --- | --- |
@@ -42,6 +42,7 @@
 | Phase4C 原生本地WAV | 运行时固定PCM16/mono/16kHz/3秒字节与SHA、参数拒绝；Windows/Android同一集成测试验证load不自动播放、duration、play/position、seek、pause、volume/rate、completed、stop/idle、无error和dispose；不提交媒体二进制 |
 | Phase4D 原生来源 | HEAD-only HTTPS探针、禁止自动重定向/响应持久化、HTTP与offline/timeout/TLS脱敏映射；Android debug-only只读Provider；双平台受控HTTPS及Android content URI真实candidate集成测试 |
 | Phase4E just_audio候选 | file/content/HTTPS瞬时映射、load不自动播放、五种processing与八阶段合成、未知duration、transport/Seek/volume/rate、命令/异步错误脱敏、Header能力未声明时预拒绝、并发幂等释放；插件只在单一backend文件，生产入口不创建候选 |
+| Phase4G media_kit分发门禁 | 四个package版本/许可指纹、Android 4 JAR/8 SO与APK 6 SO、Windows 7z/DLL与Debug bundle、内嵌FFmpeg/mpv配置、来源映射/阻断；拒绝擅自approved、删除阻断、APK→JAR哈希漂移或生产接线 |
 | Golden | 保留Windows Shell及既有组件29张；新增浅珊瑚/深翡翠/自定义白ReduceGlass队列歌词板3张，总计32张精确像素比较，旧基线不改 |
 
 ## CI
@@ -115,3 +116,8 @@ Debug和Android Debug全部通过。只读运行33942090875中Android `just_audi
 首进度68 ms、seek 9 ms、duration 3000 ms、completed，且代理/Header能力均false；Windows成功启动
 AudioEndpointBuilder/Audiosrv但可用播放端点为0，按门禁失败，没有运行或伪造播放case。该运行artifact 0、
 匹配Release 0。Phase4F与Windows小批A保持未关闭，小批B未开始。
+
+Phase4G本地证据：Node 35/35、Flutter 232/232、严格analyze、152文件format、build_runner/Drift迁移零差异、
+Android Debug及48项资产、原ZIP 24/24均通过。APK仍为279,085,047字节、SHA-256
+`bba16856f7cdbc3c909172cafa75ee07c345067cb50f66dcc6cfe21e9adbf601`。机器审计通过的含义是
+`blocked`状态和证据自洽，不是许可证通过；GitHub标准三job须按目标提交另行记录。

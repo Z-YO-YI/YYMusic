@@ -1,6 +1,6 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 4F `just_audio`原生比较已取得Android成功与Windows无端点失败证据，阶段未关闭；下一批补齐`media_kit`发布许可证闭环**。Phase2通用原语、三套Shell骨架、完整Phase3数据层，以及正式播放状态、可替换音频/来源/媒体会话合同、持久队列算法已经存在。`037db44`的GitHub push/PR已完成checks、Windows Debug和Android Debug；只读运行33942090875的Android原生WAV通过，Windows音频服务运行但托管机播放端点为0，严格失败关闭。生产仍使用`UnavailableAudioEngine`；传递许可证闭环、REST Adapter、正式播放器接线和业务页面尚未完成。
+当前阶段：**Android + Windows · Phase 4G 已完成`media_kit`原生分发审计并因来源/发行材料不完整而失败关闭；Phase 4F仍缺Windows真实播放端点**。Phase2通用原语、三套Shell骨架、完整Phase3数据层，以及正式播放状态、可替换音频/来源/媒体会话合同、持久队列算法已经存在。Android四个JAR、APK三ABI和Windows发布DLL均已强哈希映射，真实二进制也确认关闭GPL/nonfree；但Windows构建时patch/命令/cache不可恢复、Android helper未固定，两个归档均缺完整NOTICE/对应源码/重新链接材料。生产仍使用`UnavailableAudioEngine`；REST Adapter、正式播放器选型与接线和业务页面尚未完成。
 
 Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭、只允许手动选择、`contents: read`且不上传产物的Windows/Android原生集成模式。完整221项Flutter含32张Windows宿主Golden、严格分析0问题、31项Node、24项ZIP、lockfile及生成代码/v1快照零差异已通过；本机Android Debug也完成资产与v2单Debug签名复核。精确提交`622408e`的专用运行33862786766 attempt 2已在Windows与Android成功，且没有artifact或Release；普通push另提供保留14天的完整Windows Debug portable bundle。
 
@@ -10,6 +10,7 @@ Phase4D实现提交`913f3d75`增加HEAD-only脱敏网络探针、Android debug-o
 
 ## 开发入口
 
+- [Phase 4G media_kit分发审计计划](docs/phase_4g_media_kit_redistribution_plan.md)、[失败关闭报告](docs/phase_4g_media_kit_redistribution_report.md)、[原生产物清单](docs/phase_4g_media_kit_redistribution_inventory.md)、[本批 PR 草稿](docs/phase_4g_media_kit_redistribution_pr_draft.md)
 - [Phase 4F just_audio原生运行计划](docs/phase_4f_just_audio_native_poc_plan.md)、[未关闭报告](docs/phase_4f_just_audio_native_poc_report.md)、[本批 PR 草稿](docs/phase_4f_just_audio_native_poc_pr_draft.md)
 - [Phase 4E just_audio + Windows WinRT备用候选计划](docs/phase_4e_just_audio_candidate_plan.md)、[本批报告](docs/phase_4e_just_audio_candidate_report.md)、[依赖与许可证清单](docs/phase_4e_dependency_license_inventory.md)、[本批 PR 草稿](docs/phase_4e_just_audio_candidate_pr_draft.md)
 - [Phase 4C原生本地音频计划](docs/phase_4c_native_local_audio_poc_plan.md)、[本批报告](docs/phase_4c_native_local_audio_poc_report.md)、[本批 PR 草稿](docs/phase_4c_native_local_audio_poc_pr_draft.md)
@@ -78,6 +79,8 @@ Phase3H仍不新增业务页面。默认入口现在异步打开空白生产数�
 Phase4A仍不新增可见页面或真实音频插件。`PlaybackController`现在是当前曲目、引擎状态、位置/缓冲/时长、音量/速率、随机/循环、持久队列、输出设备与失败的唯一真相；`QueueController`只转发命令和同一份状态。短期网络URL/Header在`PlayableSource`中全量脱敏且不持久化，Android MediaSession与Windows SMTC先共用项目接口。默认后端继续明确不可用，不能把Fake合同测试冒充双平台POC。
 
 Phase4B新增`MediaKitAudioEngine`候选，但只有`media_kit_audio_backend.dart`接触插件类型，Windows文件路径、Android content URI及HTTPS/Header都在一次性`open`边界映射。生产入口仍不创建Player，Shell/Fixture不因此获得播放能力。Android/Windows Debug只能验证依赖解析、打包与链接；运行时音频、系统会话、后台播放、设备输出和性能留给Phase4C。Android JAR不附带native NOTICE且Windows依赖固定旧libmpv归档，因此本批禁止手动发布含候选库的APK。
+
+Phase4G进一步确认Android JAR→APK和Windows release→GitHub Debug bundle的native字节完全匹配，并从SO/DLL核实两端都以LGPL模式构建、关闭GPL/nonfree。审计同时证明现有发布链不能闭环：Windows公开历史脚本与实际DLL配置相反且构建时自定义命令/cache不可恢复；Android helper由可变main取得；两个上游归档都没有完整NOTICE、对应源码或重新链接材料。仓库以机器可读清单和反向测试锁定`blocked`，不把不完整许可证集合打入assets，也不接生产或创建候选Release。
 
 Phase4E新增隔离的`JustAudioEngine`备用候选，精确锁定`just_audio 0.10.6`与`just_audio_windows 0.2.3`。只有`just_audio_backend.dart`接触插件，三类来源、状态、控制、错误脱敏和幂等释放由7项Fake测试覆盖；Header能力必须由创建方显式声明，Windows直接Header未支持时在插件调用前失败关闭。生产入口不创建候选，也未启用缓存/下载。本机Android Debug与完整门禁通过；本机Windows因Developer Mode关闭无法创建插件symlink，但`a2b517b`的GitHub push/PR运行均已完成Windows与Android Debug。没有新Release；普通push只有14天Windows Debug审查artifact。
 
