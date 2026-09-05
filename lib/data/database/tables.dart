@@ -3,6 +3,10 @@ import 'package:drift/drift.dart';
 @DataClassName('TrackRow')
 @TableIndex(name: 'tracks_by_title', columns: {#title})
 @TableIndex(name: 'tracks_by_album', columns: {#sourceId, #albumId})
+@TableIndex.sql(
+  'CREATE INDEX tracks_by_added ON tracks '
+  '(added_at_ms DESC, source_type, source_id, track_id)',
+)
 class TrackRecords extends Table {
   @override
   String get tableName => 'tracks';
@@ -22,6 +26,8 @@ class TrackRecords extends Table {
   IntColumn get fileSize => integer().nullable()();
   TextColumn get availability => text().withLength(min: 1, max: 32)();
   TextColumn get metadataJson => text().withDefault(const Constant('{}'))();
+  // NULL means a pre-v2 row whose actual insertion time was never recorded.
+  IntColumn get addedAtMs => integer().nullable()();
 
   @override
   Set<Column<Object>> get primaryKey => {sourceType, sourceId, trackId};

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { read, walk } from './design_audit.mjs';
+import { read, sha, walk } from './design_audit.mjs';
 
 const sources = walk('lib').filter(path => path.endsWith('.dart'));
 
@@ -279,7 +279,7 @@ test('CI validates both debug targets with least-privileged, pinned actions', ()
   assert.match(workflow, /flutter build apk --debug --no-pub/);
   assert.match(workflow, /dart run build_runner build/);
   assert.match(workflow, /dart run drift_dev make-migrations/);
-  assert.match(workflow, /git diff --exit-code -- lib\/data\/database\/app_database\.g\.dart drift_schemas\//);
+  assert.match(workflow, /git diff --exit-code -- lib\/data\/database\/app_database\.g\.dart lib\/data\/database\/app_database\.steps\.dart drift_schemas\/ test\/drift\//);
   const actions = [...workflow.matchAll(/uses: (\S+)/g)].map(match => match[1]);
   assert(actions.length >= 4);
   assert(actions.every(action => /@[a-f0-9]{40}$/.test(action)));
@@ -413,6 +413,42 @@ test('shared Shell presenter maps root playback and guards queued seek identity'
   ]) {
     assert(!/PlaybackController\(|AudioPlayer\(|JustAudio|dart:io|package:just_audio|package:http/.test(read(path)), path);
   }
+});
+
+test('catalog v2 preserves immutable v1 and adds only insertion time and its index', () => {
+  const previous = read('drift_schemas/yymusic/drift_schema_v1.json').replaceAll('\r\n', '\n');
+  assert.equal(sha(previous), 'ac5e1081f89f20f79f06b08331f5f1f522db0bcf0cd6fd20e5b6ecd19290f653');
+  const v1 = JSON.parse(previous);
+  const v2 = JSON.parse(read('drift_schemas/yymusic/drift_schema_v2.json'));
+  assert.equal(v2.entities.length, v1.entities.length + 1);
+  for (const entity of v1.entities) {
+    const current = v2.entities.find(item => item.type === entity.type && item.data.name === entity.data.name);
+    assert(current, entity.data.name);
+    const data = structuredClone(current.data);
+    if (entity.data.name === 'tracks') {
+      const added = data.columns.pop();
+      assert.equal(added.name, 'added_at_ms');
+      assert.equal(added.nullable, true);
+      assert.equal(added.default_dart, null);
+      assert.equal(added.default_client_dart, null);
+    }
+    assert.deepEqual(data, entity.data, entity.data.name);
+  }
+  const index = v2.entities.find(item => item.data.name === 'tracks_by_added');
+  assert.equal(index.data.sql, 'CREATE INDEX tracks_by_added ON tracks (added_at_ms DESC, source_type, source_id, track_id)');
+});
+
+test('recent catalog query is bounded and migration plus audit are atomic', () => {
+  const repository = read('lib/data/repositories/drift_library_repository.dart');
+  assert.match(repository, /listRecentlyAdded[\s\S]*?addedAtMs.isBetweenValues\(firstMs, lastMs\)[\s\S]*?limit\(request.limit \+ 1, offset: request.offset\)/);
+  assert.match(repository, /metadata.copyWith\(addedAtMs: Value\(addedAtMs\)\)/);
+  assert.match(repository, /onConflict: DoUpdate\(\(_\) => metadata\)/);
+  const database = read('lib/data/database/app_database.dart');
+  assert.match(database, /schemaVersion => 2/);
+  assert.match(database, /transaction\(\(\) async[\s\S]*?runMigrationSteps[\s\S]*?schema.tracks.addedAtMs[\s\S]*?schema.tracksByAdded[\s\S]*?into\(schemaMigrationRecords\).insert/);
+  assert(!/DROP TABLE|deleteTable|deleteAll|VACUUM|PRAGMA foreign_keys = OFF/.test(database));
+  const workflow = read('.github/workflows/foundation.yml');
+  assert.match(workflow, /git diff --exit-code -- lib\/data\/database\/app_database.g.dart lib\/data\/database\/app_database.steps.dart drift_schemas\/ test\/drift\//);
 });
 
 test('Inspector is controlled, opaque and scrollable without IO or queue algorithms', () => {

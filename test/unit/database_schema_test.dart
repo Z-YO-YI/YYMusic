@@ -20,7 +20,7 @@ void main() {
     if (!databaseClosed) await database.close();
   });
 
-  test('schema v1 creates the exact tables and initial audit rows', () async {
+  test('schema v2 creates the exact tables and initial audit rows', () async {
     final tableRows = await database
         .customSelect(
           "SELECT name FROM sqlite_master WHERE type = 'table' "
@@ -68,10 +68,10 @@ void main() {
       'tracks',
     ]);
     expect(foreignKeys.read<int>('foreign_keys'), 1);
-    expect(userVersion.read<int>('user_version'), 1);
-    expect(migration.read<int>('version'), 1);
+    expect(userVersion.read<int>('user_version'), 2);
+    expect(migration.read<int>('version'), 2);
     expect(migration.read<int>('applied_at_ms'), _epoch.millisecondsSinceEpoch);
-    expect(migration.read<String>('description'), 'Initial YYMusic schema');
+    expect(migration.read<String>('description'), 'Initial YYMusic schema v2');
     expect(queueState.read<int>('singleton_id'), 1);
     expect(queueState.readNullable<String>('current_entry_id'), isNull);
     expect(
@@ -97,6 +97,7 @@ void main() {
       'playlists_by_updated',
       'queue_entries_by_track',
       'search_history_by_time',
+      'tracks_by_added',
       'tracks_by_album',
       'tracks_by_title',
     ]);
@@ -291,7 +292,7 @@ void main() {
       final migration = await fileDatabase
           .customSelect('SELECT version FROM schema_migrations')
           .getSingle();
-      expect(migration.read<int>('version'), 1);
+      expect(migration.read<int>('version'), 2);
       expect(
         File(path.join(root.path, 'YYMusic', 'yymusic.sqlite')).existsSync(),
         isTrue,

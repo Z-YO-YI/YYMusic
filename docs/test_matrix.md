@@ -1,6 +1,11 @@
 # 原生基础验证矩阵
 
-Phase5C 当前：327 Flutter（43 Golden）、61 Node、严格 analyze0；9项窗口Presenter/通道合同、
+Phase6A 当前：339 Flutter（43 Golden全部不变）、63 Node、严格analyze0。新增4项v1→v2迁移测试：
+真实临时文件升级重开、完整schema、17表旧数据保留、失败DDL/索引/审计回滚并恢复；8项最近添加
+合同覆盖首次时间、重复扫描、边界/稳定分页、450曲目索引、错误/并发/Fake一致性。
+旧v1快照强指纹固定，生成物与迁移助手纳入CI再生成差异检查，见[本批报告](phase_6a_home_catalog_report.md)。
+
+Phase5C 历史：327 Flutter（43 Golden）、61 Node、严格 analyze0；9项窗口Presenter/通道合同、
 8项根窗口Widget、2张新增Golden，原41张不变。Android默认APK/签名/48资产及许可通过。
 原生Win32状态/WM_CLOSE/原frame恢复由独立Windows集成测试验证，不用Fake代替；
 CI先测再重建默认入口，防止测试应用混入Debug产物，见[本批报告](phase_5c_windows_window_report.md)。

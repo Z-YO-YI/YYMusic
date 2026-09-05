@@ -1,6 +1,6 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 5C Windows 窗口控制**。三套 Shell 底栏与 Windows/宽屏平板详情共用一个根播放器；新增 Windows 专属窗口通道和根标题栏，支持最小化、最大化/还原、非按钮区拖动/双击，并在系统关闭请求后等待业务资源释放。原生握手成功才隐藏系统标题栏，所有路由保留窗口控件，Android 不调用 Windows 通道。本地 327 项 Flutter（43 张 Golden）、61 项 Node、严格分析和 Android Debug 已通过；Windows 云端真实验证见本批报告。完整队列、歌词/全屏、收藏、真实封面、业务页面和导入/REST 仍待开发，不能作为可用音乐应用交付。Phase5 其余能力、Phase6—11 和 Phase2 网页截图对照仍待完成；未改变系统工具链或权限。
+当前阶段：**Android + Windows · Phase 6A 首页最近添加数据基础**。数据库 v2 增加首次入库时间与索引，提供有界时间窗口和稳定分页；重复扫描/并发更新保留首次时间，v1 老记录保持时间未知，不伪造“今天添加”。17表旧数据、失败回滚和文件重开测试通过。首页三端界面与聚合 Controller 下一批接线，本批没有用新页面冒充完成。已有三套 Shell 共用根播放器，Windows真实窗口控制及上一批双端GitHub构建通过。本地339项Flutter（43张Golden）、63项Node及严格分析通过，构建结果见本批报告。完整业务页面、队列/歌词/全屏、收藏/真实封面、导入/REST、平台媒体与Phase11发布仍待完成；Phase2网页截图对照仍缺，不能作为上线版交付。
 
 Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭、只允许手动选择、`contents: read`且不上传产物的Windows/Android原生集成模式。完整221项Flutter含32张Windows宿主Golden、严格分析0问题、31项Node、24项ZIP、lockfile及生成代码/v1快照零差异已通过；本机Android Debug也完成资产与v2单Debug签名复核。精确提交`622408e`的专用运行33862786766 attempt 2已在Windows与Android成功，且没有artifact或Release；普通push另提供保留14天的Windows开发Debug文件包。它依赖本机Debug CRT，并非通用免安装发行包；Phase4J的Profile诊断模式与正式应用分开。
 
@@ -10,6 +10,7 @@ Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭
 
 ## 开发入口
 
+- [Phase 6A 首页最近添加数据计划](docs/phase_6a_home_catalog_plan.md)、[报告](docs/phase_6a_home_catalog_report.md)：v1→v2无损迁移、真实首次入库时间、索引与时间分页；首页UI尚待实现。
 - [Phase 5C Windows 窗口计划](docs/phase_5c_windows_window_plan.md)、[报告](docs/phase_5c_windows_window_report.md)：只控制本应用窗口、根级语义/浮层、关闭顺序和独立原生 CI；位置记忆/多屏/全屏留待 Phase10。
 - [Phase 5B 正在播放面板计划](docs/phase_5b_now_playing_inspector_plan.md)、[报告](docs/phase_5b_now_playing_inspector_report.md)：Windows320/Tablet260 独立滚动 Inspector、同根双表面操作和重载清除预览；本仓库增量编号，不表示主指令所有 Phase5 子项均完成。
 - [Phase 5A 共用 Shell 播放器计划](docs/phase_5a_shell_player_plan.md)、[报告](docs/phase_5a_shell_player_report.md)：根 Presenter、三套原生布局、拖动/切歌/关闭边界和 Space；修正原稿后置阴影及静态曲目信息可读性，不代表完整播放页面完成。

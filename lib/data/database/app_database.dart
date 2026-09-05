@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+import 'app_database.steps.dart';
 import 'tables.dart';
 
 part 'app_database.g.dart';
@@ -32,7 +33,7 @@ final class AppDatabase extends _$AppDatabase {
   final DateTime Function() _clock;
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -41,9 +42,9 @@ final class AppDatabase extends _$AppDatabase {
       final nowMs = _clock().toUtc().millisecondsSinceEpoch;
       await into(schemaMigrationRecords).insert(
         SchemaMigrationRecordsCompanion.insert(
-          version: const Value(1),
+          version: Value(schemaVersion),
           appliedAtMs: nowMs,
-          description: 'Initial YYMusic schema',
+          description: 'Initial YYMusic schema v2',
         ),
       );
       await into(queueStateRecords).insert(
@@ -54,7 +55,29 @@ final class AppDatabase extends _$AppDatabase {
       );
     },
     onUpgrade: (migrator, from, to) async {
-      throw StateError('Unsupported database migration $from -> $to');
+      if (from != 1 || to != 2) {
+        throw StateError('Unsupported database migration $from -> $to');
+      }
+      await transaction(() async {
+        await migrator.runMigrationSteps(
+          from: from,
+          to: to,
+          steps: migrationSteps(
+            from1To2: (step, schema) async {
+              await step.addColumn(schema.tracks, schema.tracks.addedAtMs);
+              await step.createIndex(schema.tracksByAdded);
+            },
+          ),
+        );
+        await into(schemaMigrationRecords).insert(
+          SchemaMigrationRecordsCompanion.insert(
+            version: const Value(2),
+            appliedAtMs: _clock().toUtc().millisecondsSinceEpoch,
+            description:
+                'Record first catalog insertion time; legacy dates unknown',
+          ),
+        );
+      });
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');

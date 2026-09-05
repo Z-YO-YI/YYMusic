@@ -38,7 +38,11 @@ Android 不构造 Windows Gateway；UI 无 Win32/IO，平台消息拒绝任何 H
 Windows CI新增真实窗口集成入口：实际frame、最大化/还原、最小化/还原、状态事件、拒绝任意参数、
 系统关闭拦截后窗口仍存活、detach恢复系统caption。测试不最终销毁进程，完整进程退出需设备验收。
 先运行集成测试，再重建正式默认入口并验证/上传既有Debug包；不会把测试入口当作可用应用分发。
-本机没有Windows C++/Debug运行环境，本批原生结果须由推送后的GitHub运行单独确认，当前未宣称通过。
+本机没有Windows C++/Debug运行环境；实现提交`db7998e2d067385b13950398192f1c0f50c8560e`
+已由GitHub push33964141676、PR33964171290验证，两组checks/Android/Windows全部success。
+两个Windows job真实窗口状态/事件/关闭拦截/detach/拒绝任意参数均通过，再重建默认Debug入口。
+六份job日志已核对：源码六包许可、Windows65文件包/六包及原生许可、Android51坐标/三份法律原文/
+48设计资产均通过。Draft PR #35保持未合并，两个音频POC按设计skipped，不计新音频设备证据。
 
 剩余：真实鼠标/触摸系统移动、多显示器/DPI、位置记忆、无边框全屏及最终退出设备验收；
 Phase2仍欠网页截图对照。没有新Release、正式签名、合并或商店上线；完整曲库/导入/REST、

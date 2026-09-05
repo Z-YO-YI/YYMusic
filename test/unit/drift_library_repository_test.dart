@@ -326,7 +326,7 @@ void main() {
       await sharedRepository.initialize();
       await sharedRepository.dispose();
       await sharedRepository.dispose();
-      expect(database.schemaVersion, 1);
+      expect(database.schemaVersion, 2);
       expect(() => sharedRepository.watchTracks(), throwsStateError);
       expect(await _count(database, 'tracks'), 0);
 
