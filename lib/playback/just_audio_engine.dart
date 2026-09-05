@@ -220,7 +220,8 @@ final class JustAudioEngine implements AudioEngine {
     if (_loading || snapshot.processing == JustAudioProcessingPhase.loading) {
       return AudioEnginePhase.loading;
     }
-    if (snapshot.processing == JustAudioProcessingPhase.completed) {
+    if (snapshot.processing == JustAudioProcessingPhase.completed &&
+        _hasPlayed) {
       return AudioEnginePhase.completed;
     }
     if (snapshot.processing == JustAudioProcessingPhase.buffering) {

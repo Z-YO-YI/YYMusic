@@ -306,6 +306,10 @@ test('native audio POCs run only on explicit read-only dual-platform CI', () => 
     workflow,
     /run_native_audio_source_poc:[\s\S]*?required: true[\s\S]*?default: false[\s\S]*?type: boolean/,
   );
+  assert.match(
+    workflow,
+    /run_just_audio_poc:[\s\S]*?required: true[\s\S]*?default: false[\s\S]*?type: boolean/,
+  );
   const native = workflow.slice(workflow.indexOf('\n  windows-native-audio:'));
   assert.match(native, /runs-on: windows-2025/);
   assert.match(native, /runs-on: ubuntu-24\.04/);
@@ -315,6 +319,10 @@ test('native audio POCs run only on explicit read-only dual-platform CI', () => 
   );
   assert.equal(
     native.match(/if: github\.event_name == 'workflow_dispatch' && inputs\.run_native_audio_source_poc/g)?.length,
+    2,
+  );
+  assert.equal(
+    native.match(/if: github\.event_name == 'workflow_dispatch' && inputs\.run_just_audio_poc/g)?.length,
     2,
   );
   assert.match(
@@ -330,6 +338,14 @@ test('native audio POCs run only on explicit read-only dual-platform CI', () => 
     2,
   );
   assert.equal(
+    native.match(/integration_test\/just_audio_native_local_poc_test\.dart/g)?.length,
+    2,
+  );
+  assert.match(
+    native,
+    /Require a real Windows playback endpoint[\s\S]*?AudioEndpointBuilder[\s\S]*?Audiosrv[\s\S]*?Get-PnpDevice -Class AudioEndpoint -PresentOnly[\s\S]*?playbackEndpoints\.Count -eq 0/,
+  );
+  assert.equal(
     native.match(/node tools\/generate_native_audio_poc_tls\.mjs/g)?.length,
     2,
   );
@@ -340,7 +356,7 @@ test('native audio POCs run only on explicit read-only dual-platform CI', () => 
   assert(!/contents: write|upload-artifact|gh release|secrets\.|pull_request_target/.test(native));
   assert(!/flutter build apk|flutter build appbundle/.test(native));
   assert.equal(
-    workflow.match(/if: github\.event_name != 'workflow_dispatch' \|\| \(!inputs\.run_native_audio_poc && !inputs\.run_native_audio_source_poc\)/g)?.length,
+    workflow.match(/if: github\.event_name != 'workflow_dispatch' \|\| \(!inputs\.run_native_audio_poc && !inputs\.run_native_audio_source_poc && !inputs\.run_just_audio_poc\)/g)?.length,
     2,
   );
 
@@ -360,6 +376,11 @@ test('native audio POCs run only on explicit read-only dual-platform CI', () => 
     read('integration_test/native_local_audio_poc_test.dart'),
     /Platform\.isWindows[\s\S]*?createWithHeadlessAudioSinkForPoc\(\)[\s\S]*?: MediaKitAudioEngine\.create\(\)/,
   );
+  const justAudioPoc = read('integration_test/just_audio_native_local_poc_test.dart');
+  assert.match(justAudioPoc, /JustAudioEngine\.create\([\s\S]*?useProxyForRequestHeaders: false,[\s\S]*?supportsRequestHeaders: false/);
+  assert.match(justAudioPoc, /buildDeterministicPcmWav\(\)/);
+  assert.match(justAudioPoc, /AudioEnginePhase\.completed/);
+  assert(!/MediaKit|headless|https?:\/\//.test(justAudioPoc));
   const sourceHook = 'createForControlledHttpsPoc';
   const sourceHookFiles = [...sources, ...integrationFiles]
     .filter(path => read(path).includes(sourceHook))
