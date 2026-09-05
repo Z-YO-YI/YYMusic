@@ -348,3 +348,18 @@ load失败不能因为currentTrack非空而绕过重试加载。显式重播已�
 dispose在异步曲目查询、来源解析、load返回后检查，已关闭Controller不再发起play。Controller仍不拥有
 Engine的dispose；根依赖释放职责不变。该门禁不宣称能识别一个没有来源身份的Engine流在新load完成后
 错误发送的旧曲快照；插件适配器仍须隔离自身过期事件。双平台原生POC和生产接线门禁保持不变。
+
+## ADR-039：把原生编译与有播放端点的运行分开记录（2026-09-05）
+
+Phase4J证实GitHub Debug EXE需要本机缺失的Debug CRT，实际启动为`0xC0000135`，而不是播放失败。
+不通过公共artifact补发Debug运行库、不改系统权限或安装驱动。使用明确的Profile诊断入口，
+由GitHub编译完整AOT包、核对原生导入和Commit；有真实端点的本机再执行原来的WAV集成测试。
+Profile是测试构建，不是Phase11 Release，也不是正式业务应用；默认入口仍使用UnavailableAudioEngine。
+
+手动`build_windows_audio_probe`默认false，只运行checks/Windows job并生成1天诊断artifact，
+与原有双平台无产物POC互斥；Android APK/Release交付明确跳过。原有POC无产物门禁不放宽。
+运行者必须从API取得精确artifact digest/head SHA，核对SDK引擎与AOT身份、路径安全与全文件清单，
+不允许用旧结果或本地改过的资产宣称某个GitHub Commit通过。Debug拆分路径单独记录Dart/native身份。
+
+本方案只解决诊断交付，不把构建成功、时钟推进或自动测试当作主观听感/后台/媒体会话验收。
+真实结果和范围记录于[Phase4J报告](phase_4j_windows_native_validation_report.md)。

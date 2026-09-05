@@ -273,7 +273,7 @@ test('native runners are branded and Android release does not use debug signing'
 test('CI validates both debug targets with least-privileged, pinned actions', () => {
   const workflow = read('.github/workflows/foundation.yml');
   assert.match(workflow, /contents: read/);
-  assert.match(workflow, /branches: \['feat\/\*\*', 'fix\/\*\*', 'refactor\/\*\*', 'docs\/\*\*', 'main', 'master'\]/);
+  assert.match(workflow, /branches: \['codex\/\*\*', 'feat\/\*\*', 'fix\/\*\*', 'refactor\/\*\*', 'docs\/\*\*', 'main', 'master'\]/);
   assert.match(workflow, /flutter build windows --debug --no-pub/);
   assert.match(workflow, /flutter build apk --debug --no-pub/);
   assert.match(workflow, /dart run build_runner build/);
@@ -337,7 +337,7 @@ test('only the just_audio native POC remains active in read-only dual-platform C
   assert(!/flutter build apk|flutter build appbundle/.test(native));
   assert.equal(
     workflow.match(/if: github\.event_name != 'workflow_dispatch' \|\| !inputs\.run_just_audio_poc/g)?.length,
-    2,
+    1,
   );
 
   const integrationFiles = walk('integration_test');

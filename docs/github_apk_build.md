@@ -4,7 +4,12 @@
 
 ## 构建和下载
 
-推送feat/fix分支或打开PR仍执行源码及原生构建，但不生成下载产物。需要APK时手动触发workflow_dispatch并选择目标分支；只有该事件会在所有门禁通过后创建`ci-debug-<run-id>-<attempt>`私有草稿Release。下载需要登录且具有仓库读取权限。
+推送codex/feat/fix等开发分支或打开PR仍执行源码及原生构建；普通push另提供Windows开发Debug文件包，不生成Android下载产物。需要APK时手动触发workflow_dispatch并选择目标分支，两个诊断输入均保持false；该模式在门禁通过后创建`ci-debug-<run-id>-<attempt>`草稿Release。下载需要登录且具有仓库所需权限。
+
+仅作音频验证时，`run_just_audio_poc=true`运行原有双平台只读无产物测试；
+`build_windows_audio_probe=true`只构建Windows Profile诊断入口，生成保留1天的测试artifact，不创建APK或Release。
+两个模式互斥，均默认false；详见[Phase4J](phase_4j_windows_native_validation_plan.md)。
+Windows普通Debug包需要Debug CRT，不能称为任意电脑可用的免安装应用。
 
 顺序：源码指纹/格式/分析/测试 → GitHub Ubuntu runner编译 → apksigner验签 → APK内48个原始SVG/字体/许可证比对 → 生成校验和/提交信息 → 手动运行时创建草稿Release。检查或构建失败时不上传APK，不使用continue-on-error或always掩盖失败；Windows job独立保留，不阻塞Android job，二者都依赖checks。
 
