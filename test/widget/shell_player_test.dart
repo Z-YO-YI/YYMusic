@@ -40,7 +40,14 @@ void main() {
         await tester.tap(control('$prefix-playback'));
         await tester.pumpAndSettle();
         expect(fixture.engine.calls, ['load', 'play']);
-        expect(find.text(fixture.tracks.first.title), findsNWidgets(surfaces));
+        // Home now shows this track too; count metadata inside actual players.
+        expect(
+          find.descendant(
+            of: find.byType(ShellPlayer),
+            matching: find.text(fixture.tracks.first.title),
+          ),
+          findsNWidgets(surfaces),
+        );
         final metadata = tester.widget<Semantics>(
           find.byWidgetPredicate(
             (widget) =>
@@ -97,7 +104,9 @@ void main() {
     expect(find.text('播放暂不可用'), findsOneWidget);
     expect(find.textContaining('private-file-marker'), findsNothing);
     fixture.engine.loadError = null;
-    await tester.tap(find.text('重试'));
+    await tester.tap(
+      find.descendant(of: find.byType(ShellPlayer), matching: find.text('重试')),
+    );
     await tester.pumpAndSettle();
     expect(find.text('播放暂不可用'), findsNothing);
     expect(fixture.engine.calls, ['load', 'load', 'play']);

@@ -4,6 +4,38 @@ import { read, sha, walk } from './design_audit.mjs';
 
 const sources = walk('lib').filter(path => path.endsWith('.dart'));
 
+test('Home has independent native layouts and bounded repository-only reads', () => {
+  for (const target of ['phone/phone_home_layout', 'tablet/tablet_home_layout', 'windows/windows_home_layout']) {
+    assert.match(read(`lib/features/home/${target}.dart`), /extends StatelessWidget/);
+  }
+  const controller = read('lib/features/home/common/home_controller.dart');
+  assert.match(controller, /PageRequest\(limit: 20\)/);
+  assert.match(controller, /Duration\(days: 7\)/);
+  assert.match(controller, /event != eventVersion/);
+  assert.match(controller, /version != _catalogVersion/);
+  assert.match(controller, /_historySubscription!\.cancel\(\)/);
+  assert.match(controller, /_sourceSubscription!\.cancel\(\)/);
+  assert(!/watchTracks\(|AudioEngine\(|AppDatabase\(|replaceQueue\(/.test(controller));
+  for (const path of sources.filter(path => path.startsWith('lib/features/home/'))) {
+    assert(!/credentialRef|publicHeaders|baseUrl|localPath|Fake|Fixture|dart:io/.test(read(path)), path);
+  }
+});
+
+test('Home uses root playback and confirms destructive history action', () => {
+  const graph = read('lib/app/dependency_graph.dart');
+  assert.match(graph, /home = HomeController\(/);
+  assert.match(graph, /home\.close,\s+playback\.close/);
+  assert.match(read('lib/app/yy_music_app.dart'), /homeController: ref\.read\(dependencyGraphProvider\)\.home/);
+  const sections = read('lib/features/home/common/home_sections.dart');
+  assert.match(sections, /YYRadius\.hero/);
+  assert.match(sections, /YYShadows\.hero/);
+  assert.match(sections, /spacing: -2\.1/);
+  assert.match(sections, /播放今日精选/);
+  assert.match(sections, /确认清除/);
+  assert.match(sections, /只清除历史，不删除歌曲/);
+  assert(!/collection[!?]?\.clearHistory\(/.test(sections));
+});
+
 test('formal source does not embed WebViews, fixture catalogs or source archives', () => {
   for (const path of sources) {
     assert(!/WebView|InAppWebView|dart:html|SonicGallery|sonic_gallery|LinearGradient|RadialGradient|SweepGradient/.test(read(path)), path);

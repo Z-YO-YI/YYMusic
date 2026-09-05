@@ -42,3 +42,12 @@ Android默认Debug成功（18.5秒），231,596,026字节；48项设计资产、
 Java原生访问警告保留，未改工具链压制。GitHub双端CI在推送后单独确认。
 数据库测试使用本机原生SQLite与隔离临时文件，不代表已对用户设备的真实数据库升级或崩溃恢复验收。
 没有新Release、正式签名、合并或上线。Home视图、真实曲库导入/REST、完整播放页和平台媒体能力仍待开发。
+
+## 精确提交云端确认（2026-09-05续验）
+
+实现`b2e561df8611e3391cc4ed322e0972d9aa008d8f`的push运行33967028865与PR运行33967084607
+均为success；各自checks、Android Debug、Windows Debug成功，两个手动音频POC按设计skipped。
+逐项读取完成日志：ZIP24、六份Dart LICENSE、51个Android原生坐标/三份全文材料、APK48资产、
+Windows65文件与两端包内许可均通过，未回流media_kit。两次真实窗口测试的customFrame、
+maximized、restored、minimized、stateEvents、closeIntercepted、detached、arbitraryHwndRejected均true。
+Draft PR #36仍未合并；这是Phase6A精确提交的证据，不能替代Phase6B后续提交检查。
