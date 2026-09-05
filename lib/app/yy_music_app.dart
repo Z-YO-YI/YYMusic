@@ -55,6 +55,7 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp> {
         licenses: ref.read(dependencyGraphProvider).licenses,
         playbackPresenter: ref.read(dependencyGraphProvider).playbackPresenter,
         homeController: ref.read(dependencyGraphProvider).home,
+        searchController: ref.read(dependencyGraphProvider).search,
         audioBackendSelected: ref
             .read(dependencyGraphProvider)
             .playback
@@ -132,8 +133,13 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp> {
                         const SingleActivator(
                           LogicalKeyboardKey.keyK,
                           control: true,
-                        ): () =>
-                            router.goTo(AppRoute.search),
+                        ): () {
+                          router.goTo(AppRoute.search);
+                          ref
+                              .read(dependencyGraphProvider)
+                              .search
+                              .requestFocus();
+                        },
                         const SingleActivator(
                           LogicalKeyboardKey.keyL,
                           control: true,

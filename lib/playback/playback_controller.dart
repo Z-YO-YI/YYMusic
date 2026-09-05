@@ -61,6 +61,7 @@ final class PlaybackController extends ChangeNotifier {
   bool _completionHandled = true;
   bool _loadingSource = false;
   bool _disposed = false;
+  int _catalogSequence = 0;
   Future<void>? _closeFuture;
 
   PlaybackState get state => _state;
@@ -167,6 +168,47 @@ final class PlaybackController extends ChangeNotifier {
 
   Future<void> playEntry(String entryId) =>
       _schedule(() => _playEntryInternal(entryId));
+
+  /// One serialized command, preserving the queue and full source identity.
+  /// A revoked UI intent never starts audio after a queued/read/load boundary.
+  Future<void> playCatalogTrack(TrackRef track, {bool Function()? canPlay}) =>
+      _schedule(
+        () => _guarded('catalog-play', () async {
+          if (canPlay?.call() == false) return;
+          _requireEngine();
+          var id = _state.queue.entries
+              .where((entry) => entry.track == track)
+              .firstOrNull
+              ?.id;
+          if (id == null) {
+            final now = _clock().toUtc();
+            String candidate;
+            do {
+              candidate =
+                  'catalog-${now.microsecondsSinceEpoch}-${_catalogSequence++}';
+            } while (_state.queue.entries.any(
+              (entry) => entry.id == candidate,
+            ));
+            await _commitQueue(
+              _snapshot(
+                _normalize([
+                  ..._state.queue.entries,
+                  QueueEntry(
+                    id: candidate,
+                    track: track,
+                    position: _state.queue.entries.length,
+                    addedAt: now,
+                  ),
+                ]),
+                currentEntryId: _state.queue.currentEntryId,
+              ),
+            );
+            id = candidate;
+          }
+          if (canPlay?.call() == false) return;
+          await _playEntryInternal(id, canPlay: canPlay);
+        }),
+      );
 
   Future<void> skipNext() => _schedule(
     () => _guarded('skip-next', () => _advanceInternal(isAutomatic: false)),
@@ -284,12 +326,18 @@ final class PlaybackController extends ChangeNotifier {
     _publish(_state.copyWith(repeatMode: value));
   }
 
-  Future<void> _playEntryInternal(String entryId) async {
+  Future<void> _playEntryInternal(
+    String entryId, {
+    bool Function()? canPlay,
+  }) async {
+    if (canPlay?.call() == false) return;
     _requireEngine();
     try {
       final entry = _entry(entryId);
-      _sessionRevision++;
-      _completionHandled = true;
+      if (canPlay == null) {
+        _sessionRevision++;
+        _completionHandled = true;
+      }
       final library = _libraryRepository;
       if (library == null) {
         throw DomainFailure(
@@ -300,6 +348,7 @@ final class PlaybackController extends ChangeNotifier {
       }
       final track = await library.getTrack(entry.track);
       _checkNotDisposed();
+      if (canPlay?.call() == false) return;
       if (track == null) throw _queueTrackMissing(entry.track);
       final availabilityFailure = _availabilityFailure(track);
       if (availabilityFailure != null) throw availabilityFailure;
@@ -313,12 +362,17 @@ final class PlaybackController extends ChangeNotifier {
       }
       final source = await resolver.resolve(track);
       _checkNotDisposed();
+      if (canPlay?.call() == false) return;
       if (source.track != track.ref) {
         throw DomainFailure(
           code: DomainFailureCode.schemaMismatch,
           diagnosticId: 'playback.source-track-mismatch',
           sourceId: track.sourceId,
         );
+      }
+      if (canPlay != null) {
+        _sessionRevision++;
+        _completionHandled = true;
       }
       if (_state.queue.currentEntryId != entryId) {
         await _commitQueue(
@@ -327,8 +381,10 @@ final class PlaybackController extends ChangeNotifier {
         );
       }
       // Explicit replay and error recovery must not retain a previous source.
+      if (canPlay?.call() == false) return;
       if (_loadedEntryId != null) await _stopEngine();
       _checkNotDisposed();
+      if (canPlay?.call() == false) return;
       _publish(
         _state.copyWith(
           phase: PlaybackPhase.loading,
@@ -345,6 +401,10 @@ final class PlaybackController extends ChangeNotifier {
       _loadingSource = false;
       _checkNotDisposed();
       _loadedEntryId = entryId;
+      if (canPlay?.call() == false) {
+        await _stopEngine();
+        return;
+      }
       await _startPlayback();
     } catch (error, stack) {
       _loadingSource = false;

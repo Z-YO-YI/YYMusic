@@ -24,7 +24,7 @@ test('Home has independent native layouts and bounded repository-only reads', ()
 test('Home uses root playback and confirms destructive history action', () => {
   const graph = read('lib/app/dependency_graph.dart');
   assert.match(graph, /home = HomeController\(/);
-  assert.match(graph, /home\.close,\s+playback\.close/);
+  assert.match(graph, /home\.close,\s+search\.close,\s+playback\.close/);
   assert.match(read('lib/app/yy_music_app.dart'), /homeController: ref\.read\(dependencyGraphProvider\)\.home/);
   const sections = read('lib/features/home/common/home_sections.dart');
   assert.match(sections, /YYRadius\.hero/);
