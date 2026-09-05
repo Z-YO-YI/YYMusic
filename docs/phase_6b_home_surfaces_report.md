@@ -56,3 +56,11 @@ Windows本机C++/Debug CRT/插件symlink限制未解除；Golden是Windows宿主
 搜索、音乐库和设置主体仍是骨架（许可页可用），来源管理入口只进入设置并明确开发中；
 导入/REST未完成，默认新安装保持真实空库，没有虚构可播放曲目。下一步按Phase6顺序做搜索，
 再逐批完成音乐库/专辑/艺术家/曲目/歌单/本地音乐/设置，以及后续播放器、导入、平台集成和发布验收。
+
+## 精确提交云端确认（2026-09-05续验）
+
+`62b8a7cbc75032a6e17baaa2b28fd4e0f45197b0`的push33976793559、PR33976796108均success，
+各自checks、Android Debug、Windows Debug成功，手动音频POC明确skipped。完成日志独立确认：
+ZIP24/24、六包许可、51个原生坐标/三份全文、Android48资产、Windows65文件、两端包内许可全部通过。
+两次真实窗口测试customFrame/maximized/restored/minimized/stateEvents/closeIntercepted/detached/
+arbitraryHwndRejected八项均true。Draft PR #37未合并；无新Release或原生音频验收声明。

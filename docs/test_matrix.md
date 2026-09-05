@@ -1,13 +1,19 @@
 # 原生基础验证矩阵
 
-Phase6B 当前：359 Flutter全部通过（含49张Windows宿主Golden）、65 Node、严格analyze0、
+Phase6C 当前：379 Flutter（49 Golden不变）、67 Node、严格analyze0、218文件格式零修改。
+新增11项搜索与9项历史测试：字面中文/ASCII/特殊字符、公开源名、源类型/ID、实体稳定分页/多艺人，
+450曲目仅一次SELECT和零写事务、迟到取消、双SQLite连接并发写后的完整旧快照、错误脱敏，
+20条上限/稳定排序、重复/并发/旧ID去重、触发器失败回滚、清除保留曲库、关闭等待及真实文件重开。
+仅数据合同与Repository，不声明Search UI、实时REST或新一轮音频/设备验收，详见Phase6C报告。
+
+Phase6B 历史：359 Flutter全部通过（含49张Windows宿主Golden）、65 Node、严格analyze0、
 211文件格式零修改、Drift生成代码/版本快照/lockfile零差异。新增8项Controller、1项真实内存SQLite、
 5项Widget与6张Golden；独立错误/Loading/Empty/重试、七天有界读、乱序/晚到事件、源身份、
 队列保留/不可用禁用、确认清除历史、根关闭等待、三套布局/130%/断点切换均覆盖。
 受影响的Shell播放器选择器改为明确限定ShellPlayer，保留动作/状态断言，不用首页重复标题使测试误判。
 本轮Android Debug及GitHub精确提交证据见phase_6b_home_surfaces_report.md；Fake播放不算原生播放验收。
 
-Phase6A 当前：339 Flutter（43 Golden全部不变）、63 Node、严格analyze0。新增4项v1→v2迁移测试：
+Phase6A 历史：339 Flutter（43 Golden全部不变）、63 Node、严格analyze0。新增4项v1→v2迁移测试：
 真实临时文件升级重开、完整schema、17表旧数据保留、失败DDL/索引/审计回滚并恢复；8项最近添加
 合同覆盖首次时间、重复扫描、边界/稳定分页、450曲目索引、错误/并发/Fake一致性。
 旧v1快照强指纹固定，生成物与迁移助手纳入CI再生成差异检查，见[本批报告](phase_6a_home_catalog_report.md)。
