@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "coverage": "six-dart-audio-packages-only",
+  "productionWiringApproved": false,
+  "releaseApproved": false,
+  "bundleAsset": "NOTICES.Z",
+  "packages": [
+    {
+      "name": "just_audio",
+      "version": "0.10.6",
+      "license": ["MIT", "Apache-2.0"],
+      "licenseFile": "LICENSE",
+      "bytes": 12644,
+      "sha256": "63ce4443e916b27424700d7fe970003add9f54944daf732f2dbcc1d8caf1bbad"
+    },
+    {
+      "name": "just_audio_windows",
+      "version": "0.2.3",
+      "license": ["MIT"],
+      "licenseFile": "LICENSE",
+      "bytes": 1099,
+      "sha256": "5ce607ae5defa5246b2886d696c1b495e8c099fd728421c8ac1bc627b0105d4d"
+    },
+    {
+      "name": "just_audio_platform_interface",
+      "version": "4.6.0",
+      "license": ["MIT"],
+      "licenseFile": "LICENSE",
+      "bytes": 1097,
+      "sha256": "2568490c678ba27cc8a405238637c4ba76adc632232f05dc1c36cbf59381dba4"
+    },
+    {
+      "name": "just_audio_web",
+      "version": "0.4.16",
+      "license": ["MIT"],
+      "licenseFile": "LICENSE",
+      "bytes": 1097,
+      "sha256": "2568490c678ba27cc8a405238637c4ba76adc632232f05dc1c36cbf59381dba4"
+    },
+    {
+      "name": "audio_session",
+      "version": "0.2.4",
+      "license": ["MIT"],
+      "licenseFile": "LICENSE",
+      "bytes": 1097,
+      "sha256": "2568490c678ba27cc8a405238637c4ba76adc632232f05dc1c36cbf59381dba4"
+    },
+    {
+      "name": "rxdart",
+      "version": "0.28.0",
+      "license": ["Apache-2.0"],
+      "licenseFile": "LICENSE",
+      "bytes": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    }
+  ],
+  "sourceFiles": [
+    {
+      "package": "just_audio",
+      "path": "android/build.gradle.kts",
+      "bytes": 1952,
+      "sha256": "e568ec02f8bdffabfeba525df3acea4959e07212195591285b1e3fda500cc2c2"
+    },
+    {
+      "package": "just_audio_windows",
+      "path": "windows/CMakeLists.txt",
+      "bytes": 2063,
+      "sha256": "931796ade3a2a04e40d91e82b4006e783a25e9d214f6e076a1aed5a371cc2643"
+    }
+  ],
+  "nativeEvidence": {
+    "android": {
+      "group": "androidx.media3",
+      "version": "1.4.1",
+      "tag": "1.4.1",
+      "sourceCommit": "c35a9d62baec57118ea898e271ac66819399649b",
+      "licenseUrl": "https://github.com/androidx/media/blob/c35a9d62baec57118ea898e271ac66819399649b/LICENSE",
+      "licenseBytes": 11358,
+      "licenseSha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "transitiveNoticeReviewComplete": false
+    },
+    "windows": {
+      "backend": "Windows Runtime MediaPlayer",
+      "additionalBundledPlayerLibraries": [],
+      "source": "https://pub.dev/packages/just_audio_windows/versions/0.2.3"
+    }
+  },
+  "capabilities": {
+    "android": ["local-file", "content-uri", "https-without-headers"],
+    "windows": ["local-file", "https-without-headers"],
+    "requestHeaders": false,
+    "proxyForHeaders": false,
+    "productionAudioConnected": false
+  }
+}

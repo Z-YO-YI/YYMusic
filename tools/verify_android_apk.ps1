@@ -30,5 +30,6 @@ try {
         $taskRejectedNames = $taskRejectedMediaKitEntries.FullName -join ', '
         throw "Rejected media_kit native content unexpectedly packaged in APK: $taskRejectedNames"
     }
+    & (Join-Path $PSScriptRoot 'verify_audio_licenses.ps1') -Mode Android -ApkPath $taskApkPath
     Write-Output 'PASS: 48 packaged SVG/font/license files match source bytes; reference/private files and rejected media_kit native content excluded.'
 } finally { $taskArchive.Dispose() }

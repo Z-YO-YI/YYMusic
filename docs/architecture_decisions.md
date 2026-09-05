@@ -388,3 +388,30 @@ RIFF 为 PCM16、mono、44100Hz、88200 字节/秒、1秒。上游仓库 LICENSE
 来源：[上游测试](https://github.com/androidx/media/blob/43e3af79dabb43a69badffbbdfa6d421a1cdb36c/libraries/extractor/src/test/java/androidx/media3/extractor/wav/WavExtractorTest.java)、
 [夹具](https://github.com/androidx/media/blob/43e3af79dabb43a69badffbbdfa6d421a1cdb36c/libraries/test_data/src/test/assets/media/wav/sample.wav)、
 [许可](https://github.com/androidx/media/blob/43e3af79dabb43a69badffbbdfa6d421a1cdb36c/LICENSE)。
+
+## ADR-041：验证实际打包的完整许可证，不重复维护原文（2026-09-05）
+
+Phase4M核对 Flutter 3.47.2 的 LicenseCollector 与 ServicesBinding：构建器会收集 Pub 包 LICENSE，
+按完整文本去重并保留包名，原生包保存为 GZip `NOTICES.Z`，运行时由 LicenseRegistry 按需读取。
+Phase4L Windows 实际包的四个许可组已包含当前音频六个 Dart 包，逐组原文字节/哈希等于 Pub 原件。
+因此新增独立副本并不能提高准确性；本批为已打包原文增加不可静默跳过的源码与产物校验。
+
+`docs/legal/just_audio/manifest.json` 固定六个版本、原文长度/SHA-256和两个原生构建源文件指纹。
+源码检查必须匹配lockfile和实际Pub缓存。APK/Windows检查必须找到唯一 NOTICES.Z，限4 MiB压缩体积、
+16 MiB展开体积、严格UTF-8及最多10000组；每个目标包恰好出现一次，必须完整文本匹配，
+不能通过重命名、只保留许可证名称、重复标注或篡改段落让校验通过。原有48项设计资产校验不变。
+
+技术能力仍以Phase4L同提交的真实POC为准：Android file/content/无Header HTTPS，Windows file/无Header HTTPS。
+六包原文检查不等于所有Android Maven传递材料、系统组件、完整发行或用户可见许可页面已经验收。
+Media3 1.4.1 的注释tag解析到 `c35a9d62baec57118ea898e271ac66819399649b`，根LICENSE为11358字节，
+Apache-2.0，SHA为 `cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30`；
+just_audio包原文本身包含ExoPlayer的Apache全文，但这不能替代其Maven传递NOTICE覆盖检查。
+Windows候选没有额外bundled player libraries，实际使用系统WinRT MediaPlayer。
+
+manifest显式保持 `releaseApproved=false`、`productionWiringApproved=false`、
+`transitiveNoticeReviewComplete=false`。下一批继续原生传递材料/许可展示与正式接线，
+不得把新增校验“通过”解读为整个应用已获发布批准。被拒绝media_kit清单与历史不变。
+
+来源：[just_audio 0.10.6](https://pub.dev/packages/just_audio/versions/0.10.6)、
+[Windows 0.2.3](https://pub.dev/packages/just_audio_windows/versions/0.2.3)、
+[AndroidX Media精确LICENSE](https://github.com/androidx/media/blob/c35a9d62baec57118ea898e271ac66819399649b/LICENSE)。
