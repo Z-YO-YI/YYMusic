@@ -109,3 +109,9 @@ Phase4C实现提交`622408e`的标准push运行33861562956与PR运行33861566379
 Phase4D实现提交`913f3d75`的标准PR运行33878401743整体成功，checks、Windows Debug与Android Debug均成功；同提交push运行33878342752因并发组被PR运行替代而cancelled。专用运行33878710671整体成功：Windows HTTPS load 77 ms/首进度244 ms/seek 2 ms；Android HTTPS为110/143/3 ms，`content://`为56/151/2 ms；全部completed、失败矩阵通过且两端报告`All tests passed!`。专用运行只读、artifact总数0、匹配Release总数0。Phase4D出口关闭，但不证明真实第三方API、跨站重定向、实体设备、MediaStore/SAF持久授权、后台/焦点、系统媒体会话或许可证闭环。
 
 Actions 固定 SHA，来源为维护者公开 refs 和说明：[checkout](https://github.com/actions/checkout)、[setup-node](https://github.com/actions/setup-node)、[setup-java](https://github.com/actions/setup-java)、[flutter-action](https://github.com/subosito/flutter-action)。静态配置验证不代表远程工作流已经通过；每个目标提交仍须单独取得并记录远程结果。
+
+Phase4F实现提交`037db44`的push运行33941592336与PR运行33941595645均整体success，checks、Windows
+Debug和Android Debug全部通过。只读运行33942090875中Android `just_audio`本地WAV通过：load 596 ms、
+首进度68 ms、seek 9 ms、duration 3000 ms、completed，且代理/Header能力均false；Windows成功启动
+AudioEndpointBuilder/Audiosrv但可用播放端点为0，按门禁失败，没有运行或伪造播放case。该运行artifact 0、
+匹配Release 0。Phase4F与Windows小批A保持未关闭，小批B未开始。

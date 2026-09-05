@@ -285,3 +285,19 @@ false，则在调用插件前失败关闭并只暴露固定脱敏DomainFailure�
 LockCachingAudioSource、StreamAudioSource或缓存清理，不实现下载/离线保存。Debug编译和Fake合同通过只
 证明适配与打包；真实native运行、实体设备、后台/焦点、系统媒体会话及第三方NOTICE完成前不锁定正式
 backend，也不触发包含备用候选的手动APK Release。
+
+## ADR-035：无真实Windows播放端点时原生POC必须失败关闭（2026-09-05）
+
+Phase4F为`just_audio`建立与media_kit合同相同的运行时WAV原生测试，且不启用Header代理、缓存、下载或
+插件内部队列。Android API36完成duration、position、seek、pause、completed等链路。Windows适配层修复
+WinRT插件在position和natural duration同为0时提前报告completed的问题，但修复后托管机调用play仍不推进
+position。
+
+专用Windows job会启动AudioEndpointBuilder与Audiosrv，并用PnP设备事实要求至少一个可用播放端点。
+GitHub Windows Server 2025两项服务均Running但播放端点为0，因此测试在端点门失败；当前远程本机同样为
+0端点，且Developer Mode关闭阻止Flutter创建plugin symlink。构建通过、服务Running、Android成功、Fake
+时钟或media_kit无头sink都不能替代本候选的Windows真实端点证据。
+
+因此Phase4F只关闭Android小批A，Windows与整个阶段保持打开，小批B不扩大。生产继续创建
+UnavailableAudioEngine。后续可在有播放端点的Windows runner重跑同一测试；并行可审计media_kit的native
+分发许可证，但任何候选都必须在自身剩余门禁关闭后才能接入Bootstrap。

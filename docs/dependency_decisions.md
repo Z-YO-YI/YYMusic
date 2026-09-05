@@ -151,3 +151,18 @@ MIT，但其LICENSE同时收录ExoPlayer Apache-2.0全文；rxdart为Apache-2.0�
 本批不启用或评估just_audio本地代理，不增加Android cleartext配置。Android直接Header与Windows认证来源
 进入Phase4F单独验证；未通过前不能把顶层聚合能力表当成YYMusic结论。生产入口继续使用
 UnavailableAudioEngine，不添加缓存、StreamAudioSource、下载或离线API。
+
+## Phase 4F just_audio原生运行结果（2026-09-05）
+
+`just_audio` Android API36原生运行已通过运行时生成WAV的load不自动播放、3000 ms duration、
+position、seek、pause、volume/rate、completed、stop与dispose；运行时继续显式关闭Header代理和Header能力。
+`just_audio_windows`的WinRT适配在真实运行中暴露0/0提前completed，项目层已只在实际播放后接受completed，
+对应回归测试通过。
+
+修复后Windows MediaPlayer能够load并保持ready，但GitHub Windows Server 2025在play后20秒仍没有position；
+后续预检成功启动AudioEndpointBuilder/Audiosrv，却确认可用播放端点为0。当前远程Windows会话也为0端点，
+且Developer Mode关闭阻止本机构建plugin symlink。因此现有环境不能满足Windows真实端点验收，不能以Fake、
+构建成功或Android结果替代。Phase4F保持未关闭，未继续HTTPS/content URI小批，`just_audio`仍是隔离备用候选。
+
+下一批对已有双平台受控解码/时钟证据的`media_kit`补齐native分发许可证；在LGPL/NOTICE、对应源码和
+可替换策略闭合前不选为正式backend。生产入口继续使用UnavailableAudioEngine。
