@@ -70,6 +70,8 @@ test('audio license ledger pins all six package identities and does not approve 
   assert.match(read('.github/workflows/foundation.yml'), /flutter pub get --enforce-lockfile\n\s+- name: Verify locked audio license sources\n\s+shell: pwsh\n\s+run: .\/tools\/verify_audio_licenses\.ps1 -Mode Source/);
   assert.match(read('tools/verify_android_apk.ps1'), /verify_audio_licenses\.ps1'\) -Mode Android/);
   assert.match(read('tools/verify_windows_bundle.ps1'), /verify_audio_licenses\.ps1'\) -Mode Windows/);
+  assert.match(read('tools/verify_audio_licenses.ps1'), /\$Mode -eq 'Source'/);
+  assert.match(read('tools/verify_audio_licenses.ps1'), /\$Mode -eq 'Android'/);
   assert(!/Invoke-WebRequest|Invoke-RestMethod|Start-Process|Set-Content|WriteAll/.test(read('tools/verify_audio_licenses.ps1')));
 });
 
@@ -99,12 +101,14 @@ test('notice validator fails closed for invalid compression, UTF-8 and bounded e
   }` });
 });
 
-test('actual APK entry point rejects missing, duplicate and oversized notice entries', () => {
+test('actual APK entry point rejects invalid entries and routes case-insensitive modes consistently', () => {
   const script = join(root, 'tools/verify_audio_licenses.ps1').replaceAll("'", "''");
-  for (const [count, oversized, expectedError] of [
-    [0, false, /Missing or duplicate Android NOTICES.Z/],
-    [2, false, /Missing or duplicate Android NOTICES.Z/],
-    [1, true, /compressed size limit exceeded/],
+  for (const [count, oversized, mode, expectedError] of [
+    [0, false, 'Android', /Missing or duplicate Android NOTICES.Z/],
+    [0, false, 'android', /Missing or duplicate Android NOTICES.Z/],
+    [0, false, 'aNdRoId', /Missing or duplicate Android NOTICES.Z/],
+    [2, false, 'Android', /Missing or duplicate Android NOTICES.Z/],
+    [1, true, 'Android', /compressed size limit exceeded/],
   ]) {
     const command = `
       $ErrorActionPreference = 'Stop'
@@ -121,7 +125,7 @@ test('actual APK entry point rejects missing, duplicate and oversized notice ent
             finally { $stream.Dispose() }
           }
         } finally { $zip.Dispose() }
-        & '${script}' -Mode Android -ApkPath $path
+        & '${script}' -Mode ${mode} -ApkPath $path
       } finally {
         $resolved = [IO.Path]::GetFullPath($fixture)
         $temp = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd([IO.Path]::DirectorySeparatorChar)

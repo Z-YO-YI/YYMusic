@@ -23,13 +23,13 @@ foreach ($package in $manifest.packages) {
     }
 }
 
-if ($Mode -ceq 'Source') {
+if ($Mode -eq 'Source') {
     $config = Get-Content -LiteralPath (Join-Path $audioRoot '.dart_tool/package_config.json') -Raw | ConvertFrom-Json
     $packageRoots = @{}
     foreach ($package in $manifest.packages) {
-        $matches = @($config.packages | Where-Object name -CEQ $package.name)
-        if ($matches.Count -ne 1) { throw 'Missing or duplicate configured audio package' }
-        $uri = [Uri]$matches[0].rootUri
+        $configuredPackages = @($config.packages | Where-Object name -CEQ $package.name)
+        if ($configuredPackages.Count -ne 1) { throw 'Missing or duplicate configured audio package' }
+        $uri = [Uri]$configuredPackages[0].rootUri
         if (!$uri.IsAbsoluteUri -or !$uri.IsFile -or $uri.Query -or $uri.Fragment) { throw 'Audio package must use a local resolved cache' }
         $packageRoots[$package.name] = $uri.LocalPath
         $path = Join-Path $uri.LocalPath $package.licenseFile
@@ -48,7 +48,7 @@ if ($Mode -ceq 'Source') {
     return
 }
 
-if ($Mode -ceq 'Android') {
+if ($Mode -eq 'Android') {
     $archive = [IO.Compression.ZipFile]::OpenRead([IO.Path]::GetFullPath($ApkPath, $audioRoot))
     try {
         $entries = @($archive.Entries | Where-Object FullName -CEQ 'assets/flutter_assets/NOTICES.Z')
