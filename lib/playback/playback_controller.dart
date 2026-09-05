@@ -134,18 +134,24 @@ final class PlaybackController extends ChangeNotifier {
     await _guarded('stop', _stopEngine);
   });
 
-  Future<void> seek(Duration position) => _schedule(() async {
-    _requireEngine();
-    if (position.isNegative) {
-      throw ArgumentError.value(position, 'position', 'must not be negative');
-    }
-    final duration = _state.duration;
-    final target = duration != null && position > duration
-        ? duration
-        : position;
-    _sessionRevision++;
-    await _guarded('seek', () => _engine.seek(target));
-  });
+  Future<void> seek(Duration position, {String? expectedEntryId}) => _schedule(
+    () async {
+      if (expectedEntryId != null &&
+          expectedEntryId != _state.queue.currentEntryId) {
+        return;
+      }
+      _requireEngine();
+      if (position.isNegative) {
+        throw ArgumentError.value(position, 'position', 'must not be negative');
+      }
+      final duration = _state.duration;
+      final target = duration != null && position > duration
+          ? duration
+          : position;
+      _sessionRevision++;
+      await _guarded('seek', () => _engine.seek(target));
+    },
+  );
 
   Future<void> setVolume(double value) => _schedule(() async {
     _requireEngine();

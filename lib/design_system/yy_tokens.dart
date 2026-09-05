@@ -314,6 +314,10 @@ abstract final class YYSliderMetrics {
 
 /// Layered, solid-color shadows; ordinary surfaces never use a gradient.
 abstract final class YYShadows {
+  // App.tsx POLISH_CSS .player-control.primary, distinct from accent buttons.
+  static const playerControl = [
+    BoxShadow(color: Color(0x290F1214), offset: Offset(0, 8), blurRadius: 22),
+  ];
   static const surface = [
     BoxShadow(color: Color(0x0A0F1214), offset: Offset(0, 1), blurRadius: 4),
     BoxShadow(color: Color(0x0A0F1214), offset: Offset(0, 4), blurRadius: 18),

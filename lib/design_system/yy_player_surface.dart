@@ -254,74 +254,94 @@ class _TrackAction extends StatelessWidget {
   final VoidCallback? onPressed;
 
   @override
-  Widget build(BuildContext context) => YYControlAction(
-    label: '打开正在播放，${data.title}，${data.artist}',
-    onActivate: loading ? null : onPressed,
-    loading: loading,
-    builder: (context, interaction) {
-      final theme = YYTheme.of(context);
-      final colors = theme.colors;
-      final fill = interaction.pressed
-          ? colors.pressed
-          : interaction.hovered
-          ? theme.accent.color.withValues(alpha: .055)
-          : const Color(0x00000000);
-      return AnimatedContainer(
-        duration: theme.motion(YYMotion.hover),
-        curve: YYMotion.standard,
-        height: artworkDimension,
-        padding: EdgeInsets.symmetric(horizontal: compact ? 0 : 4),
-        decoration: BoxDecoration(
-          color: fill,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: interaction.focused ? colors.text : const Color(0x00000000),
-            width: 1.5,
-          ),
-        ),
-        child: Row(
-          children: [
-            YYArtworkPlaceholder(
-              kind: data.artwork,
-              dimension: artworkDimension,
-              role: artworkRole,
-              semanticLabel: '${data.title} 封面',
-              hovered: interaction.hovered,
-            ),
-            SizedBox(width: compact ? 9 : 12),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    data.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: YYTypography.text(
-                      size: compact ? 11 : 12,
-                      weight: 700,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    data.artist,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: YYTypography.text(
-                      size: compact ? 9 : 10,
-                      weight: 520,
-                      color: colors.tertiary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+  Widget build(BuildContext context) {
+    if (onPressed == null) {
+      // Metadata remains readable even when the detail route is unavailable.
+      return Semantics(
+        label: '正在播放，${data.title}，${data.artist}',
+        value: loading ? '加载中' : null,
+        excludeSemantics: true,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: YYSpace.touchTarget),
+          child: _buildContent(context, (
+            hovered: false,
+            pressed: false,
+            focused: false,
+          )),
         ),
       );
-    },
-  );
+    }
+    return YYControlAction(
+      label: '打开正在播放，${data.title}，${data.artist}',
+      onActivate: loading ? null : onPressed,
+      loading: loading,
+      builder: _buildContent,
+    );
+  }
+
+  Widget _buildContent(BuildContext context, YYControlInteraction interaction) {
+    final theme = YYTheme.of(context);
+    final colors = theme.colors;
+    final fill = interaction.pressed
+        ? colors.pressed
+        : interaction.hovered
+        ? theme.accent.color.withValues(alpha: .055)
+        : const Color(0x00000000);
+    return AnimatedContainer(
+      duration: theme.motion(YYMotion.hover),
+      curve: YYMotion.standard,
+      height: artworkDimension,
+      padding: EdgeInsets.symmetric(horizontal: compact ? 0 : 4),
+      decoration: BoxDecoration(
+        color: fill,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: interaction.focused ? colors.text : const Color(0x00000000),
+          width: 1.5,
+        ),
+      ),
+      child: Row(
+        children: [
+          YYArtworkPlaceholder(
+            kind: data.artwork,
+            dimension: artworkDimension,
+            role: artworkRole,
+            semanticLabel: '${data.title} 封面',
+            hovered: interaction.hovered,
+          ),
+          SizedBox(width: compact ? 9 : 12),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  data.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: YYTypography.text(
+                    size: compact ? 11 : 12,
+                    weight: 700,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  data.artist,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: YYTypography.text(
+                    size: compact ? 9 : 10,
+                    weight: 520,
+                    color: colors.tertiary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _PlayerCenter extends StatelessWidget {
@@ -608,12 +628,7 @@ class _TransportButton extends StatelessWidget {
                         : const Color(0x00000000),
                     width: 2,
                   ),
-                  boxShadow: primary
-                      ? YYShadows.primary(
-                          theme.accent.color,
-                          hovered: interaction.hovered,
-                        )
-                      : null,
+                  boxShadow: primary ? YYShadows.playerControl : null,
                 ),
                 alignment: Alignment.center,
                 child: YYIcon(

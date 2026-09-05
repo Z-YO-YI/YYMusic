@@ -19,6 +19,7 @@ import '../playback/queue_controller.dart';
 import 'app_data_services.dart';
 import 'app_view_state.dart';
 import 'flutter_license_repository.dart';
+import 'playback_presenter.dart';
 
 /// One graph per app scope; a Shell never creates business controllers.
 final class DependencyGraph {
@@ -58,6 +59,7 @@ final class DependencyGraph {
       mediaSession: _mediaSession,
     );
     queue = QueueController(playback);
+    playbackPresenter = PlaybackPresenter(playback);
   }
 
   final AudioEngine _audioEngine;
@@ -74,6 +76,7 @@ final class DependencyGraph {
   final appearance = YYAppearanceController();
   late final PlaybackController playback;
   late final QueueController queue;
+  late final PlaybackPresenter playbackPresenter;
   Future<void>? _closeFuture;
 
   Future<void> initialize() => playback.initialize();
@@ -87,6 +90,7 @@ final class DependencyGraph {
     final existing = _closeFuture;
     if (existing != null) return existing;
     queue.dispose();
+    playbackPresenter.dispose();
     playback.dispose();
     appearance.dispose();
     return _closeFuture = _closeOwnedResources();

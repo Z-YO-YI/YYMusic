@@ -1,6 +1,6 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 4P 真实音频根接线**。默认 AppBootstrap 现在创建一个 just_audio/Windows WinRT 后端，共用 PlaybackController 和本地来源解析器；退出时等待在途命令，再依次关闭播放器、媒体接口与数据。恢复队列不自动播放，main_dev 仍明确不可播放，REST 尚需 Adapter。Phase4L 已完成双平台真实来源验证，Phase4M/N/O 的完整许可材料与查看入口已通过双平台云端构建。本批本地 282 项 Flutter（35 张 Golden）、57 项 Node 与严格分析通过；构建/云端结果见本批报告。正式 Shell 播放控件与音乐业务页面仍未接通，不能作为可用音乐应用交付。Phase5—11 和 Phase2 网页截图对照仍待完成；未改变系统工具链或权限。
+当前阶段：**Android + Windows · Phase 5A 共用 Shell 播放器**。三套 Shell 已连接根 PlaybackController：真实状态映射、播放/暂停、切歌、宽屏进度/音量与随机/循环；Windows Space 支持输入焦点避让。拖动只预览，切歌/断点变化取消旧手势，串行执行时再次保护曲目身份。没有第二套引擎或播放算法，生产空队列不注入演示音乐。全屏/歌词/收藏/队列入口暂禁用，业务页面和导入/REST 仍待开发，不能作为可用音乐应用交付。本地 300 项 Flutter（38 张 Golden）、58 项 Node 与严格分析通过；构建/云端结果见本批报告。Phase4P 的精确实现已通过两组 GitHub checks/Android/Windows。Phase5 其余能力、Phase6—11 和 Phase2 网页截图对照仍待完成；未改变系统工具链或权限。
 
 Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭、只允许手动选择、`contents: read`且不上传产物的Windows/Android原生集成模式。完整221项Flutter含32张Windows宿主Golden、严格分析0问题、31项Node、24项ZIP、lockfile及生成代码/v1快照零差异已通过；本机Android Debug也完成资产与v2单Debug签名复核。精确提交`622408e`的专用运行33862786766 attempt 2已在Windows与Android成功，且没有artifact或Release；普通push另提供保留14天的Windows开发Debug文件包。它依赖本机Debug CRT，并非通用免安装发行包；Phase4J的Profile诊断模式与正式应用分开。
 
@@ -10,6 +10,7 @@ Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭
 
 ## 开发入口
 
+- [Phase 5A 共用 Shell 播放器计划](docs/phase_5a_shell_player_plan.md)、[报告](docs/phase_5a_shell_player_report.md)：根 Presenter、三套原生布局、拖动/切歌/关闭边界和 Space；修正原稿后置阴影及静态曲目信息可读性，不代表完整播放页面完成。
 - [Phase 4P 正式音频根接线计划](docs/phase_4p_production_audio_plan.md)、[报告](docs/phase_4p_production_audio_report.md)：根单实例后端、本地引用解析、可等待的有序关闭及初始化失败清理；工程选型 ADR-044，不代表上线批准。
 - [Phase 4O 许可查看计划](docs/phase_4o_license_viewer_plan.md)、[报告](docs/phase_4o_license_viewer_report.md)：设置 → 开源许可，SDK 与原生完整原文、搜索/重试、原生模态路由和三张新视觉基线；不使用 WebView 或默认 Material 许可页面。
 - [Phase 4N 原生音频许可计划](docs/phase_4n_native_notices_plan.md)、[报告](docs/phase_4n_native_notices_report.md)：51个实际Android依赖坐标、POM/归档指纹及三份完整许可原文，新增双平台包内校验；`f324ed2` 两组云端 checks/Android/Windows 全部通过。
@@ -51,7 +52,7 @@ Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭
 
 Android 启动后，底部或左侧导航可切换首页、搜索、音乐库、设置；宽度跨越 600dp 时保留当前路由和根状态。在首页点“设计基础预览”进入 `/design-system`：切换浅色/深色/系统、五种预设/自定义 HEX、减少动态/透明，查看原生组件、滑块、七种占位封面与图标。滑块横向拖动预览、松开提交示例数值，系统取消不提交，支持键盘/无障碍增减，但不触发播放。
 
-外观仅在本次运行保留，重启恢复默认。预览页的点击/收藏/进度只是标注清楚的本页示例状态；四个业务入口仍是工程骨架。生产数据库和音频引擎已由根作用域管理，但业务页面数据、可见播放操作和平台全屏尚未接入。
+外观仅在本次运行保留，重启恢复默认。预览页的点击/收藏/进度只是标注清楚的本页示例状态；四个业务入口仍是工程骨架。生产数据库和音频引擎由根作用域管理，正式底栏已接播放操作；业务页面数据、可导入曲库和平台全屏尚未接入。
 
 “输入与选择”可输入中文/英文、按软键盘搜索提交本页文字、清空或长按选择/复制/粘贴，切换示例筛选和加载状态。不会发送网络查询或保存搜索历史；“减少动态/透明”开关实际更新根外观状态。分段控件支持Tab定位、Enter/Space选择和窄宽横向滚动。
 
@@ -59,7 +60,7 @@ Android 启动后，底部或左侧导航可切换首页、搜索、音乐库、
 
 Windows按1440/1024断点显示240dp展开或72dp紧凑侧栏，导航驱动同一组四条路由；1440布局额外保留320dp Inspector结构位。首页同样可进入设计预览，Windows Chrome Fixture只验证按钮、Tooltip和侧栏状态，不调用系统窗口或伪造在线音乐源。正式窗口控制继续使用系统原生边框，待后续Gateway接入。
 
-“播放器表面 · Fixture”在Android展示64dp Mini Player，在Windows展示88/76dp Desktop Player；播放、下一首、进度、音量、随机/循环、歌词、收藏和队列均为独立的受控回调，只更新预览页状态。它不调用AudioEngine、QueueController、系统媒体会话、数据库或持久化，正式Shell仍保留未接入槽位。
+“播放器表面 · Fixture”在Android展示64dp Mini Player，在Windows展示88/76dp Desktop Player；播放、下一首、进度、音量、随机/循环、歌词、收藏和队列均为独立的受控回调，只更新预览页状态。这个预览本身不调用 AudioEngine、QueueController、系统媒体会话、数据库或持久化；Phase5A 正式 Shell 底栏则通过根 Presenter 操作唯一播放控制器，两者不可混同。
 
 “弹层原语 · Fixture”展示最终Context Menu、Windows不透明Dialog或Android Phone Bottom Sheet，以及受控Toast；键盘/Esc/焦点与无障碍由原生Flutter组件处理。Fixture只更新本页文字，不创建正式Overlay/Route，不监听真实右键/长按，不启动Toast计时器，也不执行播放、队列、歌单或设备操作。
 

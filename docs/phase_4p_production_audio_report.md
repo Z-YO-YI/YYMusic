@@ -40,7 +40,12 @@ Windows 驱动器绝对路径/有效 UNC 文件。拒绝跨平台、相对、设
   APK 231,521,505 字节，SHA256 `15967286a80abef8dd930e505325e08a0fdb4cec963676bd226986fea01693c4`，
   v2 签名有效，1 个 Debug 签名者。Java 原生访问警告保留，未改全局参数压制。
 
-精确提交的 Windows 构建由 GitHub 补齐；推送后记录 CI 和 PR 状态，不以本机 Android 代替 Windows。
+精确提交 `4a5b32de46b6630b096abb600bb31b6e05c2605d` 的 push
+[33960148896](https://github.com/Z-YO-YI/YYMusic/actions/runs/33960148896) 和 PR
+[33960169694](https://github.com/Z-YO-YI/YYMusic/actions/runs/33960169694) 均 completed/success：
+checks、Android Debug、Windows Debug 全部通过。六个实际 job 日志已复核，源码六包、Android
+51 坐标/三份完整文本/48 资产、Windows 65 文件及双平台包内完整许可均 PASS。
+原生 POC 两 job 按设计 skipped，不计为新设备运行。Draft PR #32 未合并，没有新 Release。
 本批未重跑原生播放 POC，不以 Fake/Golden 替代设备证据；尚未创建发行包或宣布 Phase5—11 完成。
 下一步核对 Phase4 出口与同入口运行，然后接三套 Shell 的真实播放器表面，继续业务页面、
 导入/REST、媒体平台能力和最终 QA/发布。Phase2 网页参考对照仍待补齐。

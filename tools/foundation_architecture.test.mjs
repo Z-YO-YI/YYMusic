@@ -394,6 +394,27 @@ test('only the just_audio native POC remains active in read-only dual-platform C
   assert.match(read('pubspec.yaml'), /integration_test:\s*\n\s+sdk: flutter/);
 });
 
+test('shared Shell presenter maps root playback and guards queued seek identity', () => {
+  const graph = read('lib/app/dependency_graph.dart');
+  assert.equal(graph.match(/PlaybackPresenter\(playback\)/g)?.length, 1);
+  const presenter = read('lib/app/playback_presenter.dart');
+  assert.match(presenter, /extends ChangeNotifier/);
+  assert.match(presenter, /expectedEntryId: expectedEntryId/);
+  const controller = read('lib/playback/playback_controller.dart');
+  assert.match(controller, /seek\([\s\S]*?expectedEntryId[\s\S]*?_schedule\([\s\S]*?expectedEntryId != null[\s\S]*?expectedEntryId != _state.queue.currentEntryId/);
+  const shell = read('lib/features/player/common/shell_player.dart');
+  assert.match(shell, /ValueKey\(\(presenter.entryId, phone, compact\)\)/);
+  assert.match(shell, /expectedEntryId: entry/);
+  assert(!/onToggleFavorite:|onOpenQueue:|onOpenFullscreen:/.test(shell));
+  for (const path of [
+    'lib/app/playback_presenter.dart',
+    'lib/features/player/common/shell_player.dart',
+    ...walk('lib/shells'),
+  ]) {
+    assert(!/PlaybackController\(|AudioPlayer\(|JustAudio|dart:io|package:just_audio|package:http/.test(read(path)), path);
+  }
+});
+
 test('Android native source test reuses baseline and contains only a temporary debug fixture', () => {
   const content = read('integration_test/just_audio_android_sources_poc_test.dart');
   assert.match(content, /native_local\.main\(\)/);
