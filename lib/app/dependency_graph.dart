@@ -94,7 +94,11 @@ final class DependencyGraph {
       collection: this.collection,
       sources: this.musicSources,
     );
-    catalogDetails = CatalogDetailSessions(repository: this.catalogBrowse);
+    catalogDetails = CatalogDetailSessions(
+      repository: this.catalogBrowse,
+      playback: playback,
+      sources: this.musicSources,
+    );
   }
 
   final AudioEngine _audioEngine;

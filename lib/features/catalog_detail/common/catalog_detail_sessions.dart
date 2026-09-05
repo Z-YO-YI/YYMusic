@@ -3,8 +3,10 @@ part of 'catalog_detail_controller.dart';
 /// Root lifecycle registry, not a second catalog or a cache of all opened pages.
 /// A closing session remains registered until its borrowed reads have drained.
 final class CatalogDetailSessions {
-  CatalogDetailSessions({this.repository});
+  CatalogDetailSessions({this.repository, this.playback, this.sources});
   final CatalogBrowseRepository? repository;
+  final PlaybackController? playback;
+  final MusicSourceRepository? sources;
   final _sessions = <CatalogDetailController>{};
   bool _disposed = false;
   Future<void>? _closeFuture;
@@ -18,6 +20,8 @@ final class CatalogDetailSessions {
       target,
       repository,
       () => _sessions.remove(session),
+      playback,
+      sources,
     );
     _sessions.add(session);
     return session;

@@ -51,7 +51,7 @@ void main() {
     expect(controller.summary.phase, LoadPhase.data);
     expect(controller.summary.data!.trackCount, 46);
     expect(controller.tracks.items.length, 20);
-    expect(probe.selects.length, 2);
+    expect(probe.selects.length, 3); // Summary, tracks, public source lookup.
     expect(probe.transactionCount, 0);
     final firstRows = controller.tracks;
     await controller.loadMoreTracks();
@@ -77,12 +77,17 @@ void main() {
       1,
     );
     expect(controller.tracks.hasMore, isFalse);
-    expect(probe.selects.length, 4);
-    expect(probe.selects.skip(1).map((read) => read.args), [
-      ['source-a', 'album-a', 21, 0],
-      ['source-a', 'album-a', 21, 20],
-      ['source-a', 'album-a', 21, 40],
-    ]);
+    expect(probe.selects.length, 5);
+    expect(
+      probe.selects
+          .where((read) => read.sql.contains('FROM tracks item'))
+          .map((read) => read.args),
+      [
+        ['source-a', 'album-a', 21, 0],
+        ['source-a', 'album-a', 21, 20],
+        ['source-a', 'album-a', 21, 40],
+      ],
+    );
     expect((await services.collection.loadQueue()).entries, isEmpty);
     expect(await services.collection.watchFavorites().first, isEmpty);
     expect(await services.collection.watchHistory().first, isEmpty);
@@ -137,7 +142,7 @@ void main() {
             .id,
         'compilation-credit',
       );
-      expect(probe.selects.length, 3);
+      expect(probe.selects.length, 4); // Plus one independent source lookup.
       expect(probe.transactionCount, 0);
     },
   );
@@ -149,14 +154,17 @@ void main() {
     probe.selects.clear();
     await controller.start();
     expect(controller.summary.phase, LoadPhase.empty);
-    expect(probe.selects.length, 1);
+    expect(
+      probe.selects.length,
+      2,
+    ); // No child query; public source lookup remains.
     await services.library.upsertTracks([detailTrack('one')]);
     await database.customStatement('DELETE FROM album_artists');
     probe.selects.clear();
     await controller.refresh();
     expect(controller.summary.phase, LoadPhase.error);
     expect(controller.tracks.phase, LoadPhase.idle);
-    expect(probe.selects.length, 1);
+    expect(probe.selects.length, 2);
   });
 
   test(

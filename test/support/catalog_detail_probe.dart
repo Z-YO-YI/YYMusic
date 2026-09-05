@@ -36,6 +36,17 @@ final class CatalogDetailProbe extends FakeCatalogBrowseRepository {
   onAlbums;
 
   @override
+  Future<PageResult<Artist>> browseArtists(
+    CatalogArtistQuery query,
+    PageRequest page, {
+    SearchCancellation? cancellation,
+  }) async {
+    calls.add((kind: 'artists', query: query, page: page, token: cancellation));
+    cancellation?.throwIfCancelled();
+    return detailPage(artistData.values, page);
+  }
+
+  @override
   Future<Album?> getAlbum(
     AlbumRef reference, {
     SearchCancellation? cancellation,

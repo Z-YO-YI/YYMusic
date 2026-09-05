@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { read, walk } from './design_audit.mjs';
 
-test('detail sessions read scoped catalog contracts without storage, playback or fixture ownership', () => {
+test('detail sessions read scoped catalog contracts without owning storage, engines or fixtures', () => {
   for (const path of walk('lib/features/catalog_detail').filter(path => path.endsWith('.dart'))) {
-    assert(!/AppDatabase|Drift|dart:io|AudioEngine|PlaybackController|Fake|Fixture|WebView|credentialRef|baseUrl|localPath|\.network\(|watchTracks\(|upsertTracks|setFavorite/.test(read(path)), path);
+    assert(!/AppDatabase|Drift|dart:io|AudioEngine|PlaybackController\(|Fake|Fixture|WebView|credentialRef|baseUrl|localPath|\.network\(|watchTracks\(|upsertTracks|setFavorite/.test(read(path)), path);
   }
   const controller = read('lib/features/catalog_detail/common/catalog_detail_controller.dart');
   for (const method of ['getAlbum', 'getArtist', 'browseTracks', 'browseAlbums']) {
@@ -25,7 +25,8 @@ test('detail sessions read scoped catalog contracts without storage, playback or
 
 test('root retains closing detail sessions until real work drains before shared database close', () => {
   const graph = read('lib/app/dependency_graph.dart');
-  assert.match(graph, /catalogDetails = CatalogDetailSessions\(repository: this.catalogBrowse\)/);
+  assert.match(graph, /catalogDetails = CatalogDetailSessions\([\s\S]*?repository: this.catalogBrowse/);
+  assert.match(graph, /playback: playback,[\s\S]*?sources: this.musicSources/);
   assert.match(graph, /catalogDetails.dispose\(\)/);
   assert.match(graph, /catalogDetails.close,[\s\S]*?services.dispose/);
   const controller = read('lib/features/catalog_detail/common/catalog_detail_controller.dart');
@@ -33,4 +34,34 @@ test('root retains closing detail sessions until real work drains before shared 
   const registry = read('lib/features/catalog_detail/common/catalog_detail_sessions.dart');
   assert.match(registry, /if \(_disposed\) throw StateError/);
   assert.match(registry, /\(\) => _sessions.remove\(session\)/);
+});
+
+test('detail routes keep native state above app-provided chrome and scroll identity across layouts', () => {
+  const router = read('lib/app/app_router.dart');
+  assert.match(router, /CatalogDetailScreen\([\s\S]*?frame: \(child\) => AdaptiveRoot\(/);
+  assert.match(router, /parseCatalogDetailLocation\(state.uri\)/);
+  for (const [platform, layout] of [['phone', 'Phone'], ['tablet', 'Tablet'], ['windows', 'Windows']]) {
+    const path = `lib/features/catalog_detail/${platform}/${platform}_catalog_detail_layout.dart`;
+    const source = read(path);
+    assert(source.includes(`class ${layout}CatalogDetailLayout`));
+    assert(source.includes("PageStorageKey('detail-scroll')"));
+    assert(!/sessions.open|\.start\(|\.refresh\(|playCatalogTrack/.test(source));
+  }
+  const screen = read('lib/features/catalog_detail/common/catalog_detail_screen.dart');
+  assert.match(screen, /controller = widget.sessions.open\(widget.target\)/);
+  assert.match(screen, /controller.setActive\(TickerMode.valuesOf\(context\).enabled\)/);
+  assert.match(screen, /controller.close\(\)/);
+});
+
+test('detail actions borrow root playback and expose honest availability without dummy overflow', () => {
+  const controller = read('lib/features/catalog_detail/common/catalog_detail_controller.dart');
+  assert.match(controller, /_playback!\.playCatalogTrack\(/);
+  assert.match(controller, /canPlay: \(\) => !_disposed && _active && intent == _intent/);
+  assert.match(controller, /_sources\?\.getSource\(target.sourceId\)/);
+  const sections = read('lib/features/catalog_detail/common/catalog_detail_sections.dart');
+  assert.match(sections, /showMore: false/);
+  assert.match(sections, /sourceLabel: _availability\(track\)/);
+  assert.match(sections, /ArtistRef\(sourceId: album.sourceId, artistId: credit.id\)/);
+  assert.match(sections, /navigation.openAlbum\(album.ref\)/);
+  assert(!/Material|Cupertino|LinearGradient|Image\.network/.test(sections));
 });

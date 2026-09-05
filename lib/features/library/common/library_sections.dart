@@ -204,7 +204,7 @@ final class LibrarySections {
                       subtitle:
                           '${album.artists.map((a) => a.name).join(' / ')} · ${album.year ?? '年份未知'}',
                       artwork: YYArtworkKind.local,
-                      onPressed: null,
+                      onPressed: () => navigation.openAlbum(album.ref),
                     ),
                     const SizedBox(height: 6),
                     Text(
@@ -299,6 +299,12 @@ final class LibrarySections {
       item.ref,
       item.name,
       '${controller.sourceLabel(item.sourceId)} · ${item.albumCount} 张专辑 · ${item.trackCount} 首歌曲',
+      action: YYButton(
+        label: '查看艺人',
+        glyph: YYGlyph.chevronRight,
+        style: YYButtonStyle.quiet,
+        onPressed: () => navigation.openArtist(item.ref),
+      ),
     ),
     Playlist() => _metadata(
       item.id,
@@ -307,7 +313,12 @@ final class LibrarySections {
     ),
     _ => const SizedBox.shrink(),
   };
-  Widget _metadata(Object key, String title, String subtitle) => Padding(
+  Widget _metadata(
+    Object key,
+    String title,
+    String subtitle, {
+    Widget? action,
+  }) => Padding(
     key: ValueKey(key),
     padding: const EdgeInsets.only(bottom: 12),
     child: YYSurface(
@@ -324,6 +335,7 @@ final class LibrarySections {
                 color: YYTheme.of(context).colors.secondary,
               ),
             ),
+            if (action != null) ...[const SizedBox(height: 8), action],
           ],
         ),
       ),

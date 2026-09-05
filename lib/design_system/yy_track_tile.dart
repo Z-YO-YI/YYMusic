@@ -24,6 +24,7 @@ class YYTrackTile extends StatefulWidget {
     required this.onPressed,
     this.onMore,
     this.allowMoreWhenDisabled = false,
+    this.showMore = true,
     this.playing = false,
     this.loading = false,
     this.focusNode,
@@ -40,6 +41,9 @@ class YYTrackTile extends StatefulWidget {
   /// Unavailable catalog references may still expose recovery/favorite actions.
   /// Existing component consumers keep their fully disabled behavior by default.
   final bool allowMoreWhenDisabled;
+
+  /// Hide overflow entirely when the feature has no supported menu actions.
+  final bool showMore;
   final bool playing;
   final bool loading;
   final FocusNode? focusNode;
@@ -265,17 +269,19 @@ class _YYTrackTileState extends State<YYTrackTile> {
                     child: primary,
                   ),
                 ),
-                const SizedBox(width: 2),
-                YYIconButton(
-                  glyph: YYGlyph.more,
-                  label: '${widget.title} 的更多操作',
-                  style: YYButtonStyle.quiet,
-                  onPressed:
-                      (_enabled || widget.allowMoreWhenDisabled) &&
-                          !widget.loading
-                      ? widget.onMore
-                      : null,
-                ),
+                if (widget.showMore) ...[
+                  const SizedBox(width: 2),
+                  YYIconButton(
+                    glyph: YYGlyph.more,
+                    label: '${widget.title} 的更多操作',
+                    style: YYButtonStyle.quiet,
+                    onPressed:
+                        (_enabled || widget.allowMoreWhenDisabled) &&
+                            !widget.loading
+                        ? widget.onMore
+                        : null,
+                  ),
+                ],
               ],
             ),
           ),

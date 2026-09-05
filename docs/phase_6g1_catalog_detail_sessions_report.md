@@ -52,6 +52,12 @@ ZIP/源码/包内许可脚本、`flutter build apk --debug --no-pub`、`apksigne
 
 ## GitHub、设计与下一步
 
+后续核验：实现`5508cf4a37974de955dbcf6500eb0306ac333983`的
+[push 33986872978](https://github.com/Z-YO-YI/YYMusic/actions/runs/33986872978)与
+[PR 33986875262](https://github.com/Z-YO-YI/YYMusic/actions/runs/33986875262)均已完成success，
+checks、Android Debug、Windows native build逐job成功；两个专用音频job明确skipped，不算新音频证据。
+[Draft PR #42](https://github.com/Z-YO-YI/YYMusic/pull/42)保持OPEN/未合并。
+
 前置Phase6F的精确提交双组CI成功已回填其报告及PR #41；不把前置成功当作本提交通过。
 本批推送后以`codex/library-surfaces`为base建立stacked Draft PR，精确提交Android/Windows构建
 在PR补验，不自动合并或创建Release。APK/数据库/日志/秘密不提交GitHub。

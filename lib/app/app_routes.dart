@@ -1,3 +1,5 @@
+import '../domain/models/catalog_reference.dart';
+
 enum AppRoute {
   home('/home', '首页'),
   search('/search', '搜索'),
@@ -21,5 +23,7 @@ abstract interface class AppNavigation {
   void openLyrics();
   void openDesignGallery();
   void openLicenses();
+  void openAlbum(AlbumRef reference);
+  void openArtist(ArtistRef reference);
   void back();
 }

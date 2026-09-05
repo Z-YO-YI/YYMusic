@@ -10,6 +10,8 @@ import '../../../domain/models/load_state.dart';
 import '../../../domain/models/pagination.dart';
 import '../../../domain/models/track.dart';
 import '../../../domain/repositories/catalog_browse_repository.dart';
+import '../../../domain/repositories/music_source_repository.dart';
+import '../../../playback/playback_controller.dart';
 import 'catalog_detail_state.dart';
 
 part 'catalog_detail_sessions.dart';
@@ -24,13 +26,21 @@ final class _DetailBuffer<T> {
   }
 }
 
-/// One read-only detail session, owned by the root registry until work drains.
+/// One detail projection, owned by the root registry until reads/actions drain.
 /// No query is started by construction; views call start outside their build.
 final class CatalogDetailController extends ChangeNotifier {
-  CatalogDetailController._(this.target, this._repository, this._onClosed);
+  CatalogDetailController._(
+    this.target,
+    this._repository,
+    this._onClosed,
+    this._playback,
+    this._sources,
+  );
   final CatalogDetailTarget target;
   final CatalogBrowseRepository? _repository;
   final VoidCallback _onClosed;
+  final PlaybackController? _playback;
+  final MusicSourceRepository? _sources;
   final _tracks = _DetailBuffer<Track>();
   final _albums = _DetailBuffer<Album>();
   final _pending = <Future<void>>{};
@@ -40,6 +50,14 @@ final class CatalogDetailController extends ChangeNotifier {
   CatalogDetailPage<Track> get tracks => _tracks.state;
   CatalogDetailPage<Album> get albums => _albums.state;
   bool _disposed = false, _started = false;
+  bool _active = true, _playing = false;
+  int _intent = 0, _revision = 0;
+  String _sourceLabel = '来源未配置';
+  String? _actionError;
+  String get sourceLabel => _sourceLabel;
+  String? get actionError => _actionError;
+  bool get busy => _playing;
+  int get revision => _revision;
   Future<void>? _initialLoad, _closeFuture;
 
   /// Starts once. Retained routes and layout changes reuse their existing state.
@@ -54,6 +72,9 @@ final class CatalogDetailController extends ChangeNotifier {
   Future<void> refresh() {
     if (_disposed) return Future.value();
     _started = true;
+    _intent++;
+    _revision++;
+    _actionError = null;
     _headerToken.cancel();
     final token = _headerToken = SearchCancellation();
     _tracks.reset();
@@ -98,6 +119,60 @@ final class CatalogDetailController extends ChangeNotifier {
         _summary = LoadState.error(
           _safeFailure(error, 'catalog-detail.summary'),
         );
+        _notify();
+      }
+    });
+    _sourceLabel = _sources == null ? '来源未配置' : '来源读取中';
+    final sourceRead = _track(() async {
+      if (!_valid(token)) return;
+      try {
+        final source = await _sources?.getSource(target.sourceId);
+        if (!_valid(token)) return;
+        _sourceLabel = source?.id == target.sourceId ? source!.name : '来源未配置';
+      } catch (_) {
+        if (!_valid(token)) return;
+        _sourceLabel = '来源未配置';
+      }
+      _notify();
+    });
+    _notify();
+    return Future.wait([operation, sourceRead]).then((_) {});
+  }
+
+  /// Route visibility revokes unexecuted playback intent, not already playing audio.
+  void setActive(bool active) {
+    if (_disposed || active == _active) return;
+    _active = active;
+    if (!active) _intent++;
+  }
+
+  bool canPlay(TrackRef reference) =>
+      !_disposed &&
+      _active &&
+      !_playing &&
+      (_playback?.isAvailable ?? false) &&
+      tracks.items.any(
+        (track) =>
+            track.ref == reference &&
+            track.availability == TrackAvailability.available,
+      );
+
+  /// Reuses/appends a root queue entry; never constructs a player or replaces a queue.
+  Future<void> play(TrackRef reference) {
+    if (!canPlay(reference)) return Future.value();
+    final intent = _intent;
+    _playing = true;
+    _actionError = null;
+    final operation = _track(() async {
+      try {
+        await _playback!.playCatalogTrack(
+          reference,
+          canPlay: () => !_disposed && _active && intent == _intent,
+        );
+      } catch (_) {
+        if (!_disposed && intent == _intent) _actionError = '播放未完成，请重试。';
+      } finally {
+        _playing = false;
         _notify();
       }
     });
@@ -254,6 +329,7 @@ final class CatalogDetailController extends ChangeNotifier {
   void dispose() {
     if (_disposed) return;
     _disposed = true;
+    _intent++;
     _headerToken.cancel();
     _tracks.token.cancel();
     _albums.token.cancel();

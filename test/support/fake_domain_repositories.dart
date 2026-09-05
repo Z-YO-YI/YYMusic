@@ -285,6 +285,7 @@ final class FakeLyricsRepository implements LyricsRepository {
 }
 
 final class FakeMusicSourceRepository implements MusicSourceRepository {
+  Future<MusicSourceConfig?> Function(String)? sourceReader;
   final Map<String, MusicSourceConfig> _sources = {};
   final _changes = StreamController<List<MusicSourceConfig>>.broadcast(
     sync: true,
@@ -297,7 +298,8 @@ final class FakeMusicSourceRepository implements MusicSourceRepository {
   }
 
   @override
-  Future<MusicSourceConfig?> getSource(String id) async => _sources[id];
+  Future<MusicSourceConfig?> getSource(String id) async =>
+      sourceReader == null ? _sources[id] : sourceReader!(id);
 
   @override
   Future<void> saveSource(MusicSourceConfig source) async {
