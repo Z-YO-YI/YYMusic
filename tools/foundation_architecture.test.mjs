@@ -417,3 +417,24 @@ test('Android native source test reuses baseline and contains only a temporary d
   assert.match(read('.github/workflows/foundation.yml'),
     /just_audio_poc_platform:[\s\S]*?default: both[\s\S]*?type: choice[\s\S]*?options: \[both, android, windows\]/);
 });
+
+test('HTTPS playback uses pinned upstream bytes without TLS overrides, disk persistence or production wiring', () => {
+  const fixture = read('integration_test/support/pinned_https_audio_fixture.dart');
+  assert.match(fixture, /43e3af79dabb43a69badffbbdfa6d421a1cdb36c/);
+  assert.match(fixture, /1b35cc093f3d56732b19ff936c21b5bca8195135d63708f6c6488eba5803ddce/);
+  assert.match(fixture, /request\.followRedirects = false/);
+  assert.match(fixture, /client\.close\(force: true\)/);
+  assert.match(fixture, /bytes\.length \+ chunk\.length > length/);
+  assert.match(fixture, /Duration\(seconds: 40\)/);
+  assert(!/badCertificateCallback|SecurityContext|findProxy|File\(|writeAs|base64Decode|Authorization/.test(fixture));
+  const native = read('integration_test/just_audio_native_https_poc_test.dart');
+  assert.match(native, /verifyPinnedHttpsFixture\(\)/);
+  assert.match(native, /PlayableSource\.networkStream\(/);
+  assert.match(native, /uri: httpsFixtureUri/);
+  assert.match(native, /useProxyForRequestHeaders: false/);
+  assert.match(native, /supportsRequestHeaders: false/);
+  assert(!/localFile|File\(|writeAs|badCertificateCallback|SecurityContext/.test(native));
+  const combined = read('integration_test/just_audio_native_sources_poc_test.dart');
+  for (const call of ['android_sources.main()', 'local.main()', 'https.main()']) assert(combined.includes(call));
+  for (const path of sources) assert(!/pinned_https_audio_fixture|just_audio_native_https_poc/.test(read(path)), path);
+});

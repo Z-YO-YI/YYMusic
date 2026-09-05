@@ -4,6 +4,62 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:yaml/yaml.dart';
 
 void main() {
+  test(
+    'HTTPS is opt-in, diagnostic-only and enters both native test paths',
+    () {
+      final workflow = loadYaml(
+        File('.github/workflows/foundation.yml').readAsStringSync(),
+      ) as YamlMap;
+      final inputs =
+          ((workflow['on'] as YamlMap)['workflow_dispatch']
+                  as YamlMap)['inputs']
+              as YamlMap;
+      expect((inputs['include_https_audio_poc'] as YamlMap)['default'], false);
+      expect((inputs['include_https_audio_poc'] as YamlMap)['type'], 'boolean');
+      expect(
+        (workflow['concurrency'] as YamlMap)['group'],
+        r"foundation-${{ github.workflow }}-${{ github.ref }}-${{ inputs.build_windows_audio_probe && 'profile' || inputs.run_just_audio_poc && 'native' || 'standard' }}",
+      );
+      expect((workflow['concurrency'] as YamlMap)['cancel-in-progress'], true);
+      final jobs = workflow['jobs'] as YamlMap;
+      final checks = ((jobs['checks'] as YamlMap)['steps'] as YamlList)
+          .cast<YamlMap>();
+      final guard = checks.singleWhere(
+        (step) =>
+            step['name'] == 'Reject HTTPS outside an explicit diagnostic mode',
+      );
+      expect(
+        guard['if'],
+        'inputs.include_https_audio_poc && !(inputs.run_just_audio_poc || inputs.build_windows_audio_probe)',
+      );
+      expect(guard['run'], 'exit 1');
+      final windows = ((jobs['windows-debug'] as YamlMap)['steps'] as YamlList)
+          .cast<YamlMap>();
+      final build = windows.singleWhere(
+        (step) => step['name'] == 'Build isolated Windows Profile audio probe',
+      );
+      expect(
+        build['run'],
+        contains(
+          r'--dart-define=YYMUSIC_PROBE_HTTPS=${{ inputs.include_https_audio_poc }}',
+        ),
+      );
+      expect(
+        build['run'],
+        contains(
+          r'windows_audio_profile_metadata.ps1 -IncludeHttps:$includeHttps',
+        ),
+      );
+      for (final id in ['windows-just-audio', 'android-just-audio']) {
+        final job = jobs[id] as YamlMap;
+        expect(
+          job.toString(),
+          contains('integration_test/just_audio_native_sources_poc_test.dart'),
+        );
+        expect(job.toString(), contains('inputs.include_https_audio_poc &&'));
+      }
+    },
+  );
   test('Profile probe is explicit, read-only, short-lived and excludes APK delivery', () {
     final workflow = loadYaml(
       File('.github/workflows/foundation.yml').readAsStringSync(),

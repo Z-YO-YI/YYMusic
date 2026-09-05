@@ -6,7 +6,7 @@ import test from 'node:test';
 import { root } from './design_audit.mjs';
 
 const script = join(root, 'tools/windows_audio_probe.ps1').replaceAll("'", "''");
-function fixtureCheck(mutation, expected, { wrongHash = false, omitFile = '', profile = false, wrongCommit = false } = {}) {
+function fixtureCheck(mutation, expected, { wrongHash = false, omitFile = '', profile = false, wrongCommit = false, https = false, requestHttps = https, invalidHttps = false } = {}) {
   // PowerShell fixtures exercise the actual archive guard on all CI hosts.
   const command = `
     $ErrorActionPreference = 'Stop'
@@ -28,7 +28,7 @@ function fixtureCheck(mutation, expected, { wrongHash = false, omitFile = '', pr
           $writer = [IO.StreamWriter]::new($entry.Open())
           try {
             if ($name -eq 'native-audio-build.json') {
-              $writer.Write('{"schemaVersion":1,"sourceCommit":"${'1'.repeat(40)}","nativeCommit":"${(wrongCommit ? '2' : '1').repeat(40)}","runtimeMode":"Profile","purpose":"isolated-local-wav-test","flutterVersion":"3.47.2"}')
+              $writer.Write('{"schemaVersion":1,"sourceCommit":"${'1'.repeat(40)}","nativeCommit":"${(wrongCommit ? '2' : '1').repeat(40)}","runtimeMode":"Profile","purpose":"${https ? 'isolated-audio-source-test' : 'isolated-local-wav-test'}","flutterVersion":"3.47.2"${https ? `,"includeHttps":${invalidHttps ? '"true"' : 'true'}` : ''}}')
             } else { $writer.Write('fixture engine') }
           } finally { $writer.Dispose() }
         }
@@ -36,7 +36,7 @@ function fixtureCheck(mutation, expected, { wrongHash = false, omitFile = '', pr
       } finally { $zip.Dispose() }
       $hash = (Get-FileHash -LiteralPath $zipPath).Hash.ToLowerInvariant()
       ${wrongHash ? "$hash = '0' * 64" : ''}
-      & '${script}' -Mode ValidateArchive -ArchivePath $zipPath -ExpectedArchiveSha256 $hash -FlutterRoot $sdk ${profile ? `-RuntimeMode Profile -NativeCommit '${'1'.repeat(40)}'` : ''}
+      & '${script}' -Mode ValidateArchive -ArchivePath $zipPath -ExpectedArchiveSha256 $hash -FlutterRoot $sdk ${profile ? `-RuntimeMode Profile -NativeCommit '${'1'.repeat(40)}'` : ''} ${requestHttps ? '-IncludeHttps' : ''}
     } finally {
       # Only delete the resolved, uniquely named fixture directly beneath temp.
       $resolved = [IO.Path]::GetFullPath($fixtureRoot)
@@ -91,6 +91,13 @@ test('Profile packaging refuses execution outside its explicit GitHub diagnostic
   assert.ifError(result.error);
   assert.notEqual(result.status, 0);
   assert.match(result.stdout + result.stderr, /Only the manual YYMusic CI diagnostic/);
+});
+test('HTTPS Profile diagnostics require an exact opt-in mode and reject legacy or malformed metadata', () => {
+  fixtureCheck('', null, { profile: true, https: true });
+  fixtureCheck('', /Profile bundle identity mismatch/, { profile: true, https: true, requestHttps: false });
+  fixtureCheck('', /Profile bundle identity mismatch/, { profile: true, requestHttps: true });
+  fixtureCheck('', /Invalid HTTPS probe mode/, { profile: true, https: true, invalidHttps: true });
+  fixtureCheck('', /HTTPS probe requires/, { requestHttps: true });
 });
 test('Windows probe remains isolated, opt-in, timeout-bounded and tied to one real native test', () => {
   const entry = readFileSync(join(root, 'integration_test/windows_audio_probe.dart'), 'utf8');

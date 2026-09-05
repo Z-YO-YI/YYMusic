@@ -363,3 +363,28 @@ Profile是测试构建，不是Phase11 Release，也不是正式业务应用；�
 
 本方案只解决诊断交付，不把构建成功、时钟推进或自动测试当作主观听感/后台/媒体会话验收。
 真实结果和范围记录于[Phase4J报告](phase_4j_windows_native_validation_report.md)。
+
+## ADR-040：HTTPS POC 使用不可变上游测试夹具与默认 TLS（2026-09-05）
+
+旧 Phase4D 自签名服务器依赖测试信任绕过，不能用于当前 just_audio 的原生 TLS 验收。
+Phase4L 使用 AndroidX Media 自身 WavExtractorTest 的公开 `media/wav/sample.wav`，固定
+提交 `43e3af79dabb43a69badffbbdfa6d421a1cdb36c`、88,278 字节、SHA-256
+`1b35cc093f3d56732b19ff936c21b5bca8195135d63708f6c6488eba5803ddce`。
+RIFF 为 PCM16、mono、44100Hz、88200 字节/秒、1秒。上游仓库 LICENSE 为 Apache-2.0，
+该文件 SHA-256 为 `cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30`。
+这是公开测试数据的来源记录，不代替最终应用逐组件许可证审计。
+
+此决策只调整 Phase4F 的 HTTPS 夹具策略：HTTPS 内容不再要求由本测试运行时生成，
+本地3秒 WAV 仍使用原生成器。测试先以默认 HttpClient 信任、禁重定向、限时/限额在内存核验
+完整字节与 Range；随后引擎直接读取固定 HTTPS URL，不把预检字节转换为本地或字节流音源。
+没有证书回调、测试 CA 安装、代理、Authorization、用户 URL 配置、文件写入或产品下载接口。
+不提交、打包、上传媒体或其 Base64；服务不可用或指纹漂移均失败关闭，不自动换源。
+
+新增显式 `include_https_audio_poc=false` 的 CI 选择；Windows Profile 诊断扩展同名编译模式，
+两用例与1秒/3秒计时分别验证，旧一用例模式不放宽。模式进入构建元数据、准备 manifest 和结果，
+调用者必须匹配模式，旧单项结果不能被当成 HTTPS 通过。原生产物与真实端点规则沿用 ADR-039。
+本批无生产公共接口修改，不接音频/业务页面；HTTPS通过也不自动批准最终选型和应用发布。
+
+来源：[上游测试](https://github.com/androidx/media/blob/43e3af79dabb43a69badffbbdfa6d421a1cdb36c/libraries/extractor/src/test/java/androidx/media3/extractor/wav/WavExtractorTest.java)、
+[夹具](https://github.com/androidx/media/blob/43e3af79dabb43a69badffbbdfa6d421a1cdb36c/libraries/test_data/src/test/assets/media/wav/sample.wav)、
+[许可](https://github.com/androidx/media/blob/43e3af79dabb43a69badffbbdfa6d421a1cdb36c/LICENSE)。

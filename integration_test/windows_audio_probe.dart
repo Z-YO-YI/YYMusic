@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:integration_test/integration_test.dart';
 
+import 'just_audio_native_https_poc_test.dart' as https_poc;
 import 'just_audio_native_local_poc_test.dart' as native_poc;
 import 'support/windows_audio_probe_result.dart';
 
@@ -13,6 +14,7 @@ void main() {
   const enabled = bool.fromEnvironment('YYMUSIC_WINDOWS_AUDIO_PROBE');
   const sourceCommit = String.fromEnvironment('YYMUSIC_PROBE_SOURCE_COMMIT');
   const nativeCommit = String.fromEnvironment('YYMUSIC_PROBE_NATIVE_COMMIT');
+  const includeHttps = bool.fromEnvironment('YYMUSIC_PROBE_HTTPS');
   final commitPattern = RegExp(r'^[0-9a-f]{40}$');
   if (kReleaseMode ||
       !Platform.isWindows ||
@@ -29,8 +31,11 @@ void main() {
     exit(64);
   }
   native_poc.main();
+  if (includeHttps) https_poc.main();
   final binding = IntegrationTestWidgetsFlutterBinding.instance;
-  unawaited(_report(binding, resultFile, sourceCommit, nativeCommit));
+  unawaited(
+    _report(binding, resultFile, sourceCommit, nativeCommit, includeHttps),
+  );
 }
 
 Future<void> _report(
@@ -38,6 +43,7 @@ Future<void> _report(
   File resultFile,
   String sourceCommit,
   String nativeCommit,
+  bool includeHttps,
 ) async {
   var passed = false;
   var diagnostic = 'native-poc.failed';
@@ -59,6 +65,8 @@ Future<void> _report(
     testCount: binding.results.length,
     metrics: metrics,
     diagnosticId: diagnostic,
+    includeHttps: includeHttps,
+    httpsMetrics: binding.reportData?['nativeHttps'],
   );
   try {
     await resultFile.writeAsString(jsonEncode(result), flush: true);
