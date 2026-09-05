@@ -3,7 +3,13 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
+import '../design_system/yy_button.dart';
+import '../design_system/yy_feedback.dart';
+import '../domain/models/catalog_reference.dart';
 import '../domain/repositories/license_repository.dart';
+import '../features/catalog_detail/common/catalog_detail_controller.dart';
+import '../features/catalog_detail/common/catalog_detail_screen.dart';
+import '../features/catalog_detail/common/catalog_detail_state.dart';
 import '../features/design_gallery/design_gallery_screen.dart';
 import '../features/home/common/home_controller.dart';
 import '../features/home/common/home_screen.dart';
@@ -16,6 +22,7 @@ import '../shared/foundation_button.dart';
 import 'adaptive_root.dart';
 import 'app_routes.dart';
 import 'app_view_state.dart';
+import 'catalog_detail_location.dart';
 import 'flutter_license_repository.dart';
 import 'foundation_screen.dart';
 import 'layout_class.dart';
@@ -32,6 +39,7 @@ final class AppRouter implements AppNavigation {
     HomeController? homeController,
     CatalogSearchController? searchController,
     LibraryController? libraryController,
+    CatalogDetailSessions? catalogDetails,
   }) {
     Widget screen(AppRoute route) =>
         route == AppRoute.home &&
@@ -106,6 +114,58 @@ final class AppRouter implements AppNavigation {
               child: screen(route),
             ),
           ),
+        for (final kind in ['album', 'artist'])
+          GoRoute(
+            path: '/$kind/:id',
+            pageBuilder: (context, state) {
+              final target = parseCatalogDetailLocation(state.uri);
+              final identity = switch (target) {
+                AlbumDetailTarget(:final reference) => reference,
+                ArtistDetailTarget(:final reference) => reference,
+                null => null,
+              };
+              final valid =
+                  target != null &&
+                  catalogDetails != null &&
+                  playbackPresenter != null;
+              return NoTransitionPage<void>(
+                key: ValueKey((state.pageKey, identity)),
+                child: valid
+                    ? CatalogDetailScreen(
+                        target: target,
+                        sessions: catalogDetails,
+                        platform: platform,
+                        navigation: this,
+                        playback: playbackPresenter,
+                        frame: (child) => AdaptiveRoot(
+                          platform: platform,
+                          navigation: this,
+                          selected: AppRoute.library,
+                          playbackPresenter: playbackPresenter,
+                          child: child,
+                        ),
+                      )
+                    : SafeArea(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            children: [
+                              YYButton(label: '返回', onPressed: back),
+                              const Expanded(
+                                child: Center(
+                                  child: YYErrorBanner(
+                                    title: '无法打开详情',
+                                    message: '链接缺少有效的来源或内容标识，请从音乐库重新打开。',
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+              );
+            },
+          ),
         GoRoute(
           path: '/settings/licenses',
           pageBuilder: (context, state) => NoTransitionPage<void>(
@@ -149,6 +209,18 @@ final class AppRouter implements AppNavigation {
   void openDesignGallery() => unawaited(_router.push<void>('/design-system'));
   @override
   void openLicenses() => unawaited(_router.push<void>('/settings/licenses'));
+  @override
+  void openAlbum(AlbumRef reference) => unawaited(
+    _router.push<void>(
+      catalogDetailLocation(AlbumDetailTarget(reference)).toString(),
+    ),
+  );
+  @override
+  void openArtist(ArtistRef reference) => unawaited(
+    _router.push<void>(
+      catalogDetailLocation(ArtistDetailTarget(reference)).toString(),
+    ),
+  );
   @override
   void back() {
     if (_router.canPop()) {

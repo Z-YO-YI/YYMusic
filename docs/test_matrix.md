@@ -1,6 +1,16 @@
 # 原生基础验证矩阵
 
-Phase6G1 当前：479 Flutter（61 Golden全部未改）、75 Node、严格analyze0、253文件格式零修改。
+Phase6G2 当前：506 Flutter（67 Golden）、77 Node、严格analyze0、265文件格式零修改。
+新增8项单位、13项真实路由Widget、6张三端Golden；旧61张中仅音乐库phone_albums、
+tablet_portrait_artists、windows_dark_albums因真实启用详情入口更新，其余58张不变。
+覆盖完整URI/来源身份、公开名独立读取、根队列复用、不可用曲目、刷新/覆盖/关闭取消播放，
+摘要缺失/错误/空列表/分页重试、连续详情栈、键盘返回焦点、惰性行、130%文字、599/600断点、
+横竖屏/零尺寸恢复、Windows窄宽不切手机，以及同ID不同来源URL替换不复用旧会话。
+真实SQLite仍逐条验证绑定来源/分页参数、只读与关闭排空；新增公开来源读取单独计数，不弱化旧断言。
+格式/分析/全量测试、Node架构门禁、ZIP24、生成代码/Schema/lockfile零差异、Android Debug/
+48资产/完整许可/v2单签名通过；GitHub精确提交见本批PR。不等同于新的音频实机或HTML对照验收。
+
+Phase6G1 历史：479 Flutter（61 Golden全部未改）、75 Node、严格analyze0、253文件格式零修改。
 新增21项详情Controller、4项真实SQLite、2项既有Library/Search短页容量回归；共新增27项Flutter。
 覆盖固定完整身份/摘要缺失与错误、分区独立失败/重试、合辑曲目署名关联、失效引用、分页去重/
 原始offset/超长及短页上限、刷新/迟到成功与错误、重复加载、单页及根关闭等待实际查询排空。
