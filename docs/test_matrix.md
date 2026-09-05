@@ -1,6 +1,10 @@
 # 原生基础验证矩阵
 
-Phase5A 当前：300 Flutter（38 Golden）、58 Node、严格 analyze 0 问题。新增根 Presenter/三套
+Phase5B 当前：308 Flutter（41 Golden）、59 Node、严格 analyze0。新增5个Inspector交互场景与
+3张面板Golden；只变更两个Windows全页基线，其余36张不变。包括两个表面同步、宽窄恢复、
+真实加载门控/错误重试、同条目重载预览取消与260×240独立滚动，见[本批报告](phase_5b_now_playing_inspector_report.md)。
+
+Phase5A 历史：300 Flutter（38 Golden）、58 Node、严格 analyze 0 问题。新增根 Presenter/三套
 Shell 交互、真实拖动取消/跨曲 Seek/分屏连续性/输入焦点测试，以及三张播放态图；八张旧图
 按原稿阴影和槽位接线的已确认变化更新，其余27张不变。详见[本批报告](phase_5a_shell_player_report.md)。
 Phase4P `4a5b32d` 两组 GitHub checks/Android/Windows 全部成功，源码与两端包内审计日志已复核。

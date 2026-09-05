@@ -42,6 +42,10 @@ Windows Space 排除重复按键与 EditableText，既有子控件优先消费�
   APK 231,537,082字节，SHA256 `ac9a97b6978ec45ded70383f9fbca763deff116941af1eb7b0460174ee595d8f`，
   v2签名有效，1个Debug签名者；原生Java警告保留，未改全局参数压制。
 
-精确提交的 GitHub Android/Windows 构建在推送后记录。无 WebView、新权限、缓存/下载、
+精确提交 `05f818d92e5c75021ba8f73892cfac4e053c5675` 的
+[push33961128767](https://github.com/Z-YO-YI/YYMusic/actions/runs/33961128767) 与
+[PR33961146824](https://github.com/Z-YO-YI/YYMusic/actions/runs/33961146824) 均 completed/success：
+checks、Android Debug、Windows Debug 全部通过。Draft PR33 未合并；原生POC按设计 skipped。
+无 WebView、新权限、缓存/下载、
 Header 代理、用户媒体/凭据提交或 Release。本批 Fake/Golden 不替代 Phase4L 的原生播放证据；
 Phase2 网页参考截图与原生页面逐像素对照仍未完成，不能声称视觉最终验收或 Phase5 整体完成。

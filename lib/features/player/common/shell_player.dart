@@ -13,36 +13,43 @@ class ShellPlayer extends StatelessWidget {
     required this.presenter,
     this.phone = false,
     this.compact = false,
+    this.inspector = false,
   });
 
   final PlaybackPresenter presenter;
   final bool phone;
   final bool compact;
+  final bool inspector;
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: presenter,
-    builder: (context, _) => Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (presenter.errorMessage case final message?)
-          YYErrorBanner(
-            title: '播放暂不可用',
-            message: message,
-            actionLabel: '重试',
-            onAction: presenter.canControl
-                ? () => unawaited(presenter.togglePlayback())
-                : null,
-          ),
-        _PlayerControls(
-          // Reset gesture state when a queue entry or platform layout changes.
-          key: ValueKey((presenter.entryId, phone, compact)),
-          presenter: presenter,
-          phone: phone,
-          compact: compact,
-        ),
-      ],
-    ),
+    builder: (context, _) {
+      final controls = _PlayerControls(
+        // Reset gesture state when a queue entry or platform layout changes.
+        key: ValueKey((presenter.entryId, phone, compact, inspector)),
+        presenter: presenter,
+        phone: phone,
+        compact: compact,
+        inspector: inspector,
+      );
+      if (inspector) return controls;
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (presenter.errorMessage case final message?)
+            YYErrorBanner(
+              title: '播放暂不可用',
+              message: message,
+              actionLabel: '重试',
+              onAction: presenter.canControl
+                  ? () => unawaited(presenter.togglePlayback())
+                  : null,
+            ),
+          controls,
+        ],
+      );
+    },
   );
 }
 
@@ -52,10 +59,12 @@ class _PlayerControls extends StatefulWidget {
     required this.presenter,
     required this.phone,
     required this.compact,
+    required this.inspector,
   });
   final PlaybackPresenter presenter;
   final bool phone;
   final bool compact;
+  final bool inspector;
   @override
   State<_PlayerControls> createState() => _PlayerControlsState();
 }
@@ -63,6 +72,14 @@ class _PlayerControls extends StatefulWidget {
 class _PlayerControlsState extends State<_PlayerControls> {
   double? _seekPreview;
   double? _volumePreview;
+
+  @override
+  void didUpdateWidget(_PlayerControls oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // YYSlider cancels its gesture when disabled; discard our preview too.
+    if (!widget.presenter.canSeek) _seekPreview = null;
+    if (!widget.presenter.canChangeVolume) _volumePreview = null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +101,39 @@ class _PlayerControlsState extends State<_PlayerControls> {
     final next = presenter.canControl
         ? () => unawaited(presenter.next())
         : null;
+    final previous = presenter.canControl
+        ? () => unawaited(presenter.previous())
+        : null;
+    final shuffle = presenter.canControl ? presenter.toggleShuffle : null;
+    final repeat = presenter.canControl ? presenter.cycleRepeat : null;
+    final void Function(double)? seekPreview = presenter.canSeek
+        ? (value) => setState(() => _seekPreview = value)
+        : null;
+    final void Function(double)? seekCommit = presenter.canSeek && entry != null
+        ? (value) {
+            setState(() => _seekPreview = null);
+            unawaited(presenter.seek(value, expectedEntryId: entry));
+          }
+        : null;
+    void seekCancel() => setState(() => _seekPreview = null);
+    if (widget.inspector) {
+      return YYNowPlayingInspector(
+        data: view,
+        sourceLabel: presenter.sourceLabel,
+        statusLabel: presenter.statusLabel,
+        queueCount: presenter.queueCount,
+        errorMessage: presenter.errorMessage,
+        loading: presenter.busy,
+        onTogglePlayback: toggle,
+        onPrevious: previous,
+        onNext: next,
+        onToggleShuffle: shuffle,
+        onCycleRepeat: repeat,
+        onSeekPreview: seekPreview,
+        onSeekCommit: seekCommit,
+        onSeekCancel: seekCancel,
+      );
+    }
     if (widget.phone) {
       return YYMiniPlayer(
         data: view,
@@ -98,21 +148,12 @@ class _PlayerControlsState extends State<_PlayerControls> {
       loading: presenter.busy,
       onTogglePlayback: toggle,
       onNext: next,
-      onPrevious: presenter.canControl
-          ? () => unawaited(presenter.previous())
-          : null,
-      onToggleShuffle: presenter.canControl ? presenter.toggleShuffle : null,
-      onCycleRepeat: presenter.canControl ? presenter.cycleRepeat : null,
-      onSeekPreview: presenter.canSeek
-          ? (value) => setState(() => _seekPreview = value)
-          : null,
-      onSeekCommit: presenter.canSeek && entry != null
-          ? (value) {
-              setState(() => _seekPreview = null);
-              unawaited(presenter.seek(value, expectedEntryId: entry));
-            }
-          : null,
-      onSeekCancel: () => setState(() => _seekPreview = null),
+      onPrevious: previous,
+      onToggleShuffle: shuffle,
+      onCycleRepeat: repeat,
+      onSeekPreview: seekPreview,
+      onSeekCommit: seekCommit,
+      onSeekCancel: seekCancel,
       onVolumePreview: presenter.canChangeVolume
           ? (value) => setState(() => _volumePreview = value)
           : null,

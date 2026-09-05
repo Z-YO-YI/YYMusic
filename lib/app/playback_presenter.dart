@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../design_system/yy_player_data.dart';
+import '../domain/models/track.dart';
 import '../playback/playback_controller.dart';
 import '../playback/playback_state.dart';
 
@@ -16,6 +17,22 @@ final class PlaybackPresenter extends ChangeNotifier {
   bool _actionFailed = false;
 
   String? get entryId => _playback.state.queue.currentEntryId;
+  int get queueCount => _playback.state.queue.entries.length;
+  String get sourceLabel => switch (_playback.state.currentTrack?.sourceType) {
+    MusicSourceType.local => '本地音乐',
+    MusicSourceType.rest => '在线音乐源',
+    null => '尚未选择来源',
+  };
+  String get statusLabel => switch (_playback.state.phase) {
+    PlaybackPhase.idle => '等待播放',
+    PlaybackPhase.loading => '正在加载',
+    PlaybackPhase.buffering => '正在缓冲',
+    PlaybackPhase.ready => '准备就绪',
+    PlaybackPhase.playing => '正在播放',
+    PlaybackPhase.paused => '已暂停',
+    PlaybackPhase.completed => '播放结束',
+    PlaybackPhase.error => '播放失败',
+  };
   bool get busy => _pending || _playback.state.phase == PlaybackPhase.loading;
   bool get canControl =>
       !_disposed &&

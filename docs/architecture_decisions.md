@@ -494,3 +494,11 @@ Controller.seek 增加可选 expectedEntryId，并在串行命令真正执行时
 不影响普通 Primary Button；对应基线只在确认几何与颜色差分后更新。
 未开放详情的曲目信息使用静态 Semantics，保留正常文字对比度且没有按钮/onTap 语义；
 动作按钮仍按可用性禁用，不修改公共控件的全局禁用样式。
+
+## ADR-046：Inspector 与底栏共享同一个绑定入口（2026-09-05）
+
+设计系统的 YYNowPlayingInspector 仅消费视图与受控回调；ShellPlayer 的 inspector 模式复用
+根 Presenter 和相同的手势预览/提交/entryId 保护，不生成新 Controller。多个可见表面只各自持有
+短期手势，提交后从根状态收敛。Windows320/Tablet260使用同一内容组件、不同几何容器；
+短高度独立滚动，收窄卸载面板不停止或重建音频。来源只显示 local/rest 类型，不暴露路径或URL。
+未开发的完整队列/歌词/设备入口禁用，队列仅显示真实总条目数，不把物理顺序冒充随机后的下一首。

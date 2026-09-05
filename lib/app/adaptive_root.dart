@@ -47,6 +47,9 @@ class AdaptiveRoot extends StatelessWidget {
                   layout == YYLayoutClass.androidTabletPortrait ||
                   layout == YYLayoutClass.androidTabletLandscape,
             );
+      final inspector = presenter == null
+          ? null
+          : ShellPlayer(presenter: presenter, inspector: true);
       return switch (layout) {
         YYLayoutClass.windowsExpanded ||
         YYLayoutClass.windowsStandard ||
@@ -55,6 +58,7 @@ class AdaptiveRoot extends StatelessWidget {
           navigation: navigation,
           selected: selected,
           player: player,
+          inspector: inspector,
           child: child,
         ),
         YYLayoutClass.androidPhone => AndroidPhoneShell(
@@ -69,6 +73,7 @@ class AdaptiveRoot extends StatelessWidget {
           navigation: navigation,
           selected: selected,
           player: player,
+          inspector: inspector,
           child: child,
         ),
       };

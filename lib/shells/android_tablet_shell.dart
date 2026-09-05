@@ -13,12 +13,14 @@ class AndroidTabletShell extends StatelessWidget {
     required this.selected,
     required this.child,
     this.player,
+    this.inspector,
   });
   final YYLayoutClass layout;
   final AppNavigation navigation;
   final AppRoute selected;
   final Widget child;
   final Widget? player;
+  final Widget? inspector;
 
   @override
   Widget build(BuildContext context) => SafeArea(
@@ -48,9 +50,12 @@ class AndroidTabletShell extends StatelessWidget {
               Expanded(child: child),
               if (layout == YYLayoutClass.androidTabletLandscape &&
                   MediaQuery.sizeOf(context).width >= 1200)
-                const SizedBox(
+                SizedBox(
                   width: 260,
-                  child: Center(child: Text('平板详情结构预留')),
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: inspector ?? const Center(child: Text('平板详情结构预留')),
+                  ),
                 ),
             ],
           ),

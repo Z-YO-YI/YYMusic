@@ -34,12 +34,13 @@ void main() {
           graph: fixture.graph,
           scale: 1.3,
         );
-        expect(find.byType(ShellPlayer), findsOneWidget);
+        final surfaces = platform == YYPlatform.windows ? 2 : 1;
+        expect(find.byType(ShellPlayer), findsNWidgets(surfaces));
         final prefix = phone ? 'mini' : 'desktop';
         await tester.tap(control('$prefix-playback'));
         await tester.pumpAndSettle();
         expect(fixture.engine.calls, ['load', 'play']);
-        expect(find.text(fixture.tracks.first.title), findsOneWidget);
+        expect(find.text(fixture.tracks.first.title), findsNWidgets(surfaces));
         final metadata = tester.widget<Semantics>(
           find.byWidgetPredicate(
             (widget) =>
