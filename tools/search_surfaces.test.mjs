@@ -38,3 +38,13 @@ test('search keeps bounded independent generations and drains before storage', (
   assert.match(player, /Future<void> playCatalogTrack/);
   assert.match(player, /entry.track == track/);
 });
+
+test('search entities navigate with complete refs and explicit native actions, not type or name guesses', () => {
+  const ui = read('lib/features/search/common/search_sections.dart');
+  assert.match(ui, /onOpen: \(\) => navigation.openAlbum\(album.ref\)/);
+  assert.match(ui, /onOpen: \(\) => navigation.openArtist\(artist.ref\)/);
+  assert.match(ui, /ValueKey\(\('search-album', album.ref\)\)/);
+  assert.match(ui, /ValueKey\(\('search-artist', artist.ref\)\)/);
+  assert.match(ui, /YYButton\([\s\S]*?label: actionLabel,[\s\S]*?onPressed: onOpen/);
+  assert(!/详情仍在开发|AlbumRef\(|ArtistRef\(|CatalogDetailSessions\(|CatalogDetailScreen\(/.test(ui));
+});

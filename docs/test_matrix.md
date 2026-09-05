@@ -1,6 +1,15 @@
 # 原生基础验证矩阵
 
-Phase6G2 当前：506 Flutter（67 Golden）、77 Node、严格analyze0、265文件格式零修改。
+Phase6G3 当前：512 Flutter（67 Golden）、78 Node、严格analyze0、267文件格式零修改。
+新增6项Widget：Phone/Tablet/Windows真实搜索→连续详情→搜索，同名同ID不同来源且带URI转义、
+条件/滚动/根状态保留、Windows Tab/Enter/Esc焦点恢复、引用删除不以同名替换、覆盖搜索撤销加载中播放。
+跳转不新发搜索、不写历史、不播放；切换到艺人筛选按原合同独立新增两来源查询，返回不重复执行。
+六张搜索Golden因说明文字/实体按钮按预期更新并逐张查看，其他61张完全不变，未修改比较阈值。
+新增1项Node完整引用/无替代详情实例门禁。Schema/生成/迁移/lockfile、根/平台/播放器与参考原件未改。
+ZIP24、源码/包内完整许可、Android Debug/48资产/v2单签名通过，精确云端提交结果见本批PR。
+前置7fe2e21两组GitHub checks/Android/Windows成功已复核；本批无新音频实机或HTML截图对照。
+
+Phase6G2 历史：506 Flutter（67 Golden）、77 Node、严格analyze0、265文件格式零修改。
 新增8项单位、13项真实路由Widget、6张三端Golden；旧61张中仅音乐库phone_albums、
 tablet_portrait_artists、windows_dark_albums因真实启用详情入口更新，其余58张不变。
 覆盖完整URI/来源身份、公开名独立读取、根队列复用、不可用曲目、刷新/覆盖/关闭取消播放，
