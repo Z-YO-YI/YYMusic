@@ -58,6 +58,15 @@ v2签名有效、一个签名者；Java原生访问警告未掩盖。此APK仅�
 
 ## GitHub与剩余边界
 
+后续复核：实现 `b5d960f0246968525ecae1a04953e1871e5bb49a` 已在
+push [33978030423](https://github.com/Z-YO-YI/YYMusic/actions/runs/33978030423)
+与 PR [33978045428](https://github.com/Z-YO-YI/YYMusic/actions/runs/33978045428)
+两组全部通过 checks、Android Debug、Windows Debug、Windows Golden 和真实窗口测试。
+两份白名单日志均验证 ZIP 24 项、六包许可、51 个原生坐标/3 份全文法律材料、APK 48 资产、
+Windows 65 文件、无 media_kit；八项窗口结果均为 true。音频专用测试本轮 skipped，
+不能记为新音频验收。Draft PR [#38](https://github.com/Z-YO-YI/YYMusic/pull/38)
+以 `codex/home-surfaces` 为 base，仍未合并；下面的“本批”描述保留 Phase 6C 历史边界。
+
 本批提交后推送，创建以`codex/home-surfaces`为base的堆叠Draft PR；精确提交的云端checks/
 Android/Windows结果在PR单独补验。不得把前置成功当本批通过，不提交APK/日志/临时数据库/秘密。
 

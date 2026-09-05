@@ -4,10 +4,13 @@ import '../data/repositories/drift_collection_repository.dart';
 import '../data/repositories/drift_library_repository.dart';
 import '../data/repositories/drift_lyrics_repository.dart';
 import '../data/repositories/drift_music_source_repository.dart';
+import '../data/repositories/drift_search_history_repository.dart';
+import '../domain/repositories/catalog_search_repository.dart';
 import '../domain/repositories/collection_repository.dart';
 import '../domain/repositories/library_repository.dart';
 import '../domain/repositories/lyrics_repository.dart';
 import '../domain/repositories/music_source_repository.dart';
+import '../domain/repositories/search_history_repository.dart';
 import '../platform/contracts/secure_credential_gateway.dart';
 import '../platform/secure_credentials/android_secure_credential_gateway.dart';
 import '../platform/secure_credentials/windows_secure_credential_gateway.dart';
@@ -55,6 +58,7 @@ final class DatabaseAppDataServices implements AppDataServices {
     final services = DatabaseAppDataServices._(
       database: database,
       library: library,
+      searchHistory: DriftSearchHistoryRepository(database),
       collection: DriftCollectionRepository(database),
       lyrics: DriftLyricsRepository(database),
       musicSources: DriftMusicSourceRepository(database),
@@ -72,6 +76,7 @@ final class DatabaseAppDataServices implements AppDataServices {
   DatabaseAppDataServices._({
     required this._database,
     required this._library,
+    required this._searchHistory,
     required this._collection,
     required this._lyrics,
     required this._musicSources,
@@ -80,6 +85,7 @@ final class DatabaseAppDataServices implements AppDataServices {
 
   final AppDatabase _database;
   final DriftLibraryRepository _library;
+  final DriftSearchHistoryRepository _searchHistory;
   final DriftCollectionRepository _collection;
   final DriftLyricsRepository _lyrics;
   final DriftMusicSourceRepository _musicSources;
@@ -87,6 +93,12 @@ final class DatabaseAppDataServices implements AppDataServices {
 
   @override
   LibraryRepository get library => _library;
+
+  @override
+  CatalogSearchRepository get catalogSearch => _library;
+
+  @override
+  SearchHistoryRepository get searchHistory => _searchHistory;
 
   @override
   CollectionRepository get collection => _collection;
@@ -107,6 +119,7 @@ final class DatabaseAppDataServices implements AppDataServices {
     try {
       await Future.wait([
         _library.dispose(),
+        _searchHistory.dispose(),
         _collection.dispose(),
         _lyrics.dispose(),
         _musicSources.dispose(),

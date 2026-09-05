@@ -7,6 +7,8 @@ import '../domain/repositories/license_repository.dart';
 import '../features/design_gallery/design_gallery_screen.dart';
 import '../features/home/common/home_controller.dart';
 import '../features/home/common/home_screen.dart';
+import '../features/search/common/search_controller.dart';
+import '../features/search/common/search_screen.dart';
 import '../features/settings/common/licenses_screen.dart';
 import '../shared/foundation_button.dart';
 import 'adaptive_root.dart';
@@ -26,6 +28,7 @@ final class AppRouter implements AppNavigation {
     bool audioBackendSelected = false,
     PlaybackPresenter? playbackPresenter,
     HomeController? homeController,
+    CatalogSearchController? searchController,
   }) {
     Widget screen(AppRoute route) =>
         route == AppRoute.home &&
@@ -34,6 +37,16 @@ final class AppRouter implements AppNavigation {
         ? HomeScreen(
             platform: platform,
             controller: homeController,
+            playback: playbackPresenter,
+            navigation: this,
+            viewState: viewState,
+          )
+        : route == AppRoute.search &&
+              searchController != null &&
+              playbackPresenter != null
+        ? SearchScreen(
+            platform: platform,
+            controller: searchController,
             playback: playbackPresenter,
             navigation: this,
             viewState: viewState,

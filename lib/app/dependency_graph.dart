@@ -4,12 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../design_system/yy_theme.dart';
 import '../domain/models/domain_failure.dart';
+import '../domain/repositories/catalog_search_repository.dart';
 import '../domain/repositories/collection_repository.dart';
 import '../domain/repositories/library_repository.dart';
 import '../domain/repositories/license_repository.dart';
 import '../domain/repositories/lyrics_repository.dart';
 import '../domain/repositories/music_source_repository.dart';
+import '../domain/repositories/search_history_repository.dart';
 import '../features/home/common/home_controller.dart';
+import '../features/search/common/search_controller.dart';
 import '../platform/contracts/fullscreen_gateway.dart';
 import '../platform/contracts/media_session_gateway.dart';
 import '../platform/contracts/secure_credential_gateway.dart';
@@ -30,6 +33,8 @@ final class DependencyGraph {
     MediaSessionGateway? mediaSession,
     this.dataServices,
     LibraryRepository? library,
+    CatalogSearchRepository? catalogSearch,
+    SearchHistoryRepository? searchHistory,
     CollectionRepository? collection,
     LyricsRepository? lyrics,
     MusicSourceRepository? musicSources,
@@ -39,6 +44,8 @@ final class DependencyGraph {
   }) : assert(
          dataServices == null ||
              (library == null &&
+                 catalogSearch == null &&
+                 searchHistory == null &&
                  collection == null &&
                  lyrics == null &&
                  musicSources == null &&
@@ -48,6 +55,8 @@ final class DependencyGraph {
        _audioEngine = audioEngine ?? UnavailableAudioEngine(),
        _mediaSession = mediaSession ?? const UnavailableMediaSessionGateway(),
        library = dataServices?.library ?? library,
+       catalogSearch = dataServices?.catalogSearch ?? catalogSearch,
+       searchHistory = dataServices?.searchHistory ?? searchHistory,
        collection = dataServices?.collection ?? collection,
        lyrics = dataServices?.lyrics ?? lyrics,
        musicSources = dataServices?.musicSources ?? musicSources,
@@ -67,12 +76,20 @@ final class DependencyGraph {
       collection: this.collection,
       sourceRepository: this.musicSources,
     );
+    search = CatalogSearchController(
+      playback: playback,
+      repository: this.catalogSearch,
+      historyRepository: this.searchHistory,
+      sourceRepository: this.musicSources,
+    );
   }
 
   final AudioEngine _audioEngine;
   final MediaSessionGateway _mediaSession;
   final AppDataServices? dataServices;
   final LibraryRepository? library;
+  final CatalogSearchRepository? catalogSearch;
+  final SearchHistoryRepository? searchHistory;
   final CollectionRepository? collection;
   final LyricsRepository? lyrics;
   final MusicSourceRepository? musicSources;
@@ -85,6 +102,7 @@ final class DependencyGraph {
   late final QueueController queue;
   late final PlaybackPresenter playbackPresenter;
   late final HomeController home;
+  late final CatalogSearchController search;
   Future<void>? _closeFuture;
 
   Future<void> initialize() => playback.initialize();
@@ -99,6 +117,7 @@ final class DependencyGraph {
     if (existing != null) return existing;
     queue.dispose();
     home.dispose();
+    search.dispose();
     playbackPresenter.dispose();
     playback.dispose();
     appearance.dispose();
@@ -109,6 +128,7 @@ final class DependencyGraph {
     var failed = false;
     for (final release in <Future<void> Function()>[
       home.close,
+      search.close,
       playback.close,
       _audioEngine.dispose,
       _mediaSession.dispose,

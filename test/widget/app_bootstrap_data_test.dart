@@ -8,16 +8,19 @@ import 'package:yymusic/app/app_data_services.dart';
 import 'package:yymusic/app/dependency_graph.dart';
 import 'package:yymusic/app/layout_class.dart';
 import 'package:yymusic/app/yy_music_app.dart';
+import 'package:yymusic/domain/repositories/catalog_search_repository.dart';
 import 'package:yymusic/domain/repositories/collection_repository.dart';
 import 'package:yymusic/domain/repositories/library_repository.dart';
 import 'package:yymusic/domain/repositories/lyrics_repository.dart';
 import 'package:yymusic/domain/repositories/music_source_repository.dart';
+import 'package:yymusic/domain/repositories/search_history_repository.dart';
 import 'package:yymusic/platform/contracts/secure_credential_gateway.dart';
 import 'package:yymusic/playback/audio_engine.dart';
 
 import '../support/close_graph.dart';
 import '../support/fake_audio_engine.dart';
 import '../support/fake_domain_repositories.dart';
+import '../support/fake_search_repositories.dart';
 
 void main() {
   testWidgets('bootstrap shows loading, then owns and disposes injected data', (
@@ -190,6 +193,10 @@ void main() {
 
 final class _FakeAppDataServices implements AppDataServices {
   @override
+  final CatalogSearchRepository catalogSearch = FakeSearchRepository();
+  @override
+  final SearchHistoryRepository searchHistory = FakeSearchHistoryRepository();
+  @override
   final LibraryRepository library = FakeLibraryRepository();
 
   @override
@@ -210,6 +217,7 @@ final class _FakeAppDataServices implements AppDataServices {
   Future<void> dispose() async {
     disposeCount += 1;
     await library.dispose();
+    await searchHistory.dispose();
     await (collection as FakeCollectionRepository).dispose();
     await (musicSources as FakeMusicSourceRepository).dispose();
   }
