@@ -296,8 +296,13 @@ test('CI validates both debug targets with least-privileged, pinned actions', ()
     windows,
     /actions\/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a/,
   );
+  assert.match(windows, /flutter build windows --debug --no-pub[\s\S]*?\.\/tools\/verify_windows_bundle\.ps1[\s\S]*?actions\/upload-artifact/);
   assert.match(windows, /if: github\.event_name == 'push'/);
   assert.match(windows, /path: build\/windows\/x64\/runner\/Debug\//);
+  const windowsVerifier = read('tools/verify_windows_bundle.ps1');
+  assert.match(windowsVerifier, /libmpv/);
+  assert.match(windowsVerifier, /media_kit/);
+  assert.match(windowsVerifier, /AssetManifest\.bin/);
 });
 
 test('only the just_audio native POC remains active in read-only dual-platform CI', () => {

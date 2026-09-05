@@ -70,6 +70,9 @@ jobs:
       - name: Native widget goldens on their pinned host
         run: flutter test --no-pub --tags windows-golden --reporter expanded
       - run: flutter build windows --debug --no-pub
+      - name: Verify portable Windows Debug bundle
+        shell: pwsh
+        run: ./tools/verify_windows_bundle.ps1
       - name: Upload portable Windows Debug bundle
         if: github.event_name == 'push'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
