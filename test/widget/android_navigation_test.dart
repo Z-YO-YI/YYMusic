@@ -9,6 +9,7 @@ import 'package:yymusic/design_system/yy_navigation.dart';
 import 'package:yymusic/design_system/yy_surface.dart';
 import 'package:yymusic/design_system/yy_theme.dart';
 import 'package:yymusic/design_system/yy_tokens.dart';
+import 'package:yymusic/features/library/common/library_screen.dart';
 import 'package:yymusic/shells/shell_chrome.dart';
 
 import '../support/design_harness.dart';
@@ -257,7 +258,11 @@ void main() {
         );
         expect(tester.takeException(), isNull, reason: '$size');
       }
-      await tester.tap(find.byKey(const ValueKey('open-player')));
+      // The real Library replaced the old Foundation-only route test button.
+      tester
+          .widget<LibraryScreen>(find.byType(LibraryScreen))
+          .navigation
+          .openPlayer();
       await tester.pumpAndSettle();
       expect(find.byType(YYMobileBottomNavigation), findsNothing);
       await tester.binding.handlePopRoute();

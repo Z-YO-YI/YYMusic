@@ -153,6 +153,9 @@ final class FakeCollectionRepository implements CollectionRepository {
   QueueSnapshot _queue;
   List<FavoriteEntry> _favorites;
   List<PlayHistoryEntry> _history;
+  Future<void>? favoriteGate;
+  int favoriteWriteCount = 0;
+  int disposeCount = 0;
 
   @override
   Stream<List<Playlist>> watchPlaylists() async* {
@@ -223,6 +226,8 @@ final class FakeCollectionRepository implements CollectionRepository {
 
   @override
   Future<void> setFavorite(TrackRef track, {required bool favorite}) async {
+    if (favoriteGate case final gate?) await gate;
+    favoriteWriteCount++;
     _favorites = _favorites.where((entry) => entry.track != track).toList();
     if (favorite) {
       _favorites.add(
@@ -260,6 +265,7 @@ final class FakeCollectionRepository implements CollectionRepository {
       _favoriteChanges.close(),
       _historyChanges.close(),
     ]);
+    disposeCount++;
   }
 }
 

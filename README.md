@@ -1,6 +1,6 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 6E 音乐库浏览数据层**。新增歌曲/专辑/艺术家排序、来源与可用性组合筛选、完整来源身份详情和分页查询，与首页/搜索共享根数据库。423项Flutter（55张既有Golden未改）、71项Node、严格分析及本地Android Debug通过；本批GitHub状态见报告/对应Draft PR。前置Phase6D `40fb7a6`的两组GitHub Android/Windows构建与原生窗口检查均成功。音乐库原生页面是下一增量；导入/REST、后续业务页、完整播放器、Phase2网页对照和Phase11发布仍未完成，尚不是完整可用或上线版本。
+当前阶段：**Android + Windows · Phase 6F 原生音乐库入口**。五类目录、三套原生布局、排序/来源类型/可用性筛选、分页、根播放状态、右键/长按菜单和真实收藏已接线。452项Flutter（61张Golden）、73项Node、严格分析及本地Android Debug通过；本批云端状态见报告/对应Draft PR。前置Phase6E修复 `0c38340` 两组GitHub Android/Windows、Golden和原生窗口检查均成功。专辑/艺人详情、歌单编辑/系统歌单、导入/REST、完整播放器和Phase11发布仍未完成；网页对照缺口仍单列，尚不是完整可用或上线版本。
 
 Phase6E 后续修正：初始云端 Android/源码成功，Windows 旧首页 Golden 因测试样本逐首读取时钟而排序不稳定。
 已固定样本批次时间；425 Flutter/71 Node 与本地 Android 通过，55 张基线和生产代码均未改。
@@ -14,6 +14,7 @@ Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭
 
 ## 开发入口
 
+- [Phase 6F 原生音乐库计划](docs/phase_6f_library_surfaces_plan.md)、[报告](docs/phase_6f_library_surfaces_report.md)：分类/排序/筛选、惰性目录列表、取消安全播放、实际收藏与曲目菜单；既有55张Golden未改。
 - [Phase 6E 音乐库浏览计划](docs/phase_6e_catalog_browse_plan.md)、[报告](docs/phase_6e_catalog_browse_report.md)：只读单语句分页、排序/组合筛选、来源隔离详情及根数据合同；未改音乐库UI。
 - [Phase 6D 原生搜索计划](docs/phase_6d_native_search_plan.md)、[报告](docs/phase_6d_native_search_report.md)：三端页面、防抖/输入法、根接线、独立分页、搜索历史与取消安全的首条播放。
 - [Phase 6C 搜索数据计划](docs/phase_6c_catalog_search_plan.md)、[报告](docs/phase_6c_catalog_search_report.md)：单语句一致分页、来源身份、取消与持久搜索历史；无新页面、无在线请求或搜索结果入库。

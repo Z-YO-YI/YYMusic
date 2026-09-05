@@ -23,6 +23,7 @@ class YYTrackTile extends StatefulWidget {
     required this.artwork,
     required this.onPressed,
     this.onMore,
+    this.allowMoreWhenDisabled = false,
     this.playing = false,
     this.loading = false,
     this.focusNode,
@@ -35,6 +36,10 @@ class YYTrackTile extends StatefulWidget {
   final YYArtworkKind artwork;
   final VoidCallback? onPressed;
   final VoidCallback? onMore;
+
+  /// Unavailable catalog references may still expose recovery/favorite actions.
+  /// Existing component consumers keep their fully disabled behavior by default.
+  final bool allowMoreWhenDisabled;
   final bool playing;
   final bool loading;
   final FocusNode? focusNode;
@@ -229,7 +234,7 @@ class _YYTrackTileState extends State<YYTrackTile> {
       onEnter: _enabled ? (_) => setState(() => _hovered = true) : null,
       onExit: (_) => setState(() => _hovered = false),
       child: Opacity(
-        opacity: _enabled ? 1 : .45,
+        opacity: _enabled || widget.allowMoreWhenDisabled ? 1 : .45,
         child: AnimatedScale(
           duration: theme.motion(YYMotion.press),
           curve: YYMotion.standard,
@@ -252,13 +257,24 @@ class _YYTrackTileState extends State<YYTrackTile> {
             ),
             child: Row(
               children: [
-                Expanded(child: primary),
+                Expanded(
+                  child: Opacity(
+                    opacity: !_enabled && widget.allowMoreWhenDisabled
+                        ? .45
+                        : 1,
+                    child: primary,
+                  ),
+                ),
                 const SizedBox(width: 2),
                 YYIconButton(
                   glyph: YYGlyph.more,
                   label: '${widget.title} 的更多操作',
                   style: YYButtonStyle.quiet,
-                  onPressed: _enabled ? widget.onMore : null,
+                  onPressed:
+                      (_enabled || widget.allowMoreWhenDisabled) &&
+                          !widget.loading
+                      ? widget.onMore
+                      : null,
                 ),
               ],
             ),

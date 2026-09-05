@@ -62,6 +62,14 @@ Phase 2 网页对照缺口仍独立记录，未绕过此前浏览器安全限制
 APK SHA-256 与上文一致。生成文件/Schema/lockfile/全部生产 lib 零差异。
 修复提交将继续推送到同一个独立分支和 Draft PR #40，精确云端结果单独回填；未把本机通过当作云端通过。
 
+后续验收：修复 `0c383407fe1e67fdd12f5f3916284bdaceed4973` 的
+[push 33981868092](https://github.com/Z-YO-YI/YYMusic/actions/runs/33981868092) 与
+[PR 33981870433](https://github.com/Z-YO-YI/YYMusic/actions/runs/33981870433)
+两组 checks、Android Debug、Windows Golden、原生窗口测试及 Windows Debug 均已成功。
+两份日志验证 APK48资产、Windows65文件、六包许可、51原生坐标/3全文材料，八项窗口指标全部true。
+音频专用作业skipped，不记作新的音频运行验收；[Draft PR #40](https://github.com/Z-YO-YI/YYMusic/pull/40)
+仍未合并。以下保留该阶段的历史边界。
+
 前置 Phase 6D `40fb7a6` 的两组 GitHub checks / Android / Windows / Golden / 原生窗口均成功，
 已在 Phase 6D 报告与 Draft PR #39 回填精确日志，不算作本批构建成功。
 本批提交推送后以 `codex/native-search-surfaces` 为 base 创建 stacked Draft PR；
