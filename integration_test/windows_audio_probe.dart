@@ -8,13 +8,13 @@ import 'package:integration_test/integration_test.dart';
 import 'just_audio_native_local_poc_test.dart' as native_poc;
 import 'support/windows_audio_probe_result.dart';
 
-/// Development-only entry point for a verified Windows Debug runtime copy.
+/// Development-only entry point for a verified Windows diagnostic runtime.
 void main() {
   const enabled = bool.fromEnvironment('YYMUSIC_WINDOWS_AUDIO_PROBE');
   const sourceCommit = String.fromEnvironment('YYMUSIC_PROBE_SOURCE_COMMIT');
   const nativeCommit = String.fromEnvironment('YYMUSIC_PROBE_NATIVE_COMMIT');
   final commitPattern = RegExp(r'^[0-9a-f]{40}$');
-  if (!kDebugMode ||
+  if (kReleaseMode ||
       !Platform.isWindows ||
       !enabled ||
       !commitPattern.hasMatch(sourceCommit) ||

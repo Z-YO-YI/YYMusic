@@ -4,128 +4,170 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:yaml/yaml.dart';
 
 void main() {
-  test(
-    'CI YAML parses and grants write permission only to Android delivery',
-    () {
-      final workflow = loadYaml(
-        File('.github/workflows/foundation.yml').readAsStringSync(),
-      ) as YamlMap;
-      final triggers = workflow['on'] as YamlMap;
+  test('Profile probe is explicit, read-only, short-lived and excludes APK delivery', () {
+    final workflow = loadYaml(
+      File('.github/workflows/foundation.yml').readAsStringSync(),
+    ) as YamlMap;
+    final inputs =
+        ((workflow['on'] as YamlMap)['workflow_dispatch'] as YamlMap)['inputs']
+            as YamlMap;
+    expect((inputs['build_windows_audio_probe'] as YamlMap)['default'], false);
+    expect((inputs['build_windows_audio_probe'] as YamlMap)['type'], 'boolean');
+    final jobs = workflow['jobs'] as YamlMap;
+    final checks = (jobs['checks'] as YamlMap)['steps'] as YamlList;
+    final conflict = checks.cast<YamlMap>().singleWhere(
+      (step) => step['name'] == 'Reject conflicting diagnostic modes',
+    );
+    expect(
+      conflict['if'],
+      'inputs.run_just_audio_poc && inputs.build_windows_audio_probe',
+    );
+    expect(conflict['run'], 'exit 1');
+    final windows = jobs['windows-debug'] as YamlMap;
+    expect(windows['permissions'], isNull);
+    final steps = (windows['steps'] as YamlList).cast<YamlMap>();
+    final profileBuild = steps.singleWhere(
+      (step) => step['name'] == 'Build isolated Windows Profile audio probe',
+    );
+    final profileUpload = steps.singleWhere(
+      (step) => step['name'] == 'Upload short-lived Windows diagnostic only',
+    );
+    const condition =
+        "github.event_name == 'workflow_dispatch' && inputs.build_windows_audio_probe";
+    expect(profileBuild['if'], condition);
+    expect(profileUpload['if'], condition);
+    expect(
+      profileBuild['run'],
+      allOf(
+        contains('flutter build windows --profile'),
+        contains('integration_test/windows_audio_probe.dart'),
+        contains('windows_audio_profile_metadata.ps1'),
+      ),
+    );
+    expect((profileUpload['with'] as YamlMap)['retention-days'], 1);
+    expect(
+      (profileUpload['with'] as YamlMap)['path'],
+      'build/windows/x64/runner/Profile/',
+    );
+    expect(
+      (jobs['android-debug'] as YamlMap)['if'],
+      contains('!inputs.build_windows_audio_probe'),
+    );
+    final debug = steps.singleWhere(
+      (step) => step['run'] == 'flutter build windows --debug --no-pub',
+    );
+    expect(debug['if'], '!inputs.build_windows_audio_probe');
+  });
+  test('CI YAML parses and grants write permission only to Android delivery', () {
+    final workflow = loadYaml(
+      File('.github/workflows/foundation.yml').readAsStringSync(),
+    ) as YamlMap;
+    final triggers = workflow['on'] as YamlMap;
+    expect(
+      triggers.keys,
+      containsAll(['push', 'pull_request', 'workflow_dispatch']),
+    );
+    expect(
+      ((triggers['push'] as YamlMap)['branches'] as YamlList).toSet(),
+      containsAll(['codex/**', 'feat/**', 'fix/**', 'refactor/**', 'docs/**']),
+    );
+    expect(workflow['permissions'], {'contents': 'read'});
+    final jobs = workflow['jobs'] as YamlMap;
+    expect(jobs.keys.toSet(), {
+      'checks',
+      'windows-debug',
+      'android-debug',
+      'windows-just-audio',
+      'android-just-audio',
+    });
+    final dispatch = triggers['workflow_dispatch'] as YamlMap;
+    expect((dispatch['inputs'] as YamlMap)['run_just_audio_poc'], {
+      'description': 'Run the read-only just_audio native local WAV POC',
+      'required': true,
+      'default': false,
+      'type': 'boolean',
+    });
+    for (final id in [
+      'windows-debug',
+      'android-debug',
+      'windows-just-audio',
+      'android-just-audio',
+    ]) {
+      expect((jobs[id] as YamlMap)['needs'], 'checks');
+    }
+    expect((jobs['checks'] as YamlMap)['permissions'], isNull);
+    expect((jobs['windows-debug'] as YamlMap)['permissions'], isNull);
+    expect((jobs['android-debug'] as YamlMap)['permissions'], {
+      'contents': 'write',
+    });
+    final windowsSteps =
+        (jobs['windows-debug'] as YamlMap)['steps'] as YamlList;
+    expect(
+      windowsSteps.whereType<YamlMap>().map((step) => step['run']),
+      contains(
+        'flutter test --no-pub --tags windows-golden --reporter expanded',
+      ),
+    );
+    final environment = workflow['env'] as YamlMap;
+    final pubspec =
+        loadYaml(File('pubspec.yaml').readAsStringSync()) as YamlMap;
+    expect(
+      (pubspec['environment'] as YamlMap)['flutter'],
+      '>=${environment['FLUTTER_VERSION']}',
+    );
+
+    expect(
+      (jobs['windows-debug'] as YamlMap)['if'],
+      "github.event_name != 'workflow_dispatch' || !inputs.run_just_audio_poc",
+    );
+    expect(
+      (jobs['android-debug'] as YamlMap)['if'],
+      "github.event_name != 'workflow_dispatch' || "
+      '(!inputs.run_just_audio_poc && !inputs.build_windows_audio_probe)',
+    );
+
+    expect((jobs['windows-just-audio'] as YamlMap)['runs-on'], 'windows-2025');
+    expect((jobs['android-just-audio'] as YamlMap)['runs-on'], 'ubuntu-24.04');
+    final windowsJustAudioSteps =
+        ((jobs['windows-just-audio'] as YamlMap)['steps'] as YamlList)
+            .cast<YamlMap>();
+    final windowsAudioPreflight = windowsJustAudioSteps.singleWhere(
+      (step) => step['name'] == 'Require a real Windows playback endpoint',
+    );
+    expect(windowsAudioPreflight['shell'], 'pwsh');
+    expect(
+      windowsAudioPreflight['run'],
+      allOf(
+        contains("@('AudioEndpointBuilder', 'Audiosrv')"),
+        contains('Get-PnpDevice -Class AudioEndpoint -PresentOnly'),
+        contains('playbackEndpoints.Count -eq 0'),
+      ),
+    );
+    for (final id in ['windows-just-audio', 'android-just-audio']) {
+      final job = jobs[id] as YamlMap;
+      expect(job['permissions'], isNull);
       expect(
-        triggers.keys,
-        containsAll(['push', 'pull_request', 'workflow_dispatch']),
+        job['if'],
+        "github.event_name == 'workflow_dispatch' && "
+        'inputs.run_just_audio_poc',
       );
+      final steps = (job['steps'] as YamlList).cast<YamlMap>();
+      final commands = <String>[
+        ...steps.map((step) => step['run']).whereType<String>(),
+        ...steps
+            .map((step) => step['with'])
+            .whereType<YamlMap>()
+            .map((withValues) => withValues['script'])
+            .whereType<String>(),
+      ];
       expect(
-        ((triggers['push'] as YamlMap)['branches'] as YamlList).toSet(),
-        containsAll([
-          'codex/**',
-          'feat/**',
-          'fix/**',
-          'refactor/**',
-          'docs/**',
-        ]),
-      );
-      expect(workflow['permissions'], {'contents': 'read'});
-      final jobs = workflow['jobs'] as YamlMap;
-      expect(jobs.keys.toSet(), {
-        'checks',
-        'windows-debug',
-        'android-debug',
-        'windows-just-audio',
-        'android-just-audio',
-      });
-      final dispatch = triggers['workflow_dispatch'] as YamlMap;
-      expect((dispatch['inputs'] as YamlMap)['run_just_audio_poc'], {
-        'description': 'Run the read-only just_audio native local WAV POC',
-        'required': true,
-        'default': false,
-        'type': 'boolean',
-      });
-      for (final id in [
-        'windows-debug',
-        'android-debug',
-        'windows-just-audio',
-        'android-just-audio',
-      ]) {
-        expect((jobs[id] as YamlMap)['needs'], 'checks');
-      }
-      expect((jobs['checks'] as YamlMap)['permissions'], isNull);
-      expect((jobs['windows-debug'] as YamlMap)['permissions'], isNull);
-      expect((jobs['android-debug'] as YamlMap)['permissions'], {
-        'contents': 'write',
-      });
-      final windowsSteps =
-          (jobs['windows-debug'] as YamlMap)['steps'] as YamlList;
-      expect(
-        windowsSteps.whereType<YamlMap>().map((step) => step['run']),
-        contains(
-          'flutter test --no-pub --tags windows-golden --reporter expanded',
+        commands,
+        anyElement(
+          contains('integration_test/just_audio_native_local_poc_test.dart'),
         ),
       );
-      final environment = workflow['env'] as YamlMap;
-      final pubspec =
-          loadYaml(File('pubspec.yaml').readAsStringSync()) as YamlMap;
-      expect(
-        (pubspec['environment'] as YamlMap)['flutter'],
-        '>=${environment['FLUTTER_VERSION']}',
-      );
-
-      for (final id in ['windows-debug', 'android-debug']) {
-        expect(
-          (jobs[id] as YamlMap)['if'],
-          "github.event_name != 'workflow_dispatch' || !inputs.run_just_audio_poc",
-        );
-      }
-
-      expect(
-        (jobs['windows-just-audio'] as YamlMap)['runs-on'],
-        'windows-2025',
-      );
-      expect(
-        (jobs['android-just-audio'] as YamlMap)['runs-on'],
-        'ubuntu-24.04',
-      );
-      final windowsJustAudioSteps =
-          ((jobs['windows-just-audio'] as YamlMap)['steps'] as YamlList)
-              .cast<YamlMap>();
-      final windowsAudioPreflight = windowsJustAudioSteps.singleWhere(
-        (step) => step['name'] == 'Require a real Windows playback endpoint',
-      );
-      expect(windowsAudioPreflight['shell'], 'pwsh');
-      expect(
-        windowsAudioPreflight['run'],
-        allOf(
-          contains("@('AudioEndpointBuilder', 'Audiosrv')"),
-          contains('Get-PnpDevice -Class AudioEndpoint -PresentOnly'),
-          contains('playbackEndpoints.Count -eq 0'),
-        ),
-      );
-      for (final id in ['windows-just-audio', 'android-just-audio']) {
-        final job = jobs[id] as YamlMap;
-        expect(job['permissions'], isNull);
-        expect(
-          job['if'],
-          "github.event_name == 'workflow_dispatch' && "
-          'inputs.run_just_audio_poc',
-        );
-        final steps = (job['steps'] as YamlList).cast<YamlMap>();
-        final commands = <String>[
-          ...steps.map((step) => step['run']).whereType<String>(),
-          ...steps
-              .map((step) => step['with'])
-              .whereType<YamlMap>()
-              .map((withValues) => withValues['script'])
-              .whereType<String>(),
-        ];
-        expect(
-          commands,
-          anyElement(
-            contains('integration_test/just_audio_native_local_poc_test.dart'),
-          ),
-        );
-      }
-    },
-  );
+    }
+  });
 
   test(
     'cloud APK delivery is manual, draft-only and uploads verified files',

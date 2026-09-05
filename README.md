@@ -2,7 +2,7 @@
 
 当前阶段：**Android + Windows · Phase 4J Windows原生诊断工具；Phase 4F播放验收仍未关闭**。Phase4I已修复停止后重播、加载失败重试、队列替换停止旧音频、完成事件去重与过期操作保护。本批为有播放端点的Windows电脑提供独立测试入口，复用指纹与SDK严格匹配的GitHub原生包，正式播放能力仍须真实运行结果证明。生产仍使用`UnavailableAudioEngine`。Phase4H已移除被拒绝的`media_kit`活动候选；历史审计证据保留。正式播放器接线、REST Adapter和业务页面尚未完成；本机C++/插件链接权限、GitHub托管机缺端点的限制没有被更改。
 
-Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭、只允许手动选择、`contents: read`且不上传产物的Windows/Android原生集成模式。完整221项Flutter含32张Windows宿主Golden、严格分析0问题、31项Node、24项ZIP、lockfile及生成代码/v1快照零差异已通过；本机Android Debug也完成资产与v2单Debug签名复核。精确提交`622408e`的专用运行33862786766 attempt 2已在Windows与Android成功，且没有artifact或Release；普通push另提供保留14天的完整Windows Debug portable bundle。
+Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭、只允许手动选择、`contents: read`且不上传产物的Windows/Android原生集成模式。完整221项Flutter含32张Windows宿主Golden、严格分析0问题、31项Node、24项ZIP、lockfile及生成代码/v1快照零差异已通过；本机Android Debug也完成资产与v2单Debug签名复核。精确提交`622408e`的专用运行33862786766 attempt 2已在Windows与Android成功，且没有artifact或Release；普通push另提供保留14天的Windows开发Debug文件包。它依赖本机Debug CRT，并非通用免安装发行包；Phase4J的Profile诊断模式与正式应用分开。
 
 Phase4D实现提交`913f3d75`增加HEAD-only脱敏网络探针、Android debug-only只读Provider及运行时受控HTTPS测试。标准PR运行33878401743的checks、Windows Debug和Android Debug均成功；专用运行33878710671在Windows完成HTTPS，在Android完成HTTPS与`content://`真实native candidate播放，失败矩阵、进度、seek和completed均通过，且无artifact或Release。生产入口、TLS验证默认值和release Manifest未改变。
 

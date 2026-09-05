@@ -337,7 +337,7 @@ test('only the just_audio native POC remains active in read-only dual-platform C
   assert(!/flutter build apk|flutter build appbundle/.test(native));
   assert.equal(
     workflow.match(/if: github\.event_name != 'workflow_dispatch' \|\| !inputs\.run_just_audio_poc/g)?.length,
-    2,
+    1,
   );
 
   const integrationFiles = walk('integration_test');

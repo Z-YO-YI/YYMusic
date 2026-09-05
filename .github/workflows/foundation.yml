@@ -11,6 +11,11 @@ on:
         required: true
         default: false
         type: boolean
+      build_windows_audio_probe:
+        description: Build an isolated Profile probe for a real Windows test machine
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -28,6 +33,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
+      - name: Reject conflicting diagnostic modes
+        if: inputs.run_just_audio_poc && inputs.build_windows_audio_probe
+        run: exit 1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
@@ -53,7 +61,7 @@ jobs:
       - run: flutter test --no-pub --reporter expanded
 
   windows-debug:
-    name: Windows Debug build
+    name: Windows native build
     needs: checks
     if: github.event_name != 'workflow_dispatch' || !inputs.run_just_audio_poc
     runs-on: windows-2025
@@ -70,10 +78,12 @@ jobs:
       - name: Native widget goldens on their pinned host
         run: flutter test --no-pub --tags windows-golden --reporter expanded
       - run: flutter build windows --debug --no-pub
-      - name: Verify portable Windows Debug bundle
+        if: '!inputs.build_windows_audio_probe'
+      - name: Verify Windows development Debug bundle
+        if: '!inputs.build_windows_audio_probe'
         shell: pwsh
         run: ./tools/verify_windows_bundle.ps1
-      - name: Upload portable Windows Debug bundle
+      - name: Upload Windows development Debug bundle
         if: github.event_name == 'push'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -81,11 +91,31 @@ jobs:
           path: build/windows/x64/runner/Debug/
           if-no-files-found: error
           retention-days: 14
+      - name: Build isolated Windows Profile audio probe
+        if: github.event_name == 'workflow_dispatch' && inputs.build_windows_audio_probe
+        shell: pwsh
+        run: |
+          flutter build windows --profile --no-pub --target=integration_test/windows_audio_probe.dart `
+            --dart-define=YYMUSIC_WINDOWS_AUDIO_PROBE=true `
+            "--dart-define=YYMUSIC_PROBE_SOURCE_COMMIT=$env:GITHUB_SHA" `
+            "--dart-define=YYMUSIC_PROBE_NATIVE_COMMIT=$env:GITHUB_SHA" `
+            --dart-define=INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE=false
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./tools/verify_windows_bundle.ps1 -BundlePath build/windows/x64/runner/Profile
+          ./tools/windows_audio_profile_metadata.ps1
+      - name: Upload short-lived Windows diagnostic only
+        if: github.event_name == 'workflow_dispatch' && inputs.build_windows_audio_probe
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: YYMusic-windows-audio-probe-${{ github.sha }}
+          path: build/windows/x64/runner/Profile/
+          if-no-files-found: error
+          retention-days: 1
 
   android-debug:
     name: Android Debug APK and private draft Release
     needs: checks
-    if: github.event_name != 'workflow_dispatch' || !inputs.run_just_audio_poc
+    if: github.event_name != 'workflow_dispatch' || (!inputs.run_just_audio_poc && !inputs.build_windows_audio_probe)
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:

@@ -25,7 +25,8 @@
 - 结果只输出成功/失败、测试数量、平台、Commit身份和已有脱敏计时。临时音频仍由测试生成并清理。
 - 工具负责限定工作目录、限时运行、读取本次结果及核验；不安装驱动/软件、不修改注册表、权限或系统服务。
 - 标准CI增加`codex/**`分支覆盖。原来默认关闭的原生工作流保持无artifact/Release。
-  本批不新建发布模式，不上传本地诊断包，不更改生产UnavailableAudioEngine。
+  初始方案不新增发布模式；下述实际启动失败后增补显式Profile诊断模式，不上传本地诊断包，
+  不更改生产UnavailableAudioEngine。
 
 ## 风险与出口
 
@@ -57,3 +58,23 @@ Prepare保留原EXE/DLL，只重新编译隔离入口的flutter_assets，manifes
 Run只启动该副本，核对启动前与结束后的完整清单和本次结果，210秒超时只结束自己创建的进程。
 运行时会播放极短、低音量的生成测试音；不证明用户实际听感。诊断目录含manifest、结果及本机日志，
 均被Git忽略，不提交/上传原生日志、WAV、ZIP或运行副本；终端仅显示白名单结果。
+
+## 实际启动阻塞与Profile备选（同批增补）
+
+Debug来源`bd35da1`、原生`4db5899`的隔离副本已编译，但本机启动返回`0xC0000135`。
+PE导入确认依赖MSVCP140D/VCRUNTIME140D/VCRUNTIME140_1D/ucrtbased.dll，而本机四个文件均缺失；
+已有两个音频输出端点不等于Debug应用能启动。没有Dart测试结果，不能记录为播放成功。
+
+增补默认关闭的`build_windows_audio_probe`手动CI输入：只运行checks和Windows构建job，
+编译同一测试入口的Profile AOT，不运行Android发布job，不创建Release。与`run_just_audio_poc`互斥；
+旧双平台原生作业的无产物约束不变。新诊断artifact仅保留1天，包含GitHub精确Commit与Profile元数据；
+检查全部EXE/DLL导入，发现Debug CRT即失败。Profile允许集成测试，但入口仍拒绝Release和未显式启用。
+
+此模式不是正式应用发行：GitHub编译整个诊断包，本机不替换资产，只验证API归档指纹、
+同版本Profile引擎DLL、AOT文件和source/native相同Commit后解压到新目录并运行。
+`PrepareProfile`需显式提供`-RuntimeMode Profile -NativeCommit <API head_sha> -ExpectedArchiveSha256 <API digest>`；
+`Run`使用相同RuntimeMode和NativeCommit。仍有超时、过期结果和全文件指纹保护。
+
+依据：[Flutter Profile集成测试](https://docs.flutter.dev/cookbook/testing/integration/profiling)、
+[Microsoft测试机Debug运行库说明](https://learn.microsoft.com/en-us/cpp/windows/preparing-a-test-machine-to-run-a-debug-executable?view=msvc-170)。
+不从第三方下载DLL、不把Debug库上传到公共artifact、不修改系统设置。Profile原生运行仍需实际结果才算通过。

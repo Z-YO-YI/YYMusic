@@ -6,7 +6,7 @@ import test from 'node:test';
 import { root } from './design_audit.mjs';
 
 const script = join(root, 'tools/windows_audio_probe.ps1').replaceAll("'", "''");
-function fixtureCheck(mutation, expected, { wrongHash = false, omitFile = '' } = {}) {
+function fixtureCheck(mutation, expected, { wrongHash = false, omitFile = '', profile = false, wrongCommit = false } = {}) {
   // PowerShell fixtures exercise the actual archive guard on all CI hosts.
   const command = `
     $ErrorActionPreference = 'Stop'
@@ -15,24 +15,28 @@ function fixtureCheck(mutation, expected, { wrongHash = false, omitFile = '' } =
     [void][IO.Directory]::CreateDirectory($fixtureRoot)
     try {
       $sdk = Join-Path $fixtureRoot 'sdk'
-      $dll = Join-Path $sdk 'bin/cache/artifacts/engine/windows-x64/flutter_windows.dll'
+      $dll = Join-Path $sdk 'bin/cache/artifacts/engine/windows-x64${profile ? '-profile' : ''}/flutter_windows.dll'
       [void][IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($dll))
       [IO.File]::WriteAllText($dll, 'fixture engine')
       $zipPath = Join-Path $fixtureRoot 'fixture.zip'
       $zip = [IO.Compression.ZipFile]::Open($zipPath, 'Create')
       try {
         foreach ($name in @('yymusic.exe', 'flutter_windows.dll', 'just_audio_windows_plugin.dll',
-          'data/icudtl.dat', 'data/flutter_assets/AssetManifest.bin')) {
+          'data/icudtl.dat', 'data/flutter_assets/AssetManifest.bin'${profile ? ", 'data/app.so', 'native-audio-build.json'" : ''})) {
           if ($name -eq '${omitFile}') { continue }
           $entry = $zip.CreateEntry($name)
           $writer = [IO.StreamWriter]::new($entry.Open())
-          try { $writer.Write('fixture engine') } finally { $writer.Dispose() }
+          try {
+            if ($name -eq 'native-audio-build.json') {
+              $writer.Write('{"schemaVersion":1,"sourceCommit":"${'1'.repeat(40)}","nativeCommit":"${(wrongCommit ? '2' : '1').repeat(40)}","runtimeMode":"Profile","purpose":"isolated-local-wav-test","flutterVersion":"3.47.2"}')
+            } else { $writer.Write('fixture engine') }
+          } finally { $writer.Dispose() }
         }
         ${mutation}
       } finally { $zip.Dispose() }
       $hash = (Get-FileHash -LiteralPath $zipPath).Hash.ToLowerInvariant()
       ${wrongHash ? "$hash = '0' * 64" : ''}
-      & '${script}' -Mode ValidateArchive -ArchivePath $zipPath -ExpectedArchiveSha256 $hash -FlutterRoot $sdk
+      & '${script}' -Mode ValidateArchive -ArchivePath $zipPath -ExpectedArchiveSha256 $hash -FlutterRoot $sdk ${profile ? `-RuntimeMode Profile -NativeCommit '${'1'.repeat(40)}'` : ''}
     } finally {
       # Only delete the resolved, uniquely named fixture directly beneath temp.
       $resolved = [IO.Path]::GetFullPath($fixtureRoot)
@@ -74,10 +78,24 @@ test('Windows probe rejects changed fingerprints and incomplete native bundles',
   fixtureCheck('', /Archive SHA-256 mismatch/, { wrongHash: true });
   fixtureCheck('', /Required native bundle file missing/, { omitFile: 'just_audio_windows_plugin.dll' });
 });
+test('Profile probe validates exact AOT identity and rejects Debug kernels or mismatched commits', () => {
+  fixtureCheck('', null, { profile: true });
+  fixtureCheck('', /Profile bundle identity mismatch/, { profile: true, wrongCommit: true });
+  fixtureCheck('', /Invalid Profile AOT bundle/, { profile: true, omitFile: 'data/app.so' });
+  fixtureCheck("$null = $zip.CreateEntry('data/flutter_assets/kernel_blob.bin')", /Invalid Profile AOT bundle/, { profile: true });
+});
+test('Profile packaging refuses execution outside its explicit GitHub diagnostic context', () => {
+  const result = spawnSync('pwsh', ['-NoProfile', '-NonInteractive', '-File', join(root, 'tools/windows_audio_profile_metadata.ps1')], {
+    encoding: 'utf8', timeout: 30000, windowsHide: true, env: { ...process.env, GITHUB_ACTIONS: 'false' },
+  });
+  assert.ifError(result.error);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stdout + result.stderr, /Only the manual YYMusic CI diagnostic/);
+});
 test('Windows probe remains isolated, opt-in, timeout-bounded and tied to one real native test', () => {
   const entry = readFileSync(join(root, 'integration_test/windows_audio_probe.dart'), 'utf8');
   const tooling = readFileSync(join(root, 'tools/windows_audio_probe.ps1'), 'utf8');
-  assert.match(entry, /!kDebugMode/);
+  assert.match(entry, /kReleaseMode/);
   assert.match(entry, /!Platform\.isWindows/);
   assert.match(entry, /YYMUSIC_WINDOWS_AUDIO_PROBE/);
   assert.match(entry, /native_poc\.main\(\)/);

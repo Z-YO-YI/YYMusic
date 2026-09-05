@@ -2,16 +2,18 @@
 # Local diagnostic only. Never publishes or changes an installed application.
 [CmdletBinding()]
 param(
-    [ValidateSet('ValidateArchive', 'Prepare', 'Run')][string]$Mode = 'ValidateArchive',
+    [ValidateSet('ValidateArchive', 'Prepare', 'PrepareProfile', 'Run')][string]$Mode = 'ValidateArchive',
     [string]$ArchivePath,
     [string]$ExpectedArchiveSha256 = 'de1a70bc15352cd8699a928eebb261913753e68a8c75dbe1f065733caba54290',
     [string]$FlutterRoot,
-    [string]$OutputDirectory
+    [string]$OutputDirectory,
+    [ValidateSet('Debug', 'Profile')][string]$RuntimeMode = 'Debug',
+    [string]$NativeCommit = '4db58997ffe16a62da204344578a5f4b7fd9c320'
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $probeRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
-$nativeCommit = '4db58997ffe16a62da204344578a5f4b7fd9c320'
+if ($NativeCommit -cnotmatch '^[0-9a-f]{40}$') { throw 'Expected native commit must be exact' }
 
 function Assert-NoLinks([string]$Path) {
     $cursor = [IO.Path]::GetFullPath($Path)
@@ -50,7 +52,8 @@ if ($Mode -eq 'Run') {
     Assert-OutputPath
     $manifest = Get-Content -LiteralPath (Join-Path $outputPath 'manifest.json') -Raw | ConvertFrom-Json
     if ($manifest.schemaVersion -ne 1 -or $manifest.nativeCommit -cne $nativeCommit -or
-        $manifest.sourceCommit -cnotmatch '^[0-9a-f]{40}$') { throw 'Invalid probe manifest' }
+        $manifest.sourceCommit -cnotmatch '^[0-9a-f]{40}$' -or
+        $manifest.runtimeMode -cne $RuntimeMode) { throw 'Invalid probe manifest' }
     $runtime = Join-Path $outputPath 'runtime'
     $before = Get-Inventory $runtime
     if (($before | ConvertTo-Json -Depth 5 -Compress) -cne ($manifest.files | ConvertTo-Json -Depth 5 -Compress)) {
@@ -58,6 +61,9 @@ if ($Mode -eq 'Run') {
     }
     $resultPath = Join-Path $runtime 'native-audio-poc-result.json'
     if (Test-Path -LiteralPath $resultPath) { throw 'Existing probe result refused' }
+    foreach ($name in @('stdout.log', 'stderr.log', 'process-result.json')) {
+        if (Test-Path -LiteralPath (Join-Path $outputPath $name)) { throw 'Existing run evidence refused; prepare a new directory' }
+    }
     $renderCount = @(Get-PnpDevice -Class AudioEndpoint -Status OK | Where-Object {
         $_.InstanceId -like 'SWD\MMDEVAPI\{0.0.0.*'
     }).Count
@@ -79,6 +85,9 @@ if ($Mode -eq 'Run') {
         }
         $process.Refresh()
         $probeExit = $process.ExitCode
+        [ordered]@{ sourceCommit = $manifest.sourceCommit; nativeCommit = $nativeCommit; runtimeMode = $RuntimeMode;
+            exitCode = $probeExit; elapsedMs = $watch.ElapsedMilliseconds; renderEndpoints = $renderCount } |
+            ConvertTo-Json | Set-Content -LiteralPath (Join-Path $outputPath 'process-result.json') -Encoding utf8
     } finally { $process.Dispose() }
     if (-not (Test-Path -LiteralPath $resultPath) -or (Get-Item -LiteralPath $resultPath).Length -gt 8192) {
         throw 'Native probe did not produce a bounded result; local logs retained'
@@ -104,7 +113,7 @@ if ($Mode -eq 'Run') {
     }
     # Emit only whitelisted data, never the raw result or native logs.
     [ordered]@{ passed = $true; sourceCommit = $manifest.sourceCommit; nativeCommit = $nativeCommit;
-        renderEndpoints = $renderCount; exitCode = $probeExit; nativeMetrics = $metrics } | ConvertTo-Json -Compress
+        runtimeMode = $RuntimeMode; renderEndpoints = $renderCount; exitCode = $probeExit; nativeMetrics = $metrics } | ConvertTo-Json -Compress
     return
 }
 
@@ -115,7 +124,8 @@ Assert-NoLinks $ArchivePath
 if ((Get-FileHash -LiteralPath $ArchivePath -Algorithm SHA256).Hash -ine $ExpectedArchiveSha256) {
     throw 'Archive SHA-256 mismatch'
 }
-$sdkDll = Join-Path $FlutterRoot 'bin/cache/artifacts/engine/windows-x64/flutter_windows.dll'
+$engineDirectory = if ($RuntimeMode -eq 'Profile') { 'windows-x64-profile' } else { 'windows-x64' }
+$sdkDll = Join-Path $FlutterRoot "bin/cache/artifacts/engine/$engineDirectory/flutter_windows.dll"
 $sdkHash = (Get-FileHash -LiteralPath $sdkDll -Algorithm SHA256).Hash
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $archive = [IO.Compression.ZipFile]::OpenRead([IO.Path]::GetFullPath($ArchivePath))
@@ -163,30 +173,56 @@ try {
     try { $engineHash = [Convert]::ToHexString($hasher.ComputeHash($stream)) }
     finally { $stream.Dispose(); $hasher.Dispose() }
     if ($engineHash -cne $sdkHash) { throw 'Flutter native runtime does not match the local SDK' }
+    if ($RuntimeMode -eq 'Profile') {
+        if (-not $filePaths.Contains('data/app.so') -or -not $filePaths.Contains('native-audio-build.json') -or
+            $filePaths.Contains('data/flutter_assets/kernel_blob.bin')) { throw 'Invalid Profile AOT bundle' }
+        $metadataEntry = $archive.Entries | Where-Object { $_.FullName -ceq 'native-audio-build.json' }
+        if ($metadataEntry.Length -gt 4096) { throw 'Profile metadata exceeds limit' }
+        $reader = [IO.StreamReader]::new($metadataEntry.Open())
+        try { $metadata = $reader.ReadToEnd() | ConvertFrom-Json } finally { $reader.Dispose() }
+        if ($metadata.schemaVersion -ne 1 -or $metadata.sourceCommit -cne $nativeCommit -or
+            $metadata.nativeCommit -cne $nativeCommit -or $metadata.runtimeMode -cne 'Profile' -or
+            $metadata.purpose -cne 'isolated-local-wav-test' -or $metadata.flutterVersion -cne '3.47.2') {
+            throw 'Profile bundle identity mismatch'
+        }
+    }
     if ($Mode -eq 'ValidateArchive') { Write-Output 'PASS: archive paths, fingerprint and SDK runtime match'; return }
 
     if (-not $IsWindows) { throw 'Probe preparation requires Windows' }
-    if ($ExpectedArchiveSha256 -cne 'de1a70bc15352cd8699a928eebb261913753e68a8c75dbe1f065733caba54290') {
-        throw 'Preparation requires the pinned GitHub artifact'
-    }
     Assert-OutputPath
     if (Test-Path -LiteralPath $outputPath) { throw 'Probe preparation requires a new output directory' }
-    $status = @(git -C $probeRoot status --porcelain)
-    if ($LASTEXITCODE -ne 0 -or $status.Count) { throw 'Commit the probe source before preparing its runtime' }
-    $sourceCommit = git -C $probeRoot rev-parse HEAD
-    if ($LASTEXITCODE -ne 0 -or $sourceCommit -cnotmatch '^[0-9a-f]{40}$') { throw 'Cannot identify probe source' }
-    git -C $probeRoot diff --quiet $nativeCommit HEAD -- windows pubspec.yaml pubspec.lock
-    if ($LASTEXITCODE -ne 0) { throw 'Native source or dependency drift; obtain a fresh matching GitHub bundle' }
+    if ($Mode -eq 'PrepareProfile') {
+        if ($RuntimeMode -cne 'Profile') { throw 'Profile preparation requires Profile mode' }
+        $sourceCommit = $nativeCommit
+    } else {
+        if ($RuntimeMode -cne 'Debug' -or $NativeCommit -cne '4db58997ffe16a62da204344578a5f4b7fd9c320' -or
+            $ExpectedArchiveSha256 -cne 'de1a70bc15352cd8699a928eebb261913753e68a8c75dbe1f065733caba54290') {
+            throw 'Debug preparation requires the pinned GitHub artifact'
+        }
+        $status = @(git -C $probeRoot status --porcelain)
+        if ($LASTEXITCODE -ne 0 -or $status.Count) { throw 'Commit the probe source before preparing its runtime' }
+        $sourceCommit = git -C $probeRoot rev-parse HEAD
+        if ($LASTEXITCODE -ne 0 -or $sourceCommit -cnotmatch '^[0-9a-f]{40}$') { throw 'Cannot identify probe source' }
+        git -C $probeRoot diff --quiet $nativeCommit HEAD -- windows pubspec.yaml pubspec.lock
+        if ($LASTEXITCODE -ne 0) { throw 'Native source or dependency drift; obtain a fresh matching GitHub bundle' }
+    }
     $runtime = Join-Path $outputPath 'runtime'
     [void][IO.Directory]::CreateDirectory($runtime)
     foreach ($entry in $archive.Entries) {
-        if ($entry.FullName.StartsWith('data/flutter_assets/', [StringComparison]::OrdinalIgnoreCase) -or
+        if (($Mode -eq 'Prepare' -and $entry.FullName.StartsWith('data/flutter_assets/', [StringComparison]::OrdinalIgnoreCase)) -or
             $entry.FullName.EndsWith('/')) { continue }
         $target = Join-Path $runtime $entry.FullName
         [void][IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($target))
         [IO.Compression.ZipFileExtensions]::ExtractToFile($entry, $target, $false)
     }
 } finally { $archive.Dispose() }
+if ($Mode -eq 'PrepareProfile') {
+    [ordered]@{ schemaVersion = 1; sourceCommit = $sourceCommit; nativeCommit = $nativeCommit; runtimeMode = $RuntimeMode;
+        archiveSha256 = $ExpectedArchiveSha256; files = @(Get-Inventory $runtime) } |
+        ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $outputPath 'manifest.json') -Encoding utf8
+    Write-Output "PASS: unmodified Profile diagnostic prepared; source=native=$sourceCommit"
+    return
+}
 $nativeBefore = Get-Inventory $runtime
 $assetDirectory = Join-Path $runtime 'data/flutter_assets'
 Push-Location $probeRoot
@@ -206,7 +242,7 @@ foreach ($file in $nativeBefore) {
 if (-not (Test-Path -LiteralPath (Join-Path $runtime 'data/flutter_assets/kernel_blob.bin'))) {
     throw 'Probe kernel missing'
 }
-$manifest = [ordered]@{ schemaVersion = 1; sourceCommit = $sourceCommit; nativeCommit = $nativeCommit;
+$manifest = [ordered]@{ schemaVersion = 1; sourceCommit = $sourceCommit; nativeCommit = $nativeCommit; runtimeMode = $RuntimeMode;
     archiveSha256 = $ExpectedArchiveSha256; files = @(Get-Inventory $runtime) }
 $manifest | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $outputPath 'manifest.json') -Encoding utf8
 Write-Output "PASS: isolated diagnostic prepared; source=$sourceCommit native=$nativeCommit"
