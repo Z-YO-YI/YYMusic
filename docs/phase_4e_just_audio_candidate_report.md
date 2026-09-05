@@ -36,6 +36,11 @@ Windows实现未声明直接Header能力时，带Header来源在插件调用前�
 首次Android构建暴露Pub缓存位于C:、工作树位于D:时Kotlin增量缓存无法计算相对根路径；项目只增加
 `kotlin.incremental=false`，随后同一Debug构建成功。该设置牺牲增量编译速度，不改变产物功能。
 
+首次push运行33936060829的Windows构建在MSVC 14.51编译C++/WinRT兼容头时失败：新版STL把旧
+`experimental/coroutine`提示升级为`STL1011`静态断言。修复只对`just_audio_windows_plugin`目标声明
+`_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS`，不降低全项目警告级别、不修改Pub缓存源码；
+修复提交的Windows结果必须重新取得，失败运行不计作通过。
+
 ## 尚待GitHub证据
 
 实现提交、Draft PR及目标SHA的checks/Android Debug/Windows Debug运行将在推送后补记。本批不会触发

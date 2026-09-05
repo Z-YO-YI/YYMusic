@@ -13,6 +13,7 @@ Head：`feat/just-audio-native-poc`；Base：`feat/native-audio-content-network-
 - Header能力必须显式声明，不支持时在插件调用前失败关闭；原始URL、Header与插件错误不进入状态或日志。
 - 串行处理transport、Seek、音量、速率，保留未知时长并实现幂等释放；不增加缓存、下载或离线API。
 - 为Windows跨盘符Pub缓存禁用Kotlin增量编译，补齐Windows插件登记及架构门禁。
+- 仅对旧WinRT插件目标启用MSVC experimental coroutine兼容宏，保留其余目标的`/W4 /WX`。
 
 ## 本地测试
 

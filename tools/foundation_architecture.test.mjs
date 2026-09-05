@@ -239,6 +239,10 @@ test('playback has one root-owned truth behind project contracts', () => {
   assert.match(lockfile, /audio_session:[\s\S]*?version: "0\.2\.4"/);
   assert.match(read('windows/flutter/generated_plugin_registrant.cc'), /JustAudioWindowsPluginRegisterWithRegistrar/);
   assert.match(read('windows/flutter/generated_plugins.cmake'), /^  just_audio_windows$/m);
+  assert.match(
+    read('windows/CMakeLists.txt'),
+    /target_compile_definitions\(just_audio_windows_plugin PRIVATE[\s\S]*?_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS/,
+  );
   const justAudioBackend = read('lib/playback/just_audio_backend.dart');
   assert.match(justAudioBackend, /AudioPlayer\(useProxyForRequestHeaders: useProxyForRequestHeaders\)/);
   assert.match(justAudioBackend, /required bool supportsRequestHeaders/);

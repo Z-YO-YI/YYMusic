@@ -8,6 +8,7 @@
 - 152文件format、严格analyze 0问题、完整232项Flutter/32 Golden、31项Node、24项ZIP通过；Dart lockfile严格复现。
 - 本机Android Debug为279,085,047字节、SHA-256 `bba16856f7cdbc3c909172cafa75ee07c345067cb50f66dcc6cfe21e9adbf601`；48资产、0参考源、Media3解析、权限和v2单Debug签名已核验。
 - 本机Windows因Developer Mode关闭不能创建plugin symlink；目标提交GitHub三job及无Release证据待推送后补记，不触发手动APK Release。
+- 首次push运行33936060829暴露MSVC 14.51对旧C++/WinRT coroutine头的`STL1011`；兼容宏只作用于just_audio_windows插件目标，修复提交须重新取得双平台CI证据。
 
 ## 2026-09-04 — Phase 4D Content URI 与受控 HTTPS 音频 POC
 

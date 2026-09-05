@@ -38,6 +38,10 @@ not-exported receiver权限保留，没有存储、媒体库、麦克风、通�
 播放由Windows Runtime MediaPlayer提供。包能力表没有声明直接请求Header支持，因此YYMusic候选要求
 创建方显式声明Header能力；未声明时认证Header会在插件调用前失败关闭，不能静默丢弃。
 
+MSVC 14.51会把该版本C++/WinRT所用`experimental/coroutine`兼容头的弃用提示提升为`STL1011`
+静态断言；应用CMake只对`just_audio_windows_plugin`目标定义官方提示给出的
+`_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS`，不关闭全局`/W4 /WX`，也不修改缓存包源码。
+
 本机因Windows Developer Mode关闭，`flutter pub get`在完成下载/解析后无法创建plugin symlink；
 `dart pub get --enforce-lockfile`已成功。Windows编译只能由目标提交的GitHub Windows runner给出证据，
 在该证据取得前不能声称Windows Debug已经通过。
