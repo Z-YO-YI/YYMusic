@@ -20,5 +20,6 @@ abstract interface class AppNavigation {
   void openPlayer();
   void openLyrics();
   void openDesignGallery();
+  void openLicenses();
   void back();
 }

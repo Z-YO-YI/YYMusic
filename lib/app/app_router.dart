@@ -3,11 +3,14 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
+import '../domain/repositories/license_repository.dart';
 import '../features/design_gallery/design_gallery_screen.dart';
+import '../features/settings/common/licenses_screen.dart';
 import '../shared/foundation_button.dart';
 import 'adaptive_root.dart';
 import 'app_routes.dart';
 import 'app_view_state.dart';
+import 'flutter_license_repository.dart';
 import 'foundation_screen.dart';
 import 'layout_class.dart';
 
@@ -16,6 +19,7 @@ final class AppRouter implements AppNavigation {
     required YYPlatform platform,
     required AppViewState viewState,
     String initialLocation = '/home',
+    LicenseRepository licenses = const FlutterLicenseRepository(),
   }) {
     Widget screen(AppRoute route) => FoundationScreen(
       route: route,
@@ -58,6 +62,13 @@ final class AppRouter implements AppNavigation {
             ),
           ),
         GoRoute(
+          path: '/settings/licenses',
+          pageBuilder: (context, state) => NoTransitionPage<void>(
+            key: state.pageKey,
+            child: LicensesScreen(repository: licenses, onBack: back),
+          ),
+        ),
+        GoRoute(
           path: '/design-system',
           pageBuilder: (context, state) => NoTransitionPage<void>(
             key: state.pageKey,
@@ -91,6 +102,8 @@ final class AppRouter implements AppNavigation {
   void openLyrics() => unawaited(_router.push<void>(AppRoute.lyrics.path));
   @override
   void openDesignGallery() => unawaited(_router.push<void>('/design-system'));
+  @override
+  void openLicenses() => unawaited(_router.push<void>('/settings/licenses'));
   @override
   void back() {
     if (_router.canPop()) {

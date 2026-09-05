@@ -444,3 +444,15 @@ error_prone_annotations和checker-qual三项注解依赖。机器清单明确记
 来源：[固定Media3源码](https://github.com/androidx/media/tree/c35a9d62baec57118ea898e271ac66819399649b)、
 [Guava精确版本POM](https://central.sonatype.com/artifact/com.google.guava/guava/33.0.0-android)、
 [Checker Framework 3.41.0](https://checkerframework.org/releases/3.41.0/manual/)。
+
+## ADR-043：许可查看使用自有合同与原生控件（2026-09-05）
+
+新增纯Dart `SoftwareLicense` 与 `LicenseRepository`，自有app适配器读取Flutter
+`LicenseRegistry`和Phase4N已审资产；UI只接收合同，不读取文件或导入第三方插件。
+SDK条目保留全部段落内容，Android材料逐文档长度/SHA校验并按同文档聚合组件，不请求网络。
+适配器限制数量/文本大小/总时长，失败仅返回固定安全错误，允许用户主动重试。
+
+设置入口推入独立`/settings/licenses`路由，搜索组件名、按需显示全文，使用YYSearchField、
+YYButton及自有Dialog/BottomSheet；不是Material LicensePage，不复制完整Settings功能。
+模态原文进入导航栈，返回先关原文再离开许可页；长文本在模态内部滚动。依赖由Graph注入，
+不在build启动异步请求，不保存第三方许可内容到数据库，不引入全局播放状态或媒体文件。
