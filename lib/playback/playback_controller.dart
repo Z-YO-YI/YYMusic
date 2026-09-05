@@ -166,6 +166,7 @@ final class PlaybackController extends ChangeNotifier {
   Future<void> skipPrevious() => _schedule(() async {
     _requireEngine();
     if (_state.position > const Duration(seconds: 3)) {
+      _sessionRevision++;
       await _guarded('skip-previous-seek', () => _engine.seek(Duration.zero));
       return;
     }
@@ -418,6 +419,13 @@ final class PlaybackController extends ChangeNotifier {
       _loadedEntryId = null;
       _sessionRevision++;
       _completionHandled = true;
+    }
+    if (value.phase == AudioEnginePhase.playing &&
+        _loadedEntryId != null &&
+        _completionHandled) {
+      // A seek may resume the native clock without another play command.
+      _sessionRevision++;
+      _completionHandled = false;
     }
     final revision = _sessionRevision;
     final completedEntryId = _loadedEntryId;

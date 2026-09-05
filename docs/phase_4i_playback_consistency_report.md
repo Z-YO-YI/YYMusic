@@ -16,23 +16,30 @@ App.tsx最终Sprite/POLISH_CSS、已有Token和Golden基线无修改。
 ## 回归证据
 
 最初11项新测试在旧实现上2通过/9失败，真实复现重播、替换队列、重复完成及释放竞态问题。
-修复后新增15项会话测试与原有7项核心测试共22项通过。原有随机循环测试改为“显式重播后开始新周期”，
+修复后新增16项会话测试与原有7项核心测试共23项通过。原有随机循环测试改为“显式重播后开始新周期”，
 保留原全部断言；没有删除测试、放宽Lint或替换原生POC为Fake。Fake现在拒绝无已加载来源的play，stop释放来源。
 
 完整Flutter回归发现两个历史测试未加载任何来源即注入paused/position；现分别在
 `dependency_graph_test.dart`和`foundation_app_test.dart`补齐队列、Fake Repository解析和load前置步骤，
 原状态共享、42秒进度、手机/平板切换、释放次数断言全部保留。
 
-最终完整Flutter测试 **242/242通过**，含新增15项；严格analyze **0问题**；
+最后补充Seek恢复边界：当原生引擎不经额外play命令而恢复playing时，下一次真实完成仍可自动切歌；
+上一首的归零Seek同样使过期自动操作失效。
+
+最终完整Flutter测试 **243/243通过**，含新增16项；严格analyze **0问题**；
 format检查153文件零变化；Node结构/指纹/安全边界 **35/35通过**；原始ZIP **24/24一致**。
 本地详细测试输出仅保存在Git忽略的`build/phase4i-flutter-tests.log`。
 Windows Debug本机实际重试失败于插件symlink权限，不声称构建或原生播放通过。
-Android本机`flutter build apk --debug --no-pub`成功（26.1秒）；48项SVG/字体/许可包内字节一致，
-被拒绝media_kit原生内容为0，apksigner确认v2单Debug签名。增量APK为230,986,861字节，SHA-256
-`fb874c989964e2b0a9a374010ab97dd26b08e08932776340a16253f3668b158a`。
+Android本机`flutter build apk --debug --no-pub`成功（最终19.4秒）；48项SVG/字体/许可包内字节一致，
+被拒绝media_kit原生内容为0，apksigner签名验证通过。增量APK为230,987,069字节，SHA-256
+`38fda801f85cbba7cbf4544bb92ae91b22de7796b4e147ad81c76852cf394c0f`。
 它仅是本地构建验证、不作为GitHub交付或原生播放证据、不提交构建产物。
 
-GitHub精确提交检查与双平台干净构建结果在完成后补录；未通过前不声明本批完全交付。
+GitHub仓库为`Z-YO-YI/YYMusic`，分支`fix/playback-session-consistency`。
+[Draft PR #25](https://github.com/Z-YO-YI/YYMusic/pull/25)基于上一阶段分支
+`refactor/remove-media-kit-candidate`，未合并、未改main/master。
+最终精确Commit的云端checks、Windows Debug和Android Debug结果在PR检查与PR正文记录，
+与本报告的本地证据分开；失败或排队中不得视作成功。本批无新Release、依赖升级或数据库变化。
 
 ## 限制与下一步
 

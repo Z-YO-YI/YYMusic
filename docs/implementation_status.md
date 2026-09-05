@@ -35,7 +35,7 @@
 | Phase 4G media_kit原生分发审计 | 审计完成/发布阻断：四个JAR、APK三ABI、Windows归档/DLL均强哈希映射，实际二进制关闭GPL/nonfree；Windows构建变换不可恢复、Android helper未固定，两个归档均缺完整NOTICE/对应源码/重链接材料，机器门禁保持blocked |
 | Phase 4H 移除被拒绝的media_kit候选 | 已完成：13个直接/传递包、两个适配器、5项Fake测试、两个历史集成测试、四个POC job及双平台生成注册已移除；历史manifest固定为rejected/inactive。Android干净APK无libmpv/helper；`2ec37ef`的push/PR双平台三job均成功，Windows bundle二次清单为0 |
 | 后续页面、歌词、导入、来源、平台集成 | 未开始 |
-| Phase 4I 播放会话/队列一致性 | 修复停止后重播、load失败重试、替换当前队列时停止旧音频、completed去重与过期操作、error/failure一致性、load结束后dispose保护；新增15项回归，完整242项Flutter通过，见phase_4i_playback_consistency_report.md |
+| Phase 4I 播放会话/队列一致性 | 修复停止后重播、load失败重试、替换当前队列时停止旧音频、completed去重与过期操作、Seek恢复新周期、error/failure一致性、load结束后dispose保护；新增16项回归，完整243项Flutter通过，见phase_4i_playback_consistency_report.md及Draft PR #25 |
 | GitHub APK交付 | Phase4A ec508df的唯一手动运行33848236710创建私有草稿Release；190735487字节APK的三资产、metadata、SHA256SUMS、API digest、48份包内资产、Manifest及v2单签名已独立复核 |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
 | Flutter format/analyze/test | Phase4H格式检查152文件零变化、严格分析0问题、完整227项含32张Windows宿主Golden全部通过；35项Node和24项ZIP通过。较Phase4G减少的5项仅为已删除候选适配器Fake测试 |
@@ -47,7 +47,7 @@
 下方Phase4F/4H的“当前远程会话无端点”仅保留为历史环境结果，不再代表当前本机状态。
 本机Windows Debug实际重试仍失败于Flutter插件symlink权限；未找到可用Visual Studio C++安装。
 当前分支为`fix/playback-session-consistency`，基于远端`58398ea`；不进入Phase5、不接生产音频。
-Phase4I最终严格分析0问题、242项Flutter通过；GitHub目标提交结果见本批报告。
+Phase4I最终严格分析0问题、243项Flutter通过；GitHub目标提交结果见Draft PR #25检查及正文。
 
 1. 已执行安全归档：13个旧原型文件移入archive/sonic_gallery，指纹一致，f96197b保存；根lib是新骨架，不再是旧代码。
 2. 用户已批准补足工具链；Android命令行工具/API36/35、NDK及项目要求的CMake已安装，Windows C++安装等待UAC确认。GitHub Windows2025/Android的Phase3H Debug构建均已成功，但云端成功不等于本机Windows构建或安装验收。未批量接受所有Android许可。

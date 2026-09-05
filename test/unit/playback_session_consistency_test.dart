@@ -170,6 +170,23 @@ void main() {
     expect(resolver.resolved, [tracks[0].ref]);
   });
 
+  test('native playback resumed by seek accepts its next completion', () async {
+    await controller.play();
+    final seeked = controller.seek(const Duration(seconds: 1));
+    engine.complete();
+    await seeked;
+    engine.events.add(
+      AudioEngineState(
+        phase: AudioEnginePhase.playing,
+        position: const Duration(seconds: 1),
+      ),
+    );
+    engine.complete();
+    await _drain();
+    expect(controller.state.queue.currentEntryId, 'b');
+    expect(resolver.resolved, [tracks[0].ref, tracks[1].ref]);
+  });
+
   test(
     'repeat one consumes duplicates but accepts the next real cycle',
     () async {
