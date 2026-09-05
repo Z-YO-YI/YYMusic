@@ -7,7 +7,8 @@ Future<void> closeGraph(WidgetTester tester, DependencyGraph graph) async {
   final closing = graph.close().then((_) => closed = true);
   for (var i = 0; i < 12 && !closed; i++) {
     await tester.runAsync(() => Future<void>.delayed(Duration.zero));
-    await tester.pump();
+    // A duration also advances zero-delay event tasks registered during dispose.
+    await tester.pump(Duration.zero);
   }
   expect(
     closed,

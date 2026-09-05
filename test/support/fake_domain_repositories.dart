@@ -155,6 +155,8 @@ final class FakeCollectionRepository implements CollectionRepository {
   List<PlayHistoryEntry> _history;
   Future<void>? favoriteGate;
   int favoriteWriteCount = 0;
+  int favoriteWatchCount = 0;
+  Stream<List<FavoriteEntry>> Function()? favoriteReader;
   int disposeCount = 0;
 
   @override
@@ -219,7 +221,12 @@ final class FakeCollectionRepository implements CollectionRepository {
   }
 
   @override
-  Stream<List<FavoriteEntry>> watchFavorites() async* {
+  Stream<List<FavoriteEntry>> watchFavorites() {
+    favoriteWatchCount++;
+    return favoriteReader?.call() ?? _watchFavoriteChanges();
+  }
+
+  Stream<List<FavoriteEntry>> _watchFavoriteChanges() async* {
     yield List.unmodifiable(_favorites);
     yield* _favoriteChanges.stream;
   }

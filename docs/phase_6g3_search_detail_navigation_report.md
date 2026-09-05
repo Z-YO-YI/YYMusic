@@ -49,6 +49,12 @@ ZIP/源码/包内许可脚本、`flutter build apk --debug --no-pub`、`apksigne
 本批独立提交推送后以`codex/catalog-detail-surfaces`为base建立stacked Draft PR，精确提交
 的云端源码/Android/Windows结果在PR记录，不将前置或本地通过当作本提交云端通过。
 
+后续核验：实现`4386bd425ac1751fc1a83205fe86c9c0e13beb3c`的
+[push33990865572](https://github.com/Z-YO-YI/YYMusic/actions/runs/33990865572)与
+[PR33990924357](https://github.com/Z-YO-YI/YYMusic/actions/runs/33990924357)均completed/success；
+两组checks、Android Debug、Windows native build逐job成功。两项专用原生音频job为skipped，
+不计新增音频证据。对应[Draft PR #44](https://github.com/Z-YO-YI/YYMusic/pull/44)保持开放未合并。
+
 下一步先核验此提交GitHub双平台，再补详情曲目收藏/原生菜单及关闭期间写入排空。
 歌单管理、本地导入/恢复、REST、完整播放器/歌词、设置与发行仍未完成，默认新安装是真实空库。
 本机Windows C++/Debug CRT限制未改变，Windows继续由GitHub构建；没有新音频实机验收。

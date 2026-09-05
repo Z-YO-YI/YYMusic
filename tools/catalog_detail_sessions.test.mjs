@@ -4,7 +4,7 @@ import { read, walk } from './design_audit.mjs';
 
 test('detail sessions read scoped catalog contracts without owning storage, engines or fixtures', () => {
   for (const path of walk('lib/features/catalog_detail').filter(path => path.endsWith('.dart'))) {
-    assert(!/AppDatabase|Drift|dart:io|AudioEngine|PlaybackController\(|Fake|Fixture|WebView|credentialRef|baseUrl|localPath|\.network\(|watchTracks\(|upsertTracks|setFavorite/.test(read(path)), path);
+    assert(!/AppDatabase|Drift|dart:io|AudioEngine|PlaybackController\(|Fake|Fixture|WebView|credentialRef|baseUrl|localPath|\.network\(|watchTracks\(|upsertTracks/.test(read(path)), path);
   }
   const controller = read('lib/features/catalog_detail/common/catalog_detail_controller.dart');
   for (const method of ['getAlbum', 'getArtist', 'browseTracks', 'browseAlbums']) {
@@ -49,7 +49,8 @@ test('detail routes keep native state above app-provided chrome and scroll ident
   }
   const screen = read('lib/features/catalog_detail/common/catalog_detail_screen.dart');
   assert.match(screen, /controller = widget.sessions.open\(widget.target\)/);
-  assert.match(screen, /controller.setActive\(TickerMode.valuesOf\(context\).enabled\)/);
+  assert.match(screen, /final active = TickerMode.valuesOf\(context\).enabled/);
+  assert.match(screen, /controller.setActive\(active\)/);
   assert.match(screen, /controller.close\(\)/);
 });
 
@@ -59,9 +60,37 @@ test('detail actions borrow root playback and expose honest availability without
   assert.match(controller, /canPlay: \(\) => !_disposed && _active && intent == _intent/);
   assert.match(controller, /_sources\?\.getSource\(target.sourceId\)/);
   const sections = read('lib/features/catalog_detail/common/catalog_detail_sections.dart');
-  assert.match(sections, /showMore: false/);
+  assert.match(sections, /onMore: \(\) => menu\(track\)/);
+  assert.match(sections, /allowMoreWhenDisabled: true/);
   assert.match(sections, /sourceLabel: _availability\(track\)/);
   assert.match(sections, /ArtistRef\(sourceId: album.sourceId, artistId: credit.id\)/);
   assert.match(sections, /navigation.openAlbum\(album.ref\)/);
   assert(!/Material|Cupertino|LinearGradient|Image\.network/.test(sections));
+});
+
+test('detail favorites are lazy borrowed projections whose subscription work is registered and drained', () => {
+  const graph = read('lib/app/dependency_graph.dart');
+  assert.match(graph, /catalogDetails = CatalogDetailSessions\([\s\S]*?collection: this.collection/);
+  const controller = read('lib/features/catalog_detail/common/catalog_detail_controller.dart');
+  assert.match(controller, /_collection!\.setFavorite\(reference, favorite: next\)/);
+  assert.match(controller, /canOpenActions\(reference\) && !_busy && _favorites.ready/);
+  assert.match(controller, /_favorites.close\(\);[\s\S]*?Future.wait<void>\(_pending\)/);
+  const favorites = read('lib/features/catalog_detail/common/catalog_detail_favorites.dart');
+  assert.match(favorites, /unawaited\([\s\S]*?_track\(\(\) async/);
+  assert.match(favorites, /_current\(generation\)/);
+  assert.match(favorites, /await subscription.cancel\(\)/);
+  assert.match(favorites, /ready = false/);
+  assert.match(favorites, /onDone: \(\) => _failed\(generation\)/);
+});
+
+test('native detail menu actions remain controlled and dismiss before route navigation', () => {
+  const menu = read('lib/features/catalog_detail/common/catalog_detail_track_menu.dart');
+  assert.match(menu, /YYContextMenu\(/);
+  for (const id of ['play', 'favorite', 'retry-favorites', 'close']) assert(menu.includes(`id: '${id}'`));
+  assert(!/setFavorite\(|watchFavorites\(|showDialog|showModalBottomSheet|Material/.test(menu));
+  const screen = read('lib/features/catalog_detail/common/catalog_detail_screen.dart');
+  assert.match(screen, /controller.prepareTrackActions\(\)/);
+  assert.match(screen, /canPop: track == null/);
+  assert.match(screen, /ExcludeFocus\([\s\S]*?excluding: track != null/);
+  assert.match(screen, /focus\?\.context != null/);
 });

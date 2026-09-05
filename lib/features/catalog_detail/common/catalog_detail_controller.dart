@@ -4,16 +4,19 @@ import 'package:flutter/foundation.dart';
 
 import '../../../domain/models/catalog_browse.dart';
 import '../../../domain/models/catalog_search.dart';
+import '../../../domain/models/collection_models.dart';
 import '../../../domain/models/domain_failure.dart';
 import '../../../domain/models/library_entities.dart';
 import '../../../domain/models/load_state.dart';
 import '../../../domain/models/pagination.dart';
 import '../../../domain/models/track.dart';
 import '../../../domain/repositories/catalog_browse_repository.dart';
+import '../../../domain/repositories/collection_repository.dart';
 import '../../../domain/repositories/music_source_repository.dart';
 import '../../../playback/playback_controller.dart';
 import 'catalog_detail_state.dart';
 
+part 'catalog_detail_favorites.dart';
 part 'catalog_detail_sessions.dart';
 
 final class _DetailBuffer<T> {
@@ -35,12 +38,15 @@ final class CatalogDetailController extends ChangeNotifier {
     this._onClosed,
     this._playback,
     this._sources,
+    this._collection,
   );
   final CatalogDetailTarget target;
   final CatalogBrowseRepository? _repository;
   final VoidCallback _onClosed;
   final PlaybackController? _playback;
   final MusicSourceRepository? _sources;
+  final CollectionRepository? _collection;
+  late final _favorites = _DetailFavorites(_collection, _notify, _track);
   final _tracks = _DetailBuffer<Track>();
   final _albums = _DetailBuffer<Album>();
   final _pending = <Future<void>>{};
@@ -50,13 +56,16 @@ final class CatalogDetailController extends ChangeNotifier {
   CatalogDetailPage<Track> get tracks => _tracks.state;
   CatalogDetailPage<Album> get albums => _albums.state;
   bool _disposed = false, _started = false;
-  bool _active = true, _playing = false;
+  bool _active = true, _busy = false;
   int _intent = 0, _revision = 0;
   String _sourceLabel = '来源未配置';
   String? _actionError;
   String get sourceLabel => _sourceLabel;
   String? get actionError => _actionError;
-  bool get busy => _playing;
+  bool get busy => _busy;
+  bool get favoritesReady => _favorites.ready;
+  String? get favoriteError => _favorites.error;
+  bool isFavorite(TrackRef reference) => _favorites.contains(reference);
   int get revision => _revision;
   Future<void>? _initialLoad, _closeFuture;
 
@@ -149,7 +158,7 @@ final class CatalogDetailController extends ChangeNotifier {
   bool canPlay(TrackRef reference) =>
       !_disposed &&
       _active &&
-      !_playing &&
+      !_busy &&
       (_playback?.isAvailable ?? false) &&
       tracks.items.any(
         (track) =>
@@ -161,7 +170,7 @@ final class CatalogDetailController extends ChangeNotifier {
   Future<void> play(TrackRef reference) {
     if (!canPlay(reference)) return Future.value();
     final intent = _intent;
-    _playing = true;
+    _busy = true;
     _actionError = null;
     final operation = _track(() async {
       try {
@@ -172,7 +181,42 @@ final class CatalogDetailController extends ChangeNotifier {
       } catch (_) {
         if (!_disposed && intent == _intent) _actionError = '播放未完成，请重试。';
       } finally {
-        _playing = false;
+        _busy = false;
+        _notify();
+      }
+    });
+    _notify();
+    return operation;
+  }
+
+  bool canOpenActions(TrackRef reference) =>
+      !_disposed &&
+      _active &&
+      tracks.items.any((track) => track.ref == reference);
+  bool canFavorite(TrackRef reference) =>
+      canOpenActions(reference) && !_busy && _favorites.ready;
+  void prepareTrackActions() {
+    if (!_disposed && _active) _favorites.start();
+  }
+
+  void retryFavorites() {
+    if (!_disposed && _active) _favorites.retry();
+  }
+
+  /// Accepted writes drain even if this route is refreshed, covered or closed.
+  Future<void> toggleFavorite(TrackRef reference) {
+    if (!canFavorite(reference)) return Future.value();
+    final next = !isFavorite(reference);
+    _busy = true;
+    _actionError = null;
+    final operation = _track(() async {
+      try {
+        await _collection!.setFavorite(reference, favorite: next);
+        _favorites.retry();
+      } catch (_) {
+        if (!_disposed) _actionError = '收藏未完成，请重试。';
+      } finally {
+        _busy = false;
         _notify();
       }
     });
@@ -333,6 +377,7 @@ final class CatalogDetailController extends ChangeNotifier {
     _headerToken.cancel();
     _tracks.token.cancel();
     _albums.token.cancel();
+    _favorites.close();
     super.dispose();
     _closeFuture = Future.wait<void>(_pending).then((_) {
       _onClosed();
