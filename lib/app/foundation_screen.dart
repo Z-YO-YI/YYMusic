@@ -15,11 +15,13 @@ class FoundationScreen extends StatefulWidget {
     required this.navigation,
     required this.viewState,
     this.showDesignGallery = false,
+    this.audioBackendSelected = false,
   });
   final AppRoute route;
   final AppNavigation navigation;
   final AppViewState viewState;
   final bool showDesignGallery;
+  final bool audioBackendSelected;
 
   @override
   State<FoundationScreen> createState() => _FoundationScreenState();
@@ -110,7 +112,11 @@ class _FoundationScreenState extends State<FoundationScreen> {
               ],
             ),
             const SizedBox(height: 24),
-            const Text('播放状态：不可用；未选择音频后端。'),
+            Text(
+              widget.audioBackendSelected
+                  ? '音频后端已接入；业务播放入口尚未实现。'
+                  : '播放状态：不可用；未选择音频后端。',
+            ),
             const SizedBox(height: 12),
             const Text('曲库、在线来源及凭据存储：尚未接入。'),
             const SizedBox(height: 12),

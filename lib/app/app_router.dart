@@ -20,12 +20,14 @@ final class AppRouter implements AppNavigation {
     required AppViewState viewState,
     String initialLocation = '/home',
     LicenseRepository licenses = const FlutterLicenseRepository(),
+    bool audioBackendSelected = false,
   }) {
     Widget screen(AppRoute route) => FoundationScreen(
       route: route,
       navigation: this,
       viewState: viewState,
       showDesignGallery: route.isMain,
+      audioBackendSelected: audioBackendSelected,
     );
     _router = GoRouter(
       initialLocation: initialLocation,

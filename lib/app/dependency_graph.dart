@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../design_system/yy_theme.dart';
+import '../domain/models/domain_failure.dart';
 import '../domain/repositories/collection_repository.dart';
 import '../domain/repositories/library_repository.dart';
 import '../domain/repositories/license_repository.dart';
@@ -73,24 +74,46 @@ final class DependencyGraph {
   final appearance = YYAppearanceController();
   late final PlaybackController playback;
   late final QueueController queue;
-  bool _disposed = false;
+  Future<void>? _closeFuture;
 
   Future<void> initialize() => playback.initialize();
 
   void dispose() {
-    if (_disposed) return;
-    _disposed = true;
+    unawaited(close().catchError((Object _) {}));
+  }
+
+  /// Stops commands immediately and drains users of data before closing storage.
+  Future<void> close() {
+    final existing = _closeFuture;
+    if (existing != null) return existing;
     queue.dispose();
     playback.dispose();
     appearance.dispose();
-    unawaited(_audioEngine.dispose());
-    unawaited(_mediaSession.dispose());
-    final services = dataServices;
-    if (services != null) {
-      unawaited(services.dispose());
-    } else {
-      final repository = library;
-      if (repository != null) unawaited(repository.dispose());
+    return _closeFuture = _closeOwnedResources();
+  }
+
+  Future<void> _closeOwnedResources() async {
+    var failed = false;
+    for (final release in <Future<void> Function()>[
+      playback.close,
+      _audioEngine.dispose,
+      _mediaSession.dispose,
+      if (dataServices case final services?)
+        services.dispose
+      else if (library case final repository?)
+        repository.dispose,
+    ]) {
+      try {
+        await release();
+      } catch (_) {
+        failed = true;
+      }
+    }
+    if (failed) {
+      throw DomainFailure(
+        code: DomainFailureCode.unknown,
+        diagnosticId: 'app.shutdown-failed',
+      );
     }
   }
 }

@@ -135,7 +135,7 @@ test('domain contracts stay independent and UI has no direct data access', () =>
   const bootstrap = read('lib/app/app_bootstrap.dart');
   assert(!/DriftLibraryRepository|DriftCollectionRepository|DriftLyricsRepository|DriftMusicSourceRepository|AppDatabase|AndroidSecureCredentialGateway|WindowsSecureCredentialGateway|FlutterSecureStorage/.test(bootstrap), 'Phase 3H bootstrap must use the app data composition boundary');
   assert.match(bootstrap, /createProductionAppDataServices/);
-  assert.match(bootstrap, /YYMusic 无法初始化本地数据/);
+  assert.match(bootstrap, /YYMusic 无法初始化应用/);
   assert(!/package:(drift|sqlite3|flutter_secure_storage)\//.test(bootstrap));
 
   const dataComposition = read('lib/app/database_app_data_services.dart');

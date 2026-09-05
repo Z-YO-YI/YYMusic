@@ -1,11 +1,11 @@
 # 实施状态
 
-当前增量Phase4O：设置中的原生许可查看页已实现，支持 SDK/Android 原生完整文本、搜索、返回、
-失败重试与 130% 字号。270 Flutter（35 Golden）/56 Node、格式/分析和 Android Debug 通过。
-当前分支`codex/audio-license-viewer`，详见[Phase4O报告](phase_4o_license_viewer_report.md)。
-前置 Phase4N 的 `f324ed2` push/PR 两组 checks/Android/Windows 全部成功，实际包内许可日志已复核。
+当前增量Phase4P：默认 Bootstrap 已接 just_audio/Windows WinRT 单实例；本地来源解析、
+根获取失败清理和 Controller/Graph 有序异步关闭已实现。282 Flutter（35 Golden）/57 Node、严格分析通过。
+当前分支`codex/production-audio-bootstrap`，详见[Phase4P报告](phase_4p_production_audio_report.md)。
+前置 Phase4O 的 `60a79c7` push/PR 两组 checks/Android/Windows 全部成功，Draft PR #31 未合并。
 
-更新：2026-09-05。当前在 Phase 4 播放基础验证；Phase 0—3 已有实现与审计产物，Phase 2 仍欠网页截图对照。Phase4L 已在同一实现提交验证 Android WAV/content URI/HTTPS 与 Windows WAV/HTTPS。Phase4G 的 `media_kit` 分发审计未通过，Phase4H 已移除该活动候选。许可材料与查看入口已实现，生产仍为 `UnavailableAudioEngine`，最终工程选型、正式业务页面、播放器接线及 Phase 5—11 未完成，不能作为可用音乐应用交付。
+更新：2026-09-05。当前在 Phase 4 播放基础实现；Phase 0—3 已有实现与审计产物，Phase 2 仍欠网页截图对照。Phase4L 已在同一实现提交验证 Android WAV/content URI/HTTPS 与 Windows WAV/HTTPS。Phase4G 的 `media_kit` 分发审计未通过，Phase4H 已移除该活动候选。许可材料、查看入口及 ADR-044 工程选型已完成，默认入口不再使用 UnavailableAudioEngine；独立测试 Graph/main_dev 仍保留不可用后端。正式 Shell 可见控件、业务页面与 Phase5—11 未完成，不能作为可用音乐应用交付。下文旧阶段的未接线描述保留历史归属。
 
 Phase4J最新增量：`25747bc`的GitHub Profile完整诊断包已在本机Windows进程连续两次通过原始本地WAV测试，
 此前Windows小批A运行证据已补齐；本机缺Debug CRT导致的`0xC0000135`没有被掩盖。

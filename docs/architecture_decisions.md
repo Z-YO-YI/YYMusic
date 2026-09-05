@@ -456,3 +456,21 @@ SDK条目保留全部段落内容，Android材料逐文档长度/SHA校验并按
 YYButton及自有Dialog/BottomSheet；不是Material LicensePage，不复制完整Settings功能。
 模态原文进入导航栈，返回先关原文再离开许可页；长文本在模态内部滚动。依赖由Graph注入，
 不在build启动异步请求，不保存第三方许可内容到数据库，不引入全局播放状态或媒体文件。
+
+## ADR-044：当前音频工程选型与根资源所有权（2026-09-05）
+
+选择锁定的 just_audio 0.10.6 + just_audio_windows 0.2.3（Media3/WinRT），
+依据 Phase4L 同实现双平台原生运行、Phase4M/N 源码/实际包内全文核验、Phase4O 可见许可入口。
+只批准当前无代理/Header 的工程接线；全应用发行仍未批准。更新六包清单的工程能力标志，
+但保持其六包覆盖范围和 releaseApproved=false，原生范围仍以独立 manifest 为准。
+
+新增 app 层 AudioEngineFactory，默认 Bootstrap 在数据作用域之后只创建一次后端，再移交 Graph。
+Widget 测试注入 Fake，main_dev 显式不可用；不按布局断点创建播放器。平台限定本地解析器只将
+已经由 Repository 提供的 Track 转为短期 PlayableSource，不读磁盘、访问网络或取得权限。
+Android 优先 content URI，回退绝对 POSIX 路径；Windows 接受驱动器绝对路径或明确 UNC 文件，
+拒绝设备命名空间、相对路径和跨平台引用。REST 必须等待 Adapter，不解析 metadata URL。
+
+PlaybackController.close() 同步停止接受命令/状态更新，并等待订阅取消、已有命令和媒体同步；
+Graph.close() 共享同一个 Future，逐项释放 engine/media/data，即使一项失败也继续，最后给固定
+app.shutdown-failed。dispose() 保留 Flutter 同步接口，安全启动关闭；有验证需求调用 close()。
+Bootstrap 获取资源期间的异常或晚到结果都执行清理，不展示原始路径/插件异常；恢复队列不自动播放。

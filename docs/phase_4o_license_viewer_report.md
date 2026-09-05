@@ -30,9 +30,13 @@ SDK 无归属文本组被拒绝以及许可弹层未继承打包字体。没有�
 - Android Debug：成功；48 设计资产、六个音频包 NOTICES.Z、原生许可资产均通过包内校验。
   APK 231,001,811 字节，SHA256 `0bfd62926c45ec6b3f83ad001c646d6f0bb1298b1536ebf769ad8d3c67aff042`。
   apksigner 验证 v2 有效，1 个 Debug 签名者；没有新发行签名。
-- Windows 本机未重新构建/运行，等待 GitHub 精确提交的 Windows Debug，不能用 Golden 替代。
+- Windows 本机未重新构建/运行；GitHub 精确提交的 Windows Debug 已通过，不能用 Golden 替代。
 
-提交、PR 与云端结果推送后按精确 SHA 记录。没有手动触发发布或创建 Release。
+实现 `60a79c7af54b30c9af09e883149fef27fdd8ed29` 已推送，Draft PR #31 未合并。
+push [33959483011](https://github.com/Z-YO-YI/YYMusic/actions/runs/33959483011) 和
+PR [33959503666](https://github.com/Z-YO-YI/YYMusic/actions/runs/33959503666) 均完成 success：
+checks/Android Debug/Windows Debug 全部通过；原生 POC skipped，不算新的播放运行。
+没有手动触发发布或创建 Release。
 这不是完整设置业务页、整体发行许可批准或应用上线；releaseApproved 仍为 false。
 生产仍为 UnavailableAudioEngine，下一批继续最终工程选型与真实音频根接线。
 Phase2 网页截图对照仍欠验收，不声称新增 Golden 与网页逐像素一致。

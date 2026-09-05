@@ -54,6 +54,8 @@ final class FakeMediaSessionGateway implements MediaSessionGateway {
   final List<TrackRef> metadata = [];
   final List<PlaybackState> states = [];
   int disposalCount = 0;
+  Future<void>? metadataGate;
+  Object? disposeError;
 
   @override
   bool get isAvailable => true;
@@ -68,6 +70,7 @@ final class FakeMediaSessionGateway implements MediaSessionGateway {
   Future<void> updateMetadata(Track track) async {
     metadata.add(track.ref);
     calls.add('metadata');
+    await metadataGate;
   }
 
   @override
@@ -83,5 +86,7 @@ final class FakeMediaSessionGateway implements MediaSessionGateway {
   Future<void> dispose() async {
     disposalCount++;
     calls.add('dispose');
+    final error = disposeError;
+    if (error != null) throw error;
   }
 }

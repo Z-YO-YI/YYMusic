@@ -6,8 +6,8 @@ import 'audio_engine_state.dart';
 import 'just_audio_backend.dart';
 import 'playable_source.dart';
 
-/// Isolated Phase 4E candidate. Production bootstrap must not create it until
-/// native comparison and redistribution review are complete.
+/// Selected in ADR-044 after native comparison and packaged notice verification.
+/// Plugin types remain confined to the backend; app release approval is separate.
 final class JustAudioEngine implements AudioEngine {
   factory JustAudioEngine.create({
     required bool useProxyForRequestHeaders,
