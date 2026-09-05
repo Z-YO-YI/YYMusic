@@ -330,3 +330,21 @@ Windows由生成注册门禁及GitHub干净portable bundle清单复核。该删�
 旧Android debug-only Provider、受控TLS生成器和HEAD探针是与候选无关的受控测试基础设施，可供后续来源
 验证复用；它们不接生产、不持久化响应、不加入release Manifest。Phase4H不进入Phase5，也不增加下载、
 缓存、离线保存、WebView、后台服务、SMTC/MediaSession或新权限。
+
+## ADR-038：队列元数据不等于已加载的播放会话（2026-09-05）
+
+Phase4I不改公共API。PlaybackController内部单独记录成功load的QueueEntry身份：stop或idle后
+保留当前曲目信息供UI显示，但后续play必须重新resolve/load；暂停恢复可复用已加载会话。
+load失败不能因为currentTrack非空而绕过重试加载。显式重播已完成项从零开始。
+
+队列替换、清空和移除共用提交路径：丢弃当前Entry身份或完整TrackRef前先stop，stop失败不写入新队列；
+保存队列失败保留原快照，已成功停止的音频不自动恢复。只重排且保留当前身份/引用时不中断音频。
+同一当前曲目的error phase与failure必须同时保留，不能清除failure却保留error phase。
+
+自动下一首绑定触发时的会话revision和Entry身份；一次完成只入队一次。手动选择、停止、暂停、Seek或
+新一轮播放使旧自动操作失效。完成后的重复快照仍可更新控制值，但更改循环模式不应把重复completed
+伪造为新播放周期。旧循环测试补显式重播，不移除随机/列表循环/单曲循环断言。
+
+dispose在异步曲目查询、来源解析、load返回后检查，已关闭Controller不再发起play。Controller仍不拥有
+Engine的dispose；根依赖释放职责不变。该门禁不宣称能识别一个没有来源身份的Engine流在新load完成后
+错误发送的旧曲快照；插件适配器仍须隔离自身过期事件。双平台原生POC和生产接线门禁保持不变。

@@ -12,6 +12,8 @@ final class FakeAudioEngine implements AudioEngine {
   final Duration? duration;
   PlayableSource? loadedSource;
   Object? loadError;
+  Object? stopError;
+  Future<void>? loadGate;
   Duration position = Duration.zero;
   Duration buffered = Duration.zero;
   double volume = 1;
@@ -25,6 +27,7 @@ final class FakeAudioEngine implements AudioEngine {
   @override
   Future<void> load(PlayableSource source) async {
     calls.add('load');
+    await loadGate;
     final error = loadError;
     if (error != null) throw error;
     loadedSource = source;
@@ -37,6 +40,7 @@ final class FakeAudioEngine implements AudioEngine {
   @override
   Future<void> play() async {
     calls.add('play');
+    if (loadedSource == null) throw StateError('No audio source is loaded');
     _emit(AudioEnginePhase.playing);
   }
 
@@ -49,6 +53,9 @@ final class FakeAudioEngine implements AudioEngine {
   @override
   Future<void> stop() async {
     calls.add('stop');
+    final error = stopError;
+    if (error != null) throw error;
+    loadedSource = null;
     position = Duration.zero;
     buffered = Duration.zero;
     _emit(AudioEnginePhase.idle);

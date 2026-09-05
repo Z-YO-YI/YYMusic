@@ -56,6 +56,10 @@ final class PlaybackController extends ChangeNotifier {
   int _shuffleCursor = -1;
   TrackRef? _mediaTrack;
   bool _mediaInitialized = false;
+  String? _loadedEntryId;
+  int _sessionRevision = 0;
+  bool _completionHandled = true;
+  bool _loadingSource = false;
   bool _disposed = false;
 
   PlaybackState get state => _state;
@@ -91,8 +95,15 @@ final class PlaybackController extends ChangeNotifier {
 
   Future<void> play() => _schedule(() async {
     _requireEngine();
-    if (_state.currentTrack != null) {
-      await _guarded('play', _engine.play);
+    if (_loadedEntryId != null &&
+        _loadedEntryId == _state.queue.currentEntryId &&
+        _state.phase != PlaybackPhase.error) {
+      await _guarded('play', () async {
+        if (_state.phase == PlaybackPhase.completed) {
+          await _engine.seek(Duration.zero);
+        }
+        await _startPlayback();
+      });
       return;
     }
     final entryId =
@@ -111,12 +122,13 @@ final class PlaybackController extends ChangeNotifier {
 
   Future<void> pause() => _schedule(() async {
     _requireEngine();
+    _sessionRevision++;
     await _guarded('pause', _engine.pause);
   });
 
   Future<void> stop() => _schedule(() async {
     _requireEngine();
-    await _guarded('stop', _engine.stop);
+    await _guarded('stop', _stopEngine);
   });
 
   Future<void> seek(Duration position) => _schedule(() async {
@@ -128,6 +140,7 @@ final class PlaybackController extends ChangeNotifier {
     final target = duration != null && position > duration
         ? duration
         : position;
+    _sessionRevision++;
     await _guarded('seek', () => _engine.seek(target));
   });
 
@@ -153,6 +166,7 @@ final class PlaybackController extends ChangeNotifier {
   Future<void> skipPrevious() => _schedule(() async {
     _requireEngine();
     if (_state.position > const Duration(seconds: 3)) {
+      _sessionRevision++;
       await _guarded('skip-previous-seek', () => _engine.seek(Duration.zero));
       return;
     }
@@ -229,9 +243,6 @@ final class PlaybackController extends ChangeNotifier {
       entries.removeAt(index);
       String? nextCurrent = _state.queue.currentEntryId;
       if (removedCurrent) {
-        if (_engine.isAvailable && _state.currentTrack != null) {
-          await _engine.stop();
-        }
         nextCurrent = entries.isEmpty
             ? null
             : entries[min(index, entries.length - 1)].id;
@@ -244,9 +255,6 @@ final class PlaybackController extends ChangeNotifier {
 
   Future<void> clearQueue() => _schedule(
     () => _guarded('queue-clear', () async {
-      if (_engine.isAvailable && _state.currentTrack != null) {
-        await _engine.stop();
-      }
       await _commitQueue(_snapshot(const []));
     }),
   );
@@ -271,6 +279,8 @@ final class PlaybackController extends ChangeNotifier {
     _requireEngine();
     try {
       final entry = _entry(entryId);
+      _sessionRevision++;
+      _completionHandled = true;
       final library = _libraryRepository;
       if (library == null) {
         throw DomainFailure(
@@ -280,6 +290,7 @@ final class PlaybackController extends ChangeNotifier {
         );
       }
       final track = await library.getTrack(entry.track);
+      _checkNotDisposed();
       if (track == null) throw _queueTrackMissing(entry.track);
       final availabilityFailure = _availabilityFailure(track);
       if (availabilityFailure != null) throw availabilityFailure;
@@ -292,6 +303,7 @@ final class PlaybackController extends ChangeNotifier {
         );
       }
       final source = await resolver.resolve(track);
+      _checkNotDisposed();
       if (source.track != track.ref) {
         throw DomainFailure(
           code: DomainFailureCode.schemaMismatch,
@@ -305,6 +317,9 @@ final class PlaybackController extends ChangeNotifier {
           rebuildShuffle: false,
         );
       }
+      // Explicit replay and error recovery must not retain a previous source.
+      if (_loadedEntryId != null) await _stopEngine();
+      _checkNotDisposed();
       _publish(
         _state.copyWith(
           phase: PlaybackPhase.loading,
@@ -316,9 +331,14 @@ final class PlaybackController extends ChangeNotifier {
         ),
       );
       _syncShuffleCursor(entryId);
+      _loadingSource = true;
       await _engine.load(source);
-      await _engine.play();
+      _loadingSource = false;
+      _checkNotDisposed();
+      _loadedEntryId = entryId;
+      await _startPlayback();
     } catch (error, stack) {
+      _loadingSource = false;
       final failure = _safeFailure(error, 'load-entry');
       _publish(_state.copyWith(phase: PlaybackPhase.error, failure: failure));
       Error.throwWithStackTrace(failure, stack);
@@ -330,7 +350,7 @@ final class PlaybackController extends ChangeNotifier {
     if (isAutomatic && _state.repeatMode == RepeatMode.one) {
       if (_state.currentTrack != null) {
         await _engine.seek(Duration.zero);
-        await _engine.play();
+        await _startPlayback();
       }
       return;
     }
@@ -382,6 +402,36 @@ final class PlaybackController extends ChangeNotifier {
 
   void _acceptEngineState(AudioEngineState value) {
     if (_disposed) return;
+    if (value.phase == AudioEnginePhase.completed && _loadedEntryId == null) {
+      return;
+    }
+    if (!_loadingSource &&
+        _loadedEntryId == null &&
+        value.phase != AudioEnginePhase.idle &&
+        value.phase != AudioEnginePhase.error) {
+      // Late media snapshots after stop cannot resurrect an unloaded session.
+      _publish(
+        _state.copyWith(volume: value.volume, playbackRate: value.playbackRate),
+      );
+      return;
+    }
+    if (value.phase == AudioEnginePhase.idle && !_loadingSource) {
+      _loadedEntryId = null;
+      _sessionRevision++;
+      _completionHandled = true;
+    }
+    if (value.phase == AudioEnginePhase.playing &&
+        _loadedEntryId != null &&
+        _completionHandled) {
+      // A seek may resume the native clock without another play command.
+      _sessionRevision++;
+      _completionHandled = false;
+    }
+    final revision = _sessionRevision;
+    final completedEntryId = _loadedEntryId;
+    final shouldAdvance =
+        value.phase == AudioEnginePhase.completed && !_completionHandled;
+    if (value.phase == AudioEnginePhase.completed) _completionHandled = true;
     final phase = switch (value.phase) {
       AudioEnginePhase.idle => PlaybackPhase.idle,
       AudioEnginePhase.loading => PlaybackPhase.loading,
@@ -403,13 +453,17 @@ final class PlaybackController extends ChangeNotifier {
         failure: value.failure,
       ),
     );
-    if (value.phase == AudioEnginePhase.completed) {
+    if (shouldAdvance) {
       unawaited(
         _schedule(
-          () => _guarded(
-            'auto-advance',
-            () => _advanceInternal(isAutomatic: true),
-          ),
+          () => _guarded('auto-advance', () async {
+            if (_sessionRevision != revision ||
+                _loadedEntryId != completedEntryId ||
+                _state.phase != PlaybackPhase.completed) {
+              return;
+            }
+            await _advanceInternal(isAutomatic: true);
+          }),
         ).catchError((Object _) {}),
       );
     }
@@ -419,22 +473,22 @@ final class PlaybackController extends ChangeNotifier {
     QueueSnapshot snapshot, {
     bool rebuildShuffle = true,
   }) async {
+    if (!_retainsCurrentTrack(snapshot) &&
+        _state.currentTrack != null &&
+        _engine.isAvailable) {
+      await _stopEngine();
+    }
+    _checkNotDisposed();
     final collection = _collectionRepository;
     if (collection != null) await collection.saveQueue(snapshot);
     _applyQueue(snapshot, rebuildShuffle: rebuildShuffle);
   }
 
   void _applyQueue(QueueSnapshot queue, {bool rebuildShuffle = true}) {
-    var currentTrack = _state.currentTrack;
+    final currentTrack = _retainsCurrentTrack(queue)
+        ? _state.currentTrack
+        : null;
     final currentId = queue.currentEntryId;
-    final previousCurrentId = _state.queue.currentEntryId;
-    if (currentTrack != null &&
-        (currentId == null ||
-            currentId != previousCurrentId ||
-            queue.entries.singleWhere((entry) => entry.id == currentId).track !=
-                currentTrack.ref)) {
-      currentTrack = null;
-    }
     _publish(
       _state.copyWith(
         phase: currentTrack == null ? PlaybackPhase.idle : _state.phase,
@@ -443,7 +497,7 @@ final class PlaybackController extends ChangeNotifier {
         buffered: currentTrack == null ? Duration.zero : _state.buffered,
         duration: currentTrack == null ? null : _state.duration,
         queue: queue,
-        failure: null,
+        failure: currentTrack == null ? null : _state.failure,
       ),
     );
     if (_state.shuffleEnabled) {
@@ -453,6 +507,34 @@ final class PlaybackController extends ChangeNotifier {
         _syncShuffleCursor(currentId);
       }
     }
+  }
+
+  bool _retainsCurrentTrack(QueueSnapshot queue) {
+    final currentTrack = _state.currentTrack;
+    final currentId = queue.currentEntryId;
+    return currentTrack != null &&
+        currentId == _state.queue.currentEntryId &&
+        queue.entries.any(
+          (entry) => entry.id == currentId && entry.track == currentTrack.ref,
+        );
+  }
+
+  Future<void> _startPlayback() async {
+    _checkNotDisposed();
+    _sessionRevision++;
+    _completionHandled = false;
+    await _engine.play();
+  }
+
+  Future<void> _stopEngine() async {
+    _sessionRevision++;
+    _completionHandled = true;
+    await _engine.stop();
+    _loadedEntryId = null;
+  }
+
+  void _checkNotDisposed() {
+    if (_disposed) throw StateError('PlaybackController is disposed');
   }
 
   void _rebuildShuffleOrder() {

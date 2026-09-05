@@ -15,6 +15,8 @@ import 'package:yymusic/shells/android_tablet_shell.dart';
 import 'package:yymusic/shells/windows_shell.dart';
 
 import '../support/fake_audio_engine.dart';
+import '../support/fake_domain_repositories.dart';
+import '../support/fake_playback_dependencies.dart';
 
 Future<void> mount(
   WidgetTester tester, {
@@ -101,7 +103,14 @@ void main() {
     'Android resizing and routes preserve one graph, playback and selection',
     (tester) async {
       final engine = FakeAudioEngine();
-      final graph = DependencyGraph(audioEngine: engine);
+      final graph = DependencyGraph(
+        audioEngine: engine,
+        library: FakeLibraryRepository(tracks: [playbackFixtureTrack]),
+        playbackSourceResolver: FakePlaybackSourceResolver(),
+      );
+      await graph.initialize();
+      await graph.queue.replace([playbackFixtureEntry()]);
+      await graph.playback.play();
       await mount(
         tester,
         platform: YYPlatform.android,

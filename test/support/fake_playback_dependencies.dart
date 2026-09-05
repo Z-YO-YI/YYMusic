@@ -1,9 +1,26 @@
+import 'package:yymusic/domain/models/collection_models.dart';
 import 'package:yymusic/domain/models/domain_failure.dart';
 import 'package:yymusic/domain/models/track.dart';
 import 'package:yymusic/platform/contracts/media_session_gateway.dart';
 import 'package:yymusic/playback/playable_source.dart';
 import 'package:yymusic/playback/playback_source_resolver.dart';
 import 'package:yymusic/playback/playback_state.dart';
+
+final playbackFixtureTrack = Track(
+  id: 'graph-fixture',
+  sourceId: 'test-only',
+  sourceType: MusicSourceType.rest,
+  title: 'Graph playback fixture',
+  artists: const ['Test'],
+  duration: const Duration(minutes: 3),
+);
+
+QueueEntry playbackFixtureEntry() => QueueEntry(
+  id: 'graph-fixture-entry',
+  track: playbackFixtureTrack.ref,
+  position: 0,
+  addedAt: DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+);
 
 final class FakePlaybackSourceResolver implements PlaybackSourceResolver {
   FakePlaybackSourceResolver({this.failure});
