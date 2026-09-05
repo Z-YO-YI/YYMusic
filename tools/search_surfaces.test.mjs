@@ -20,7 +20,9 @@ test('native search borrows contracts and has separate virtualized layouts', () 
 test('search keeps bounded independent generations and drains before storage', () => {
   const controller = read('lib/features/search/common/search_controller.dart');
   assert.match(controller, /Duration\(milliseconds: 300\)/);
-  assert.match(controller, /PageRequest\(offset: _offset, limit: 20\)/);
+  assert.match(controller, /final limit = \(200 - _offset\).clamp\(1, 20\)/);
+  assert.match(controller, /PageRequest\(offset: _offset, limit: limit\)/);
+  assert.match(controller, /page.items.take\(limit\)/);
   assert.match(controller, /_offset >= 200/);
   assert.match(controller, /_token.cancel\(\)/);
   assert.match(controller, /_historyTail.then/);

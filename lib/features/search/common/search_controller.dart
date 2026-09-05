@@ -74,14 +74,15 @@ final class SearchBucket<T extends Object> {
     try {
       final fetch = _fetch;
       if (fetch == null) throw StateError('Catalog unavailable');
+      final limit = (200 - _offset).clamp(1, 20);
       final page = await fetch(
         CatalogQuery(text, sourceType: sourceType),
-        PageRequest(offset: _offset, limit: 20),
+        PageRequest(offset: _offset, limit: limit),
         cancellation: token,
       );
       if (token.isCancelled) return;
       // Defend the bounded projection even against a misbehaving adapter.
-      final raw = page.items.take(20).toList();
+      final raw = page.items.take(limit).toList();
       final seen = _items.map(_identity).toSet();
       _items = List<T>.unmodifiable([
         ..._items,
