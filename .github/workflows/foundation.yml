@@ -2,7 +2,7 @@ name: Native foundation
 
 on:
   push:
-    branches: ['feat/**', 'fix/**', 'main', 'master']
+    branches: ['feat/**', 'fix/**', 'refactor/**', 'docs/**', 'main', 'master']
   pull_request:
   workflow_dispatch:
     inputs:

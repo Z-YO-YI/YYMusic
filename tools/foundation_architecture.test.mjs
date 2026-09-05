@@ -273,6 +273,7 @@ test('native runners are branded and Android release does not use debug signing'
 test('CI validates both debug targets with least-privileged, pinned actions', () => {
   const workflow = read('.github/workflows/foundation.yml');
   assert.match(workflow, /contents: read/);
+  assert.match(workflow, /branches: \['feat\/\*\*', 'fix\/\*\*', 'refactor\/\*\*', 'docs\/\*\*', 'main', 'master'\]/);
   assert.match(workflow, /flutter build windows --debug --no-pub/);
   assert.match(workflow, /flutter build apk --debug --no-pub/);
   assert.match(workflow, /dart run build_runner build/);
