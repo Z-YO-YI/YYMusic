@@ -10,6 +10,7 @@ Phase4D实现提交`913f3d75`增加HEAD-only脱敏网络探针、Android debug-o
 
 ## 开发入口
 
+- [Phase 4K Android本地来源原生验证计划](docs/phase_4k_android_native_sources_plan.md)：当前批次复跑 WAV，并补只读 content URI 的失败、恢复与生命周期测试；结果以报告为准，不将待运行计为通过。
 - [Phase 4J Windows原生诊断计划与运行方式](docs/phase_4j_windows_native_validation_plan.md)、[本批报告](docs/phase_4j_windows_native_validation_report.md)
 - [Phase 4I播放会话计划](docs/phase_4i_playback_consistency_plan.md)、[本批报告](docs/phase_4i_playback_consistency_report.md)
 - [Phase 4H media_kit候选移除计划](docs/phase_4h_media_kit_candidate_removal_plan.md)、[本批报告](docs/phase_4h_media_kit_candidate_removal_report.md)、[本批 PR 草稿](docs/phase_4h_media_kit_candidate_removal_pr_draft.md)

@@ -1,11 +1,11 @@
 # 实施状态
 
-更新：2026-09-05。用户要求持续开发并同步Windows，Android APK仍由GitHub构建。Phase 3及Phase4A—4E已关闭；Phase4F完成Android `just_audio`真实native本地WAV但缺Windows播放端点。Phase4G完成`media_kit`原生产物/来源审计并失败关闭，Phase4H已进一步从活动依赖、源码、生成注册和CI移除该候选，历史证据继续保留。两个候选都未接生产；下一批只能继续`just_audio`剩余验收或推进与音频选型解耦的能力，不能绕过门禁。
+更新：2026-09-05。当前在 Phase 4 播放基础验证；Phase 0—3 已有实现与审计产物，Phase 2 仍欠网页截图对照。Phase4J 已补 Windows `just_audio` 真实本地 WAV 运行。Phase4G 的 `media_kit` 分发审计未通过，Phase4H 已移除该活动候选。生产仍为 `UnavailableAudioEngine`，正式业务页面、播放器接线及 Phase 5—11 未完成，不能作为可用音乐应用交付。
 
 Phase4J最新增量：`25747bc`的GitHub Profile完整诊断包已在本机Windows进程连续两次通过原始本地WAV测试，
 此前Windows小批A运行证据已补齐；本机缺Debug CRT导致的`0xC0000135`没有被掩盖。
-该提交的GitHub Android/Windows Debug均成功。当前为`codex/windows-native-audio-validation`、Draft PR #26。
-Phase4F整体仍未关闭：Android需在当前候选组合上复跑，无Header HTTPS/content URI、最终选型和正式接线待完成。
+该提交的GitHub Android/Windows Debug均成功，对应 Draft PR #26；最后文档提交 `ca7b69d` 的两组 CI 也已成功。
+当前批次为 `codex/android-native-source-validation` 的 Phase4K：复跑当前 Android WAV，补 content URI 的失败恢复和生命周期；原生结果尚待 GitHub 实测。Phase4F整体仍未关闭，无Header HTTPS、最终选型和正式接线待完成。
 下文无端点/旧分支描述保留历史归属，以本段及[Phase4J报告](phase_4j_windows_native_validation_report.md)为当前状态。
 
 | 阶段/能力 | 状态 |
@@ -43,6 +43,7 @@ Phase4F整体仍未关闭：Android需在当前候选组合上复跑，无Header
 | 后续页面、歌词、导入、来源、平台集成 | 未开始 |
 | Phase 4I 播放会话/队列一致性 | 修复停止后重播、load失败重试、替换当前队列时停止旧音频、completed去重与过期操作、Seek恢复新周期、error/failure一致性、load结束后dispose保护；新增16项回归，完整243项Flutter通过，见phase_4i_playback_consistency_report.md及Draft PR #25 |
 | Phase 4J Windows本机原生验证 | GitHub完整Profile包在本机两次真实WAV通过；248项Flutter、43项Node、源码指纹、严格分析和实现提交的GitHub双平台Debug通过。正式入口不变，见phase_4j_windows_native_validation_report.md |
+| Phase 4K Android本地来源 | 当前批次新增隔离的 content URI 失败/恢复/播放/释放集成测试，复用原始 WAV 测试；CI 增加默认 both 的显式平台选择，本地 249 项 Flutter / 44 项 Node 通过，原生 CI 待运行，见 phase_4k_android_native_sources_plan.md |
 | GitHub APK交付 | Phase4A ec508df的唯一手动运行33848236710创建私有草稿Release；190735487字节APK的三资产、metadata、SHA256SUMS、API digest、48份包内资产、Manifest及v2单签名已独立复核 |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
 | Flutter format/analyze/test | Phase4H格式检查152文件零变化、严格分析0问题、完整227项含32张Windows宿主Golden全部通过；35项Node和24项ZIP通过。较Phase4G减少的5项仅为已删除候选适配器Fake测试 |

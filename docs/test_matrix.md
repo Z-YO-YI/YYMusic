@@ -50,7 +50,14 @@ Phase4H删除已拒绝media_kit适配器的5项Fake测试后，保留227项Flutt
 
 `.github/workflows/foundation.yml`：checks 在 Ubuntu24.04 跑 Node/PowerShell 源核验、Dart格式/严格分析/Flutter测试；checks 成功后独立 Windows2025 Debug 和 Ubuntu Android Debug 构建。push feat/fix/refactor/docs、PR或手动运行触发，超时20/30分钟。Android执行验签/48文件比对/三文件白名单和被拒绝原生库排除；只有手动workflow_dispatch在全部门禁后创建私有draft/prerelease，普通push/PR不创建下载产物。个人令牌不注入runner，checkout不保留凭据。
 
-`.github/workflows/foundation.yml`只保留`run_just_audio_poc`手动输入；显式设为`true`后才在Windows 2025和Ubuntu 24.04 Android API36 x86_64模拟器运行同一生成WAV测试，并跳过具有写权限的Android发布job。Windows先要求真实播放端点，缺失即失败关闭。Emulator action固定完整提交SHA；native路径不使用Secret、不上传artifact、不构建/发布APK且不创建Release。普通push的Windows Debug另上传保留14天的完整portable bundle，PR不重复上传。结果只适用于被触发的精确提交。
+`.github/workflows/foundation.yml` 的 `run_just_audio_poc` 默认 false，只有手动设为 true 才运行原生测试。
+Phase4K 增加 `just_audio_poc_platform=both|android|windows`（默认 both）；它只缩小明确选择的测试范围，
+不改变发布权限，不把另一平台 skipped 计为通过。Windows 先要求真实播放端点，缺失即失败关闭，仍运行原始 WAV。
+Android API36 x86_64 运行原始 WAV 加 Debug-only content URI 缺失/同引擎恢复/播放/seek/completed/释放测试。
+原生模式跳过常规构建/发布，不使用 Secret、不上传 artifact、不创建 Release。
+另有默认关闭且与原生模式互斥的 `build_windows_audio_probe`，只生成保留一天的 Windows Profile 诊断包。
+普通 push 的 Windows Debug 包保留14天，需要 Debug CRT，不是通用 portable 发行包；PR 不重复上传。
+所有结果只适用于被触发的精确提交，原生测试用 APK 在模拟器临时构建安装，不作为交付物上传。
 
 Phase4E修复提交`a2b517b`的PR运行33936726367与push运行33936724989均完成checks、Windows Debug和Android Debug。push的Windows Debug artifact按既有策略保留14天；Android签名/48资产/打包成功但Release步骤skipped，匹配新Release为0。该证据只证明备用候选编译/打包，不证明native播放。
 
