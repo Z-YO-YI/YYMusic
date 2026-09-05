@@ -2,18 +2,26 @@ import 'dart:async';
 
 import 'package:drift/drift.dart';
 
+import '../../domain/models/catalog_browse.dart';
+import '../../domain/models/catalog_reference.dart';
 import '../../domain/models/catalog_search.dart';
 import '../../domain/models/domain_failure.dart';
 import '../../domain/models/library_entities.dart';
 import '../../domain/models/pagination.dart';
 import '../../domain/models/track.dart';
+import '../../domain/repositories/catalog_browse_repository.dart';
 import '../../domain/repositories/catalog_search_repository.dart';
 import '../../domain/repositories/library_repository.dart';
 import '../database/app_database.dart';
 import 'library_row_mapper.dart';
 
+part 'drift_catalog_browse.dart';
+
 final class DriftLibraryRepository
-    implements LibraryRepository, CatalogSearchRepository {
+    implements
+        LibraryRepository,
+        CatalogSearchRepository,
+        CatalogBrowseRepository {
   factory DriftLibraryRepository(
     AppDatabase database, {
     bool closeDatabaseOnDispose = false,
@@ -46,6 +54,45 @@ final class DriftLibraryRepository
 
   bool _initialized = false;
   bool _disposed = false;
+
+  @override
+  Future<PageResult<Track>> browseTracks(
+    CatalogTrackQuery query,
+    PageRequest page, {
+    SearchCancellation? cancellation,
+  }) => _browseTracks(query, page, cancellation);
+  @override
+  Future<PageResult<Album>> browseAlbums(
+    CatalogAlbumQuery query,
+    PageRequest page, {
+    SearchCancellation? cancellation,
+  }) => _browseAlbums(query, page, cancellation);
+  @override
+  Future<PageResult<Artist>> browseArtists(
+    CatalogArtistQuery query,
+    PageRequest page, {
+    SearchCancellation? cancellation,
+  }) => _browseArtists(query, page, cancellation);
+  @override
+  Future<Album?> getAlbum(
+    AlbumRef reference, {
+    SearchCancellation? cancellation,
+  }) => _browseAlbums(
+    const CatalogAlbumQuery(),
+    PageRequest(limit: 1),
+    cancellation,
+    exact: reference,
+  ).then((page) => page.items.firstOrNull);
+  @override
+  Future<Artist?> getArtist(
+    ArtistRef reference, {
+    SearchCancellation? cancellation,
+  }) => _browseArtists(
+    const CatalogArtistQuery(),
+    PageRequest(limit: 1),
+    cancellation,
+    exact: reference,
+  ).then((page) => page.items.firstOrNull);
 
   @override
   Future<void> initialize() async {

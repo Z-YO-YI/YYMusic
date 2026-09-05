@@ -1,3 +1,4 @@
+import 'catalog_reference.dart';
 import 'domain_validation.dart';
 
 final class ArtistCredit {
@@ -60,6 +61,7 @@ final class Album {
   final int? year;
   final Uri? artworkUri;
   final int trackCount;
+  AlbumRef get ref => AlbumRef(sourceId: sourceId, albumId: id);
 }
 
 final class Artist {
@@ -85,4 +87,5 @@ final class Artist {
   final Uri? artworkUri;
   final int albumCount;
   final int trackCount;
+  ArtistRef get ref => ArtistRef(sourceId: sourceId, artistId: id);
 }

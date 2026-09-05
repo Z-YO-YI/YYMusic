@@ -1,6 +1,10 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 6D 原生搜索界面**。三套搜索布局已接根数据库和唯一播放器：中文输入法/300ms防抖、六种筛选、分区分页/独立错误、最近20条搜索历史/确认清除、Enter本地优先播放、Windows Ctrl+K聚焦。只查询已保存目录，不把持久REST引用冒充实时在线搜索。本地407项Flutter（55张Golden）、69项Node及严格分析通过；本批打包/云端结果见报告。前置Phase6C `b5d960f`两组GitHub Android/Windows构建和真实窗口检查已成功。导入/REST、后续业务页、完整播放器和Phase11发布仍未完成；Phase2网页对照仍缺，尚不是完整可用或上线版本。
+当前阶段：**Android + Windows · Phase 6E 音乐库浏览数据层**。新增歌曲/专辑/艺术家排序、来源与可用性组合筛选、完整来源身份详情和分页查询，与首页/搜索共享根数据库。423项Flutter（55张既有Golden未改）、71项Node、严格分析及本地Android Debug通过；本批GitHub状态见报告/对应Draft PR。前置Phase6D `40fb7a6`的两组GitHub Android/Windows构建与原生窗口检查均成功。音乐库原生页面是下一增量；导入/REST、后续业务页、完整播放器、Phase2网页对照和Phase11发布仍未完成，尚不是完整可用或上线版本。
+
+Phase6E 后续修正：初始云端 Android/源码成功，Windows 旧首页 Golden 因测试样本逐首读取时钟而排序不稳定。
+已固定样本批次时间；425 Flutter/71 Node 与本地 Android 通过，55 张基线和生产代码均未改。
+修复后的云端双平台结果以 [PR #40](https://github.com/Z-YO-YI/YYMusic/pull/40) 为准。
 
 Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭、只允许手动选择、`contents: read`且不上传产物的Windows/Android原生集成模式。完整221项Flutter含32张Windows宿主Golden、严格分析0问题、31项Node、24项ZIP、lockfile及生成代码/v1快照零差异已通过；本机Android Debug也完成资产与v2单Debug签名复核。精确提交`622408e`的专用运行33862786766 attempt 2已在Windows与Android成功，且没有artifact或Release；普通push另提供保留14天的Windows开发Debug文件包。它依赖本机Debug CRT，并非通用免安装发行包；Phase4J的Profile诊断模式与正式应用分开。
 
@@ -10,6 +14,7 @@ Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭
 
 ## 开发入口
 
+- [Phase 6E 音乐库浏览计划](docs/phase_6e_catalog_browse_plan.md)、[报告](docs/phase_6e_catalog_browse_report.md)：只读单语句分页、排序/组合筛选、来源隔离详情及根数据合同；未改音乐库UI。
 - [Phase 6D 原生搜索计划](docs/phase_6d_native_search_plan.md)、[报告](docs/phase_6d_native_search_report.md)：三端页面、防抖/输入法、根接线、独立分页、搜索历史与取消安全的首条播放。
 - [Phase 6C 搜索数据计划](docs/phase_6c_catalog_search_plan.md)、[报告](docs/phase_6c_catalog_search_report.md)：单语句一致分页、来源身份、取消与持久搜索历史；无新页面、无在线请求或搜索结果入库。
 - [Phase 6B 原生首页计划](docs/phase_6b_home_surfaces_plan.md)、[报告](docs/phase_6b_home_surfaces_report.md)：三套布局、真实Repository投影、独立状态、队列保留与关闭排空；封面仍用占位，来源配置和曲库导入尚待开发。

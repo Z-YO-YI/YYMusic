@@ -131,7 +131,7 @@ test('domain contracts stay independent and UI has no direct data access', () =>
   ]);
 
   const repository = read('lib/data/repositories/drift_library_repository.dart');
-  assert.match(repository, /implements LibraryRepository/);
+  assert.match(repository, /implements\s+LibraryRepository/);
   assert.match(repository, /transaction\(\(\) async/);
   assert.match(repository, /insertAllOnConflictUpdate/);
   assert.match(repository, /limit\(request\.limit \+ 1, offset: request\.offset\)/);
