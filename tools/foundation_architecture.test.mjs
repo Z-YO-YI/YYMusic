@@ -403,7 +403,7 @@ test('shared Shell presenter maps root playback and guards queued seek identity'
   const controller = read('lib/playback/playback_controller.dart');
   assert.match(controller, /seek\([\s\S]*?expectedEntryId[\s\S]*?_schedule\([\s\S]*?expectedEntryId != null[\s\S]*?expectedEntryId != _state.queue.currentEntryId/);
   const shell = read('lib/features/player/common/shell_player.dart');
-  assert.match(shell, /ValueKey\(\(presenter.entryId, phone, compact\)\)/);
+  assert.match(shell, /ValueKey\(\(presenter.entryId, phone, compact, inspector\)\)/);
   assert.match(shell, /expectedEntryId: entry/);
   assert(!/onToggleFavorite:|onOpenQueue:|onOpenFullscreen:/.test(shell));
   for (const path of [
@@ -413,6 +413,21 @@ test('shared Shell presenter maps root playback and guards queued seek identity'
   ]) {
     assert(!/PlaybackController\(|AudioPlayer\(|JustAudio|dart:io|package:just_audio|package:http/.test(read(path)), path);
   }
+});
+
+test('Inspector is controlled, opaque and scrollable without IO or queue algorithms', () => {
+  const panel = read('lib/design_system/yy_now_playing_inspector.dart');
+  assert.match(panel, /part of 'yy_player_surface.dart'/);
+  assert.match(panel, /SingleChildScrollView/);
+  assert.match(panel, /color: colors.elevated/);
+  assert.match(panel, /YYArtworkRole.player/);
+  assert(!/BackdropFilter|Timer|Repository|PlaybackController|dart:io|\.network\(/.test(panel));
+  const root = read('lib/app/adaptive_root.dart');
+  assert.match(root, /ShellPlayer\(presenter: presenter, inspector: true\)/);
+  assert.equal(root.match(/inspector: inspector/g)?.length, 2);
+  const presenter = read('lib/app/playback_presenter.dart');
+  assert.match(presenter, /queueCount => _playback.state.queue.entries.length/);
+  assert(!/localPath|contentUri|artworkUri|metadata\[|Timer/.test(presenter));
 });
 
 test('Android native source test reuses baseline and contains only a temporary debug fixture', () => {

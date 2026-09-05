@@ -17,12 +17,14 @@ class WindowsShell extends StatelessWidget {
     required this.selected,
     required this.child,
     this.player,
+    this.inspector,
   });
   final YYLayoutClass layout;
   final AppNavigation navigation;
   final AppRoute selected;
   final Widget child;
   final Widget? player;
+  final Widget? inspector;
 
   @override
   Widget build(BuildContext context) {
@@ -57,16 +59,18 @@ class WindowsShell extends StatelessWidget {
                     SizedBox(width: gap),
                     SizedBox(
                       width: YYWindowsMetrics.inspectorWidth,
-                      child: YYGlassPanel(
-                        child: Center(
-                          child: Text(
-                            'Inspector 结构预留 · Phase 5',
-                            style: YYTypography.caption.copyWith(
-                              color: YYTheme.of(context).colors.secondary,
+                      child:
+                          inspector ??
+                          YYGlassPanel(
+                            child: Center(
+                              child: Text(
+                                'Inspector 结构预留 · Phase 5',
+                                style: YYTypography.caption.copyWith(
+                                  color: YYTheme.of(context).colors.secondary,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
                     ),
                   ],
                 ],

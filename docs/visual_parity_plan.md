@@ -1,5 +1,13 @@
 # 视觉还原与 Golden 计划
 
+## Phase 5B Inspector
+
+新增320浅色播放、260深色播放、320白强调错误，均130%字号和固定Fake状态，完整内容高980。
+原稿不透明now-panel、26radius/18padding/17文案间距、最终Artwork26与Transport56/38、图标24/20
+及主按钮hover阴影纳入；260窄栏模式按钮换行，短高度通过独立滚动保持可达。
+非更新首轮仅两张Windows整页图产生预期差异，确认后更新；新增3图逐张审查，其余36张旧图不变。
+最终41张非更新比较通过；网页参考截图仍未补齐，不把Golden自洽当作对原稿的最终像素验收。
+
 ## Phase 5A Shell 播放状态
 
 新增 phone_light 390×844、tablet_dark 1024×768、windows_white 1440×900 的 ShellPlayer

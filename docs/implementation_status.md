@@ -1,9 +1,9 @@
 # 实施状态
 
-当前增量Phase5A：三套 Shell 已接根播放器 Presenter；真实状态/命令、拖动取消、串行 Seek
-条目保护、断点播放连续性与 Windows Space 已实现。300 Flutter（38 Golden）/58 Node、严格分析通过。
-当前分支`codex/shared-shell-player`，详见[Phase5A报告](phase_5a_shell_player_report.md)。
-前置 Phase4P 的 `4a5b32d` push/PR 两组 checks/Android/Windows 全部成功，Draft PR #32 未合并。
+当前增量Phase5B：Windows/宽屏平板正在播放Inspector与底栏共享同一根Presenter；真实状态与
+多表面操作、独立滚动、同条目重载清除预览已实现。308 Flutter（41 Golden）/59 Node、严格分析通过。
+当前分支`codex/now-playing-inspector`，详见[Phase5B报告](phase_5b_now_playing_inspector_report.md)。
+前置 Phase5A 为 `05f818d`、Draft PR #33；两组GitHub checks/Android/Windows已全部成功，未合并或上线。
 
 更新：2026-09-05。当前在 Phase 5 三套 Shell 接线；Phase 0—4 已有实现与审计产物，Phase 2 仍欠网页截图对照。Phase4L 已在同一实现提交验证 Android WAV/content URI/HTTPS 与 Windows WAV/HTTPS。Phase4G 的 `media_kit` 分发审计未通过，Phase4H 已移除该活动候选。许可材料、查看入口及 ADR-044 工程选型已完成，默认入口不再使用 UnavailableAudioEngine；独立测试 Graph/main_dev 仍保留不可用后端。正式 Shell 底栏已可控制根播放器，业务曲库/导入、完整播放页面与 Phase5 其余部分/Phase6—11 未完成，不能作为可用音乐应用交付。下文旧阶段的未接线描述保留历史归属。
 
@@ -59,9 +59,10 @@ v2签名通过；Windows既有真实Profile包只做新增许可复核。初始�
 | Phase 4M 音频许可基础 | 已完成本批：六包完整LICENSE/两个构建源指纹、源码/APK/Windows NOTICES.Z校验、有界解压/UTF-8/全文唯一与参数大小写回归；本地255 Flutter/51 Node，`c0e3706`两组GitHub三job均成功；不代表全部Maven传递NOTICE或生产接线完成 |
 | Phase 4N/O/P 原生材料、许可页与根接线 | 51 坐标/三份全文材料、原生许可页、根引擎及有序关闭已完成；各批精确实现两组 GitHub checks/Android/Windows 全部成功，最新 `4a5b32d`；不代表 Release 批准 |
 | Phase 5A 共用 Shell 播放器 | 300 Flutter/58 Node、三端状态/动作/拖动取消/跨曲 Seek/键盘焦点已验证，38张 Golden；窗口、Inspector、全屏/歌词/队列和业务页面仍待后续批次 |
+| Phase 5B 增量 Inspector | Windows320/Tablet260独立滚动面板与底栏共用状态/操作，308 Flutter/59 Node、41张Golden；本编号不等同于主指令全部Phone子项完成 |
 | GitHub APK交付 | Phase4A ec508df的唯一手动运行33848236710创建私有草稿Release；190735487字节APK的三资产、metadata、SHA256SUMS、API digest、48份包内资产、Manifest及v2单签名已独立复核 |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
-| Flutter format/analyze/test | Phase5A 格式179文件零改动、严格分析0问题、完整300项含38张Windows宿主Golden、58项Node、ZIP24/24与生成代码/Drift零差异通过 |
+| Flutter format/analyze/test | Phase5B 格式182文件零改动、严格分析0问题、完整308项含41张Windows宿主Golden、59项Node、ZIP24/24与生成代码/Drift零差异通过 |
 | Windows / Android Debug构建 | Phase4P `4a5b32d` 标准push/PR均完成双平台Debug；Phase5A结果见本批报告。Windows本机构建仍缺工具链；真实播放证据仍归属于Phase4L，不伪称本批进行了新的原生设备播放 |
 
 ## 保留的验收缺口与后续边界
@@ -75,7 +76,7 @@ Phase4I最终严格分析0问题、243项Flutter通过；GitHub目标提交结�
 1. 已执行安全归档：13个旧原型文件移入archive/sonic_gallery，指纹一致，f96197b保存；根lib是新骨架，不再是旧代码。
 2. 用户已批准补足工具链；Android命令行工具/API36/35、NDK及项目要求的CMake已安装，Windows C++安装等待UAC确认。GitHub Windows2025/Android的Phase3H Debug构建均已成功，但云端成功不等于本机Windows构建或安装验收。未批量接受所有Android许可。
 3. Phase4G 发现 media_kit 分发材料不完整，Phase4H 已删除该活动候选并用双平台包清单防止回流。Phase4J/4K/4L 已补当前后端双平台本地和无Header HTTPS 运行，Android另有content URI；GitHub Windows 托管机仍缺播放端点。Phase4M/N/O/P 已完成当前后端材料、查看及默认生产接线，不等于全应用签名/安装/发布验收。
-4. 已建立实时平台分类、三个Shell和根依赖；Phase5A 正式底栏已接根播放器，Gallery 仍为明确标注的独立 Fixture。窗口Gateway、Inspector业务、队列/歌词/全屏和业务页面未实现，不把设计预览当成音乐业务交付。
+4. 已建立实时平台分类、三个Shell和根依赖；Phase5A 正式底栏、Phase5B Inspector已接根播放器，Gallery 仍为独立 Fixture。窗口Gateway、完整队列/歌词/全屏、真实封面和业务页面未实现，不把设计预览当成音乐业务交付。
 5. 为后续视觉验证准备获准且可访问的预览环境；遵守 Browser 技能边界，不绕过本轮 file: 拒绝。参考 screenshot 与 Flutter Golden 必须分别记录。
 
 ## 仓库边界

@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 
 import 'src/yy_control_action.dart';
 import 'yy_artwork_placeholder.dart';
+import 'yy_button.dart';
+import 'yy_feedback.dart';
 import 'yy_icon.dart';
 import 'yy_player_data.dart';
 import 'yy_slider.dart';
@@ -9,6 +11,8 @@ import 'yy_surface.dart';
 import 'yy_theme.dart';
 import 'yy_tokens.dart';
 import 'yy_tooltip.dart';
+
+part 'yy_now_playing_inspector.dart';
 
 typedef YYPlayerValueChanged = void Function(double value);
 
@@ -564,6 +568,7 @@ class _TransportButton extends StatelessWidget {
     this.primary = false,
     this.selected = false,
     this.toggled,
+    this.inspector = false,
   });
 
   final String id;
@@ -574,6 +579,7 @@ class _TransportButton extends StatelessWidget {
   final bool primary;
   final bool selected;
   final bool? toggled;
+  final bool inspector;
 
   @override
   Widget build(BuildContext context) => YYTooltip(
@@ -589,7 +595,9 @@ class _TransportButton extends StatelessWidget {
         final theme = YYTheme.of(context);
         final colors = theme.colors;
         final active = selected || toggled == true;
-        final visual = primary
+        final visual = inspector
+            ? (primary ? 56.0 : 38.0)
+            : primary
             ? YYPlayerMetrics.primaryControlVisual
             : YYPlayerMetrics.controlVisual;
         final fill = primary
@@ -599,7 +607,9 @@ class _TransportButton extends StatelessWidget {
             : active
             ? Color.alphaBlend(theme.accent.soft, colors.elevated)
             : interaction.hovered
-            ? theme.accent.color.withValues(alpha: .08)
+            ? inspector
+                  ? colors.subtle
+                  : theme.accent.color.withValues(alpha: .08)
             : const Color(0x00000000);
         final ink = primary
             ? colors.elevated
@@ -607,12 +617,16 @@ class _TransportButton extends StatelessWidget {
             ? theme.accent.readableOn(fill)
             : colors.icon;
         return SizedBox.square(
-          dimension: YYSpace.touchTarget,
+          dimension: inspector && primary ? 56 : YYSpace.touchTarget,
           child: Center(
             child: AnimatedScale(
               duration: theme.motion(YYMotion.press),
               curve: YYMotion.standard,
-              scale: interaction.pressed ? .94 : 1,
+              scale: interaction.pressed
+                  ? (inspector ? .96 : .94)
+                  : inspector && primary && interaction.hovered
+                  ? 1.04
+                  : 1,
               child: AnimatedContainer(
                 key: ValueKey('player-control-$id'),
                 duration: theme.motion(YYMotion.hover),
@@ -628,12 +642,37 @@ class _TransportButton extends StatelessWidget {
                         : const Color(0x00000000),
                     width: 2,
                   ),
-                  boxShadow: primary ? YYShadows.playerControl : null,
+                  boxShadow: primary
+                      ? inspector
+                            ? [
+                                BoxShadow(
+                                  color: Color(
+                                    interaction.hovered
+                                        ? 0x450F1214
+                                        : 0x330F1214,
+                                  ),
+                                  offset: Offset(
+                                    0,
+                                    interaction.hovered ? 16 : 12,
+                                  ),
+                                  blurRadius: interaction.hovered ? 40 : 32,
+                                ),
+                              ]
+                            : YYShadows.playerControl
+                      : null,
                 ),
                 alignment: Alignment.center,
                 child: YYIcon(
                   glyph: glyph,
-                  size: primary ? 21 : 18,
+                  size: inspector
+                      ? (primary ||
+                                glyph == YYGlyph.previous ||
+                                glyph == YYGlyph.next
+                            ? 24
+                            : 20)
+                      : primary
+                      ? 21
+                      : 18,
                   color: ink,
                 ),
               ),
