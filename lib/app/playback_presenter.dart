@@ -17,6 +17,7 @@ final class PlaybackPresenter extends ChangeNotifier {
   bool _actionFailed = false;
 
   String? get entryId => _playback.state.queue.currentEntryId;
+  TrackRef? get trackRef => _playback.state.currentTrack?.ref;
   int get queueCount => _playback.state.queue.entries.length;
   String get sourceLabel => switch (_playback.state.currentTrack?.sourceType) {
     MusicSourceType.local => '本地音乐',

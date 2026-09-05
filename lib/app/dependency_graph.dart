@@ -9,6 +9,7 @@ import '../domain/repositories/library_repository.dart';
 import '../domain/repositories/license_repository.dart';
 import '../domain/repositories/lyrics_repository.dart';
 import '../domain/repositories/music_source_repository.dart';
+import '../features/home/common/home_controller.dart';
 import '../platform/contracts/fullscreen_gateway.dart';
 import '../platform/contracts/media_session_gateway.dart';
 import '../platform/contracts/secure_credential_gateway.dart';
@@ -60,6 +61,12 @@ final class DependencyGraph {
     );
     queue = QueueController(playback);
     playbackPresenter = PlaybackPresenter(playback);
+    home = HomeController(
+      playback: playback,
+      library: this.library,
+      collection: this.collection,
+      sourceRepository: this.musicSources,
+    );
   }
 
   final AudioEngine _audioEngine;
@@ -77,6 +84,7 @@ final class DependencyGraph {
   late final PlaybackController playback;
   late final QueueController queue;
   late final PlaybackPresenter playbackPresenter;
+  late final HomeController home;
   Future<void>? _closeFuture;
 
   Future<void> initialize() => playback.initialize();
@@ -90,6 +98,7 @@ final class DependencyGraph {
     final existing = _closeFuture;
     if (existing != null) return existing;
     queue.dispose();
+    home.dispose();
     playbackPresenter.dispose();
     playback.dispose();
     appearance.dispose();
@@ -99,6 +108,7 @@ final class DependencyGraph {
   Future<void> _closeOwnedResources() async {
     var failed = false;
     for (final release in <Future<void> Function()>[
+      home.close,
       playback.close,
       _audioEngine.dispose,
       _mediaSession.dispose,

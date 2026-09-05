@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 
 import '../domain/repositories/license_repository.dart';
 import '../features/design_gallery/design_gallery_screen.dart';
+import '../features/home/common/home_controller.dart';
+import '../features/home/common/home_screen.dart';
 import '../features/settings/common/licenses_screen.dart';
 import '../shared/foundation_button.dart';
 import 'adaptive_root.dart';
@@ -23,14 +25,26 @@ final class AppRouter implements AppNavigation {
     LicenseRepository licenses = const FlutterLicenseRepository(),
     bool audioBackendSelected = false,
     PlaybackPresenter? playbackPresenter,
+    HomeController? homeController,
   }) {
-    Widget screen(AppRoute route) => FoundationScreen(
-      route: route,
-      navigation: this,
-      viewState: viewState,
-      showDesignGallery: route.isMain,
-      audioBackendSelected: audioBackendSelected,
-    );
+    Widget screen(AppRoute route) =>
+        route == AppRoute.home &&
+            homeController != null &&
+            playbackPresenter != null
+        ? HomeScreen(
+            platform: platform,
+            controller: homeController,
+            playback: playbackPresenter,
+            navigation: this,
+            viewState: viewState,
+          )
+        : FoundationScreen(
+            route: route,
+            navigation: this,
+            viewState: viewState,
+            showDesignGallery: route.isMain,
+            audioBackendSelected: audioBackendSelected,
+          );
     _router = GoRouter(
       initialLocation: initialLocation,
       routes: [
