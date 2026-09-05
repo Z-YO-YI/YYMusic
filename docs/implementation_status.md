@@ -1,9 +1,10 @@
 # 实施状态
 
-当前增量Phase6B：原生首页三套布局与根HomeController接线，最近添加/历史/来源独立状态，
-确认清除历史、保留队列播放和异步关闭排空。359 Flutter（49 Golden）/65 Node及严格分析通过。
-当前分支`codex/home-surfaces`，详见[Phase6B报告](phase_6b_home_surfaces_report.md)。
-前置Phase6A为`b2e561d`、Draft PR #36；两组GitHub checks/Android/Windows及真实窗口测试全部成功，未合并或上线。
+当前增量Phase6C：本地目录搜索与搜索历史数据层，歌曲/专辑/艺人单语句分页、来源筛选和取消，
+20条持久历史、原子去重/裁剪/清除。379 Flutter（49 Golden不变）/67 Node及严格分析通过。
+当前分支`codex/catalog-search-data`，详见[Phase6C报告](phase_6c_catalog_search_report.md)。
+前置Phase6B为`62b8a7c`、Draft PR #37；两组GitHub checks/Android/Windows及真实窗口测试全部成功，未合并或上线。
+本批尚未接SearchController、三端搜索页面或REST，Search路由仍是工程骨架。
 下方旧阶段记录保留历史归属；当前首页已接线，但其余Phase6页面、导入/REST、完整播放器及上线仍未完成。
 
 更新：2026-09-05。当前在 Phase 5 三套 Shell 接线；Phase 0—4 已有实现与审计产物，Phase 2 仍欠网页截图对照。Phase4L 已在同一实现提交验证 Android WAV/content URI/HTTPS 与 Windows WAV/HTTPS。Phase4G 的 `media_kit` 分发审计未通过，Phase4H 已移除该活动候选。许可材料、查看入口及 ADR-044 工程选型已完成，默认入口不再使用 UnavailableAudioEngine；独立测试 Graph/main_dev 仍保留不可用后端。正式 Shell 底栏已可控制根播放器，业务曲库/导入、完整播放页面与 Phase5 其余部分/Phase6—11 未完成，不能作为可用音乐应用交付。下文旧阶段的未接线描述保留历史归属。
@@ -22,6 +23,7 @@ v2签名通过；Windows既有真实Profile包只做新增许可复核。初始�
 
 | 阶段/能力 | 状态 |
 | --- | --- |
+| Phase 6C 搜索数据层 | 正式SQLite单语句分页/源筛选、合作式取消、20条持久历史及安全错误；379 Flutter/67 Node，49张Golden不变；根接线、输入防抖、三端Search界面与REST仍待后续 |
 | Phase 6A/B 首页 | v2首次入库时间与保留旧数据迁移；三套原生布局、真实投影、单根播放、确认清除历史和关闭排空已实现；359 Flutter/49 Golden/65 Node，本批报告记录精确构建状态；导入/来源配置、真实封面与网页对照未完成 |
 | Phase 0 输入身份、源码审计、合成与映射 | 已形成可复核产物，结果见 phase_0_report.md |
 | Phase 1 Flutter 工程骨架 | 已实现路由/DI/三个Shell/runner/测试/CI；GitHub Android/Windows Debug已通过，本机Windows仍待UAC，见phase_1_report.md及ci_reference_audit_fix.md |

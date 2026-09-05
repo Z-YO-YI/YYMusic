@@ -470,6 +470,38 @@ test('catalog v2 preserves immutable v1 and adds only insertion time and its ind
   assert.equal(index.data.sql, 'CREATE INDEX tracks_by_added ON tracks (added_at_ms DESC, source_type, source_id, track_id)');
 });
 
+test('catalog search binds inputs and pages entities before single-statement credit expansion', () => {
+  const repository = read('lib/data/repositories/drift_library_repository.dart');
+  const search = repository.slice(repository.indexOf('Future<PageResult<Track>> searchTracks'), repository.indexOf('Future<void> upsertTracks'));
+  for (const method of ['searchTracks', 'searchAlbums', 'searchArtists']) assert(search.includes(method));
+  assert.match(search, /WITH input\(term\) AS \(VALUES \(\?\)\), page AS/);
+  assert.match(search, /Variable<String>\(query.text\)/);
+  assert.match(search, /Variable<int>\(page.limit \+ 1\)/);
+  assert.match(search, /Variable<int>\(page.offset\)/);
+  assert.match(search, /LIMIT \? OFFSET \?\)/);
+  assert.match(search, /LEFT JOIN track_artists/);
+  assert.match(search, /LEFT JOIN album_artists/);
+  assert.match(search, /_searchCheckpoint\(cancellation\)/);
+  assert.equal(search.match(/\.customSelect\(/g)?.length, 1);
+  assert(!/\.transaction\(|watchTracks|base_url|credential_ref|public_headers|local_path|metadata_json|HttpClient/.test(search));
+  assert(!/\$\{?query\.(text|sourceId|sourceType)/.test(search));
+});
+
+test('search history keeps bounded atomic local records and drains before database close', () => {
+  const history = read('lib/data/repositories/drift_search_history_repository.dart');
+  assert.match(history, /implements SearchHistoryRepository/);
+  assert.match(history, /\.transaction\(\(\) async/);
+  assert.match(history, /\.limit\(20\)/);
+  assert.match(history, /ORDER BY searched_at_ms DESC, search_id LIMIT 20/);
+  assert.match(history, /foldSearchText\(input.text\)/);
+  assert.match(history, /sha256/);
+  assert.match(history, /await Future.wait\(_pending\)[\s\S]*?await _database.close\(\)/);
+  assert(!/HttpClient|AudioEngine|PlaybackController|upsertTracks|debugPrint|print\(/.test(history));
+  const models = read('lib/domain/models/catalog_search.dart');
+  assert.match(models, /CatalogQuery\(<redacted>\)/);
+  assert.match(models, /SearchHistoryEntry\(<redacted>\)/);
+});
+
 test('recent catalog query is bounded and migration plus audit are atomic', () => {
   const repository = read('lib/data/repositories/drift_library_repository.dart');
   assert.match(repository, /listRecentlyAdded[\s\S]*?addedAtMs.isBetweenValues\(firstMs, lastMs\)[\s\S]*?limit\(request.limit \+ 1, offset: request.offset\)/);

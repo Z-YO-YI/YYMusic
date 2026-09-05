@@ -2,15 +2,18 @@ import 'dart:async';
 
 import 'package:drift/drift.dart';
 
+import '../../domain/models/catalog_search.dart';
 import '../../domain/models/domain_failure.dart';
 import '../../domain/models/library_entities.dart';
 import '../../domain/models/pagination.dart';
 import '../../domain/models/track.dart';
+import '../../domain/repositories/catalog_search_repository.dart';
 import '../../domain/repositories/library_repository.dart';
 import '../database/app_database.dart';
 import 'library_row_mapper.dart';
 
-final class DriftLibraryRepository implements LibraryRepository {
+final class DriftLibraryRepository
+    implements LibraryRepository, CatalogSearchRepository {
   factory DriftLibraryRepository(
     AppDatabase database, {
     bool closeDatabaseOnDispose = false,
@@ -221,6 +224,212 @@ final class DriftLibraryRepository implements LibraryRepository {
       if (row == null) return null;
       return (await _tracksFromRows([row])).single;
     });
+  }
+
+  @override
+  Future<PageResult<Track>> searchTracks(
+    CatalogQuery query,
+    PageRequest page, {
+    SearchCancellation? cancellation,
+  }) {
+    _searchCheckpoint(cancellation);
+    if (query.text.isEmpty) {
+      return Future.value(PageResult(items: const [], hasMore: false));
+    }
+    return _guard('search-tracks', () async {
+      final rows = await _catalogSearchRows(
+        query,
+        page,
+        from: 'tracks item',
+        match: '''
+          instr(lower(item.title), lower(input.term)) > 0
+          OR instr(lower(COALESCE(item.album_title, '')), lower(input.term)) > 0
+          OR EXISTS (
+            SELECT 1 FROM track_artists ta JOIN artists a
+              ON a.source_id = ta.artist_source_id AND a.artist_id = ta.artist_id
+            WHERE ta.track_source_type = item.source_type
+              AND ta.track_source_id = item.source_id AND ta.track_id = item.track_id
+              AND instr(lower(a.name), lower(input.term)) > 0
+          ) OR EXISTS (
+            SELECT 1 FROM music_sources s WHERE s.source_id = item.source_id
+              AND s.source_type = item.source_type
+              AND instr(lower(s.name), lower(input.term)) > 0
+          )
+        ''',
+        typePredicate: 'item.source_type = ?',
+        order: 'item.title, item.source_type, item.source_id, item.track_id',
+        artistJoin: '''
+            LEFT JOIN track_artists credit
+              ON credit.track_source_type = item.source_type
+                AND credit.track_source_id = item.source_id AND credit.track_id = item.track_id
+            LEFT JOIN artists artist ON artist.source_id = credit.artist_source_id
+              AND artist.artist_id = credit.artist_id
+          ''',
+      );
+      _searchCheckpoint(cancellation);
+      final grouped = <_TrackKey, _WatchedTrack>{};
+      for (final result in rows) {
+        final row = _database.trackRecords.map(result.data);
+        final entry = grouped.putIfAbsent(
+          _TrackKey.fromRow(row),
+          () => _WatchedTrack(row),
+        );
+        final name = result.readNullable<String>('search_artist_name');
+        if (name != null) {
+          entry.artists.add(name);
+        }
+      }
+      final items = grouped.values
+          .take(page.limit)
+          .map((entry) => _mapper.trackFromRow(entry.row, entry.artists))
+          .toList(growable: false);
+      _searchCheckpoint(cancellation);
+      return PageResult(items: items, hasMore: grouped.length > page.limit);
+    });
+  }
+
+  @override
+  Future<PageResult<Album>> searchAlbums(
+    CatalogQuery query,
+    PageRequest page, {
+    SearchCancellation? cancellation,
+  }) {
+    _searchCheckpoint(cancellation);
+    if (query.text.isEmpty) {
+      return Future.value(PageResult(items: const [], hasMore: false));
+    }
+    return _guard('search-albums', () async {
+      final rows = await _catalogSearchRows(
+        query,
+        page,
+        from: 'albums item',
+        match: '''
+          instr(lower(item.title), lower(input.term)) > 0
+          OR EXISTS (
+            SELECT 1 FROM album_artists aa JOIN artists a
+              ON a.source_id = aa.artist_source_id AND a.artist_id = aa.artist_id
+            WHERE aa.album_source_id = item.source_id AND aa.album_id = item.album_id
+              AND instr(lower(a.name), lower(input.term)) > 0
+          ) OR EXISTS (
+            SELECT 1 FROM music_sources s WHERE s.source_id = item.source_id
+              AND instr(lower(s.name), lower(input.term)) > 0
+          )
+        ''',
+        typePredicate: '''EXISTS (
+          SELECT 1 FROM tracks t WHERE t.source_id = item.source_id
+            AND t.album_id = item.album_id AND t.source_type = ?
+        )''',
+        order: 'item.title, item.source_id, item.album_id',
+        artistJoin: '''
+            LEFT JOIN album_artists credit
+              ON credit.album_source_id = item.source_id AND credit.album_id = item.album_id
+            LEFT JOIN artists artist ON artist.source_id = credit.artist_source_id
+              AND artist.artist_id = credit.artist_id
+          ''',
+      );
+      _searchCheckpoint(cancellation);
+      final grouped =
+          <_AlbumKey, ({AlbumRow row, List<ArtistCredit> artists})>{};
+      for (final result in rows) {
+        final row = _database.albumRecords.map(result.data);
+        final entry = grouped.putIfAbsent(
+          _AlbumKey.fromRow(row),
+          () => (row: row, artists: []),
+        );
+        final name = result.readNullable<String>('search_artist_name');
+        final id = result.readNullable<String>('search_artist_id');
+        if (name != null && id != null) {
+          entry.artists.add(ArtistCredit(id: id, name: name));
+        }
+      }
+      final items = grouped.values
+          .take(page.limit)
+          .map((entry) => _mapper.albumFromRow(entry.row, entry.artists))
+          .toList(growable: false);
+      _searchCheckpoint(cancellation);
+      return PageResult(items: items, hasMore: grouped.length > page.limit);
+    });
+  }
+
+  @override
+  Future<PageResult<Artist>> searchArtists(
+    CatalogQuery query,
+    PageRequest page, {
+    SearchCancellation? cancellation,
+  }) {
+    _searchCheckpoint(cancellation);
+    if (query.text.isEmpty) {
+      return Future.value(PageResult(items: const [], hasMore: false));
+    }
+    return _guard('search-artists', () async {
+      final rows = await _catalogSearchRows(
+        query,
+        page,
+        from: 'artists item',
+        match: '''
+          instr(lower(item.name), lower(input.term)) > 0
+          OR EXISTS (
+            SELECT 1 FROM music_sources s WHERE s.source_id = item.source_id
+              AND instr(lower(s.name), lower(input.term)) > 0
+          )
+        ''',
+        typePredicate: '''EXISTS (
+          SELECT 1 FROM track_artists ta JOIN tracks t
+            ON t.source_type = ta.track_source_type AND t.source_id = ta.track_source_id
+              AND t.track_id = ta.track_id
+          WHERE ta.artist_source_id = item.source_id AND ta.artist_id = item.artist_id
+            AND t.source_type = ?
+        )''',
+        order: 'item.name, item.source_id, item.artist_id',
+      );
+      _searchCheckpoint(cancellation);
+      final items = [
+        for (final row in rows.take(page.limit))
+          _mapper.artistFromRow(_database.artistRecords.map(row.data)),
+      ];
+      _searchCheckpoint(cancellation);
+      return PageResult(items: items, hasMore: rows.length > page.limit);
+    });
+  }
+
+  // SQL fragments come only from the fixed entity queries above. Every input
+  // value, including paging and source filters, is bound rather than interpolated.
+  Future<List<QueryRow>> _catalogSearchRows(
+    CatalogQuery query,
+    PageRequest page, {
+    required String from,
+    required String match,
+    required String typePredicate,
+    required String order,
+    String? artistJoin,
+  }) {
+    final filters = <String>[];
+    final variables = <Variable>[
+      Variable<String>(query.text),
+      if (query.sourceType != null) Variable<String>(query.sourceType!.name),
+      if (query.sourceId != null) Variable<String>(query.sourceId!),
+      Variable<int>(page.limit + 1),
+      Variable<int>(page.offset),
+    ];
+    if (query.sourceType != null) filters.add(typePredicate);
+    if (query.sourceId != null) filters.add('item.source_id = ?');
+    return _database
+        .customSelect(
+          'WITH input(term) AS (VALUES (?)), page AS ('
+          'SELECT item.* FROM $from CROSS JOIN input WHERE ($match) '
+          '${filters.isEmpty ? '' : 'AND ${filters.join(' AND ')}'} '
+          'ORDER BY $order LIMIT ? OFFSET ?) '
+          'SELECT item.*${artistJoin == null ? '' : ', artist.name AS search_artist_name, artist.artist_id AS search_artist_id'} '
+          'FROM page item ${artistJoin ?? ''} '
+          'ORDER BY $order${artistJoin == null ? '' : ', credit.position'}',
+          variables: variables,
+        )
+        .get();
+  }
+
+  void _searchCheckpoint(SearchCancellation? cancellation) {
+    cancellation?.throwIfCancelled();
+    _requireReady();
   }
 
   @override
@@ -583,6 +792,8 @@ final class DriftLibraryRepository implements LibraryRepository {
     try {
       return await body();
     } on DomainFailure {
+      rethrow;
+    } on SearchCancelled {
       rethrow;
     } catch (_) {
       throw _failure(operation);
