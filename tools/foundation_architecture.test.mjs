@@ -326,8 +326,9 @@ test('only the just_audio native POC remains active in read-only dual-platform C
   );
   assert.equal(
     native.match(/integration_test\/just_audio_native_local_poc_test\.dart/g)?.length,
-    2,
+    1,
   );
+  assert.match(native, /integration_test\/just_audio_android_sources_poc_test\.dart/);
   assert.match(
     native,
     /Require a real Windows playback endpoint[\s\S]*?AudioEndpointBuilder[\s\S]*?Audiosrv[\s\S]*?Get-PnpDevice -Class AudioEndpoint -PresentOnly[\s\S]*?playbackEndpoints\.Count -eq 0/,
@@ -390,4 +391,29 @@ test('only the just_audio native POC remains active in read-only dual-platform C
   assert(!/print\(|debugPrint|dart:developer/.test(networkProbe));
   assert(!/NetworkPlayableSourceProbe|DartIoNetworkHeadTransport/.test(read('lib/main.dart')));
   assert.match(read('pubspec.yaml'), /integration_test:\s*\n\s+sdk: flutter/);
+});
+
+test('Android native source test reuses baseline and contains only a temporary debug fixture', () => {
+  const content = read('integration_test/just_audio_android_sources_poc_test.dart');
+  assert.match(content, /native_local\.main\(\)/);
+  assert.match(content, /Platform\.isAndroid && kDebugMode/);
+  assert.match(content, /getTemporaryDirectory\(\)/);
+  assert.match(content, /fixture\.create\(exclusive: true\)/);
+  assert.match(content, /createdFixture && await fixture\.exists\(\)/);
+  assert.match(content, /await fixture\.delete\(\)/);
+  assert.match(content, /buildDeterministicPcmWav\(\)/);
+  assert.match(content, /PlayableSource\.contentUri\(/);
+  assert.match(content, /DomainFailureCode\.playbackOpenFailed/);
+  assert.equal(content.match(/engine\.load\(source\)/g)?.length, 2);
+  for (const fact of ['sameEngineRecovered', 'missingSourceRejected', 'completed', 'disposed']) {
+    assert.match(content, new RegExp(`'${fact}': true`));
+  }
+  assert.match(content, /await statesClosed\.future/);
+  assert.match(content, /useProxyForRequestHeaders: false/);
+  assert.match(content, /supportsRequestHeaders: false/);
+  assert(!/MediaStore|Permission\.|badCertificateCallback|https?:\/\/|headless/.test(content));
+  const metrics = content.slice(content.indexOf('final metrics ='));
+  assert(!/fixture\.path|source\.uri|failure\.toString|exception|stackTrace/.test(metrics));
+  assert.match(read('.github/workflows/foundation.yml'),
+    /just_audio_poc_platform:[\s\S]*?default: both[\s\S]*?type: choice[\s\S]*?options: \[both, android, windows\]/);
 });

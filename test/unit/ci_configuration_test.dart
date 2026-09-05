@@ -82,7 +82,7 @@ void main() {
     });
     final dispatch = triggers['workflow_dispatch'] as YamlMap;
     expect((dispatch['inputs'] as YamlMap)['run_just_audio_poc'], {
-      'description': 'Run the read-only just_audio native local WAV POC',
+      'description': 'Run the read-only just_audio native source POC',
       'required': true,
       'default': false,
       'type': 'boolean',
@@ -149,7 +149,8 @@ void main() {
       expect(
         job['if'],
         "github.event_name == 'workflow_dispatch' && "
-        'inputs.run_just_audio_poc',
+        'inputs.run_just_audio_poc && inputs.just_audio_poc_platform != '
+        "'${id == 'windows-just-audio' ? 'android' : 'windows'}'",
       );
       final steps = (job['steps'] as YamlList).cast<YamlMap>();
       final commands = <String>[
@@ -163,11 +164,58 @@ void main() {
       expect(
         commands,
         anyElement(
-          contains('integration_test/just_audio_native_local_poc_test.dart'),
+          contains(
+            id == 'windows-just-audio'
+                ? 'integration_test/just_audio_native_local_poc_test.dart'
+                : 'integration_test/just_audio_android_sources_poc_test.dart',
+          ),
         ),
       );
     }
   });
+
+  test(
+    'native platform choice defaults to both and cannot enable delivery',
+    () {
+      final workflow = loadYaml(
+        File('.github/workflows/foundation.yml').readAsStringSync(),
+      ) as YamlMap;
+      final inputs =
+          ((workflow['on'] as YamlMap)['workflow_dispatch']
+                  as YamlMap)['inputs']
+              as YamlMap;
+      final platform = inputs['just_audio_poc_platform'] as YamlMap;
+      expect(platform['type'], 'choice');
+      expect(platform['default'], 'both');
+      expect(platform['required'], true);
+      expect(platform['options'], ['both', 'android', 'windows']);
+      final jobs = workflow['jobs'] as YamlMap;
+      for (final id in ['checks', 'windows-debug', 'android-debug']) {
+        // Choosing a platform is not permission to change the delivery mode.
+        expect(
+          (jobs[id] as YamlMap)['if'].toString(),
+          isNot(contains('just_audio_poc_platform')),
+        );
+      }
+      final checks = (jobs['checks'] as YamlMap)['steps'] as YamlList;
+      expect(
+        checks.cast<YamlMap>().map((step) => step['run']),
+        contains(
+          'dart format --output=none --set-exit-if-changed lib test integration_test',
+        ),
+      );
+      for (final id in ['windows-just-audio', 'android-just-audio']) {
+        final steps = ((jobs[id] as YamlMap)['steps'] as YamlList)
+            .cast<YamlMap>();
+        expect(steps.any((step) => step['continue-on-error'] == true), isFalse);
+        expect(steps.any((step) => step['if'] == 'always()'), isFalse);
+        expect(
+          steps.map((step) => step['uses'].toString()).join('\n'),
+          isNot(contains('upload-artifact')),
+        );
+      }
+    },
+  );
 
   test(
     'cloud APK delivery is manual, draft-only and uploads verified files',
