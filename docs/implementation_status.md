@@ -1,12 +1,13 @@
 # 实施状态
 
-更新：2026-09-05。当前在 Phase 4 播放基础验证；Phase 0—3 已有实现与审计产物，Phase 2 仍欠网页截图对照。Phase4J 已补 Windows `just_audio` 真实本地 WAV 运行。Phase4G 的 `media_kit` 分发审计未通过，Phase4H 已移除该活动候选。生产仍为 `UnavailableAudioEngine`，正式业务页面、播放器接线及 Phase 5—11 未完成，不能作为可用音乐应用交付。
+更新：2026-09-05。当前在 Phase 4 播放基础验证；Phase 0—3 已有实现与审计产物，Phase 2 仍欠网页截图对照。Phase4L 已在同一实现提交验证 Android WAV/content URI/HTTPS 与 Windows WAV/HTTPS。Phase4G 的 `media_kit` 分发审计未通过，Phase4H 已移除该活动候选。生产仍为 `UnavailableAudioEngine`，最终候选/许可展示、正式业务页面、播放器接线及 Phase 5—11 未完成，不能作为可用音乐应用交付。
 
 Phase4J最新增量：`25747bc`的GitHub Profile完整诊断包已在本机Windows进程连续两次通过原始本地WAV测试，
 此前Windows小批A运行证据已补齐；本机缺Debug CRT导致的`0xC0000135`没有被掩盖。
 该提交的GitHub Android/Windows Debug均成功，对应 Draft PR #26；最后文档提交 `ca7b69d` 的两组 CI 也已成功。
-当前批次为 `codex/android-native-source-validation` 的 Phase4K：实现提交 `33a0b3c` 已通过当前 Android WAV 复跑、content URI 的失败恢复/播放/释放，以及 GitHub 标准双平台 Debug。原生运行 `33953874067` 两项测试全部通过、artifact 0、匹配 Release 0；Draft PR #27 未合并。Phase4F整体仍未关闭，无Header HTTPS、最终选型和正式接线待完成。
-下文无端点/旧分支描述保留历史归属，以本段及[Phase4J报告](phase_4j_windows_native_validation_report.md)为当前状态。
+Phase4K 实现 `33a0b3c` 已通过 Android WAV/content URI 两项测试和标准双平台 Debug，Draft PR #27 未合并。
+当前批次为 `codex/native-https-validation` 的 Phase4L：实现 `8c4aa6e` 的 Android API36 三来源原生、标准 push/PR 双平台 Debug、完整 Windows Profile 构建四条运行均成功。同一 Profile 包在本机两个新目录各执行本地 WAV/HTTPS 两项测试，均退出0，64项运行文件前后指纹不变。完整本地255项 Flutter、46项 Node 通过；Draft PR #28 未合并。Phase4F 的无Header HTTPS 运行缺口已补齐，最终选型/NOTICE 和正式接线仍待完成。
+下文无端点/旧分支描述保留历史归属，以本段及[Phase4L报告](phase_4l_native_https_report.md)为当前状态。
 
 | 阶段/能力 | 状态 |
 | --- | --- |
@@ -37,17 +38,18 @@ Phase4J最新增量：`25747bc`的GitHub Profile完整诊断包已在本机Windo
 | Phase 4C 双平台原生本地音频 POC | 已关闭：精确提交`622408e`的专用运行33862786766 attempt 2在Windows/Android均成功，覆盖固定WAV的load不自动播放、play/position/seek/pause/volume/rate/completed/stop；不接生产入口、不上传产物/Release |
 | Phase 4D Content URI与受控HTTPS音频 POC | 已关闭：实现提交`913f3d75`的标准PR三job与专用运行33878710671成功；Android debug-only Provider、双平台loopback HTTPS、Android content URI、Header与脱敏失败映射均通过；零artifact/Release，不接生产、不提交证书/音频 |
 | Phase 4E just_audio + Windows WinRT备用候选 | 已关闭：精确依赖/许可指纹、隔离适配器、7项Fake合同、Header失败关闭、完整门禁与Android Debug通过；`a2b517b`的push/PR两次三job成功，无新Release，不接生产 |
-| Phase 4F just_audio双平台原生运行比较 | 未关闭：Windows 本地 WAV 已由 Phase4J 两次本机运行补证，当前 Android WAV/content URI 已由 Phase4K 通过；无 Header HTTPS、最终选型/许可展示和正式接线未完成。GitHub Windows 托管机仍无播放端点，不能把 skipped 计通过 |
+| Phase 4F just_audio双平台原生运行比较 | 原生来源缺口已由 Phase4J/4K/4L 补齐；同一 `8c4aa6e` 的 Android 三来源和 Windows WAV/HTTPS 两轮通过。最终选型/许可展示和正式接线仍未完成，整体保持未关闭；GitHub Windows 托管机无端点，使用实际本机进程证据，不把 skipped 计通过 |
 | Phase 4G media_kit原生分发审计 | 审计完成/发布阻断：四个JAR、APK三ABI、Windows归档/DLL均强哈希映射，实际二进制关闭GPL/nonfree；Windows构建变换不可恢复、Android helper未固定，两个归档均缺完整NOTICE/对应源码/重链接材料，机器门禁保持blocked |
 | Phase 4H 移除被拒绝的media_kit候选 | 已完成：13个直接/传递包、两个适配器、5项Fake测试、两个历史集成测试、四个POC job及双平台生成注册已移除；历史manifest固定为rejected/inactive。Android干净APK无libmpv/helper；`2ec37ef`的push/PR双平台三job均成功，Windows bundle二次清单为0 |
 | 后续页面、歌词、导入、来源、平台集成 | 未开始 |
 | Phase 4I 播放会话/队列一致性 | 修复停止后重播、load失败重试、替换当前队列时停止旧音频、completed去重与过期操作、Seek恢复新周期、error/failure一致性、load结束后dispose保护；新增16项回归，完整243项Flutter通过，见phase_4i_playback_consistency_report.md及Draft PR #25 |
 | Phase 4J Windows本机原生验证 | GitHub完整Profile包在本机两次真实WAV通过；248项Flutter、43项Node、源码指纹、严格分析和实现提交的GitHub双平台Debug通过。正式入口不变，见phase_4j_windows_native_validation_report.md |
 | Phase 4K Android本地来源 | 已完成本批：`33a0b3c` 的 Android API36 本地 WAV/content URI 两项原生测试及 PR 双平台 Debug 全部成功；content 缺失失败、同引擎恢复、播放/释放通过；本地 249 项 Flutter / 44 项 Node 通过；见 phase_4k_android_native_sources_report.md |
+| Phase 4L 无Header HTTPS来源 | 已完成本批：`8c4aa6e` 的 Android 三来源原生、标准双平台 Debug、Windows 完整 Profile 构建成功；同包两次本机 WAV/HTTPS 各2项通过。内存验证固定夹具 SHA/Range，默认 TLS、无代理/Header、无媒体提交；本地255 Flutter / 46 Node，见 phase_4l_native_https_report.md |
 | GitHub APK交付 | Phase4A ec508df的唯一手动运行33848236710创建私有草稿Release；190735487字节APK的三资产、metadata、SHA256SUMS、API digest、48份包内资产、Manifest及v2单签名已独立复核 |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
-| Flutter format/analyze/test | Phase4H格式检查152文件零变化、严格分析0问题、完整227项含32张Windows宿主Golden全部通过；35项Node和24项ZIP通过。较Phase4G减少的5项仅为已删除候选适配器Fake测试 |
-| Windows / Android Debug构建 | Phase4H本机Android干净Debug成功，194,098,216字节APK的48资产、0项media_kit原生库和v2单Debug签名通过；本机Windows仍受Developer Mode/plugin symlink限制。`2ec37ef`的GitHub push/PR两次双平台构建成功，push Windows ZIP为66,407,581字节、64项且libmpv/media_kit为0 |
+| Flutter format/analyze/test | Phase4L格式161文件零改动、严格分析0问题、完整255项含32张Windows宿主Golden、46项Node、ZIP24/24与生成代码/Drift零差异通过 |
+| Windows / Android Debug构建 | Phase4L本机常规及集成入口Android Debug成功，恢复正式入口后230,987,069字节APK与48资产/v2签名通过；`8c4aa6e`标准push/PR均完成双平台Debug。Windows本机构建仍缺工具链，使用GitHub完整Profile包取得真实播放证据，不伪称本机构建成功 |
 
 ## 保留的验收缺口与后续边界
 
@@ -59,12 +61,12 @@ Phase4I最终严格分析0问题、243项Flutter通过；GitHub目标提交结�
 
 1. 已执行安全归档：13个旧原型文件移入archive/sonic_gallery，指纹一致，f96197b保存；根lib是新骨架，不再是旧代码。
 2. 用户已批准补足工具链；Android命令行工具/API36/35、NDK及项目要求的CMake已安装，Windows C++安装等待UAC确认。GitHub Windows2025/Android的Phase3H Debug构建均已成功，但云端成功不等于本机Windows构建或安装验收。未批量接受所有Android许可。
-3. Phase4G 发现 media_kit 分发材料不完整，Phase4H 已删除该活动候选并用双平台包清单防止回流。Phase4J 已在本机两个真实输出端点环境补齐 Windows WAV 运行，Phase4K 已补当前 Android WAV/content URI；GitHub Windows 托管机仍缺播放端点。生产 Bootstrap 继续 Unavailable，HTTPS/最终选型尚未关闭，不创建候选的可下载应用 APK。
+3. Phase4G 发现 media_kit 分发材料不完整，Phase4H 已删除该活动候选并用双平台包清单防止回流。Phase4J/4K/4L 已补当前候选双平台本地和无Header HTTPS 运行，Android另有content URI；GitHub Windows 托管机仍缺播放端点。生产 Bootstrap 继续 Unavailable，下一批先完成最终选型、NOTICE/许可展示，再做共用播放器接线；当前不创建候选的可下载应用 APK。
 4. 已建立实时平台分类、三个Shell和根依赖；Windows Shell现有设计导航与跨平台Gallery，播放器、弹层、状态、队列及歌词组件仅存在于明确标注的Fixture，窗口Gateway、业务Overlay Manager、Inspector业务与正式播放器接线仍未实现。业务页面未实现，不把设计预览当成音乐业务交付。
 5. 为后续视觉验证准备获准且可访问的预览环境；遵守 Browser 技能边界，不绕过本轮 file: 拒绝。参考 screenshot 与 Flutter Golden 必须分别记录。
 
 ## 仓库边界
 
-Phase4H 历史分支：`refactor/remove-media-kit-candidate`，基于`feat/media-kit-license-closure@ad1774c95c1760fabb23488f61be9f352fad5674`。未在main/master直接开发；旧候选仍可由Git历史和Phase4B—4G报告复核。该批删除已拒绝候选，不改UI、生产Bootstrap、release权限或Drift v1 Schema。当前 Phase4K 的分支、PR 与精确提交见文首和本批报告；没有擅自合并或改写历史。
+Phase4H 历史分支：`refactor/remove-media-kit-candidate`，基于`feat/media-kit-license-closure@ad1774c95c1760fabb23488f61be9f352fad5674`。未在main/master直接开发；旧候选仍可由Git历史和Phase4B—4G报告复核。该批删除已拒绝候选，不改UI、生产Bootstrap、release权限或Drift v1 Schema。当前 Phase4L 的分支、PR 与精确提交见文首和本批报告；没有擅自合并或改写历史。
 
 用户于2026-09-04明确授权将`Z-YO-YI/YYMusic`由private改为public；变更前检查当前已跟踪文件及可见Git历史，未发现常见Token、私钥、`.env`或签名密钥文件。临时API访问令牌不持久化、不进入仓库。Phase3H Draft PR #16与APK证据仍只对应`27dd76c`；Phase4A Draft PR #17与APK证据只对应`ec508df`；Phase4C原生证据只对应`622408e`。
