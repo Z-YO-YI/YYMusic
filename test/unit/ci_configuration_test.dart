@@ -25,6 +25,8 @@ void main() {
         'android-native-audio',
         'windows-native-audio-sources',
         'android-native-audio-sources',
+        'windows-just-audio',
+        'android-just-audio',
       });
       final dispatch = triggers['workflow_dispatch'] as YamlMap;
       expect((dispatch['inputs'] as YamlMap)['run_native_audio_poc'], {
@@ -39,6 +41,12 @@ void main() {
         'default': false,
         'type': 'boolean',
       });
+      expect((dispatch['inputs'] as YamlMap)['run_just_audio_poc'], {
+        'description': 'Run the read-only just_audio native local WAV POC',
+        'required': true,
+        'default': false,
+        'type': 'boolean',
+      });
       for (final id in [
         'windows-debug',
         'android-debug',
@@ -46,6 +54,8 @@ void main() {
         'android-native-audio',
         'windows-native-audio-sources',
         'android-native-audio-sources',
+        'windows-just-audio',
+        'android-just-audio',
       ]) {
         expect((jobs[id] as YamlMap)['needs'], 'checks');
       }
@@ -107,7 +117,41 @@ void main() {
           (jobs[id] as YamlMap)['if'],
           "github.event_name != 'workflow_dispatch' || "
           '(!inputs.run_native_audio_poc && '
-          '!inputs.run_native_audio_source_poc)',
+          '!inputs.run_native_audio_source_poc && '
+          '!inputs.run_just_audio_poc)',
+        );
+      }
+
+      expect(
+        (jobs['windows-just-audio'] as YamlMap)['runs-on'],
+        'windows-2025',
+      );
+      expect(
+        (jobs['android-just-audio'] as YamlMap)['runs-on'],
+        'ubuntu-24.04',
+      );
+      for (final id in ['windows-just-audio', 'android-just-audio']) {
+        final job = jobs[id] as YamlMap;
+        expect(job['permissions'], isNull);
+        expect(
+          job['if'],
+          "github.event_name == 'workflow_dispatch' && "
+          'inputs.run_just_audio_poc',
+        );
+        final steps = (job['steps'] as YamlList).cast<YamlMap>();
+        final commands = <String>[
+          ...steps.map((step) => step['run']).whereType<String>(),
+          ...steps
+              .map((step) => step['with'])
+              .whereType<YamlMap>()
+              .map((withValues) => withValues['script'])
+              .whereType<String>(),
+        ];
+        expect(
+          commands,
+          anyElement(
+            contains('integration_test/just_audio_native_local_poc_test.dart'),
+          ),
         );
       }
 
