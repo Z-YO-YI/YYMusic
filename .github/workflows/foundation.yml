@@ -22,12 +22,17 @@ on:
         required: true
         default: false
         type: boolean
+      include_https_audio_poc:
+        description: Include pinned HTTPS in an explicitly selected native diagnostic mode
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
 
 concurrency:
-  group: foundation-${{ github.workflow }}-${{ github.ref }}
+  group: foundation-${{ github.workflow }}-${{ github.ref }}-${{ inputs.build_windows_audio_probe && 'profile' || inputs.run_just_audio_poc && 'native' || 'standard' }}
   cancel-in-progress: true
 
 env:
@@ -41,6 +46,9 @@ jobs:
     steps:
       - name: Reject conflicting diagnostic modes
         if: inputs.run_just_audio_poc && inputs.build_windows_audio_probe
+        run: exit 1
+      - name: Reject HTTPS outside an explicit diagnostic mode
+        if: inputs.include_https_audio_poc && !(inputs.run_just_audio_poc || inputs.build_windows_audio_probe)
         run: exit 1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -105,10 +113,12 @@ jobs:
             --dart-define=YYMUSIC_WINDOWS_AUDIO_PROBE=true `
             "--dart-define=YYMUSIC_PROBE_SOURCE_COMMIT=$env:GITHUB_SHA" `
             "--dart-define=YYMUSIC_PROBE_NATIVE_COMMIT=$env:GITHUB_SHA" `
+            --dart-define=YYMUSIC_PROBE_HTTPS=${{ inputs.include_https_audio_poc }} `
             --dart-define=INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE=false
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           ./tools/verify_windows_bundle.ps1 -BundlePath build/windows/x64/runner/Profile
-          ./tools/windows_audio_profile_metadata.ps1
+          $includeHttps = '${{ inputs.include_https_audio_poc }}' -ceq 'true'
+          ./tools/windows_audio_profile_metadata.ps1 -IncludeHttps:$includeHttps
       - name: Upload short-lived Windows diagnostic only
         if: github.event_name == 'workflow_dispatch' && inputs.build_windows_audio_probe
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -241,7 +251,7 @@ jobs:
             throw 'No real Windows playback endpoint is available on this runner.'
           }
       - name: Run generated WAV through the Windows just_audio backend
-        run: flutter test --no-pub integration_test/just_audio_native_local_poc_test.dart -d windows --reporter expanded
+        run: flutter test --no-pub ${{ inputs.include_https_audio_poc && 'integration_test/just_audio_native_sources_poc_test.dart' || 'integration_test/just_audio_native_local_poc_test.dart' }} -d windows --reporter expanded
 
   android-just-audio:
     name: Android x86_64 just_audio local WAV and content URI
@@ -278,4 +288,4 @@ jobs:
           ndk: 28.2.13676358
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: flutter test --no-pub integration_test/just_audio_android_sources_poc_test.dart -d emulator-${EMULATOR_PORT} --reporter expanded
+          script: flutter test --no-pub ${{ inputs.include_https_audio_poc && 'integration_test/just_audio_native_sources_poc_test.dart' || 'integration_test/just_audio_android_sources_poc_test.dart' }} -d emulator-${EMULATOR_PORT} --reporter expanded

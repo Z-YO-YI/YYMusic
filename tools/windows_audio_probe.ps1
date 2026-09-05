@@ -8,12 +8,21 @@ param(
     [string]$FlutterRoot,
     [string]$OutputDirectory,
     [ValidateSet('Debug', 'Profile')][string]$RuntimeMode = 'Debug',
-    [string]$NativeCommit = '4db58997ffe16a62da204344578a5f4b7fd9c320'
+    [string]$NativeCommit = '4db58997ffe16a62da204344578a5f4b7fd9c320',
+    [switch]$IncludeHttps
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $probeRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 if ($NativeCommit -cnotmatch '^[0-9a-f]{40}$') { throw 'Expected native commit must be exact' }
+if ($IncludeHttps -and $RuntimeMode -cne 'Profile') { throw 'HTTPS probe requires a matching Profile bundle' }
+
+function Get-HttpsMode($Record) {
+    $property = $Record.PSObject.Properties['includeHttps']
+    if (-not $property) { return $false } # Legacy local-only diagnostics.
+    if ($property.Value -isnot [bool]) { throw 'Invalid HTTPS probe mode' }
+    return $property.Value
+}
 
 function Assert-NoLinks([string]$Path) {
     $cursor = [IO.Path]::GetFullPath($Path)
@@ -53,7 +62,8 @@ if ($Mode -eq 'Run') {
     $manifest = Get-Content -LiteralPath (Join-Path $outputPath 'manifest.json') -Raw | ConvertFrom-Json
     if ($manifest.schemaVersion -ne 1 -or $manifest.nativeCommit -cne $nativeCommit -or
         $manifest.sourceCommit -cnotmatch '^[0-9a-f]{40}$' -or
-        $manifest.runtimeMode -cne $RuntimeMode) { throw 'Invalid probe manifest' }
+        $manifest.runtimeMode -cne $RuntimeMode -or
+        (Get-HttpsMode $manifest) -ne [bool]$IncludeHttps) { throw 'Invalid probe manifest' }
     $runtime = Join-Path $outputPath 'runtime'
     $before = Get-Inventory $runtime
     if (($before | ConvertTo-Json -Depth 5 -Compress) -cne ($manifest.files | ConvertTo-Json -Depth 5 -Compress)) {
@@ -93,9 +103,11 @@ if ($Mode -eq 'Run') {
         throw 'Native probe did not produce a bounded result; local logs retained'
     }
     $result = Get-Content -LiteralPath $resultPath -Raw | ConvertFrom-Json
+    $expectedTests = if ($IncludeHttps) { 2 } else { 1 }
     if ($result.schemaVersion -ne 1 -or $result.sourceCommit -cne $manifest.sourceCommit -or
         $result.nativeCommit -cne $nativeCommit -or $result.platform -cne 'windows' -or
-        $result.passed -isnot [bool] -or -not $result.passed -or $result.testCount -ne 1 -or
+        $result.passed -isnot [bool] -or -not $result.passed -or $result.testCount -ne $expectedTests -or
+        (Get-HttpsMode $result) -ne [bool]$IncludeHttps -or
         $result.diagnosticId -cne 'native-poc.passed' -or $probeExit -ne 0) {
         throw 'Native probe failed; inspect the ignored local result and logs'
     }
@@ -107,13 +119,30 @@ if ($Mode -eq 'Run') {
         $metrics[$key] = $value
     }
     if ($metrics.durationMs -lt 2900 -or $metrics.durationMs -gt 3100) { throw 'Invalid native duration' }
+    $httpsMetrics = [ordered]@{}
+    if ($IncludeHttps) {
+        $https = $result.httpsMetrics
+        if ($https.fixtureSha256 -cne '1b35cc093f3d56732b19ff936c21b5bca8195135d63708f6c6488eba5803ddce' -or
+            $https.fixtureVerified -isnot [bool] -or -not $https.fixtureVerified -or
+            $https.rangeVerified -isnot [bool] -or -not $https.rangeVerified) { throw 'Invalid HTTPS fixture evidence' }
+        foreach ($key in @('loadMs', 'firstProgressMs', 'seekMs', 'durationMs')) {
+            $value = $https.$key
+            if (($value -isnot [long] -and $value -isnot [int]) -or $value -lt 0 -or $value -gt 30000) {
+                throw 'Invalid HTTPS timing'
+            }
+            $httpsMetrics[$key] = $value
+        }
+        if ($httpsMetrics.durationMs -lt 950 -or $httpsMetrics.durationMs -gt 1050) { throw 'Invalid HTTPS duration' }
+        $httpsMetrics.fixtureSha256 = $https.fixtureSha256
+    }
     $after = @(Get-Inventory $runtime | Where-Object { $_.path -cne 'native-audio-poc-result.json' })
     if (($before | ConvertTo-Json -Depth 5 -Compress) -cne ($after | ConvertTo-Json -Depth 5 -Compress)) {
         throw 'Runtime files changed during execution'
     }
     # Emit only whitelisted data, never the raw result or native logs.
     [ordered]@{ passed = $true; sourceCommit = $manifest.sourceCommit; nativeCommit = $nativeCommit;
-        runtimeMode = $RuntimeMode; renderEndpoints = $renderCount; exitCode = $probeExit; nativeMetrics = $metrics } | ConvertTo-Json -Compress
+        runtimeMode = $RuntimeMode; includeHttps = [bool]$IncludeHttps; testCount = $expectedTests;
+        renderEndpoints = $renderCount; exitCode = $probeExit; nativeMetrics = $metrics; httpsMetrics = $httpsMetrics } | ConvertTo-Json -Compress
     return
 }
 
@@ -180,9 +209,11 @@ try {
         if ($metadataEntry.Length -gt 4096) { throw 'Profile metadata exceeds limit' }
         $reader = [IO.StreamReader]::new($metadataEntry.Open())
         try { $metadata = $reader.ReadToEnd() | ConvertFrom-Json } finally { $reader.Dispose() }
+        $purpose = if ($IncludeHttps) { 'isolated-audio-source-test' } else { 'isolated-local-wav-test' }
         if ($metadata.schemaVersion -ne 1 -or $metadata.sourceCommit -cne $nativeCommit -or
             $metadata.nativeCommit -cne $nativeCommit -or $metadata.runtimeMode -cne 'Profile' -or
-            $metadata.purpose -cne 'isolated-local-wav-test' -or $metadata.flutterVersion -cne '3.47.2') {
+            $metadata.purpose -cne $purpose -or $metadata.flutterVersion -cne '3.47.2' -or
+            (Get-HttpsMode $metadata) -ne [bool]$IncludeHttps) {
             throw 'Profile bundle identity mismatch'
         }
     }
@@ -218,7 +249,7 @@ try {
 } finally { $archive.Dispose() }
 if ($Mode -eq 'PrepareProfile') {
     [ordered]@{ schemaVersion = 1; sourceCommit = $sourceCommit; nativeCommit = $nativeCommit; runtimeMode = $RuntimeMode;
-        archiveSha256 = $ExpectedArchiveSha256; files = @(Get-Inventory $runtime) } |
+        includeHttps = [bool]$IncludeHttps; archiveSha256 = $ExpectedArchiveSha256; files = @(Get-Inventory $runtime) } |
         ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $outputPath 'manifest.json') -Encoding utf8
     Write-Output "PASS: unmodified Profile diagnostic prepared; source=native=$sourceCommit"
     return

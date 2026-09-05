@@ -89,4 +89,62 @@ void main() {
       throwsArgumentError,
     );
   });
+
+  final https = <String, Object>{
+    'platform': 'windows',
+    'fixtureSha256':
+        '1b35cc093f3d56732b19ff936c21b5bca8195135d63708f6c6488eba5803ddce',
+    'fixtureVerified': true,
+    'rangeVerified': true,
+    'completed': true,
+    'disposed': true,
+    'proxyForHeaders': false,
+    'requestHeaders': false,
+    'loadMs': 100,
+    'firstProgressMs': 170,
+    'seekMs': 7,
+    'durationMs': 1000,
+    'private': 'private-URL-or-credentials',
+  };
+  Map<String, Object> httpsResult({Object? evidence, int count = 2}) =>
+      windowsAudioProbeResult(
+        sourceCommit: commit,
+        nativeCommit: commit,
+        testsPassed: true,
+        testCount: count,
+        metrics: metrics,
+        includeHttps: true,
+        httpsMetrics: evidence,
+      );
+  test('HTTPS mode requires both original WAV and verified HTTPS and strips extras', () {
+    final record = httpsResult(evidence: https);
+    expect(record['passed'], isTrue);
+    expect(record['testCount'], 2);
+    expect(record['includeHttps'], isTrue);
+    expect(jsonEncode(record), isNot(contains('private-')));
+    for (final count in [0, 1, 3]) {
+      expect(httpsResult(evidence: https, count: count)['passed'], isFalse);
+    }
+    expect(httpsResult()['passed'], isFalse);
+  });
+  test(
+    'HTTPS fixture drift, incomplete lifecycle and invalid metrics fail closed',
+    () {
+      for (final change in <Map<String, Object>>[
+        {'fixtureSha256': '0' * 64},
+        {'fixtureVerified': false},
+        {'rangeVerified': false},
+        {'disposed': false},
+        {'completed': false},
+        {'durationMs': 3000},
+        {'loadMs': -1},
+        {'seekMs': double.nan},
+        {'platform': 'android'},
+        {'requestHeaders': true},
+        {'proxyForHeaders': true},
+      ]) {
+        expect(httpsResult(evidence: {...https, ...change})['passed'], isFalse);
+      }
+    },
+  );
 }

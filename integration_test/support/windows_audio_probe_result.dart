@@ -1,3 +1,5 @@
+import 'pinned_https_audio_fixture.dart';
+
 /// Builds a bounded, non-sensitive diagnostic record, never plugin errors.
 Map<String, Object> windowsAudioProbeResult({
   required String sourceCommit,
@@ -6,6 +8,8 @@ Map<String, Object> windowsAudioProbeResult({
   required int testCount,
   required Object? metrics,
   String diagnosticId = 'native-poc.failed',
+  bool includeHttps = false,
+  Object? httpsMetrics,
 }) {
   final commit = RegExp(r'^[0-9a-f]{40}$');
   if (!commit.hasMatch(sourceCommit) || !commit.hasMatch(nativeCommit)) {
@@ -39,10 +43,35 @@ Map<String, Object> windowsAudioProbeResult({
     metricsValid =
         metricsValid && duration is int && duration >= 2900 && duration <= 3100;
   }
+  final safeHttps = <String, Object>{};
+  var httpsValid = !includeHttps;
+  if (includeHttps && httpsMetrics is Map<String, Object>) {
+    httpsValid =
+        httpsMetrics['platform'] == 'windows' &&
+        httpsMetrics['fixtureSha256'] == httpsFixtureSha256 &&
+        httpsMetrics['fixtureVerified'] == true &&
+        httpsMetrics['rangeVerified'] == true &&
+        httpsMetrics['completed'] == true &&
+        httpsMetrics['disposed'] == true &&
+        httpsMetrics['proxyForHeaders'] == false &&
+        httpsMetrics['requestHeaders'] == false;
+    for (final key in ['loadMs', 'firstProgressMs', 'seekMs', 'durationMs']) {
+      final value = httpsMetrics[key];
+      if (value is! int || value < 0 || value > 30000) {
+        httpsValid = false;
+      } else {
+        safeHttps[key] = value;
+      }
+    }
+    final duration = safeHttps['durationMs'];
+    httpsValid =
+        httpsValid && duration is int && duration >= 950 && duration <= 1050;
+  }
   final passed =
       testsPassed &&
-      testCount == 1 &&
+      testCount == (includeHttps ? 2 : 1) &&
       metricsValid &&
+      httpsValid &&
       diagnosticId == 'native-poc.failed';
   return {
     'schemaVersion': 1,
@@ -51,7 +80,15 @@ Map<String, Object> windowsAudioProbeResult({
     'platform': 'windows',
     'passed': passed,
     'testCount': testCount,
+    'includeHttps': includeHttps,
     'diagnosticId': passed ? 'native-poc.passed' : diagnosticId,
     if (passed) 'nativeMetrics': safeMetrics,
+    if (passed && includeHttps)
+      'httpsMetrics': {
+        ...safeHttps,
+        'fixtureSha256': httpsFixtureSha256,
+        'fixtureVerified': true,
+        'rangeVerified': true,
+      },
   };
 }
