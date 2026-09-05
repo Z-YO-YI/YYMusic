@@ -1,6 +1,6 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 4H 已移除因分发证据不完整而被拒绝的`media_kit`活动候选；Phase 4F仍缺Windows真实播放端点**。Phase2通用原语、三套Shell骨架、完整Phase3数据层，以及正式播放状态、可替换音频/来源/媒体会话合同、持久队列算法已经存在。Phase4G历史清单仍保存Android四个JAR、APK三ABI和Windows发布DLL的强哈希证据，但这些wrapper、SO、DLL和专用POC已不再进入当前依赖、源码、CI或生成注册。生产仍使用`UnavailableAudioEngine`；REST Adapter、正式播放器选型与接线和业务页面尚未完成。
+当前阶段：**Android + Windows · Phase 4I 修复播放会话与队列一致性；Phase 4F Windows原生播放验收仍未关闭**。新增停止后重播、加载失败重试、队列替换停止旧音频、完成事件去重与过期操作保护。生产仍使用`UnavailableAudioEngine`，不把测试通过当作应用已能播放。Phase4H已移除被拒绝的`media_kit`活动候选；历史审计证据保留。正式播放器选型与接线、REST Adapter和业务页面尚未完成。本机现已检测到输出端点，但C++工具链与插件链接权限尚未就绪；GitHub托管机缺端点的限制仍保留。
 
 Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭、只允许手动选择、`contents: read`且不上传产物的Windows/Android原生集成模式。完整221项Flutter含32张Windows宿主Golden、严格分析0问题、31项Node、24项ZIP、lockfile及生成代码/v1快照零差异已通过；本机Android Debug也完成资产与v2单Debug签名复核。精确提交`622408e`的专用运行33862786766 attempt 2已在Windows与Android成功，且没有artifact或Release；普通push另提供保留14天的完整Windows Debug portable bundle。
 
@@ -10,6 +10,7 @@ Phase4D实现提交`913f3d75`增加HEAD-only脱敏网络探针、Android debug-o
 
 ## 开发入口
 
+- [Phase 4I播放会话计划](docs/phase_4i_playback_consistency_plan.md)、[本批报告](docs/phase_4i_playback_consistency_report.md)
 - [Phase 4H media_kit候选移除计划](docs/phase_4h_media_kit_candidate_removal_plan.md)、[本批报告](docs/phase_4h_media_kit_candidate_removal_report.md)、[本批 PR 草稿](docs/phase_4h_media_kit_candidate_removal_pr_draft.md)
 - [Phase 4G media_kit分发审计计划](docs/phase_4g_media_kit_redistribution_plan.md)、[失败关闭报告](docs/phase_4g_media_kit_redistribution_report.md)、[原生产物清单](docs/phase_4g_media_kit_redistribution_inventory.md)、[本批 PR 草稿](docs/phase_4g_media_kit_redistribution_pr_draft.md)
 - [Phase 4F just_audio原生运行计划](docs/phase_4f_just_audio_native_poc_plan.md)、[未关闭报告](docs/phase_4f_just_audio_native_poc_report.md)、[本批 PR 草稿](docs/phase_4f_just_audio_native_poc_pr_draft.md)

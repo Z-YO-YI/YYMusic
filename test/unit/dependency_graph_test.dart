@@ -6,6 +6,7 @@ import 'package:yymusic/playback/audio_engine_state.dart';
 import 'package:yymusic/playback/playback_state.dart';
 
 import '../support/fake_audio_engine.dart';
+import '../support/fake_domain_repositories.dart';
 import '../support/fake_playback_dependencies.dart';
 
 void main() {
@@ -35,8 +36,13 @@ void main() {
       final graph = DependencyGraph(
         audioEngine: engine,
         mediaSession: mediaSession,
+        library: FakeLibraryRepository(tracks: [playbackFixtureTrack]),
+        playbackSourceResolver: FakePlaybackSourceResolver(),
       );
+      addTearDown(graph.dispose);
       await graph.initialize();
+      await graph.queue.replace([playbackFixtureEntry()]);
+      await graph.playback.play();
       engine.events.add(
         AudioEngineState(
           phase: AudioEnginePhase.paused,

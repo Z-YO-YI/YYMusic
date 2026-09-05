@@ -250,6 +250,8 @@ void main() {
         expect(resolver.resolved, hasLength(3));
 
         controller.setRepeatMode(RepeatMode.all);
+        // A completed item only starts a new cycle after an explicit replay.
+        await controller.play();
         engine.complete();
         await _drain();
         expect(controller.state.currentTrack?.id, 'c');
