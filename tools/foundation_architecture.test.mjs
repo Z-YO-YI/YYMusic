@@ -16,6 +16,7 @@ test('formal source does not embed WebViews, fixture catalogs or source archives
     'assets/icons/yymusic/',
     'assets/fonts/inter/OFL.txt',
     'assets/fonts/noto_sans_sc/OFL.txt',
+    'assets/legal/android_audio/notices.json',
     'assets/fonts/inter/InterVariable.ttf',
     'assets/fonts/noto_sans_sc/NotoSansSCVariable.ttf',
   ], 'Only audited icons, pinned fonts and licenses may be bundled');

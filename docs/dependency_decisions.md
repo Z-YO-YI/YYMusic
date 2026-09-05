@@ -205,3 +205,11 @@ Phase4M将Phase4E六个Pub包的完整许可原文和两个原生构建文件指
 沿用Flutter自动汇总/LicenseRegistry，而不是另外维护可能漂移的原文副本。
 详细范围见ADR-041：本批仅关闭六个音频Dart包的来源与打包覆盖，不伪称已经审完全部Maven传递材料，
 也不接生产AudioEngine。完整原生NOTICE与最终选型/许可展示仍是正式接线前的剩余工作。
+
+## Phase 4N 原生材料（2026-09-05）
+
+当前Media3实际Debug/Profile闭包51项、Release48项均已按精确POM/父POM和归档哈希核对，
+保留三份完整许可原文并打包为单一JSON资产。没有新增或升级运行时依赖。
+Windows无额外播放器DLL的结论不变，随两端携带的Android材料明确标注平台范围。
+许可查看与正式音频入口尚待下一批；本批不是整个应用发行批准。详见ADR-042及
+[Phase4N报告](phase_4n_native_notices_report.md)。

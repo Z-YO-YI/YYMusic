@@ -1,5 +1,9 @@
 # 原生基础验证矩阵
 
+当前Phase4N新增5项原生许可回归；本地255 Flutter/56 Node、源码/三变体依赖精确比对、Android包内
+许可和48项设计资产/v2签名通过。云端结果见[本批报告](phase_4n_native_notices_report.md)，
+不能把只读Release依赖解析当作Release构建成功。下文旧候选状态仅保留历史归属。
+
 Phase4H删除已拒绝media_kit适配器的5项Fake测试后，保留227项Flutter检查；35项Node仍包含4项历史清单/失败关闭反向门禁。不包含用户音乐、在线密钥、媒体二进制、证书或私钥。旧media_kit原生POC job已经移除，只保留默认关闭、只读且不上传产物的just_audio双平台手动作业；其Windows真时钟证据仍因无播放端点而失败关闭。
 
 | 类别 | 已有自动检查 |

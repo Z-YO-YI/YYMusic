@@ -34,4 +34,5 @@ if ($taskRejectedFiles.Count -gt 0) {
 
 $taskFileCount = @(Get-ChildItem -LiteralPath $taskBundlePath -Recurse -File).Count
 & (Join-Path $PSScriptRoot 'verify_audio_licenses.ps1') -Mode Windows -BundlePath $taskBundlePath
+& (Join-Path $PSScriptRoot 'verify_native_audio_notices.ps1') -Mode Windows -BundlePath $taskBundlePath
 Write-Output "PASS: Windows bundle contains $taskFileCount files and no rejected media_kit native content."

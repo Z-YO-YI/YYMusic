@@ -1,5 +1,9 @@
 # 实施状态
 
+当前增量Phase4N：51项Android音频原生依赖材料/双平台包内校验已实现，本地255 Flutter、
+56 Node、格式/分析、ZIP、生成代码、Android Debug/签名全部通过；云端验证中。
+当前分支`codex/native-audio-notices`，详见[Phase4N报告](phase_4n_native_notices_report.md)。
+
 更新：2026-09-05。当前在 Phase 4 播放基础验证；Phase 0—3 已有实现与审计产物，Phase 2 仍欠网页截图对照。Phase4L 已在同一实现提交验证 Android WAV/content URI/HTTPS 与 Windows WAV/HTTPS。Phase4G 的 `media_kit` 分发审计未通过，Phase4H 已移除该活动候选。生产仍为 `UnavailableAudioEngine`，最终候选/许可展示、正式业务页面、播放器接线及 Phase 5—11 未完成，不能作为可用音乐应用交付。
 
 Phase4J最新增量：`25747bc`的GitHub Profile完整诊断包已在本机Windows进程连续两次通过原始本地WAV测试，

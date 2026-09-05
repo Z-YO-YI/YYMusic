@@ -1,0 +1,1398 @@
+{
+  "schemaVersion": 1,
+  "scope": "resolved-android-media3-audio-closure",
+  "sourceLicenseUrl": "https://github.com/androidx/media/blob/c35a9d62baec57118ea898e271ac66819399649b/LICENSE",
+  "components": [
+    {
+      "coordinate": "androidx.annotation:annotation-experimental:1.4.0",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.annotation:annotation-experimental:1.4.0",
+          "bytes": 2031,
+          "sha256": "41d2b9d879fc9221acda8e873ec7d26b153b9b8e04770ac79491e0576baef038"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "annotation-experimental-1.4.0.aar",
+          "bytes": 39811,
+          "sha256": "c6eb7e676011ec65b32428373d450debdfc45179c4f8b3a752174fb87c17b08a",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.annotation:annotation-jvm:1.8.2",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.annotation:annotation-jvm:1.8.2",
+          "bytes": 1826,
+          "sha256": "7d3b2860ea36511153a9713559dab60d77f72167fadc9c1c3198c23035fbc480"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "annotation-jvm-1.8.2.jar",
+          "bytes": 56126,
+          "sha256": "9aab326d9492800991854360ac248f493ce7f7c3183519309b78ace9e240f6f6",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.annotation:annotation:1.8.1",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.annotation:annotation:1.8.1",
+          "bytes": 2008,
+          "sha256": "b71225974ec087eb96c25ef6819f55b1c22f530e85ca446ba735fb66ed04ff5c"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": []
+    },
+    {
+      "coordinate": "androidx.arch.core:core-common:2.2.0",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.arch.core:core-common:2.2.0",
+          "bytes": 1704,
+          "sha256": "1e17d4af8d6425be2a69f8af4d654a87e0456259a9eef1542869bcb023547e28"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "core-common-2.2.0.jar",
+          "bytes": 11657,
+          "sha256": "65308a06b1c00ee186cb9e19321383f043b993813f1522c47f4a3e3303bdba41",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.arch.core:core-runtime:2.2.0",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.arch.core:core-runtime:2.2.0",
+          "bytes": 1920,
+          "sha256": "0f953706598140d9d8735cdd5aeb1fa35933f4e2f31c0bf3eb81a053a4c8c1a5"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "core-runtime-2.2.0.aar",
+          "bytes": 7577,
+          "sha256": "a1be5e0caa2b07623862af6ae21b3ab0718123245184d0e30dea81b53f990a47",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.collection:collection:1.2.0",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.collection:collection:1.2.0",
+          "bytes": 1736,
+          "sha256": "97a004946bf0581cc8fe19b48adfce4f48374deb2a52c49d53157312d05bd5ad"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "collection-1.2.0.jar",
+          "bytes": 40384,
+          "sha256": "16d77e8c443fa55fe9a6074d00445d520ca5c9f913cefdbf4828356255214e42",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.concurrent:concurrent-futures:1.1.0",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.concurrent:concurrent-futures:1.1.0",
+          "bytes": 1888,
+          "sha256": "748a34eb5d13d19d187adecaea82667fded5f1b0b98a655e13ed2e4a8b3d8ae6"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "concurrent-futures-1.1.0.jar",
+          "bytes": 25987,
+          "sha256": "0ce067c514a0d1049d1bebdf709e344ed3266fe9744275682937cdcb13334e9e",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.core:core-ktx:1.13.1",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.core:core-ktx:1.13.1",
+          "bytes": 2450,
+          "sha256": "31cc345b8c6cdd2046dcf67872df8a8cb4f44ea0cade4df80002caa7e3b71809"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "core-ktx-1.13.1.aar",
+          "bytes": 171581,
+          "sha256": "19ba50d094c7368ede1b4ccf1195ceb83e35970736593f823e5af716f8d05d70",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.core:core:1.13.1",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.core:core:1.13.1",
+          "bytes": 3654,
+          "sha256": "527abfa5a8d6af748b37e1c0162d1633a2d5ea4387b0205a8b436b6214ba1cf6"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "core-1.13.1.aar",
+          "bytes": 1270406,
+          "sha256": "2c27de199535675005553066597a4b20fa1eea7c228ab4ef6b32b5fe39ca1f59",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.exifinterface:exifinterface:1.4.1",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.exifinterface:exifinterface:1.4.1",
+          "bytes": 2004,
+          "sha256": "944e867584e20748613cc7610bd5fa10a968cc98cb59fdfdb863e9f0201df289"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "exifinterface-1.4.1.aar",
+          "bytes": 75523,
+          "sha256": "17e17a6b86bb54074d3a7ecfa695ab920eaff4cf667a8371ed82e377580cfcf6",
+          "notices": [
+            {
+              "path": "META-INF/androidx/exifinterface/exifinterface/LICENSE.txt",
+              "document": "809fa1ed21450f59827d1e9aec720bbc4b687434fa22283c6cb5dd82a47ab9c0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.interpolator:interpolator:1.0.0",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.interpolator:interpolator:1.0.0",
+          "bytes": 1608,
+          "sha256": "0ddc07cc39699f48ecd9ec894b5830c0f09e22e82959294edf37217224c88b7b"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "interpolator-1.0.0.aar",
+          "bytes": 7669,
+          "sha256": "33193135a64fe21fa2c35eec6688f1a76e512606c0fc83dc1b689e37add7732a",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.lifecycle:lifecycle-common-java8:2.7.0",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.lifecycle:lifecycle-common-java8:2.7.0",
+          "bytes": 5246,
+          "sha256": "c29de269fca03230d0fb5ebf9c9560950b9f9bcd540ed7fcf85c08beca1afddb"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "lifecycle-common-java8-2.7.0.jar",
+          "bytes": 261,
+          "sha256": "c6deada2fac53b8ea6523dbda77597b128006674616f140f04df23264c6d1aa3",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.lifecycle:lifecycle-common:2.7.0",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.lifecycle:lifecycle-common:2.7.0",
+          "bytes": 5939,
+          "sha256": "8a7c2448917f84fa6793dfe8563b49c96562d6e86eed19c642ef300d5cd16bc0"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "lifecycle-common-2.7.0.jar",
+          "bytes": 56617,
+          "sha256": "533ded8ee0645a18f6653da53fe1ec5a15430e7f36a737d45e410531f30f3318",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.lifecycle:lifecycle-livedata-core-ktx:2.7.0",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.lifecycle:lifecycle-livedata-core-ktx:2.7.0",
+          "bytes": 5316,
+          "sha256": "67502b56b0695b2c2a1c8ff2b93ebd23b6c3d0c214f1ea3b96211eca98960fc4"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "lifecycle-livedata-core-ktx-2.7.0.aar",
+          "bytes": 20190,
+          "sha256": "a97f4c2191ebdd32f99ac229597bd1a92446b01cd1a088d13494cc05cabf0def",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.lifecycle:lifecycle-livedata-core:2.7.0",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.lifecycle:lifecycle-livedata-core:2.7.0",
+          "bytes": 5651,
+          "sha256": "d8e8a0ccedc798db560c637df432159cb05ec3ad18f9b8f6648f59bd4580acd6"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "lifecycle-livedata-core-2.7.0.aar",
+          "bytes": 11311,
+          "sha256": "af8e11b87e030d6e3107ed39adcf01fa10d6259eb15c43cba6e7b4e3ffaedf27",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.lifecycle:lifecycle-livedata:2.7.0",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.lifecycle:lifecycle-livedata:2.7.0",
+          "bytes": 6091,
+          "sha256": "69885fd126b6866da760421636cb31cbf0fc5195f9962f45b9775c2d18496fc8"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "lifecycle-livedata-2.7.0.aar",
+          "bytes": 57786,
+          "sha256": "9affa24c6160dc8cadaac9422d4f714e5009537d0243afc4bc74b5b7cf0de4ad",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.lifecycle:lifecycle-process:2.7.0",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.lifecycle:lifecycle-process:2.7.0",
+          "bytes": 5664,
+          "sha256": "7b07a80cb709396b69b071ea1a9177846ed699b4b44bebb1f9bad8bbbf21a23d"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "lifecycle-process-2.7.0.aar",
+          "bytes": 16079,
+          "sha256": "6fb33d9473a4933da9d98a0b12b606127e80681bd9b90309ccd2c2230863b939",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.lifecycle:lifecycle-runtime:2.7.0",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.lifecycle:lifecycle-runtime:2.7.0",
+          "bytes": 6038,
+          "sha256": "fec5849eef5069ae19f0c6270d76421485f461f1025c90277b05ddd713c7e365"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "lifecycle-runtime-2.7.0.aar",
+          "bytes": 21940,
+          "sha256": "81c6fb1dbb6a3cd7dc827d7b08e1c8142ed3a400a3422441108480e22f8937c4",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.lifecycle:lifecycle-viewmodel-savedstate:2.7.0",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.lifecycle:lifecycle-viewmodel-savedstate:2.7.0",
+          "bytes": 6300,
+          "sha256": "df0107a734b53080a2847bfabbf8e127958b765f6d5a0d5e028281af3964623f"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "lifecycle-viewmodel-savedstate-2.7.0.aar",
+          "bytes": 39363,
+          "sha256": "57c578862e219e360c6957ff0bca6f169707b1e5582d4fa593e284f7f63e33f6",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.lifecycle:lifecycle-viewmodel:2.7.0",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.lifecycle:lifecycle-viewmodel:2.7.0",
+          "bytes": 5248,
+          "sha256": "700f289173adcd0c6144da0c692c4e40b0a83af5a1392c544da982f4aabbd48e"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "lifecycle-viewmodel-2.7.0.aar",
+          "bytes": 39819,
+          "sha256": "4e1d92e289920cd7b50e3671b9191bd413407349cda6f602b0285464f41c1c82",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.media3:media3-common:1.4.1",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.media3:media3-common:1.4.1",
+          "bytes": 7151,
+          "sha256": "ff48f952c6fb65662a720f83d52b123c20082e9cade754320df44d9cae662bc9"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "media3-common-1.4.1.aar",
+          "bytes": 479222,
+          "sha256": "973e5e7b0ecf8e6c8cd825cab35145b84c56020af7c3ec52815e595ef71baa16",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.media3:media3-container:1.4.1",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.media3:media3-container:1.4.1",
+          "bytes": 1776,
+          "sha256": "67e07e64ceebb75c5c39d7ed5a731810f8ce0d9d7fda05522374b48f9f0bef27"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "media3-container-1.4.1.aar",
+          "bytes": 24985,
+          "sha256": "65b6d22c96dfb5ce76754b08f5b004ee0dbdbe60793c5eab9f95c1f54f95f4b0",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.media3:media3-database:1.4.1",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.media3:media3-database:1.4.1",
+          "bytes": 1773,
+          "sha256": "f37770c0d8ff610241c5e775ccb9376120925bd4f9a3b3893096a123f36851de"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "media3-database-1.4.1.aar",
+          "bytes": 7196,
+          "sha256": "2170ae6448cd499fc570dafa81e5687ad813995b7c2b7ff6801acaaa9a88bb4a",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.media3:media3-datasource:1.4.1",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.media3:media3-datasource:1.4.1",
+          "bytes": 2196,
+          "sha256": "e36ef0d3ff89283389b0a38e6f27331558c40ea2194e6f6c87f43f2d8c719832"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "media3-datasource-1.4.1.aar",
+          "bytes": 161706,
+          "sha256": "1c0bb41ee88a6bfaf24720bbfe2d29a033abad21c30e0921efbdce6c1fa28842",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.media3:media3-decoder:1.4.1",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.media3:media3-decoder:1.4.1",
+          "bytes": 1770,
+          "sha256": "1d3306347cd68526c651852e7232ebc66e4015abde71490a0e173aa5595b5ded"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "media3-decoder-1.4.1.aar",
+          "bytes": 17747,
+          "sha256": "f7d97c5a39dca3c3c21bc8a70145d931d8633ed0dae89198c370e7b7e3c3f183",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.media3:media3-exoplayer-dash:1.4.1",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.media3:media3-exoplayer-dash:1.4.1",
+          "bytes": 1794,
+          "sha256": "127c155e7a229aaf8fa3990a66438c84178dd660811304f7a89b35643d9347fe"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "media3-exoplayer-dash-1.4.1.aar",
+          "bytes": 139125,
+          "sha256": "3940c66935d718d07abaae05b11ab89751b300b7cee4b8ada1ba9510e7362759",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.media3:media3-exoplayer-hls:1.4.1",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.media3:media3-exoplayer-hls:1.4.1",
+          "bytes": 1791,
+          "sha256": "6b2237b2d421424089cc884fd1287ed986193f13f4a9cd204398901d169da066"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "media3-exoplayer-hls-1.4.1.aar",
+          "bytes": 167058,
+          "sha256": "43546b6b2ef0c2816f5d3af181c2179a5c1bddb9df85b7b84b3428cd37c887de",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.media3:media3-exoplayer-smoothstreaming:1.4.1",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.media3:media3-exoplayer-smoothstreaming:1.4.1",
+          "bytes": 1827,
+          "sha256": "1625384d0f50a910491b5449afe96facd7bb771f5ff96b5438c56563aca288d2"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "media3-exoplayer-smoothstreaming-1.4.1.aar",
+          "bytes": 51015,
+          "sha256": "0e7140eb91079a6249fac170230753ca6594e76a21fd9e82e5f4acf19800e74e",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.media3:media3-exoplayer:1.4.1",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.media3:media3-exoplayer:1.4.1",
+          "bytes": 3395,
+          "sha256": "60f4ccd8872495ae3ee7df21a06bf0b418941387195c8eb32ed03445730cb0b5"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "media3-exoplayer-1.4.1.aar",
+          "bytes": 1440873,
+          "sha256": "66cd0f99209191660823d32c8fc329e383a8a7ff33e0d676632387361abcba70",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.media3:media3-extractor:1.4.1",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.media3:media3-extractor:1.4.1",
+          "bytes": 2188,
+          "sha256": "97de06a4e1c83919e05a2de63a6bb3ac516c7638f46176f1bf647e716f6f357c"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "media3-extractor-1.4.1.aar",
+          "bytes": 774439,
+          "sha256": "1f51e4633e1e6137f0a4b80552afc399e269208b700352f96543d4513be6bf28",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.profileinstaller:profileinstaller:1.3.1",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.profileinstaller:profileinstaller:1.3.1",
+          "bytes": 2418,
+          "sha256": "08263eb70a814a7cb26d11d3a83825f84c29f3e4b59f9134724e0e02e2bbd768"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "profileinstaller-1.3.1.aar",
+          "bytes": 47619,
+          "sha256": "d0e402ec31f24028a1dc7eb6a0a3f9d9635c1459392cd734396343b73d673948",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.savedstate:savedstate:1.2.1",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.savedstate:savedstate:1.2.1",
+          "bytes": 2549,
+          "sha256": "0d33bc285df1e12f22780f1624a6f0b38ea2a6181b0955ec6641caf620c50cbf"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "savedstate-1.2.1.aar",
+          "bytes": 20217,
+          "sha256": "21a7d4bcf6bdb94ad7b9283801529300b4fbb8808ca4f191e0cdce6fd8e4705a",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.startup:startup-runtime:1.1.1",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.startup:startup-runtime:1.1.1",
+          "bytes": 1949,
+          "sha256": "f4114b5c6859bb1bc3caf281cb6d6f25998fa7f7292c64ceaea74a93210e746b"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "startup-runtime-1.1.1.aar",
+          "bytes": 19371,
+          "sha256": "e0a6329a371262fe4c450372b70fdaf33b769ef6917094723787cfce896b1dd3",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.tracing:tracing:1.2.0",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.tracing:tracing:1.2.0",
+          "bytes": 1968,
+          "sha256": "f34bec4eb58871d31002901377108aaa1ebfe77fa6d882b8b86200b158e26ea1"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "tracing-1.2.0.aar",
+          "bytes": 6060,
+          "sha256": "6faa90390d1fdbf0adb9a99bf99de67b94c6c6f35aea9510593a9d17973736a2",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "androidx.versionedparcelable:versionedparcelable:1.1.1",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "androidx.versionedparcelable:versionedparcelable:1.1.1",
+          "bytes": 1643,
+          "sha256": "5f51e65873ca612de3838fa90d2ee95b8d040efd31b9c390a19bf94d615cdb2f"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "versionedparcelable-1.1.1.aar",
+          "bytes": 31061,
+          "sha256": "57e8d93260d18d5b9007c9eed3c64ad159de90c8609ebfc74a347cbd514535a4",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "com.google.code.findbugs:jsr305:3.0.2",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "com.google.code.findbugs:jsr305:3.0.2",
+          "bytes": 4286,
+          "sha256": "19889dbdf1b254b2601a5ee645b8147a974644882297684c798afe5d63d78dfe"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "jsr305-3.0.2.jar",
+          "bytes": 19936,
+          "sha256": "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "com.google.errorprone:error_prone_annotations:2.41.0",
+      "declaredLicenses": [
+        {
+          "name": "Apache 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "com.google.errorprone:error_prone_annotations:2.41.0",
+          "bytes": 4252,
+          "sha256": "a151df1e2e0b48618d8b06a180748a29b3abb39b1b2396f6a1c879a727488c6e"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "error_prone_annotations-2.41.0.jar",
+          "bytes": 20389,
+          "sha256": "a56e782b5b50811ac204073a355a21d915a2107fce13ec711331ad036f660fcc",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "com.google.guava:failureaccess:1.0.2",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "com.google.guava:failureaccess:1.0.2",
+          "bytes": 3339,
+          "sha256": "19ebc6f4bdb4edbb3d07b6ee994f846b54ef295582a9b5634719ffa9f31d03b2"
+        },
+        {
+          "coordinate": "com.google.guava:guava-parent:26.0-android",
+          "bytes": 10180,
+          "sha256": "f8698ab46ca996ce889c1afc8ca4f25eb8ac6b034dc898d4583742360016cc04"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "failureaccess-1.0.2.jar",
+          "bytes": 4740,
+          "sha256": "8a8f81cf9b359e3f6dfa691a1e776985c061ef2f223c9b2c80753e1b458e8064",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "com.google.guava:guava:33.0.0-android",
+      "declaredLicenses": [
+        {
+          "name": "Apache License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "com.google.guava:guava:33.0.0-android",
+          "bytes": 12564,
+          "sha256": "d11ef66b08c8012ff7682e0b0bcb72932932470a509d7252803fc621e2c965f6"
+        },
+        {
+          "coordinate": "com.google.guava:guava-parent:33.0.0-android",
+          "bytes": 19077,
+          "sha256": "5af483b78c49de78c49faedd2a58752784a44c8363f5e25e52e297814c09177a"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "guava-33.0.0-android.jar",
+          "bytes": 2887938,
+          "sha256": "640535014a304c50221abad19d6b22a096f13119c7c447a655cc1e009a32208d",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava",
+          "bytes": 2278,
+          "sha256": "18d4b1db26153d4e55079ce1f76bb1fe05cdb862ef9954a88cbcc4ff38b8679b"
+        },
+        {
+          "coordinate": "com.google.guava:guava-parent:26.0-android",
+          "bytes": 10180,
+          "sha256": "f8698ab46ca996ce889c1afc8ca4f25eb8ac6b034dc898d4583742360016cc04"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+          "bytes": 2199,
+          "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "org.checkerframework:checker-qual:3.41.0",
+      "declaredLicenses": [
+        {
+          "name": "The MIT License",
+          "url": "http://opensource.org/licenses/MIT"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "org.checkerframework:checker-qual:3.41.0",
+          "bytes": 2096,
+          "sha256": "5c73b0770540842cf06a01d264bbb89ae5e248669dc9da80e861e8233dd4675b"
+        }
+      ],
+      "licenseDocuments": [
+        "e90eaa08dea089df10f2bf7f9dba63a5f6237c01562c4741e2e86773e78582d5"
+      ],
+      "artifacts": [
+        {
+          "name": "checker-qual-3.41.0.jar",
+          "bytes": 228963,
+          "sha256": "2f9f245bf68e4259d610894f2406dc1f6363dc639302bd566e8272e4f4541172",
+          "notices": [
+            {
+              "path": "META-INF/LICENSE.txt",
+              "document": "e90eaa08dea089df10f2bf7f9dba63a5f6237c01562c4741e2e86773e78582d5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "coordinate": "org.jetbrains.kotlin:kotlin-stdlib-common:2.4.0",
+      "declaredLicenses": [
+        {
+          "name": "Apache-2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "org.jetbrains.kotlin:kotlin-stdlib-common:2.4.0",
+          "bytes": 1819,
+          "sha256": "fd1a658edbed7880ac3e0a0dbd20ae1a46c987e40af544e3a6b110825bbefcf5"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": []
+    },
+    {
+      "coordinate": "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.20",
+      "declaredLicenses": [
+        {
+          "name": "The Apache License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.20",
+          "bytes": 1389,
+          "sha256": "3622d106578cddcc0a9ec20f8ce815f7f49ff542f640228d2141fcaf80616b06"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "kotlin-stdlib-jdk7-1.8.20.jar",
+          "bytes": 963,
+          "sha256": "af1ec40c3b951afdcc0c2a0173c7b81763c5281c2d5bafbf0a8544a24c5dcc0c",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20",
+      "declaredLicenses": [
+        {
+          "name": "The Apache License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20",
+          "bytes": 1581,
+          "sha256": "3a462214a336e995687769531b1e37b0c81d8e10c9949cd5ea7ae1d7803a0232"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "kotlin-stdlib-jdk8-1.8.20.jar",
+          "bytes": 969,
+          "sha256": "e398b67977622718bf18ff99b739c7d9da060f33fb458a2e25203221c16af010",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "org.jetbrains.kotlin:kotlin-stdlib:2.4.0",
+      "declaredLicenses": [
+        {
+          "name": "Apache-2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "org.jetbrains.kotlin:kotlin-stdlib:2.4.0",
+          "bytes": 2299,
+          "sha256": "8194ff79a9ee24a7fa3f74a6b179c04a1859de8b987a4f0983056e59451721de"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "kotlin-stdlib-2.4.0.jar",
+          "bytes": 1841929,
+          "sha256": "ccb14ff83fabcb11458b798dbc9824748ccdffeec79c9aba789e6ed1cda86b1c",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1",
+          "bytes": 2226,
+          "sha256": "80f47d014115258758d4e1c5e4c9238c9eed36d2249d1d25858a934b29aba5df"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "kotlinx-coroutines-android-1.7.1.jar",
+          "bytes": 20637,
+          "sha256": "107313760c18f8da174e8d8103504a468e806e88f7b55a84bd1c0eaeea118e9a",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.1",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.1",
+          "bytes": 4291,
+          "sha256": "b925aa988c40a5c7aa0c77b21373feb18c39414926bd51c76ef44434f5bae9c2"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": []
+    },
+    {
+      "coordinate": "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.1",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.1",
+          "bytes": 2395,
+          "sha256": "85c19db10dbc448a04663cdfb478243eda0a8d6b127f108f19955b16d489b35d"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "kotlinx-coroutines-core-jvm-1.7.1.jar",
+          "bytes": 1548432,
+          "sha256": "7496cffdd3eb10109acdda1c3212f6ac7815789e09380dc9e2ccdec496dba3fc",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1",
+          "bytes": 2057,
+          "sha256": "046b010fc7a0e43d2bfc73a9de7675de5541006cbce96163121746034d69d723"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": []
+    },
+    {
+      "coordinate": "org.jetbrains:annotations:23.0.0",
+      "declaredLicenses": [
+        {
+          "name": "The Apache Software License, Version 2.0",
+          "url": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "org.jetbrains:annotations:23.0.0",
+          "bytes": 1354,
+          "sha256": "c9490f655132328df2cfbcfdf743f53fc3916d6c1d10437175a6ca6e3a67771c"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "annotations-23.0.0.jar",
+          "bytes": 29371,
+          "sha256": "7b0f19724082cbfcbc66e5abea2b9bc92cf08a1ea11e191933ed43801eb3cd05",
+          "notices": []
+        }
+      ]
+    },
+    {
+      "coordinate": "org.jspecify:jspecify:1.0.0",
+      "declaredLicenses": [
+        {
+          "name": "The Apache License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "poms": [
+        {
+          "coordinate": "org.jspecify:jspecify:1.0.0",
+          "bytes": 1511,
+          "sha256": "cdab929a3b95211f43d2090c5e2d0dfe8465960e378bc32b35841dab324433a6"
+        }
+      ],
+      "licenseDocuments": [
+        "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      ],
+      "artifacts": [
+        {
+          "name": "jspecify-1.0.0.jar",
+          "bytes": 3819,
+          "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+          "notices": []
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "sha256": "809fa1ed21450f59827d1e9aec720bbc4b687434fa22283c6cb5dd82a47ab9c0",
+      "bytes": 10175,
+      "text": "\n                                 Apache License\n                           Version 2.0, January 2004\n                        http://www.apache.org/licenses/\n\n   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n   1. Definitions.\n\n      \"License\" shall mean the terms and conditions for use, reproduction,\n      and distribution as defined by Sections 1 through 9 of this document.\n\n      \"Licensor\" shall mean the copyright owner or entity authorized by\n      the copyright owner that is granting the License.\n\n      \"Legal Entity\" shall mean the union of the acting entity and all\n      other entities that control, are controlled by, or are under common\n      control with that entity. For the purposes of this definition,\n      \"control\" means (i) the power, direct or indirect, to cause the\n      direction or management of such entity, whether by contract or\n      otherwise, or (ii) ownership of fifty percent (50%) or more of the\n      outstanding shares, or (iii) beneficial ownership of such entity.\n\n      \"You\" (or \"Your\") shall mean an individual or Legal Entity\n      exercising permissions granted by this License.\n\n      \"Source\" form shall mean the preferred form for making modifications,\n      including but not limited to software source code, documentation\n      source, and configuration files.\n\n      \"Object\" form shall mean any form resulting from mechanical\n      transformation or translation of a Source form, including but\n      not limited to compiled object code, generated documentation,\n      and conversions to other media types.\n\n      \"Work\" shall mean the work of authorship, whether in Source or\n      Object form, made available under the License, as indicated by a\n      copyright notice that is included in or attached to the work\n      (an example is provided in the Appendix below).\n\n      \"Derivative Works\" shall mean any work, whether in Source or Object\n      form, that is based on (or derived from) the Work and for which the\n      editorial revisions, annotations, elaborations, or other modifications\n      represent, as a whole, an original work of authorship. For the purposes\n      of this License, Derivative Works shall not include works that remain\n      separable from, or merely link (or bind by name) to the interfaces of,\n      the Work and Derivative Works thereof.\n\n      \"Contribution\" shall mean any work of authorship, including\n      the original version of the Work and any modifications or additions\n      to that Work or Derivative Works thereof, that is intentionally\n      submitted to Licensor for inclusion in the Work by the copyright owner\n      or by an individual or Legal Entity authorized to submit on behalf of\n      the copyright owner. For the purposes of this definition, \"submitted\"\n      means any form of electronic, verbal, or written communication sent\n      to the Licensor or its representatives, including but not limited to\n      communication on electronic mailing lists, source code control systems,\n      and issue tracking systems that are managed by, or on behalf of, the\n      Licensor for the purpose of discussing and improving the Work, but\n      excluding communication that is conspicuously marked or otherwise\n      designated in writing by the copyright owner as \"Not a Contribution.\"\n\n      \"Contributor\" shall mean Licensor and any individual or Legal Entity\n      on behalf of whom a Contribution has been received by Licensor and\n      subsequently incorporated within the Work.\n\n   2. Grant of Copyright License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      copyright license to reproduce, prepare Derivative Works of,\n      publicly display, publicly perform, sublicense, and distribute the\n      Work and such Derivative Works in Source or Object form.\n\n   3. Grant of Patent License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      (except as stated in this section) patent license to make, have made,\n      use, offer to sell, sell, import, and otherwise transfer the Work,\n      where such license applies only to those patent claims licensable\n      by such Contributor that are necessarily infringed by their\n      Contribution(s) alone or by combination of their Contribution(s)\n      with the Work to which such Contribution(s) was submitted. If You\n      institute patent litigation against any entity (including a\n      cross-claim or counterclaim in a lawsuit) alleging that the Work\n      or a Contribution incorporated within the Work constitutes direct\n      or contributory patent infringement, then any patent licenses\n      granted to You under this License for that Work shall terminate\n      as of the date such litigation is filed.\n\n   4. Redistribution. You may reproduce and distribute copies of the\n      Work or Derivative Works thereof in any medium, with or without\n      modifications, and in Source or Object form, provided that You\n      meet the following conditions:\n\n      (a) You must give any other recipients of the Work or\n          Derivative Works a copy of this License; and\n\n      (b) You must cause any modified files to carry prominent notices\n          stating that You changed the files; and\n\n      (c) You must retain, in the Source form of any Derivative Works\n          that You distribute, all copyright, patent, trademark, and\n          attribution notices from the Source form of the Work,\n          excluding those notices that do not pertain to any part of\n          the Derivative Works; and\n\n      (d) If the Work includes a \"NOTICE\" text file as part of its\n          distribution, then any Derivative Works that You distribute must\n          include a readable copy of the attribution notices contained\n          within such NOTICE file, excluding those notices that do not\n          pertain to any part of the Derivative Works, in at least one\n          of the following places: within a NOTICE text file distributed\n          as part of the Derivative Works; within the Source form or\n          documentation, if provided along with the Derivative Works; or,\n          within a display generated by the Derivative Works, if and\n          wherever such third-party notices normally appear. The contents\n          of the NOTICE file are for informational purposes only and\n          do not modify the License. You may add Your own attribution\n          notices within Derivative Works that You distribute, alongside\n          or as an addendum to the NOTICE text from the Work, provided\n          that such additional attribution notices cannot be construed\n          as modifying the License.\n\n      You may add Your own copyright statement to Your modifications and\n      may provide additional or different license terms and conditions\n      for use, reproduction, or distribution of Your modifications, or\n      for any such Derivative Works as a whole, provided Your use,\n      reproduction, and distribution of the Work otherwise complies with\n      the conditions stated in this License.\n\n   5. Submission of Contributions. Unless You explicitly state otherwise,\n      any Contribution intentionally submitted for inclusion in the Work\n      by You to the Licensor shall be under the terms and conditions of\n      this License, without any additional terms or conditions.\n      Notwithstanding the above, nothing herein shall supersede or modify\n      the terms of any separate license agreement you may have executed\n      with Licensor regarding such Contributions.\n\n   6. Trademarks. This License does not grant permission to use the trade\n      names, trademarks, service marks, or product names of the Licensor,\n      except as required for reasonable and customary use in describing the\n      origin of the Work and reproducing the content of the NOTICE file.\n\n   7. Disclaimer of Warranty. Unless required by applicable law or\n      agreed to in writing, Licensor provides the Work (and each\n      Contributor provides its Contributions) on an \"AS IS\" BASIS,\n      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or\n      implied, including, without limitation, any warranties or conditions\n      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A\n      PARTICULAR PURPOSE. You are solely responsible for determining the\n      appropriateness of using or redistributing the Work and assume any\n      risks associated with Your exercise of permissions under this License.\n\n   8. Limitation of Liability. In no event and under no legal theory,\n      whether in tort (including negligence), contract, or otherwise,\n      unless required by applicable law (such as deliberate and grossly\n      negligent acts) or agreed to in writing, shall any Contributor be\n      liable to You for damages, including any direct, indirect, special,\n      incidental, or consequential damages of any character arising as a\n      result of this License or out of the use or inability to use the\n      Work (including but not limited to damages for loss of goodwill,\n      work stoppage, computer failure or malfunction, or any and all\n      other commercial damages or losses), even if such Contributor\n      has been advised of the possibility of such damages.\n\n   9. Accepting Warranty or Additional Liability. While redistributing\n      the Work or Derivative Works thereof, You may choose to offer,\n      and charge a fee for, acceptance of support, warranty, indemnity,\n      or other liability obligations and/or rights consistent with this\n      License. However, in accepting such obligations, You may act only\n      on Your own behalf and on Your sole responsibility, not on behalf\n      of any other Contributor, and only if You agree to indemnify,\n      defend, and hold each Contributor harmless for any liability\n      incurred by, or claims asserted against, such Contributor by reason\n      of your accepting any such warranty or additional liability.\n\n   END OF TERMS AND CONDITIONS\n\n"
+    },
+    {
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "bytes": 11358,
+      "text": "\n                                 Apache License\n                           Version 2.0, January 2004\n                        http://www.apache.org/licenses/\n\n   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n   1. Definitions.\n\n      \"License\" shall mean the terms and conditions for use, reproduction,\n      and distribution as defined by Sections 1 through 9 of this document.\n\n      \"Licensor\" shall mean the copyright owner or entity authorized by\n      the copyright owner that is granting the License.\n\n      \"Legal Entity\" shall mean the union of the acting entity and all\n      other entities that control, are controlled by, or are under common\n      control with that entity. For the purposes of this definition,\n      \"control\" means (i) the power, direct or indirect, to cause the\n      direction or management of such entity, whether by contract or\n      otherwise, or (ii) ownership of fifty percent (50%) or more of the\n      outstanding shares, or (iii) beneficial ownership of such entity.\n\n      \"You\" (or \"Your\") shall mean an individual or Legal Entity\n      exercising permissions granted by this License.\n\n      \"Source\" form shall mean the preferred form for making modifications,\n      including but not limited to software source code, documentation\n      source, and configuration files.\n\n      \"Object\" form shall mean any form resulting from mechanical\n      transformation or translation of a Source form, including but\n      not limited to compiled object code, generated documentation,\n      and conversions to other media types.\n\n      \"Work\" shall mean the work of authorship, whether in Source or\n      Object form, made available under the License, as indicated by a\n      copyright notice that is included in or attached to the work\n      (an example is provided in the Appendix below).\n\n      \"Derivative Works\" shall mean any work, whether in Source or Object\n      form, that is based on (or derived from) the Work and for which the\n      editorial revisions, annotations, elaborations, or other modifications\n      represent, as a whole, an original work of authorship. For the purposes\n      of this License, Derivative Works shall not include works that remain\n      separable from, or merely link (or bind by name) to the interfaces of,\n      the Work and Derivative Works thereof.\n\n      \"Contribution\" shall mean any work of authorship, including\n      the original version of the Work and any modifications or additions\n      to that Work or Derivative Works thereof, that is intentionally\n      submitted to Licensor for inclusion in the Work by the copyright owner\n      or by an individual or Legal Entity authorized to submit on behalf of\n      the copyright owner. For the purposes of this definition, \"submitted\"\n      means any form of electronic, verbal, or written communication sent\n      to the Licensor or its representatives, including but not limited to\n      communication on electronic mailing lists, source code control systems,\n      and issue tracking systems that are managed by, or on behalf of, the\n      Licensor for the purpose of discussing and improving the Work, but\n      excluding communication that is conspicuously marked or otherwise\n      designated in writing by the copyright owner as \"Not a Contribution.\"\n\n      \"Contributor\" shall mean Licensor and any individual or Legal Entity\n      on behalf of whom a Contribution has been received by Licensor and\n      subsequently incorporated within the Work.\n\n   2. Grant of Copyright License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      copyright license to reproduce, prepare Derivative Works of,\n      publicly display, publicly perform, sublicense, and distribute the\n      Work and such Derivative Works in Source or Object form.\n\n   3. Grant of Patent License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      (except as stated in this section) patent license to make, have made,\n      use, offer to sell, sell, import, and otherwise transfer the Work,\n      where such license applies only to those patent claims licensable\n      by such Contributor that are necessarily infringed by their\n      Contribution(s) alone or by combination of their Contribution(s)\n      with the Work to which such Contribution(s) was submitted. If You\n      institute patent litigation against any entity (including a\n      cross-claim or counterclaim in a lawsuit) alleging that the Work\n      or a Contribution incorporated within the Work constitutes direct\n      or contributory patent infringement, then any patent licenses\n      granted to You under this License for that Work shall terminate\n      as of the date such litigation is filed.\n\n   4. Redistribution. You may reproduce and distribute copies of the\n      Work or Derivative Works thereof in any medium, with or without\n      modifications, and in Source or Object form, provided that You\n      meet the following conditions:\n\n      (a) You must give any other recipients of the Work or\n          Derivative Works a copy of this License; and\n\n      (b) You must cause any modified files to carry prominent notices\n          stating that You changed the files; and\n\n      (c) You must retain, in the Source form of any Derivative Works\n          that You distribute, all copyright, patent, trademark, and\n          attribution notices from the Source form of the Work,\n          excluding those notices that do not pertain to any part of\n          the Derivative Works; and\n\n      (d) If the Work includes a \"NOTICE\" text file as part of its\n          distribution, then any Derivative Works that You distribute must\n          include a readable copy of the attribution notices contained\n          within such NOTICE file, excluding those notices that do not\n          pertain to any part of the Derivative Works, in at least one\n          of the following places: within a NOTICE text file distributed\n          as part of the Derivative Works; within the Source form or\n          documentation, if provided along with the Derivative Works; or,\n          within a display generated by the Derivative Works, if and\n          wherever such third-party notices normally appear. The contents\n          of the NOTICE file are for informational purposes only and\n          do not modify the License. You may add Your own attribution\n          notices within Derivative Works that You distribute, alongside\n          or as an addendum to the NOTICE text from the Work, provided\n          that such additional attribution notices cannot be construed\n          as modifying the License.\n\n      You may add Your own copyright statement to Your modifications and\n      may provide additional or different license terms and conditions\n      for use, reproduction, or distribution of Your modifications, or\n      for any such Derivative Works as a whole, provided Your use,\n      reproduction, and distribution of the Work otherwise complies with\n      the conditions stated in this License.\n\n   5. Submission of Contributions. Unless You explicitly state otherwise,\n      any Contribution intentionally submitted for inclusion in the Work\n      by You to the Licensor shall be under the terms and conditions of\n      this License, without any additional terms or conditions.\n      Notwithstanding the above, nothing herein shall supersede or modify\n      the terms of any separate license agreement you may have executed\n      with Licensor regarding such Contributions.\n\n   6. Trademarks. This License does not grant permission to use the trade\n      names, trademarks, service marks, or product names of the Licensor,\n      except as required for reasonable and customary use in describing the\n      origin of the Work and reproducing the content of the NOTICE file.\n\n   7. Disclaimer of Warranty. Unless required by applicable law or\n      agreed to in writing, Licensor provides the Work (and each\n      Contributor provides its Contributions) on an \"AS IS\" BASIS,\n      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or\n      implied, including, without limitation, any warranties or conditions\n      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A\n      PARTICULAR PURPOSE. You are solely responsible for determining the\n      appropriateness of using or redistributing the Work and assume any\n      risks associated with Your exercise of permissions under this License.\n\n   8. Limitation of Liability. In no event and under no legal theory,\n      whether in tort (including negligence), contract, or otherwise,\n      unless required by applicable law (such as deliberate and grossly\n      negligent acts) or agreed to in writing, shall any Contributor be\n      liable to You for damages, including any direct, indirect, special,\n      incidental, or consequential damages of any character arising as a\n      result of this License or out of the use or inability to use the\n      Work (including but not limited to damages for loss of goodwill,\n      work stoppage, computer failure or malfunction, or any and all\n      other commercial damages or losses), even if such Contributor\n      has been advised of the possibility of such damages.\n\n   9. Accepting Warranty or Additional Liability. While redistributing\n      the Work or Derivative Works thereof, You may choose to offer,\n      and charge a fee for, acceptance of support, warranty, indemnity,\n      or other liability obligations and/or rights consistent with this\n      License. However, in accepting such obligations, You may act only\n      on Your own behalf and on Your sole responsibility, not on behalf\n      of any other Contributor, and only if You agree to indemnify,\n      defend, and hold each Contributor harmless for any liability\n      incurred by, or claims asserted against, such Contributor by reason\n      of your accepting any such warranty or additional liability.\n\n   END OF TERMS AND CONDITIONS\n\n   APPENDIX: How to apply the Apache License to your work.\n\n      To apply the Apache License to your work, attach the following\n      boilerplate notice, with the fields enclosed by brackets \"[]\"\n      replaced with your own identifying information. (Don't include\n      the brackets!)  The text should be enclosed in the appropriate\n      comment syntax for the file format. We also recommend that a\n      file or class name and description of purpose be included on the\n      same \"printed page\" as the copyright notice for easier\n      identification within third-party archives.\n\n   Copyright [yyyy] [name of copyright owner]\n\n   Licensed under the Apache License, Version 2.0 (the \"License\");\n   you may not use this file except in compliance with the License.\n   You may obtain a copy of the License at\n\n       http://www.apache.org/licenses/LICENSE-2.0\n\n   Unless required by applicable law or agreed to in writing, software\n   distributed under the License is distributed on an \"AS IS\" BASIS,\n   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n   See the License for the specific language governing permissions and\n   limitations under the License.\n"
+    },
+    {
+      "sha256": "e90eaa08dea089df10f2bf7f9dba63a5f6237c01562c4741e2e86773e78582d5",
+      "bytes": 1126,
+      "text": "Checker Framework qualifiers\nCopyright 2004-present by the Checker Framework developers\n\nMIT License:\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.\n"
+    }
+  ]
+}

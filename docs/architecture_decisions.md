@@ -415,3 +415,32 @@ manifest显式保持 `releaseApproved=false`、`productionWiringApproved=false`�
 来源：[just_audio 0.10.6](https://pub.dev/packages/just_audio/versions/0.10.6)、
 [Windows 0.2.3](https://pub.dev/packages/just_audio_windows/versions/0.2.3)、
 [AndroidX Media精确LICENSE](https://github.com/androidx/media/blob/c35a9d62baec57118ea898e271ac66819399649b/LICENSE)。
+
+## ADR-042：随应用保留 Android 音频闭包的原生许可材料（2026-09-05）
+
+Phase4N以应用真实解析的Media3闭包为范围，共51个坐标，而非仅插件声明的10个Media3模块。
+Gradle报告只解析选定外部模块，避免AGP本地插件的多变体歧义；相同文件名且SHA相同的重复
+变体归档去重，BOM/重定向坐标保留为空归档列表，不伪造二进制。解析版本和每份实际归档的
+长度/SHA均进入可比对清单；开发机绝对缓存路径只存在忽略的build报告中。
+
+生成器读取精确POM及必要父POM，禁用DTD/外部实体；查找AAR/JAR及嵌套classes.jar中的
+LICENSE/NOTICE/COPYING/AL2.0/LGPL2.1文本，完整UTF-8原文有界读取并去重。
+当前有三份不同原文：固定Media3上游Apache-2.0、ExifInterface归档内Apache原文、
+checker-qual归档内包含著作权的MIT原文。Guava/failureaccess/listenablefuture的许可继承
+精确父POM；没有用通用MIT模板替换带著作权原文。生成结果为66,604字节JSON，SHA见机器清单。
+
+该数据随两平台应用资产打包，Windows携带的条目明确属于Android能力，不声称其二进制
+进入Windows。Android构建后重新解析真实闭包并逐项验证归档及重新生成原文；两平台均对
+实际包内资产逐字节校验。新增唯一资产白名单项，原48项设计资产与六个Dart包门禁不变。
+
+额外只读解析Profile与Release：Profile同为51项；Release为48项，恰好不含jsr305、
+error_prone_annotations和checker-qual三项注解依赖。机器清单明确记录三个变体的差异，
+逐项精确比对，不能允许任意子集缺失。随应用保留51项材料超集；这不是Release构建成功证据。
+
+这关闭当前音频闭包的工程材料缺口，保留releaseApproved=false；整个应用仍须Phase11发行
+审核和Release构建，未来依赖版本改变必须重审材料。用户可见许可入口和生产播放器接线尚待
+下一批，不在本批翻转已声明的生产状态。没有运行时联网收集许可或媒体下载。
+
+来源：[固定Media3源码](https://github.com/androidx/media/tree/c35a9d62baec57118ea898e271ac66819399649b)、
+[Guava精确版本POM](https://central.sonatype.com/artifact/com.google.guava/guava/33.0.0-android)、
+[Checker Framework 3.41.0](https://checkerframework.org/releases/3.41.0/manual/)。
