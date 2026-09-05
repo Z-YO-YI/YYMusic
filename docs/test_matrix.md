@@ -52,6 +52,8 @@
 
 Phase4D另使用默认关闭的`run_native_audio_source_poc`；显式手动选择后才生成忽略的短期loopback TLS defines，并运行Windows受控HTTPS与Android content URI/受控HTTPS作业。原始cert/key生成后立即删除，专用作业仍为`contents: read`且无artifact/Release；标准push/PR不生成TLS材料。
 
+Phase4E修复提交`a2b517b`的PR运行33936726367与push运行33936724989均完成checks、Windows Debug和Android Debug。push的Windows Debug artifact按既有策略保留14天；Android签名/48资产/打包成功但Release步骤skipped，匹配新Release为0。该证据只证明备用候选编译/打包，不证明native播放。
+
 32张Golden按Windows宿主标记，Linux明确跳过（非静默通过）并运行完整非Golden回归，Windows job构建前执行`flutter test --tags windows-golden`。checks在分析前重跑build_runner与make-migrations，并要求g.dart/v1快照Git零差异。没有删除或跳过原有回归，远程状态须按目标commit单独核验。
 
 云端交付增量：1项YAML门禁测试、4项Node元数据/拒绝本地打包测试。APK必须在build→signature→assets→package均成功后上传，不使用always/continue-on-error；metadata不复制环境变量或秘密，下载URL必须属于本run。4be8ba2的手动运行已完成既有交付复核；每个新commit仍须重新取得运行证据。

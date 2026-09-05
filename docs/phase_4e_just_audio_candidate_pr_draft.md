@@ -23,10 +23,12 @@ Head：`feat/just-audio-native-poc`；Base：`feat/native-audio-content-network-
   `bba16856f7cdbc3c909172cafa75ee07c345067cb50f66dcc6cfe21e9adbf601`。
 - APK的48份设计资产、0份参考源、SDK/包名/标签、v2单Debug签名通过；仅保留网络/网络状态和生成的
   not-exported receiver权限，没有存储、媒体、麦克风或通知权限。
-- 本机Developer Mode关闭，不能创建Windows插件symlink；Windows Debug必须由GitHub Windows runner验证。
+- 本机Developer Mode关闭，不能创建Windows插件symlink；Windows Debug已由目标提交的GitHub Windows runner验证。
+- 修复提交`a2b517b`的PR运行33936726367与push运行33936724989均为三job success；四类手动native
+  POC job全部skipped。push只生成既有14天Windows Debug artifact，Android手动Release步骤skipped，
+  匹配新Release为0。
 
 ## 影响与未验收项
 
-正式入口和可见UI没有播放能力变化。本批只证明适配合同及Android打包；推送后仍需目标SHA的标准三job
-证据。Phase4F才运行备用候选的Windows/Android本地WAV、无Header HTTPS和Android content URI；
+正式入口和可见UI没有播放能力变化。本批只证明适配合同及双平台Debug打包。Phase4F才运行备用候选的Windows/Android本地WAV、无Header HTTPS和Android content URI；
 Windows认证Header策略、实体设备、后台/焦点/系统媒体会话与最终NOTICE仍未验收。本PR不触发手动APK Release。

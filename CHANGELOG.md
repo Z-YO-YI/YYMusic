@@ -7,8 +7,9 @@
 - 禁止缓存/下载/离线API；Windows直接Header不支持时在插件调用前拒绝，不静默丢弃凭据。
 - 152文件format、严格analyze 0问题、完整232项Flutter/32 Golden、31项Node、24项ZIP通过；Dart lockfile严格复现。
 - 本机Android Debug为279,085,047字节、SHA-256 `bba16856f7cdbc3c909172cafa75ee07c345067cb50f66dcc6cfe21e9adbf601`；48资产、0参考源、Media3解析、权限和v2单Debug签名已核验。
-- 本机Windows因Developer Mode关闭不能创建plugin symlink；目标提交GitHub三job及无Release证据待推送后补记，不触发手动APK Release。
-- 首次push运行33936060829暴露MSVC 14.51对旧C++/WinRT coroutine头的`STL1011`；兼容宏只作用于just_audio_windows插件目标，修复提交须重新取得双平台CI证据。
+- 本机Windows因Developer Mode关闭不能创建plugin symlink；目标提交的Windows构建只由GitHub runner验证，不触发手动APK Release。
+- 首次push运行33936060829暴露MSVC 14.51对旧C++/WinRT coroutine头的`STL1011`；兼容宏只作用于just_audio_windows插件目标。修复提交`a2b517b`的PR运行33936726367与push运行33936724989均为checks/Windows/Android三job success。
+- push只保留既有14天Windows Debug artifact（73,831,743字节），Android Release步骤skipped；目标SHA/分支匹配新Release为0，Phase4E出口关闭。
 
 ## 2026-09-04 — Phase 4D Content URI 与受控 HTTPS 音频 POC
 

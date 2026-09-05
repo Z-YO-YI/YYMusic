@@ -5,6 +5,10 @@
 干净；该提交的push运行33880462282与PR运行33880464921均整体成功，Phase4D Draft PR #20保持
 open/draft。从该提交创建`feat/just-audio-native-poc`，不在main/master开发。
 
+状态：**已关闭**。修复提交`a2b517b3`的标准PR运行33936726367与push运行33936724989均完成
+checks、Windows Debug和Android Debug；没有workflow_dispatch或新Release。push按既有策略只保留14天
+Windows Debug portable artifact，未生成候选APK Release。
+
 ## 背景与决策边界
 
 `media_kit`候选已经通过Windows/Android本地WAV、双平台受控HTTPS及Android `content://`原生POC，
@@ -46,7 +50,7 @@ NOTICE。这个事实不构成法律结论，但在可复核的源码、构建�
 | 控制 | play/pause/stop/seek/volume/rate串行；非法值在插件调用前拒绝 |
 | 安全 | 原始URL、query、Header、插件异常不进入DomainFailure、日志、Drift或Fixture |
 | 生命周期 | dispose等待已接收工作，拒绝新工作，只释放一次 |
-| 构建 | Android/Windows Debug通过；无新增存储/媒体权限，无Release或可下载候选包 |
+| 构建 | Android/Windows Debug通过；无新增存储/媒体权限，无手动候选APK Release；普通push仅允许既有14天Windows Debug审查artifact |
 
 ## 失败与出口
 

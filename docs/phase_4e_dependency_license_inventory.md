@@ -43,8 +43,8 @@ MSVC 14.51会把该版本C++/WinRT所用`experimental/coroutine`兼容头的弃�
 `_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS`，不关闭全局`/W4 /WX`，也不修改缓存包源码。
 
 本机因Windows Developer Mode关闭，`flutter pub get`在完成下载/解析后无法创建plugin symlink；
-`dart pub get --enforce-lockfile`已成功。Windows编译只能由目标提交的GitHub Windows runner给出证据，
-在该证据取得前不能声称Windows Debug已经通过。
+`dart pub get --enforce-lockfile`已成功。Windows编译只能由目标提交的GitHub Windows runner给出证据；
+修复提交`a2b517b`的PR运行33936726367与push运行33936724989均已实际完成Windows Debug。
 
 ## 发布边界
 
