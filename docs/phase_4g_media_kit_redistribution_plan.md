@@ -52,13 +52,10 @@
 - `docs/phase_4g_media_kit_redistribution_inventory.md`
 - `docs/phase_4g_media_kit_redistribution_report.md`
 - `docs/phase_4g_media_kit_redistribution_pr_draft.md`
-- `assets/legal/media_kit/`
-- `assets/legal/media_kit/manifest.json`
+- `docs/legal/media_kit/`（若审计失败，仅保存`inventory-only`阻断清单）
+- `assets/legal/media_kit/`（仅在完整义务可关闭时创建；本次不得用不完整材料占位）
 - `tools/media_kit_redistribution_audit.mjs`
 - `tools/media_kit_redistribution_audit.test.mjs`
-- `pubspec.yaml`
-- `tools/verify_android_apk.ps1`
 - `docs/dependency_decisions.md`
 - `docs/architecture_decisions.md`
 - `docs/implementation_status.md`
-

@@ -301,3 +301,16 @@ GitHub Windows Server 2025两项服务均Running但播放端点为0，因此测�
 因此Phase4F只关闭Android小批A，Windows与整个阶段保持打开，小批B不扩大。生产继续创建
 UnavailableAudioEngine。后续可在有播放端点的Windows runner重跑同一测试；并行可审计media_kit的native
 分发许可证，但任何候选都必须在自身剩余门禁关闭后才能接入Bootstrap。
+
+## ADR-036：原生分发来源无法重建时只提交失败关闭清单（2026-09-05）
+
+Phase4G不以Dart wrapper的MIT许可证推断native bundle合规，也不因SO/DLL内嵌配置显示LGPL模式就自动
+批准发行。Android四个release JAR、APK三ABI以及Windows release DLL/Phase4C bundle已经用SHA-256逐字节
+映射；真实FFmpeg/mpv配置也确认关闭GPL/nonfree。该证据回答“打包了什么”，没有回答“发行者如何交付
+对应源码、patch、NOTICE和重新链接能力”。
+
+现有Android脚本从可变main取得helper；Windows实际DLL配置与release前最近历史脚本相反，构建workflow
+又允许未记录自定义命令和恢复cache，旧运行记录无法取回。故机器manifest固定为`inventory-only`、
+`releaseApproved=false`、`productionWiringApproved=false`。不完整许可证集合不得放入应用assets；测试同时
+锁定生产`UnavailableAudioEngine`、native哈希映射和阻断项。只有自行从不可变revision与记录patch重建、
+补齐逐组件审查/NOTICE/对应源码/重新链接方案并验证双平台候选包后，才可通过新决策显式改写本门禁。
