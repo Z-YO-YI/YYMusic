@@ -7,6 +7,7 @@ import '../shells/windows_shell.dart';
 import 'app_routes.dart';
 import 'layout_class.dart';
 import 'playback_presenter.dart';
+import 'window_chrome.dart';
 
 class AdaptiveRoot extends StatelessWidget {
   const AdaptiveRoot({
@@ -55,6 +56,7 @@ class AdaptiveRoot extends StatelessWidget {
         YYLayoutClass.windowsStandard ||
         YYLayoutClass.windowsNarrow => WindowsShell(
           layout: layout,
+          showToolbar: !WindowFrameScope.active(context),
           navigation: navigation,
           selected: selected,
           player: player,

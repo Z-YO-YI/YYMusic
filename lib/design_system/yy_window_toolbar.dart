@@ -17,6 +17,7 @@ class YYWindowToolbar extends StatelessWidget {
     this.onMinimize,
     this.onToggleMaximize,
     this.onClose,
+    this.onStartDrag,
   });
 
   final String title;
@@ -26,6 +27,7 @@ class YYWindowToolbar extends StatelessWidget {
   final VoidCallback? onMinimize;
   final VoidCallback? onToggleMaximize;
   final VoidCallback? onClose;
+  final VoidCallback? onStartDrag;
 
   @override
   Widget build(BuildContext context) {
@@ -37,30 +39,42 @@ class YYWindowToolbar extends StatelessWidget {
         builder: (context, constraints) => Stack(
           alignment: Alignment.center,
           children: [
+            if (onStartDrag != null)
+              Positioned.fill(
+                right: showWindowControls ? YYSpace.touchTarget * 3 : 0,
+                child: GestureDetector(
+                  key: const ValueKey('window-drag-region'),
+                  behavior: HitTestBehavior.opaque,
+                  onPanStart: (_) => onStartDrag!(),
+                  onDoubleTap: onToggleMaximize,
+                ),
+              ),
             Align(
               alignment: Alignment.centerLeft,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: YYTheme.of(context).accent.color,
+              child: IgnorePointer(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: YYTheme.of(context).accent.color,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 9),
-                  Text(
-                    title,
-                    style: YYTypography.text(
-                      size: 12,
-                      weight: 650,
-                      spacing: .2,
-                      color: colors.secondary,
+                    const SizedBox(width: 9),
+                    Text(
+                      title,
+                      style: YYTypography.text(
+                        size: 12,
+                        weight: 650,
+                        spacing: .2,
+                        color: colors.secondary,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             if (constraints.maxWidth >= 760)
@@ -124,6 +138,7 @@ class _WindowControl extends StatelessWidget {
   @override
   Widget build(BuildContext context) => YYTooltip(
     message: label,
+    below: true,
     child: YYControlAction(
       label: label,
       onActivate: onPressed,

@@ -502,3 +502,14 @@ Controller.seek 增加可选 expectedEntryId，并在串行命令真正执行时
 短期手势，提交后从根状态收敛。Windows320/Tablet260使用同一内容组件、不同几何容器；
 短高度独立滚动，收窄卸载面板不停止或重建音频。来源只显示 local/rest 类型，不暴露路径或URL。
 未开发的完整队列/歌词/设备入口禁用，队列仅显示真实总条目数，不把物理顺序冒充随机后的下一首。
+
+## ADR-047：窗口生命周期独立于播放根资源（2026-09-05）
+
+YYMusicApp根作用域拥有WindowPresenter/Gateway，三个Shell只接收已构造Chrome，不调用Win32。
+窗口通道只操作本Runner HWND；握手成功前保留系统caption，成功后保留原生resize边界，Flutter
+42dp非交互标题区域驱动移动/双击最大化，控件区域不作为拖动区。窗口快照以原生状态为准。
+WM_CLOSE/Alt+F4触发closeRequested，Presenter幂等等待业务Graph.close所有释放尝试完成后调用
+原生completeClose，才允许WM_CLOSE销毁。窗口Gateway不能作为Graph内的提前释放资源，否则
+退出握手会在最终关闭前断开。UI卸载时解除通道/订阅，晚到回调不能更新已销毁状态。
+没有新包、全局系统修改、尺寸/位置持久化或全屏能力。本批CI先跑原生窗口测试再重新构建正式
+Debug，原生测试不关闭测试进程，只证明关闭请求被Dart接收且批准前窗口仍存在。
