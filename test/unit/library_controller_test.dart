@@ -239,6 +239,28 @@ void main() {
     expect(controller.page.hasMore, isFalse);
   });
   test(
+    'short intermediate library pages request only the remaining capacity',
+    () async {
+      fixture.repository.onTracks = (_, page, _) async => PageResult(
+        items: fixture.tracks.take(page.offset == 0 ? 15 : 20),
+        hasMore: true,
+      );
+      controller.start();
+      controller.selectCategory(LibraryCategory.tracks);
+      await flushLibrary();
+      for (var i = 0; i < 12; i++) {
+        await controller.loadMore();
+      }
+      final reads = fixture.repository.calls
+          .where((call) => call.query is CatalogTrackQuery)
+          .toList();
+      expect(reads.length, 11);
+      expect(reads.last.page.offset, 195);
+      expect(reads.last.page.limit, 5);
+      expect(controller.page.capped, isTrue);
+    },
+  );
+  test(
     'overlong adapters are bounded and stop after 200 raw entities',
     () async {
       fixture.repository.onTracks = (_, _, _) async =>

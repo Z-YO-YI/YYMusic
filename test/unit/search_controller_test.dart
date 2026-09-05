@@ -187,6 +187,36 @@ void main() {
     );
   });
 
+  test(
+    'short intermediate search pages request only the remaining capacity',
+    () async {
+      final fixture = SearchGraphFixture(count: 240);
+      addTearDown(fixture.close);
+      fixture.repository.trackQuery = (_, page, _) async => PageResult(
+        items: fixture.tracks
+            .skip(page.offset)
+            .take(page.offset == 0 ? 15 : 20),
+        hasMore: true,
+      );
+      final search = fixture.graph.search
+        ..selectFilter(SearchFilter.local)
+        ..updateInput('夜');
+      await search.submit();
+      final bucket = localTracks(search);
+      for (var i = 0; i < 12; i++) {
+        await search.loadMore(bucket);
+      }
+      expect(bucket.items.length, 200);
+      expect(bucket.capped, isTrue);
+      final reads = fixture.repository.requests
+          .where((read) => read.$1 == 'tracks')
+          .toList();
+      expect(reads.length, 11);
+      expect(reads.last.$3.offset, 195);
+      expect(reads.last.$3.limit, 5);
+    },
+  );
+
   test('failed append preserves items and retries the same offset', () async {
     final fixture = SearchGraphFixture(count: 30);
     addTearDown(fixture.close);

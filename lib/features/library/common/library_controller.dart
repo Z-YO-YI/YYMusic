@@ -248,7 +248,10 @@ final class LibraryController extends ChangeNotifier {
       try {
         final repository = this.repository;
         if (repository == null) throw StateError('Library unavailable');
-        final request = PageRequest(offset: target._offset, limit: 20);
+        final request = PageRequest(
+          offset: target._offset,
+          limit: (200 - target._offset).clamp(1, 20),
+        );
         final filter = _filter(target.category);
         final Future<PageResult<Object>> query = switch (target.category) {
           LibraryCategory.albums => repository.browseAlbums(
@@ -285,7 +288,7 @@ final class LibraryController extends ChangeNotifier {
         };
         final result = await query;
         if (_disposed || token.isCancelled) return;
-        final raw = result.items.take(20).toList();
+        final raw = result.items.take(request.limit).toList();
         final seen = target.items.map(_identity).toSet();
         target._items = List.unmodifiable([
           ...target.items,

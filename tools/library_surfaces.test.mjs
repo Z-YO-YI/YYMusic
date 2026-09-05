@@ -19,7 +19,8 @@ test('library uses three native virtualized layouts and no direct storage or plu
 
 test('library drains borrowed work before root storage and uses atomic catalog playback', () => {
   const controller = read('lib/features/library/common/library_controller.dart');
-  assert.match(controller, /PageRequest\(offset: target\._offset, limit: 20\)/);
+  assert.match(controller, /offset: target\._offset,[\s\S]*?limit: \(200 - target\._offset\).clamp\(1, 20\)/);
+  assert.match(controller, /result.items.take\(request.limit\)/);
   assert.match(controller, /_offset >= 200/);
   assert.match(controller, /token.isCancelled/);
   assert.match(controller, /playback.playCatalogTrack/);

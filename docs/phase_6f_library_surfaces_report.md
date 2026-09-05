@@ -69,3 +69,12 @@ checks/Android/Windows结果在PR补验，不把前置成功当作本批通过�
 APK/日志/临时数据库/秘密不提交GitHub。本轮Fake播放与截图不算新音频实机验收；
 Windows本机C++/Debug CRT限制仍在，原生构建由GitHub核验。
 下一增量按Phase6继续专辑与艺人详情，沿用完整来源身份和根播放器；当前仍不是完整可用或上线版本。
+
+### 精确提交云端回执（2026-09-06补验）
+
+`b72413eb06b16304d7a526e1f0779469aa7f7d13` 的
+[push 33984812889](https://github.com/Z-YO-YI/YYMusic/actions/runs/33984812889) 与
+[PR 33984831085](https://github.com/Z-YO-YI/YYMusic/actions/runs/33984831085) 均已成功。
+两组源码/测试、Android Debug、Windows Debug通过；push日志另核实391项非Windows Golden测试、
+61张Windows宿主Golden、真实窗口8个布尔项全部true、51个原生坐标/3份全文许可及APK v2签名。
+两项专用音频job均skipped，不代表本批完成新的音频实机运行；PR #41仍为Draft，未合并/发布。
