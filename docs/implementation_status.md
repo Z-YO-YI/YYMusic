@@ -30,6 +30,7 @@
 | Phase 4B 候选适配/打包 POC | media_kit 1.2.6 + audio libs已解析；项目适配器、5项Fake测试、完整本地门禁、本机Android native打包及目标提交GitHub push/PR双平台三job通过；生产入口未接候选，native许可证和真实播放未闭合 |
 | Phase 4C 双平台原生本地音频 POC | 已关闭：精确提交`622408e`的专用运行33862786766 attempt 2在Windows/Android均成功，覆盖固定WAV的load不自动播放、play/position/seek/pause/volume/rate/completed/stop；不接生产入口、不上传产物/Release |
 | Phase 4D Content URI与受控HTTPS音频 POC | 已关闭：实现提交`913f3d75`的标准PR三job与专用运行33878710671成功；Android debug-only Provider、双平台loopback HTTPS、Android content URI、Header与脱敏失败映射均通过；零artifact/Release，不接生产、不提交证书/音频 |
+| Phase 4E just_audio + Windows WinRT备用候选 | 已开始：先验证精确依赖、项目适配边界、Fake合同和双平台Debug打包；Windows直接Header明确不支持，不接生产、不发布 |
 | 后续页面、歌词、导入、来源、平台集成 | 未开始 |
 | GitHub APK交付 | Phase4A ec508df的唯一手动运行33848236710创建私有草稿Release；190735487字节APK的三资产、metadata、SHA256SUMS、API digest、48份包内资产、Manifest及v2单签名已独立复核 |
 | 浏览器参考截图 / Computed Style | 未运行：file: 导航被安全策略阻止 |
