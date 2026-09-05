@@ -8,6 +8,14 @@ abstract interface class LibraryRepository {
 
   Stream<List<Track>> watchTracks();
   Future<PageResult<Track>> listTracks(PageRequest request);
+
+  /// First catalog insertion time, inclusive UTC window, newest first.
+  /// Migrated rows with unknown insertion time are excluded, not dated today.
+  Future<PageResult<Track>> listRecentlyAdded(
+    PageRequest request, {
+    required DateTime since,
+    required DateTime until,
+  });
   Future<PageResult<Album>> listAlbums(PageRequest request);
   Future<PageResult<Artist>> listArtists(PageRequest request);
   Future<Track?> getTrack(TrackRef reference);

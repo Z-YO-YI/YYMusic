@@ -15,22 +15,31 @@ final class DriftLibraryRepository implements LibraryRepository {
     AppDatabase database, {
     bool closeDatabaseOnDispose = false,
     LibraryRowMapper mapper = const LibraryRowMapper(),
-  }) => DriftLibraryRepository._(database, closeDatabaseOnDispose, mapper);
+    DateTime Function()? clock,
+  }) => DriftLibraryRepository._(
+    database,
+    closeDatabaseOnDispose,
+    mapper,
+    clock ?? _utcNow,
+  );
 
   factory DriftLibraryRepository.owned(
     AppDatabase database, {
     LibraryRowMapper mapper = const LibraryRowMapper(),
-  }) => DriftLibraryRepository._(database, true, mapper);
+    DateTime Function()? clock,
+  }) => DriftLibraryRepository._(database, true, mapper, clock ?? _utcNow);
 
   DriftLibraryRepository._(
     this._database,
     this._closeDatabaseOnDispose,
     this._mapper,
+    this._clock,
   );
 
   final AppDatabase _database;
   final bool _closeDatabaseOnDispose;
   final LibraryRowMapper _mapper;
+  final DateTime Function() _clock;
 
   bool _initialized = false;
   bool _disposed = false;
@@ -145,6 +154,39 @@ final class DriftLibraryRepository implements LibraryRepository {
   }
 
   @override
+  Future<PageResult<Track>> listRecentlyAdded(
+    PageRequest request, {
+    required DateTime since,
+    required DateTime until,
+  }) {
+    _requireReady();
+    final firstMs = since.toUtc().millisecondsSinceEpoch;
+    final lastMs = until.toUtc().millisecondsSinceEpoch;
+    if (since.isAfter(until)) {
+      throw ArgumentError('Invalid catalog time window');
+    }
+    return _guard('recently-added', () async {
+      final query = _database.select(_database.trackRecords)
+        ..where((row) => row.addedAtMs.isBetweenValues(firstMs, lastMs))
+        ..orderBy([
+          (row) =>
+              OrderingTerm(expression: row.addedAtMs, mode: OrderingMode.desc),
+          (row) => OrderingTerm(expression: row.sourceType),
+          (row) => OrderingTerm(expression: row.sourceId),
+          (row) => OrderingTerm(expression: row.trackId),
+        ])
+        ..limit(request.limit + 1, offset: request.offset);
+      final rows = await query.get();
+      return PageResult(
+        items: await _tracksFromRows(
+          rows.take(request.limit).toList(growable: false),
+        ),
+        hasMore: rows.length > request.limit,
+      );
+    });
+  }
+
+  @override
   Future<PageResult<Artist>> listArtists(PageRequest request) {
     _requireReady();
     return _guard('list-artists', () async {
@@ -207,10 +249,17 @@ final class DriftLibraryRepository implements LibraryRepository {
         }
 
         await _database.batch((batch) {
-          batch.insertAllOnConflictUpdate(
-            _database.trackRecords,
-            catalog.tracks.map(_mapper.trackToCompanion),
-          );
+          final addedAtMs = _clock().toUtc().millisecondsSinceEpoch;
+          for (final track in catalog.tracks) {
+            final metadata = _mapper.trackToCompanion(track);
+            batch.insert(
+              _database.trackRecords,
+              metadata.copyWith(addedAtMs: Value(addedAtMs)),
+              // No addedAtMs in this companion: preserve first insertion,
+              // including unknown (NULL) dates from a migrated v1 catalog.
+              onConflict: DoUpdate((_) => metadata),
+            );
+          }
           batch.insertAllOnConflictUpdate(
             _database.artistRecords,
             catalog.artists.values,
@@ -668,3 +717,5 @@ int _compareTrackRefs(TrackRef left, TrackRef right) {
   if (comparison != 0) return comparison;
   return left.trackId.compareTo(right.trackId);
 }
+
+DateTime _utcNow() => DateTime.now().toUtc();

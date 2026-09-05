@@ -193,6 +193,17 @@ class $TrackRecordsTable extends TrackRecords
     requiredDuringInsert: false,
     defaultValue: const Constant('{}'),
   );
+  static const VerificationMeta _addedAtMsMeta = const VerificationMeta(
+    'addedAtMs',
+  );
+  @override
+  late final GeneratedColumn<int> addedAtMs = GeneratedColumn<int>(
+    'added_at_ms',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     trackId,
@@ -210,6 +221,7 @@ class $TrackRecordsTable extends TrackRecords
     fileSize,
     availability,
     metadataJson,
+    addedAtMs,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -337,6 +349,12 @@ class $TrackRecordsTable extends TrackRecords
         ),
       );
     }
+    if (data.containsKey('added_at_ms')) {
+      context.handle(
+        _addedAtMsMeta,
+        addedAtMs.isAcceptableOrUnknown(data['added_at_ms']!, _addedAtMsMeta),
+      );
+    }
     return context;
   }
 
@@ -406,6 +424,10 @@ class $TrackRecordsTable extends TrackRecords
         DriftSqlType.string,
         data['${effectivePrefix}metadata_json'],
       )!,
+      addedAtMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}added_at_ms'],
+      ),
     );
   }
 
@@ -431,6 +453,7 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
   final int? fileSize;
   final String availability;
   final String metadataJson;
+  final int? addedAtMs;
   const TrackRow({
     required this.trackId,
     required this.sourceId,
@@ -447,6 +470,7 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
     this.fileSize,
     required this.availability,
     required this.metadataJson,
+    this.addedAtMs,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -482,6 +506,9 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
     }
     map['availability'] = Variable<String>(availability);
     map['metadata_json'] = Variable<String>(metadataJson);
+    if (!nullToAbsent || addedAtMs != null) {
+      map['added_at_ms'] = Variable<int>(addedAtMs);
+    }
     return map;
   }
 
@@ -518,6 +545,9 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
           : Value(fileSize),
       availability: Value(availability),
       metadataJson: Value(metadataJson),
+      addedAtMs: addedAtMs == null && nullToAbsent
+          ? const Value.absent()
+          : Value(addedAtMs),
     );
   }
 
@@ -542,6 +572,7 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
       fileSize: serializer.fromJson<int?>(json['fileSize']),
       availability: serializer.fromJson<String>(json['availability']),
       metadataJson: serializer.fromJson<String>(json['metadataJson']),
+      addedAtMs: serializer.fromJson<int?>(json['addedAtMs']),
     );
   }
   @override
@@ -563,6 +594,7 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
       'fileSize': serializer.toJson<int?>(fileSize),
       'availability': serializer.toJson<String>(availability),
       'metadataJson': serializer.toJson<String>(metadataJson),
+      'addedAtMs': serializer.toJson<int?>(addedAtMs),
     };
   }
 
@@ -582,6 +614,7 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
     Value<int?> fileSize = const Value.absent(),
     String? availability,
     String? metadataJson,
+    Value<int?> addedAtMs = const Value.absent(),
   }) => TrackRow(
     trackId: trackId ?? this.trackId,
     sourceId: sourceId ?? this.sourceId,
@@ -600,6 +633,7 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
     fileSize: fileSize.present ? fileSize.value : this.fileSize,
     availability: availability ?? this.availability,
     metadataJson: metadataJson ?? this.metadataJson,
+    addedAtMs: addedAtMs.present ? addedAtMs.value : this.addedAtMs,
   );
   TrackRow copyWithCompanion(TrackRecordsCompanion data) {
     return TrackRow(
@@ -636,6 +670,7 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
       metadataJson: data.metadataJson.present
           ? data.metadataJson.value
           : this.metadataJson,
+      addedAtMs: data.addedAtMs.present ? data.addedAtMs.value : this.addedAtMs,
     );
   }
 
@@ -656,7 +691,8 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
           ..write('modifiedAtMs: $modifiedAtMs, ')
           ..write('fileSize: $fileSize, ')
           ..write('availability: $availability, ')
-          ..write('metadataJson: $metadataJson')
+          ..write('metadataJson: $metadataJson, ')
+          ..write('addedAtMs: $addedAtMs')
           ..write(')'))
         .toString();
   }
@@ -678,6 +714,7 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
     fileSize,
     availability,
     metadataJson,
+    addedAtMs,
   );
   @override
   bool operator ==(Object other) =>
@@ -697,7 +734,8 @@ class TrackRow extends DataClass implements Insertable<TrackRow> {
           other.modifiedAtMs == this.modifiedAtMs &&
           other.fileSize == this.fileSize &&
           other.availability == this.availability &&
-          other.metadataJson == this.metadataJson);
+          other.metadataJson == this.metadataJson &&
+          other.addedAtMs == this.addedAtMs);
 }
 
 class TrackRecordsCompanion extends UpdateCompanion<TrackRow> {
@@ -716,6 +754,7 @@ class TrackRecordsCompanion extends UpdateCompanion<TrackRow> {
   final Value<int?> fileSize;
   final Value<String> availability;
   final Value<String> metadataJson;
+  final Value<int?> addedAtMs;
   final Value<int> rowid;
   const TrackRecordsCompanion({
     this.trackId = const Value.absent(),
@@ -733,6 +772,7 @@ class TrackRecordsCompanion extends UpdateCompanion<TrackRow> {
     this.fileSize = const Value.absent(),
     this.availability = const Value.absent(),
     this.metadataJson = const Value.absent(),
+    this.addedAtMs = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   TrackRecordsCompanion.insert({
@@ -751,6 +791,7 @@ class TrackRecordsCompanion extends UpdateCompanion<TrackRow> {
     this.fileSize = const Value.absent(),
     required String availability,
     this.metadataJson = const Value.absent(),
+    this.addedAtMs = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : trackId = Value(trackId),
        sourceId = Value(sourceId),
@@ -774,6 +815,7 @@ class TrackRecordsCompanion extends UpdateCompanion<TrackRow> {
     Expression<int>? fileSize,
     Expression<String>? availability,
     Expression<String>? metadataJson,
+    Expression<int>? addedAtMs,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -792,6 +834,7 @@ class TrackRecordsCompanion extends UpdateCompanion<TrackRow> {
       if (fileSize != null) 'file_size': fileSize,
       if (availability != null) 'availability': availability,
       if (metadataJson != null) 'metadata_json': metadataJson,
+      if (addedAtMs != null) 'added_at_ms': addedAtMs,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -812,6 +855,7 @@ class TrackRecordsCompanion extends UpdateCompanion<TrackRow> {
     Value<int?>? fileSize,
     Value<String>? availability,
     Value<String>? metadataJson,
+    Value<int?>? addedAtMs,
     Value<int>? rowid,
   }) {
     return TrackRecordsCompanion(
@@ -830,6 +874,7 @@ class TrackRecordsCompanion extends UpdateCompanion<TrackRow> {
       fileSize: fileSize ?? this.fileSize,
       availability: availability ?? this.availability,
       metadataJson: metadataJson ?? this.metadataJson,
+      addedAtMs: addedAtMs ?? this.addedAtMs,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -882,6 +927,9 @@ class TrackRecordsCompanion extends UpdateCompanion<TrackRow> {
     if (metadataJson.present) {
       map['metadata_json'] = Variable<String>(metadataJson.value);
     }
+    if (addedAtMs.present) {
+      map['added_at_ms'] = Variable<int>(addedAtMs.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -906,6 +954,7 @@ class TrackRecordsCompanion extends UpdateCompanion<TrackRow> {
           ..write('fileSize: $fileSize, ')
           ..write('availability: $availability, ')
           ..write('metadataJson: $metadataJson, ')
+          ..write('addedAtMs: $addedAtMs, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -8214,6 +8263,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'tracks_by_album',
     'CREATE INDEX tracks_by_album ON tracks (source_id, album_id)',
   );
+  late final Index tracksByAdded = Index(
+    'tracks_by_added',
+    'CREATE INDEX tracks_by_added ON tracks (added_at_ms DESC, source_type, source_id, track_id)',
+  );
   late final Index albumsByTitle = Index(
     'albums_by_title',
     'CREATE INDEX albums_by_title ON albums (title)',
@@ -8270,6 +8323,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     schemaMigrationRecords,
     tracksByTitle,
     tracksByAlbum,
+    tracksByAdded,
     albumsByTitle,
     artistsByName,
     playlistsByUpdated,
@@ -8315,6 +8369,7 @@ typedef $$TrackRecordsTableCreateCompanionBuilder =
       Value<int?> fileSize,
       required String availability,
       Value<String> metadataJson,
+      Value<int?> addedAtMs,
       Value<int> rowid,
     });
 typedef $$TrackRecordsTableUpdateCompanionBuilder =
@@ -8334,6 +8389,7 @@ typedef $$TrackRecordsTableUpdateCompanionBuilder =
       Value<int?> fileSize,
       Value<String> availability,
       Value<String> metadataJson,
+      Value<int?> addedAtMs,
       Value<int> rowid,
     });
 
@@ -8418,6 +8474,11 @@ class $$TrackRecordsTableFilterComposer
 
   ColumnFilters<String> get metadataJson => $composableBuilder(
     column: $table.metadataJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get addedAtMs => $composableBuilder(
+    column: $table.addedAtMs,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -8505,6 +8566,11 @@ class $$TrackRecordsTableOrderingComposer
     column: $table.metadataJson,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get addedAtMs => $composableBuilder(
+    column: $table.addedAtMs,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$TrackRecordsTableAnnotationComposer
@@ -8578,6 +8644,9 @@ class $$TrackRecordsTableAnnotationComposer
     column: $table.metadataJson,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get addedAtMs =>
+      $composableBuilder(column: $table.addedAtMs, builder: (column) => column);
 }
 
 class $$TrackRecordsTableTableManager
@@ -8626,6 +8695,7 @@ class $$TrackRecordsTableTableManager
                 Value<int?> fileSize = const Value.absent(),
                 Value<String> availability = const Value.absent(),
                 Value<String> metadataJson = const Value.absent(),
+                Value<int?> addedAtMs = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TrackRecordsCompanion(
                 trackId: trackId,
@@ -8643,6 +8713,7 @@ class $$TrackRecordsTableTableManager
                 fileSize: fileSize,
                 availability: availability,
                 metadataJson: metadataJson,
+                addedAtMs: addedAtMs,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -8662,6 +8733,7 @@ class $$TrackRecordsTableTableManager
                 Value<int?> fileSize = const Value.absent(),
                 required String availability,
                 Value<String> metadataJson = const Value.absent(),
+                Value<int?> addedAtMs = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TrackRecordsCompanion.insert(
                 trackId: trackId,
@@ -8679,6 +8751,7 @@ class $$TrackRecordsTableTableManager
                 fileSize: fileSize,
                 availability: availability,
                 metadataJson: metadataJson,
+                addedAtMs: addedAtMs,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

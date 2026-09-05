@@ -18,16 +18,21 @@ final class FakeLibraryRepository implements LibraryRepository {
     Iterable<Track> tracks = const [],
     Iterable<Album> albums = const [],
     Iterable<Artist> artists = const [],
+    DateTime Function()? clock,
   }) : _albums = List.of(albums),
-       _artists = List.of(artists) {
+       _artists = List.of(artists),
+       _clock = clock ?? DateTime.now {
     for (final track in tracks) {
       _tracks[_key(track.ref)] = track;
+      _addedAt[_key(track.ref)] = _clock().toUtc();
     }
   }
 
   final Map<String, Track> _tracks = {};
   final List<Album> _albums;
   final List<Artist> _artists;
+  final DateTime Function() _clock;
+  final Map<String, DateTime> _addedAt = {};
   final _trackChanges = StreamController<List<Track>>.broadcast(sync: true);
   int initializeCount = 0;
   int disposeCount = 0;
@@ -48,6 +53,32 @@ final class FakeLibraryRepository implements LibraryRepository {
       _page(_sortedTracks(), request);
 
   @override
+  Future<PageResult<Track>> listRecentlyAdded(
+    PageRequest request, {
+    required DateTime since,
+    required DateTime until,
+  }) async {
+    if (since.isAfter(until)) {
+      throw ArgumentError('Invalid catalog time window');
+    }
+    final tracks =
+        _tracks.values.where((track) {
+          final added = _addedAt[_key(track.ref)];
+          return added != null &&
+              !added.isBefore(since) &&
+              !added.isAfter(until);
+        }).toList()..sort((a, b) {
+          final date = _addedAt[_key(b.ref)]!.compareTo(_addedAt[_key(a.ref)]!);
+          if (date != 0) return date;
+          final type = a.sourceType.name.compareTo(b.sourceType.name);
+          if (type != 0) return type;
+          final source = a.sourceId.compareTo(b.sourceId);
+          return source == 0 ? a.id.compareTo(b.id) : source;
+        });
+    return _page(tracks, request);
+  }
+
+  @override
   Future<PageResult<Album>> listAlbums(PageRequest request) async =>
       _page(_albums, request);
 
@@ -61,6 +92,7 @@ final class FakeLibraryRepository implements LibraryRepository {
   @override
   Future<void> upsertTracks(Iterable<Track> tracks) async {
     for (final track in tracks) {
+      _addedAt.putIfAbsent(_key(track.ref), () => _clock().toUtc());
       _tracks[_key(track.ref)] = track;
     }
     _trackChanges.add(trackSnapshot);

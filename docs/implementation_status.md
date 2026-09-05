@@ -1,9 +1,9 @@
 # 实施状态
 
-当前增量Phase5C：Windows根窗口控件、当前HWND专属Gateway、有序关闭及跨路由无障碍入口。
-327 Flutter（43 Golden）/61 Node、严格分析和Android Debug通过；Windows原生CI结果单独记录。
-当前分支`codex/windows-window-gateway`，详见[Phase5C报告](phase_5c_windows_window_report.md)。
-前置 Phase5B 为 `a39d306`、Draft PR #34；两组GitHub checks/Android/Windows已全部成功，未合并或上线。
+当前增量Phase6A：首页最近添加数据基础，v2首次入库时间/索引/稳定分页及v1无损迁移。
+339 Flutter（43 Golden）/63 Node和严格分析通过；首页UI和聚合Controller尚未替换骨架。
+当前分支`codex/home-recent-catalog`，详见[Phase6A报告](phase_6a_home_catalog_report.md)。
+前置Phase5C为`db7998e`、Draft PR #35；两组GitHub checks/Android/Windows及真实窗口测试全部成功，未合并或上线。
 
 更新：2026-09-05。当前在 Phase 5 三套 Shell 接线；Phase 0—4 已有实现与审计产物，Phase 2 仍欠网页截图对照。Phase4L 已在同一实现提交验证 Android WAV/content URI/HTTPS 与 Windows WAV/HTTPS。Phase4G 的 `media_kit` 分发审计未通过，Phase4H 已移除该活动候选。许可材料、查看入口及 ADR-044 工程选型已完成，默认入口不再使用 UnavailableAudioEngine；独立测试 Graph/main_dev 仍保留不可用后端。正式 Shell 底栏已可控制根播放器，业务曲库/导入、完整播放页面与 Phase5 其余部分/Phase6—11 未完成，不能作为可用音乐应用交付。下文旧阶段的未接线描述保留历史归属。
 
