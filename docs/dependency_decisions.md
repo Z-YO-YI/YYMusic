@@ -193,3 +193,15 @@ Android APK均不得重新出现该候选；若未来从不可变源码建立新
 当前音频选择仍未完成。`just_audio`只保留为隔离备用候选，其Android原生POC已通过、Windows仍缺真实
 播放端点；生产继续使用`UnavailableAudioEngine`。移除media_kit不授权Phase5、不引入代理、下载、缓存、
 离线保存、WebView、后台服务或新的平台权限。
+
+## Phase 4L/4M 当前候选证据更新（2026-09-05）
+
+上方Phase4F/4H缺Windows端点的文字为历史结果。Phase4L同一 `8c4aa6e` 的 Android 三来源原生、
+Windows 本机两轮 file/HTTPS均已通过，参考[实际计时与归档证据](phase_4l_native_https_report.md)。
+这补齐当前无Header候选的播放运行证据，但不扩大认证Header、后台、听感或发行结论。
+
+Phase4M将Phase4E六个Pub包的完整许可原文和两个原生构建文件指纹写入
+`docs/legal/just_audio/manifest.json`。源码与实际APK/Windows NOTICES.Z均须逐包全文校验，
+沿用Flutter自动汇总/LicenseRegistry，而不是另外维护可能漂移的原文副本。
+详细范围见ADR-041：本批仅关闭六个音频Dart包的来源与打包覆盖，不伪称已经审完全部Maven传递材料，
+也不接生产AudioEngine。完整原生NOTICE与最终选型/许可展示仍是正式接线前的剩余工作。

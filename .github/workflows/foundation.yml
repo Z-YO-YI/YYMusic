@@ -67,6 +67,9 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
       - run: flutter pub get --enforce-lockfile
+      - name: Verify locked audio license sources
+        shell: pwsh
+        run: ./tools/verify_audio_licenses.ps1 -Mode Source
       - run: dart run build_runner build
       - run: dart run drift_dev make-migrations
       - run: git diff --exit-code -- lib/data/database/app_database.g.dart drift_schemas/
