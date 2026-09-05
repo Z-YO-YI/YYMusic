@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../design_system/yy_theme.dart';
 import '../domain/models/domain_failure.dart';
+import '../domain/repositories/catalog_browse_repository.dart';
 import '../domain/repositories/catalog_search_repository.dart';
 import '../domain/repositories/collection_repository.dart';
 import '../domain/repositories/library_repository.dart';
@@ -34,6 +35,7 @@ final class DependencyGraph {
     this.dataServices,
     LibraryRepository? library,
     CatalogSearchRepository? catalogSearch,
+    CatalogBrowseRepository? catalogBrowse,
     SearchHistoryRepository? searchHistory,
     CollectionRepository? collection,
     LyricsRepository? lyrics,
@@ -45,6 +47,7 @@ final class DependencyGraph {
          dataServices == null ||
              (library == null &&
                  catalogSearch == null &&
+                 catalogBrowse == null &&
                  searchHistory == null &&
                  collection == null &&
                  lyrics == null &&
@@ -56,6 +59,7 @@ final class DependencyGraph {
        _mediaSession = mediaSession ?? const UnavailableMediaSessionGateway(),
        library = dataServices?.library ?? library,
        catalogSearch = dataServices?.catalogSearch ?? catalogSearch,
+       catalogBrowse = dataServices?.catalogBrowse ?? catalogBrowse,
        searchHistory = dataServices?.searchHistory ?? searchHistory,
        collection = dataServices?.collection ?? collection,
        lyrics = dataServices?.lyrics ?? lyrics,
@@ -89,6 +93,7 @@ final class DependencyGraph {
   final AppDataServices? dataServices;
   final LibraryRepository? library;
   final CatalogSearchRepository? catalogSearch;
+  final CatalogBrowseRepository? catalogBrowse;
   final SearchHistoryRepository? searchHistory;
   final CollectionRepository? collection;
   final LyricsRepository? lyrics;

@@ -57,6 +57,15 @@ Java 原生访问警告保留，没有影响检查退出状态。本机包仅为
 
 ## 剩余边界
 
+后续复核：实现 `40fb7a61c844f9e69852178b8c338c9b900a4473` 的
+push [33979718858](https://github.com/Z-YO-YI/YYMusic/actions/runs/33979718858) 与
+PR [33979732078](https://github.com/Z-YO-YI/YYMusic/actions/runs/33979732078)
+均已通过 checks、Android Debug、Windows Debug、Windows Golden 和原生窗口测试。
+两份日志核实 ZIP 24 项、六包许可、51 个原生坐标 / 3 份全文法律材料、APK 48 资产及
+Windows 65 文件；窗口八项结果均为 true。音频专用作业 skipped，不算新增音频验收。
+Draft PR [#39](https://github.com/Z-YO-YI/YYMusic/pull/39) 以 `codex/catalog-search-data`
+为 base，仍未合并；以下边界保留 Phase 6D 交付时归属。
+
 默认新安装仍是实际空库，没有音乐导入和来源配置 UI；在线筛选只能查已入库引用。
 实时 REST、多来源适配、封面、专辑/艺术家详情、音乐库与后续业务页、完整播放器和发布
 仍按主指令后续阶段实施。SQLite 子串搜索不是 FTS/拼音检索；合成测试不替代大曲库实机性能。

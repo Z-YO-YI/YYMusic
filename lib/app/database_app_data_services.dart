@@ -5,6 +5,7 @@ import '../data/repositories/drift_library_repository.dart';
 import '../data/repositories/drift_lyrics_repository.dart';
 import '../data/repositories/drift_music_source_repository.dart';
 import '../data/repositories/drift_search_history_repository.dart';
+import '../domain/repositories/catalog_browse_repository.dart';
 import '../domain/repositories/catalog_search_repository.dart';
 import '../domain/repositories/collection_repository.dart';
 import '../domain/repositories/library_repository.dart';
@@ -96,6 +97,9 @@ final class DatabaseAppDataServices implements AppDataServices {
 
   @override
   CatalogSearchRepository get catalogSearch => _library;
+
+  @override
+  CatalogBrowseRepository get catalogBrowse => _library;
 
   @override
   SearchHistoryRepository get searchHistory => _searchHistory;

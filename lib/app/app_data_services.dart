@@ -1,3 +1,4 @@
+import '../domain/repositories/catalog_browse_repository.dart';
 import '../domain/repositories/catalog_search_repository.dart';
 import '../domain/repositories/collection_repository.dart';
 import '../domain/repositories/library_repository.dart';
@@ -11,6 +12,7 @@ import '../platform/contracts/secure_credential_gateway.dart';
 abstract interface class AppDataServices {
   LibraryRepository get library;
   CatalogSearchRepository get catalogSearch;
+  CatalogBrowseRepository get catalogBrowse;
   SearchHistoryRepository get searchHistory;
   CollectionRepository get collection;
   LyricsRepository get lyrics;
