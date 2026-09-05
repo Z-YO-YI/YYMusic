@@ -430,6 +430,43 @@ test('Inspector is controlled, opaque and scrollable without IO or queue algorit
   assert(!/localPath|contentUri|artworkUri|metadata\[|Timer/.test(presenter));
 });
 
+test('Windows frame is root-owned, current-HWND-only and closes after business shutdown', () => {
+  const app = read('lib/app/yy_music_app.dart');
+  assert.match(app, /if \(platform == YYPlatform.windows\)[\s\S]*?WindowPresenter\(/);
+  assert.match(app, /beforeClose: ref.read\(dependencyGraphProvider\).close/);
+  assert.match(app, /WindowFrame\(/);
+  assert(!/WindowGateway|WindowPresenter/.test(read('lib/app/dependency_graph.dart')));
+  const presenter = read('lib/app/window_presenter.dart');
+  assert.match(presenter, /await beforeClose\(\)[\s\S]*?await _gateway.completeClose\(\)/);
+  const gateway = read('lib/platform/windows/windows_window_gateway.dart');
+  assert.match(gateway, /invokeMethod<Object\?>\(method\)/);
+  assert.match(gateway, /on MissingPluginException[\s\S]*?return null/);
+  assert.match(gateway, /setMethodCallHandler\(null\)/);
+  const native = read('windows/runner/window_control.cpp');
+  assert.match(native, /const HWND window = GetHandle\(\)/);
+  assert.match(native, /std::holds_alternative<std::monostate>/);
+  assert.match(native, /original_window_style_/);
+  assert.match(native, /SWP_FRAMECHANGED/);
+  assert.match(native, /GetAsyncKeyState\(VK_LBUTTON\)/);
+  assert(!/FindWindow|EnumWindows|OpenProcess|SetForegroundWindow|SendInput|ShellExecute|CreateProcess/.test(native));
+  const runner = read('windows/runner/flutter_window.cpp');
+  assert.match(runner, /message == WM_CLOSE && custom_frame_ && !close_approved_/);
+  assert.match(runner, /InvokeMethod\("closeRequested", nullptr\)/);
+  for (const path of [...walk('lib/shells'), 'lib/app/window_chrome.dart', 'lib/design_system/yy_window_toolbar.dart']) {
+    assert(!/MethodChannel|dart:io|package:win32|ShowWindow\(/.test(read(path)), path);
+  }
+});
+
+test('native window integration runs before the default Windows artifact rebuild', () => {
+  const workflow = read('.github/workflows/foundation.yml');
+  assert.match(workflow, /flutter test integration_test\/windows_window_gateway_test.dart -d windows[\s\S]*?flutter build windows --debug --no-pub[\s\S]*?Upload Windows development Debug bundle/);
+  const integration = read('integration_test/windows_window_gateway_test.dart');
+  assert.match(integration, /Platform.isWindows && kDebugMode/);
+  assert.match(integration, /gateway.requestClose\(\)/);
+  assert.match(integration, /await gateway.dispose\(\)/);
+  assert(!/FakeWindow|setMockMethodCallHandler|\.completeClose\(|HttpClient|File\(|SendInput/.test(integration));
+});
+
 test('Android native source test reuses baseline and contains only a temporary debug fixture', () => {
   const content = read('integration_test/just_audio_android_sources_poc_test.dart');
   assert.match(content, /native_local\.main\(\)/);

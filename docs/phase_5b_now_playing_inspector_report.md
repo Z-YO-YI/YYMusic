@@ -39,6 +39,8 @@ ShellPlayer.inspector模式，与底栏复用相同Presenter和手势实现。�
   `c3735dc6fa6d061bb1c09c8cbe88dee6613510c1a9f7ff619a4faf43188fbae5`。
   原生Java警告保留，未更改工具链或全局权限来压制。
 
-本提交GitHub双平台构建在推送后记录，不把本机Android结果当成Windows通过。没有新原生POC、Release或
+实现提交`a39d306435738cc24a8ac23540ae092bafecb056`，Draft PR #34保持未合并。
+GitHub push33961718376与PR33961733794均completed/success：两组checks、Android Debug、
+Windows Debug全部通过，原生音频POC两项均skipped（不计新原生设备运行）。没有新原生POC、Release或
 真实歌曲导入；这些Widget/Fake合同不替代Phase4L的设备播放证据。Phase5窗口能力和Phase6—11
 继续分批开发，不能作为完成版音乐应用或上线成果交付。

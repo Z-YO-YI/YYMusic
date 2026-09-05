@@ -1,6 +1,11 @@
 # 原生基础验证矩阵
 
-Phase5B 当前：308 Flutter（41 Golden）、59 Node、严格 analyze0。新增5个Inspector交互场景与
+Phase5C 当前：327 Flutter（43 Golden）、61 Node、严格 analyze0；9项窗口Presenter/通道合同、
+8项根窗口Widget、2张新增Golden，原41张不变。Android默认APK/签名/48资产及许可通过。
+原生Win32状态/WM_CLOSE/原frame恢复由独立Windows集成测试验证，不用Fake代替；
+CI先测再重建默认入口，防止测试应用混入Debug产物，见[本批报告](phase_5c_windows_window_report.md)。
+
+Phase5B 历史：308 Flutter（41 Golden）、59 Node、严格 analyze0。新增5个Inspector交互场景与
 3张面板Golden；只变更两个Windows全页基线，其余36张不变。包括两个表面同步、宽窄恢复、
 真实加载门控/错误重试、同条目重载预览取消与260×240独立滚动，见[本批报告](phase_5b_now_playing_inspector_report.md)。
 

@@ -94,6 +94,10 @@ jobs:
       - run: flutter pub get --enforce-lockfile
       - name: Native widget goldens on their pinned host
         run: flutter test --no-pub --tags windows-golden --reporter expanded
+      - name: Verify real Windows frame state and close handshake
+        if: '!inputs.build_windows_audio_probe'
+        run: flutter test integration_test/windows_window_gateway_test.dart -d windows --no-pub --reporter expanded
+      # Rebuild the default entry point AFTER the integration test, never upload it.
       - run: flutter build windows --debug --no-pub
         if: '!inputs.build_windows_audio_probe'
       - name: Verify Windows development Debug bundle

@@ -18,6 +18,7 @@ class WindowsShell extends StatelessWidget {
     required this.child,
     this.player,
     this.inspector,
+    this.showToolbar = true,
   });
   final YYLayoutClass layout;
   final AppNavigation navigation;
@@ -25,6 +26,7 @@ class WindowsShell extends StatelessWidget {
   final Widget child;
   final Widget? player;
   final Widget? inspector;
+  final bool showToolbar;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +41,7 @@ class WindowsShell extends StatelessWidget {
         padding: EdgeInsets.fromLTRB(edge, 0, edge, edge),
         child: Column(
           children: [
-            const YYWindowToolbar(showWindowControls: false),
+            if (showToolbar) const YYWindowToolbar(showWindowControls: false),
             SizedBox(height: gap),
             Expanded(
               child: Row(

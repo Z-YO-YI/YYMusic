@@ -7,15 +7,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../design_system/yy_theme.dart';
 import '../design_system/yy_tokens.dart';
+import '../platform/contracts/window_gateway.dart';
+import '../platform/windows/windows_window_gateway.dart';
 import 'app_router.dart';
 import 'app_routes.dart';
 import 'dependency_graph.dart';
 import 'layout_class.dart';
+import 'window_chrome.dart';
+import 'window_presenter.dart';
 
 class YYMusicApp extends ConsumerStatefulWidget {
-  const YYMusicApp({super.key, this.platform, this.initialLocation = '/home'});
+  const YYMusicApp({
+    super.key,
+    this.platform,
+    this.initialLocation = '/home',
+    this.windowGateway,
+  });
   final YYPlatform? platform;
   final String initialLocation;
+  final WindowGateway? windowGateway;
 
   @override
   ConsumerState<YYMusicApp> createState() => _YYMusicAppState();
@@ -23,6 +33,7 @@ class YYMusicApp extends ConsumerStatefulWidget {
 
 class _YYMusicAppState extends ConsumerState<YYMusicApp> {
   AppRouter? _router;
+  WindowPresenter? _window;
 
   @override
   void initState() {
@@ -31,6 +42,13 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp> {
         widget.platform ??
         (kIsWeb ? null : YYPlatform.fromTarget(defaultTargetPlatform));
     if (platform != null) {
+      if (platform == YYPlatform.windows) {
+        _window = WindowPresenter(
+          widget.windowGateway ?? WindowsWindowGateway(),
+          beforeClose: ref.read(dependencyGraphProvider).close,
+        );
+        unawaited(_window!.initialize());
+      }
       _router = AppRouter(
         platform: platform,
         viewState: ref.read(dependencyGraphProvider).viewState,
@@ -47,6 +65,7 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp> {
 
   @override
   void dispose() {
+    _window?.dispose();
     _router?.dispose();
     super.dispose();
   }
@@ -127,7 +146,12 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp> {
                       },
                       child: Focus(
                         autofocus: true,
-                        child: child ?? const SizedBox.shrink(),
+                        child: _window == null
+                            ? child ?? const SizedBox.shrink()
+                            : WindowFrame(
+                                presenter: _window!,
+                                child: child ?? const SizedBox.shrink(),
+                              ),
                       ),
                     ),
                   ),

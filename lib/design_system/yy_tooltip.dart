@@ -12,11 +12,13 @@ class YYTooltip extends StatefulWidget {
     required this.message,
     required this.child,
     this.waitDuration = const Duration(milliseconds: 450),
+    this.below = false,
   });
 
   final String message;
   final Widget child;
   final Duration waitDuration;
+  final bool below;
 
   @override
   State<YYTooltip> createState() => _YYTooltipState();
@@ -51,9 +53,13 @@ class _YYTooltipState extends State<YYTooltip> {
       return CompositedTransformFollower(
         link: _link,
         showWhenUnlinked: false,
-        targetAnchor: Alignment.centerRight,
-        followerAnchor: Alignment.centerLeft,
-        offset: const Offset(8, 0),
+        targetAnchor: widget.below
+            ? Alignment.bottomRight
+            : Alignment.centerRight,
+        followerAnchor: widget.below
+            ? Alignment.topRight
+            : Alignment.centerLeft,
+        offset: widget.below ? const Offset(0, 8) : const Offset(8, 0),
         child: Align(
           alignment: Alignment.topLeft,
           widthFactor: 1,
