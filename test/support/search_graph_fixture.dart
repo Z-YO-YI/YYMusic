@@ -1,5 +1,6 @@
 import 'package:yymusic/app/dependency_graph.dart';
 import 'package:yymusic/domain/models/track.dart';
+import 'package:yymusic/domain/repositories/catalog_browse_repository.dart';
 
 import 'fake_audio_engine.dart';
 import 'fake_domain_repositories.dart';
@@ -7,7 +8,7 @@ import 'fake_playback_dependencies.dart';
 import 'fake_search_repositories.dart';
 
 class SearchGraphFixture {
-  SearchGraphFixture({int count = 4}) {
+  SearchGraphFixture({int count = 4, CatalogBrowseRepository? catalogBrowse}) {
     tracks = [
       for (var i = 0; i < count; i++)
         Track(
@@ -35,6 +36,7 @@ class SearchGraphFixture {
       library: FakeLibraryRepository(tracks: tracks),
       collection: collection,
       catalogSearch: repository,
+      catalogBrowse: catalogBrowse,
       searchHistory: history,
       musicSources: sources,
       playbackSourceResolver: FakePlaybackSourceResolver(),

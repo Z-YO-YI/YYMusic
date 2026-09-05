@@ -1,11 +1,11 @@
 # 实施状态
 
-当前增量Phase6G2：音乐库专辑/艺人→原生详情，完整来源路由与连续返回栈、Phone/Tablet/Windows
-独立布局、公开来源名、真实分页/错误/重试及唯一根播放；布局变化保留会话、页和滚动，替换来源不串页。
-506 Flutter（67 Golden）/77 Node、严格分析和本地Android Debug通过；
-分支`codex/catalog-detail-surfaces`，精确APK/云端状态见[Phase6G2报告](phase_6g2_catalog_detail_surfaces_report.md)。
-前置Phase6G1 `5508cf4`、Draft PR #42两组GitHub checks/Android/Windows成功，未合并。
-详情收藏菜单/播放全部、搜索结果详情入口和真实封面尚未接入；音乐库原分类/播放/收藏/菜单保持。
+当前增量Phase6G3：搜索专辑/艺人→既有三端原生详情，完整来源身份、连续返回搜索、滚动/条件/焦点
+保持，点击详情不写搜索历史或播放，覆盖搜索时撤销未完成播放意图。只改搜索展示，不改根合同或查询语义。
+512 Flutter（67 Golden）/78 Node、严格分析和本地Android Debug通过；
+分支`codex/search-detail-navigation`，精确APK/云端状态见[Phase6G3报告](phase_6g3_search_detail_navigation_report.md)。
+前置Phase6G2 `7fe2e21`、Draft PR #43两组GitHub checks/Android/Windows成功，未合并。
+详情收藏菜单/播放全部和真实封面尚未接入；音乐库原分类/播放/收藏/菜单保持。
 歌单编辑、实时REST、导入/恢复、完整播放器、网页对照和上线仍未完成，默认新安装仍是无Fixture的空库。
 下方旧阶段记录保留历史归属。
 
@@ -25,6 +25,7 @@ v2签名通过；Windows既有真实Profile包只做新增许可复核。初始�
 
 | 阶段/能力 | 状态 |
 | --- | --- |
+| Phase 6G3 搜索详情入口 | 明确原生按钮、完整来源引用、连续返回/搜索滚动/条件/键盘焦点保持、无隐式历史/播放；512 Flutter/67 Golden/78 Node，本机Android通过；未扩展搜索/来源合同 |
 | Phase 6G2 原生详情 | 音乐库入口、三端布局、完整来源返回栈、分页/重试及根播放；506 Flutter/67 Golden/77 Node，本机Android通过；搜索入口/收藏菜单/封面和后续业务待完成 |
 | Phase 6G1 详情状态层 | 固定来源身份摘要、独立有界分页、刷新取消、根会话排空；479 Flutter/61 Golden未改/75 Node，修复三个目录投影的短页容量；路由/三端详情页面下一批接入 |
 | Phase 6F 原生音乐库 | 五分类/三布局、排序/来源类型/状态筛选、分页/惰性构建、根播放/收藏/菜单；452 Flutter/61 Golden/73 Node，b72413e双组云端成功；详情、歌单编辑/系统歌单与导入/恢复未完成 |

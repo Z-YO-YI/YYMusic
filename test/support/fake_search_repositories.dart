@@ -15,6 +15,18 @@ class FakeSearchRepository implements CatalogSearchRepository {
     SearchCancellation?,
   )?
   trackQuery;
+  Future<PageResult<Album>> Function(
+    CatalogQuery,
+    PageRequest,
+    SearchCancellation?,
+  )?
+  albumQuery;
+  Future<PageResult<Artist>> Function(
+    CatalogQuery,
+    PageRequest,
+    SearchCancellation?,
+  )?
+  artistQuery;
   bool remoteFailure = false;
   @override
   Future<PageResult<Track>> searchTracks(
@@ -45,6 +57,7 @@ class FakeSearchRepository implements CatalogSearchRepository {
     SearchCancellation? cancellation,
   }) async {
     requests.add(('albums', query, page, cancellation));
+    if (albumQuery != null) return albumQuery!(query, page, cancellation);
     _check(query, cancellation);
     return PageResult(
       items: tracks.isEmpty
@@ -69,6 +82,7 @@ class FakeSearchRepository implements CatalogSearchRepository {
     SearchCancellation? cancellation,
   }) async {
     requests.add(('artists', query, page, cancellation));
+    if (artistQuery != null) return artistQuery!(query, page, cancellation);
     _check(query, cancellation);
     return PageResult(
       items: tracks.isEmpty

@@ -84,7 +84,7 @@ final class SearchSections {
         style: TextStyle(fontSize: 11, height: 1.6),
       ),
       const Text(
-        'Enter 搜索并播放首个可用曲目；专辑和艺术家详情仍在开发。',
+        'Enter 搜索并播放首个可用曲目；详情请点查看按钮。',
         style: TextStyle(fontSize: 11, height: 1.6),
       ),
       const SizedBox(height: 18),
@@ -181,17 +181,23 @@ final class SearchSections {
           : null,
     ),
     Album album => _EntityResult(
+      key: ValueKey(('search-album', album.ref)),
       title: album.title,
       subtitle:
           '${album.artists.map((a) => a.name).join(' / ')} · ${album.trackCount} 首',
       source: controller.sourceLabel(album.sourceId, type),
       glyph: YYGlyph.library,
+      actionLabel: '查看专辑',
+      onOpen: () => navigation.openAlbum(album.ref),
     ),
     Artist artist => _EntityResult(
+      key: ValueKey(('search-artist', artist.ref)),
       title: artist.name,
       subtitle: '${artist.albumCount} 张专辑 · ${artist.trackCount} 首',
       source: controller.sourceLabel(artist.sourceId, type),
       glyph: YYGlyph.music,
+      actionLabel: '查看艺人',
+      onOpen: () => navigation.openArtist(artist.ref),
     ),
     _ => const SizedBox.shrink(),
   };
@@ -199,13 +205,18 @@ final class SearchSections {
 
 class _EntityResult extends StatelessWidget {
   const _EntityResult({
+    super.key,
     required this.title,
     required this.subtitle,
     required this.source,
     required this.glyph,
+    required this.actionLabel,
+    required this.onOpen,
   });
   final String title, subtitle, source;
   final YYGlyph glyph;
+  final String actionLabel;
+  final VoidCallback onOpen;
   @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.only(bottom: 8),
@@ -234,6 +245,13 @@ class _EntityResult extends StatelessWidget {
                     size: 11,
                     color: YYTheme.of(context).colors.secondary,
                   ),
+                ),
+                const SizedBox(height: 8),
+                YYButton(
+                  label: actionLabel,
+                  glyph: YYGlyph.chevronRight,
+                  style: YYButtonStyle.quiet,
+                  onPressed: onOpen,
                 ),
               ],
             ),
