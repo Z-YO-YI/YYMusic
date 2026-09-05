@@ -12,7 +12,7 @@ import 'package:yymusic/playback/playable_source.dart';
 import 'support/deterministic_pcm_wav.dart';
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('just_audio decodes and controls a generated local WAV', (
     _,
@@ -129,6 +129,7 @@ void main() {
       'proxyForHeaders': false,
       'requestHeaders': false,
     };
+    binding.reportData = <String, Object>{'nativeAudio': metrics};
     debugPrint('YYMUSIC_JUST_AUDIO_NATIVE_POC ${jsonEncode(metrics)}');
   }, timeout: const Timeout(Duration(minutes: 2)));
 }

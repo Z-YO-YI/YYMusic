@@ -17,7 +17,13 @@ void main() {
       );
       expect(
         ((triggers['push'] as YamlMap)['branches'] as YamlList).toSet(),
-        containsAll(['feat/**', 'fix/**', 'refactor/**', 'docs/**']),
+        containsAll([
+          'codex/**',
+          'feat/**',
+          'fix/**',
+          'refactor/**',
+          'docs/**',
+        ]),
       );
       expect(workflow['permissions'], {'contents': 'read'});
       final jobs = workflow['jobs'] as YamlMap;
