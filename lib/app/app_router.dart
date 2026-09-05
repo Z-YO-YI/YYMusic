@@ -13,6 +13,7 @@ import 'app_view_state.dart';
 import 'flutter_license_repository.dart';
 import 'foundation_screen.dart';
 import 'layout_class.dart';
+import 'playback_presenter.dart';
 
 final class AppRouter implements AppNavigation {
   AppRouter({
@@ -21,6 +22,7 @@ final class AppRouter implements AppNavigation {
     String initialLocation = '/home',
     LicenseRepository licenses = const FlutterLicenseRepository(),
     bool audioBackendSelected = false,
+    PlaybackPresenter? playbackPresenter,
   }) {
     Widget screen(AppRoute route) => FoundationScreen(
       route: route,
@@ -38,6 +40,7 @@ final class AppRouter implements AppNavigation {
             platform: platform,
             navigation: this,
             selected: AppRoute.mainRoutes[shell.currentIndex],
+            playbackPresenter: playbackPresenter,
             child: shell,
           ),
           branches: [

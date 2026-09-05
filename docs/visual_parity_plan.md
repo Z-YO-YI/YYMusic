@@ -1,5 +1,14 @@
 # 视觉还原与 Golden 计划
 
+## Phase 5A Shell 播放状态
+
+新增 phone_light 390×844、tablet_dark 1024×768、windows_white 1440×900 的 ShellPlayer
+完整场景，固定测试曲目、1:14/3:00、130% 双语文字；Fake 引擎仅用于可重现状态，不冒充原生。
+首次非更新比较确认 8 个预期差异后更新 2 Android/3 Windows Shell、3 PlayerSurfaces 基线。
+后者修正 App.tsx `.player-control.primary` 后置深色轻阴影；静态元信息不因未开放详情按钮变灰。
+11 张新增/变更图逐张检查，最终非更新全量回归通过；另 27 张旧图保持原字节，总数 38。
+以上仅说明本仓库 Flutter 视觉回归稳定；网页合成参考截图仍缺，未宣称像素完全一致。
+
 ## Phase 4O 原生许可页回归
 
 新增 `licenses_phone_light.png`（390×844）、`licenses_tablet_dark.png`（1024×768）、

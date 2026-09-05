@@ -10,10 +10,12 @@ class AndroidPhoneShell extends StatelessWidget {
     required this.navigation,
     required this.selected,
     required this.child,
+    this.player,
   });
   final AppNavigation navigation;
   final AppRoute selected;
   final Widget child;
+  final Widget? player;
 
   @override
   Widget build(BuildContext context) => SafeArea(
@@ -24,7 +26,10 @@ class AndroidPhoneShell extends StatelessWidget {
           child: Center(child: Text('YYMusic · Android Phone')),
         ),
         Expanded(child: child),
-        const FoundationPlaybackSlot(height: 64),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: player ?? const FoundationPlaybackSlot(height: 64),
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: YYMobileBottomNavigation(

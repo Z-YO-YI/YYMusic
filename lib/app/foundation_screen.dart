@@ -114,7 +114,7 @@ class _FoundationScreenState extends State<FoundationScreen> {
             const SizedBox(height: 24),
             Text(
               widget.audioBackendSelected
-                  ? '音频后端已接入；业务播放入口尚未实现。'
+                  ? '底部播放器已连接；曲库与完整播放页面正在开发。'
                   : '播放状态：不可用；未选择音频后端。',
             ),
             const SizedBox(height: 12),

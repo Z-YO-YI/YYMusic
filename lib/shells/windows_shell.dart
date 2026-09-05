@@ -16,11 +16,13 @@ class WindowsShell extends StatelessWidget {
     required this.navigation,
     required this.selected,
     required this.child,
+    this.player,
   });
   final YYLayoutClass layout;
   final AppNavigation navigation;
   final AppRoute selected;
   final Widget child;
+  final Widget? player;
 
   @override
   Widget build(BuildContext context) {
@@ -71,11 +73,12 @@ class WindowsShell extends StatelessWidget {
               ),
             ),
             SizedBox(height: gap),
-            FoundationPlaybackSlot(
-              height: narrow
-                  ? YYWindowsMetrics.compactPlayerHeight
-                  : YYWindowsMetrics.playerHeight,
-            ),
+            player ??
+                FoundationPlaybackSlot(
+                  height: narrow
+                      ? YYWindowsMetrics.compactPlayerHeight
+                      : YYWindowsMetrics.playerHeight,
+                ),
           ],
         ),
       ),

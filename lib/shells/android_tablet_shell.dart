@@ -12,11 +12,13 @@ class AndroidTabletShell extends StatelessWidget {
     required this.navigation,
     required this.selected,
     required this.child,
+    this.player,
   });
   final YYLayoutClass layout;
   final AppNavigation navigation;
   final AppRoute selected;
   final Widget child;
+  final Widget? player;
 
   @override
   Widget build(BuildContext context) => SafeArea(
@@ -53,7 +55,10 @@ class AndroidTabletShell extends StatelessWidget {
             ],
           ),
         ),
-        const FoundationPlaybackSlot(height: 76),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+          child: player ?? const FoundationPlaybackSlot(height: 76),
+        ),
       ],
     ),
   );

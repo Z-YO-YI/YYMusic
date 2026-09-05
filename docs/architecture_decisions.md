@@ -474,3 +474,23 @@ PlaybackController.close() 同步停止接受命令/状态更新，并等待订�
 Graph.close() 共享同一个 Future，逐项释放 engine/media/data，即使一项失败也继续，最后给固定
 app.shutdown-failed。dispose() 保留 Flutter 同步接口，安全启动关闭；有验证需求调用 close()。
 Bootstrap 获取资源期间的异常或晚到结果都执行清理，不展示原始路径/插件异常；恢复队列不自动播放。
+
+## ADR-045：Shell 播放器只消费根 Presenter（2026-09-05）
+
+新增 app/PlaybackPresenter，订阅根 PlaybackController，只计算只读 YYNowPlayingViewData 与
+控件可用性，转发既有播放/队列/随机/循环命令；不复制位置时钟、队列算法、历史或音频实例。
+Presenter 仅保留 UI 命令执行中与脱敏动作错误，Graph 在 Controller 前解除其订阅。
+三个 Shell 接收已构造的播放器 Widget 插槽，由 AdaptiveRoot 选择 Mini 或 Desktop Compact/Full。
+因此宽度/路由变化不重建 Presenter/播放核心，也没有平台专属业务控制器。
+
+ShellPlayer 的短期拖动值由 Widget 持有；Seek 绑定队列条目身份并以该身份重建拖动子树，
+换曲/换 Shell 不把旧手势提交到新曲。持久位置、音量仍只来自 Controller，预览不调用引擎。
+命令串行期间禁用相应操作，失败使用固定文案；空队列/不可用后端不假装播放。
+未实现的收藏、歌词/全屏、队列/设备工具保持空回调即禁用；不打开骨架页冒充业务功能。
+当前无封面来源 Gateway，播放器暂用既有纯几何占位，后续真实 Artwork 接口优先替换。
+Controller.seek 增加可选 expectedEntryId，并在串行命令真正执行时再次核对；Presenter 的前置核对
+不能代替队列内部保护，防止 Seek 排在外部换曲操作之后。系统媒体接口仍可不传此参数。
+修正旧播放器主按钮误用 accent 阴影：采用 App.tsx .player-control.primary 的 (0,8)/22/16% 深色，
+不影响普通 Primary Button；对应基线只在确认几何与颜色差分后更新。
+未开放详情的曲目信息使用静态 Semantics，保留正常文字对比度且没有按钮/onTap 语义；
+动作按钮仍按可用性禁用，不修改公共控件的全局禁用样式。

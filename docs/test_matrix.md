@@ -1,6 +1,11 @@
 # 原生基础验证矩阵
 
-Phase4P 当前：282 Flutter（35 Golden）、57 Node、严格 analyze 0 问题。新增 4 个本地来源
+Phase5A 当前：300 Flutter（38 Golden）、58 Node、严格 analyze 0 问题。新增根 Presenter/三套
+Shell 交互、真实拖动取消/跨曲 Seek/分屏连续性/输入焦点测试，以及三张播放态图；八张旧图
+按原稿阴影和槽位接线的已确认变化更新，其余27张不变。详见[本批报告](phase_5a_shell_player_report.md)。
+Phase4P `4a5b32d` 两组 GitHub checks/Android/Windows 全部成功，源码与两端包内审计日志已复核。
+
+Phase4P 历史：282 Flutter（35 Golden）、57 Node、严格 analyze 0 问题。新增 4 个本地来源
 解析用例、3 个有序关闭用例、5 个双平台启动/异常/晚到 Widget 用例；已有 3 个页面生命周期
 断言改为等待 close 完成，未删除断言或修改视觉基线。同步关闭和异步关闭使用同一根所有权。
 平台设备运行不使用这些 Fake 测试替代；真实后端的运行证据仍归属 Phase4L，当前构建见本批报告。

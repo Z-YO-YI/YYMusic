@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -33,6 +35,7 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp> {
         platform: platform,
         viewState: ref.read(dependencyGraphProvider).viewState,
         licenses: ref.read(dependencyGraphProvider).licenses,
+        playbackPresenter: ref.read(dependencyGraphProvider).playbackPresenter,
         audioBackendSelected: ref
             .read(dependencyGraphProvider)
             .playback
@@ -46,6 +49,17 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp> {
   void dispose() {
     _router?.dispose();
     super.dispose();
+  }
+
+  void _toggleFromKeyboard() {
+    final focused = FocusManager.instance.primaryFocus?.context;
+    if (focused?.widget is EditableText ||
+        focused?.findAncestorWidgetOfExactType<EditableText>() != null) {
+      return;
+    }
+    unawaited(
+      ref.read(dependencyGraphProvider).playbackPresenter.togglePlayback(),
+    );
   }
 
   @override
@@ -82,6 +96,13 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp> {
                     color: theme.colors.base,
                     child: CallbackShortcuts(
                       bindings: {
+                        if ((widget.platform ??
+                                YYPlatform.fromTarget(defaultTargetPlatform)) ==
+                            YYPlatform.windows)
+                          const SingleActivator(
+                            LogicalKeyboardKey.space,
+                            includeRepeats: false,
+                          ): _toggleFromKeyboard,
                         const SingleActivator(
                           LogicalKeyboardKey.arrowLeft,
                           alt: true,
