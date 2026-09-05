@@ -3,6 +3,8 @@
   "auditId": "phase-4g-media-kit-native-redistribution",
   "auditedAt": "2026-09-05",
   "status": "blocked",
+  "decision": "rejected",
+  "activeDependency": false,
   "releaseApproved": false,
   "productionWiringApproved": false,
   "scope": {

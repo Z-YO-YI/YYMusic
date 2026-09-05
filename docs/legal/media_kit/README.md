@@ -1,7 +1,7 @@
 # media_kit 原生分发审计材料
 
 这里保存Phase4G的机器可读审计清单，不是获准随应用分发的许可证包。当前
-`manifest.json`明确为`blocked`和`inventory-only`；因此本目录未加入Flutter assets，
+`manifest.json`明确为`blocked`、`rejected`和`inventory-only`，且活动依赖已移除；因此本目录未加入Flutter assets，
 也不包含下载的JAR、SO、DLL、7z、源码归档或不完整的第三方许可证集合。
 
 只有在Android与Windows原生二进制都能映射到不可变源码、完整构建配置、逐组件许可文本、

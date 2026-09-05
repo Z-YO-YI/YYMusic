@@ -213,14 +213,12 @@ test('playback has one root-owned truth behind project contracts', () => {
     assert(!/package:(media_kit|just_audio|audio_service)\//.test(read(path)), `${path} imports an audio plugin`);
   }
   const pluginImports = sources.filter(path => /package:media_kit\//.test(read(path)));
-  assert.deepEqual(
-    pluginImports,
-    ['lib/playback/media_kit_audio_backend.dart'],
-    'media_kit must remain inside its playback adapter',
-  );
+  assert.deepEqual(pluginImports, [], 'rejected media_kit must not remain in active source');
   assert(!/MediaKit|NativeMediaKitPlayerBackend/.test(read('lib/main.dart')));
   const redistribution = JSON.parse(read('docs/legal/media_kit/manifest.json'));
   assert.equal(redistribution.status, 'blocked');
+  assert.equal(redistribution.activeDependency, false);
+  assert.equal(redistribution.decision, 'rejected');
   assert.equal(redistribution.releaseApproved, false);
   assert.equal(redistribution.productionWiringApproved, false);
   assert.equal(redistribution.scope.distributionMode, 'inventory-only');
@@ -234,11 +232,7 @@ test('playback has one root-owned truth behind project contracts', () => {
   assert(!/JustAudioEngine|NativeJustAudioPlayerBackend/.test(read('lib/main.dart')));
   const pubspec = read('pubspec.yaml');
   const lockfile = read('pubspec.lock');
-  assert.match(pubspec, /media_kit: 1\.2\.6/);
-  assert.match(pubspec, /media_kit_libs_audio: 1\.0\.7/);
-  assert.match(lockfile, /media_kit_libs_android_audio:[\s\S]*?version: "1\.3\.8"/);
-  assert.match(lockfile, /media_kit_libs_windows_audio:[\s\S]*?version: "1\.0\.9"/);
-  assert(!/media_kit_(?:video|libs_video)/.test(`${pubspec}\n${lockfile}`));
+  assert(!/media_kit/i.test(`${pubspec}\n${lockfile}`));
   assert.match(pubspec, /^  just_audio: 0\.10\.6$/m);
   assert.match(pubspec, /^  just_audio_windows: 0\.2\.3$/m);
   assert.match(lockfile, /just_audio_platform_interface:[\s\S]*?version: "4\.6\.0"/);
@@ -270,6 +264,10 @@ test('native runners are branded and Android release does not use debug signing'
   assert.match(read('android/app/src/main/AndroidManifest.xml'), /android:allowBackup="false"/);
   assert.match(read('windows/runner/main.cpp'), /window\.Create\(L"YYMusic"/);
   assert(!read('android/app/build.gradle.kts').includes('signingConfigs.getByName("debug")'));
+  const apkVerifier = read('tools/verify_android_apk.ps1');
+  assert.match(apkVerifier, /libmpv\\\.so/);
+  assert.match(apkVerifier, /libmediakitandroidhelper\\\.so/);
+  assert.match(apkVerifier, /Rejected media_kit native content unexpectedly packaged in APK/);
 });
 
 test('CI validates both debug targets with least-privileged, pinned actions', () => {
@@ -301,32 +299,17 @@ test('CI validates both debug targets with least-privileged, pinned actions', ()
   assert.match(windows, /path: build\/windows\/x64\/runner\/Debug\//);
 });
 
-test('native audio POCs run only on explicit read-only dual-platform CI', () => {
+test('only the just_audio native POC remains active in read-only dual-platform CI', () => {
   const workflow = read('.github/workflows/foundation.yml');
   assert.match(workflow, /^permissions:\s*\n\s+contents: read\s*$/m);
   assert.match(
     workflow,
-    /run_native_audio_poc:[\s\S]*?required: true[\s\S]*?default: false[\s\S]*?type: boolean/,
-  );
-  assert.match(
-    workflow,
-    /run_native_audio_source_poc:[\s\S]*?required: true[\s\S]*?default: false[\s\S]*?type: boolean/,
-  );
-  assert.match(
-    workflow,
     /run_just_audio_poc:[\s\S]*?required: true[\s\S]*?default: false[\s\S]*?type: boolean/,
   );
-  const native = workflow.slice(workflow.indexOf('\n  windows-native-audio:'));
+  assert(!/run_native_audio_poc|run_native_audio_source_poc/.test(workflow));
+  const native = workflow.slice(workflow.indexOf('\n  windows-just-audio:'));
   assert.match(native, /runs-on: windows-2025/);
   assert.match(native, /runs-on: ubuntu-24\.04/);
-  assert.equal(
-    native.match(/if: github\.event_name == 'workflow_dispatch' && inputs\.run_native_audio_poc/g)?.length,
-    2,
-  );
-  assert.equal(
-    native.match(/if: github\.event_name == 'workflow_dispatch' && inputs\.run_native_audio_source_poc/g)?.length,
-    2,
-  );
   assert.equal(
     native.match(/if: github\.event_name == 'workflow_dispatch' && inputs\.run_just_audio_poc/g)?.length,
     2,
@@ -336,14 +319,6 @@ test('native audio POCs run only on explicit read-only dual-platform CI', () => 
     /ReactiveCircus\/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d/,
   );
   assert.equal(
-    native.match(/integration_test\/native_local_audio_poc_test\.dart/g)?.length,
-    2,
-  );
-  assert.equal(
-    native.match(/integration_test\/native_audio_sources_poc_test\.dart/g)?.length,
-    2,
-  );
-  assert.equal(
     native.match(/integration_test\/just_audio_native_local_poc_test\.dart/g)?.length,
     2,
   );
@@ -351,18 +326,11 @@ test('native audio POCs run only on explicit read-only dual-platform CI', () => 
     native,
     /Require a real Windows playback endpoint[\s\S]*?AudioEndpointBuilder[\s\S]*?Audiosrv[\s\S]*?Get-PnpDevice -Class AudioEndpoint -PresentOnly[\s\S]*?playbackEndpoints\.Count -eq 0/,
   );
-  assert.equal(
-    native.match(/node tools\/generate_native_audio_poc_tls\.mjs/g)?.length,
-    2,
-  );
-  assert.equal(
-    native.match(/--dart-define-from-file=build\/native-audio-poc\/tls-defines\.json/g)?.length,
-    2,
-  );
+  assert(!/native_local_audio_poc_test|native_audio_sources_poc_test|generate_native_audio_poc_tls/.test(native));
   assert(!/contents: write|upload-artifact|gh release|secrets\.|pull_request_target/.test(native));
   assert(!/flutter build apk|flutter build appbundle/.test(native));
   assert.equal(
-    workflow.match(/if: github\.event_name != 'workflow_dispatch' \|\| \(!inputs\.run_native_audio_poc && !inputs\.run_native_audio_source_poc && !inputs\.run_just_audio_poc\)/g)?.length,
+    workflow.match(/if: github\.event_name != 'workflow_dispatch' \|\| !inputs\.run_just_audio_poc/g)?.length,
     2,
   );
 
@@ -373,15 +341,7 @@ test('native audio POCs run only on explicit read-only dual-platform CI', () => 
   const hookFiles = [...sources, ...integrationFiles]
     .filter(path => read(path).includes(headlessHook))
     .sort();
-  assert.deepEqual(hookFiles, [
-    'integration_test/native_local_audio_poc_test.dart',
-    'lib/playback/media_kit_audio_backend.dart',
-    'lib/playback/media_kit_audio_engine.dart',
-  ]);
-  assert.match(
-    read('integration_test/native_local_audio_poc_test.dart'),
-    /Platform\.isWindows[\s\S]*?createWithHeadlessAudioSinkForPoc\(\)[\s\S]*?: MediaKitAudioEngine\.create\(\)/,
-  );
+  assert.deepEqual(hookFiles, []);
   const justAudioPoc = read('integration_test/just_audio_native_local_poc_test.dart');
   assert.match(justAudioPoc, /JustAudioEngine\.create\([\s\S]*?useProxyForRequestHeaders: false,[\s\S]*?supportsRequestHeaders: false/);
   assert.match(justAudioPoc, /buildDeterministicPcmWav\(\)/);
@@ -391,15 +351,7 @@ test('native audio POCs run only on explicit read-only dual-platform CI', () => 
   const sourceHookFiles = [...sources, ...integrationFiles]
     .filter(path => read(path).includes(sourceHook))
     .sort();
-  assert.deepEqual(sourceHookFiles, [
-    'integration_test/native_audio_sources_poc_test.dart',
-    'lib/playback/media_kit_audio_backend.dart',
-    'lib/playback/media_kit_audio_engine.dart',
-  ]);
-  assert.match(
-    read('integration_test/native_audio_sources_poc_test.dart'),
-    /createForControlledHttpsPoc\([\s\S]*?headlessAudio: Platform\.isWindows/,
-  );
+  assert.deepEqual(sourceHookFiles, []);
 
   const debugManifest = read('android/app/src/debug/AndroidManifest.xml');
   assert.match(debugManifest, /\.NativeAudioPocProvider/);
