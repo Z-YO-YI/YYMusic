@@ -66,6 +66,14 @@ class _FoundationScreenState extends State<FoundationScreen> {
             const Text('Phase 1 · 工程骨架', style: TextStyle(fontSize: 18)),
             const SizedBox(height: 12),
             const Text('此处验证平台布局、导航和共用依赖。业务页面尚未实现。'),
+            if (widget.route == AppRoute.settings) ...[
+              const SizedBox(height: 20),
+              YYButton(
+                label: '开源许可',
+                glyph: YYGlyph.info,
+                onPressed: widget.navigation.openLicenses,
+              ),
+            ],
             if (widget.showDesignGallery) ...[
               const SizedBox(height: 20),
               YYButton(

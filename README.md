@@ -1,6 +1,6 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 4M 音频许可校验基础；最终候选确认与正式播放器接线未完成**。Phase4L 的 `8c4aa6e` 已通过 Android 本地 WAV/content URI/HTTPS 三项原生测试，同提交 Profile 包在本机 Windows 两次通过 WAV/HTTPS，标准双平台 Debug成功。Phase4M新增六个音频Dart包原文、源码及实际NOTICES.Z打包校验，本地255项Flutter、51项工具回归通过；精确提交的云端结果见本批报告。生产仍使用 `UnavailableAudioEngine`，尚不能作为可用音乐应用交付。被拒绝的 `media_kit` 已移除；原生Maven传递NOTICE、许可展示、最终选型和共用播放器接线仍待完成，之后才是REST Adapter和业务页面。Phase2网页截图对照仍欠验收，未改变系统工具链或权限。
+当前阶段：**Android + Windows · Phase 4O 原生许可查看入口；正式播放器接线未完成**。Phase4L 已完成双平台真实音频来源验证，Phase4M/4N 的六包 Dart 许可和 51 项 Android 原生依赖材料已通过 GitHub 双平台打包核验。设置现在可以搜索开源组件、阅读完整许可、返回和失败重试。本批本地 270 项 Flutter（含 35 张 Golden）、56 项 Node、严格分析和 Android Debug 通过；云端结果见本批报告。生产仍使用 `UnavailableAudioEngine`，尚不能作为可用音乐应用交付。被拒绝的 `media_kit` 已移除；最终工程选型和共用播放器接线是下一步，Phase5—11 尚未完成。Phase2 网页截图对照仍欠验收，未改变系统工具链或权限。
 
 Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭、只允许手动选择、`contents: read`且不上传产物的Windows/Android原生集成模式。完整221项Flutter含32张Windows宿主Golden、严格分析0问题、31项Node、24项ZIP、lockfile及生成代码/v1快照零差异已通过；本机Android Debug也完成资产与v2单Debug签名复核。精确提交`622408e`的专用运行33862786766 attempt 2已在Windows与Android成功，且没有artifact或Release；普通push另提供保留14天的Windows开发Debug文件包。它依赖本机Debug CRT，并非通用免安装发行包；Phase4J的Profile诊断模式与正式应用分开。
 
@@ -10,7 +10,8 @@ Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭
 
 ## 开发入口
 
-- [Phase 4N 原生音频许可计划](docs/phase_4n_native_notices_plan.md)、[报告](docs/phase_4n_native_notices_report.md)：当前开发批次，51个实际Android依赖坐标、POM/归档指纹及三份完整许可原文，新增双平台包内校验；本地255 Flutter/56 Node通过，云端验证中。
+- [Phase 4O 许可查看计划](docs/phase_4o_license_viewer_plan.md)、[报告](docs/phase_4o_license_viewer_report.md)：设置 → 开源许可，SDK 与原生完整原文、搜索/重试、原生模态路由和三张新视觉基线；不使用 WebView 或默认 Material 许可页面。
+- [Phase 4N 原生音频许可计划](docs/phase_4n_native_notices_plan.md)、[报告](docs/phase_4n_native_notices_report.md)：51个实际Android依赖坐标、POM/归档指纹及三份完整许可原文，新增双平台包内校验；`f324ed2` 两组云端 checks/Android/Windows 全部通过。
 - [Phase 4M 音频许可基础计划](docs/phase_4m_audio_license_plan.md)、[本批报告](docs/phase_4m_audio_license_report.md)：本批完成，最终修正`c0e3706`的两组GitHub三job通过；完整许可原文指纹与源码/双平台打包校验、参数大小写回归，不把六包覆盖当成完整发行批准。
 - [Phase 4L HTTPS 原生验证计划](docs/phase_4l_native_https_plan.md)、[本批报告](docs/phase_4l_native_https_report.md)：Android 三来源、Windows 双来源两轮真实原生测试和标准双平台构建通过；默认关闭、诊断隔离，不属于业务功能交付。
 - [Phase 4K Android本地来源原生验证计划](docs/phase_4k_android_native_sources_plan.md)、[本批报告](docs/phase_4k_android_native_sources_report.md)：WAV 复跑和只读 content URI 的失败、恢复、播放及释放已在 GitHub 通过；该原生运行无 artifact/Release。

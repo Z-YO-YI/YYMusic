@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../design_system/yy_theme.dart';
 import '../domain/repositories/collection_repository.dart';
 import '../domain/repositories/library_repository.dart';
+import '../domain/repositories/license_repository.dart';
 import '../domain/repositories/lyrics_repository.dart';
 import '../domain/repositories/music_source_repository.dart';
 import '../platform/contracts/fullscreen_gateway.dart';
@@ -16,6 +17,7 @@ import '../playback/playback_source_resolver.dart';
 import '../playback/queue_controller.dart';
 import 'app_data_services.dart';
 import 'app_view_state.dart';
+import 'flutter_license_repository.dart';
 
 /// One graph per app scope; a Shell never creates business controllers.
 final class DependencyGraph {
@@ -30,6 +32,7 @@ final class DependencyGraph {
     MusicSourceRepository? musicSources,
     SecureCredentialGateway? credentials,
     this.fullscreen,
+    this.licenses = const FlutterLicenseRepository(),
   }) : assert(
          dataServices == null ||
              (library == null &&
@@ -65,6 +68,7 @@ final class DependencyGraph {
   final MusicSourceRepository? musicSources;
   final SecureCredentialGateway? credentials;
   final FullscreenGateway? fullscreen;
+  final LicenseRepository licenses;
   final viewState = AppViewState();
   final appearance = YYAppearanceController();
   late final PlaybackController playback;

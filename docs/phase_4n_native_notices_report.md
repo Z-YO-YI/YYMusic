@@ -35,7 +35,13 @@ XML禁DTD/外部实体；嵌套JAR与文本读取有界；开发机绝对路径�
 
 ## GitHub、范围和下一步
 
-代码提交及云端双平台结果将在推送后按精确SHA补充；不能把本机Android成功当作Windows通过。
+实现提交 `f324ed2acfc9048393345304afdb9c9a52139a2e` 已推送；Draft PR #30 未合并。
+push [33958595589](https://github.com/Z-YO-YI/YYMusic/actions/runs/33958595589) 和
+PR [33958609697](https://github.com/Z-YO-YI/YYMusic/actions/runs/33958609697) 均完成：
+checks、Windows Debug、Android Debug 三个 job 全部 success。原生 POC skipped，不算新运行通过。
+Android job 101286747582 的 51 坐标/POM/三份全文重生成、六包 NOTICES.Z、原生材料和 48 资产均 PASS；
+Windows job 101286861692 的六包 NOTICES.Z、原生材料和 65 文件 bundle 检查均 PASS。
+以上为精确实现提交的云端证据，不以本机 Android 结果代替 Windows。
 未改变发布权限、手动发布条件或保留期，没有创建新Release。
 本批不改HTML/App.tsx Sprite、POLISH_CSS、字体和UI；Phase2网页视觉对照仍欠验收。
 这是当前Media3闭包的工程许可材料，不是整个应用发行法律批准；`releaseApproved=false`。

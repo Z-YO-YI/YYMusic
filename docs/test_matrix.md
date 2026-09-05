@@ -1,5 +1,11 @@
 # 原生基础验证矩阵
 
+2026-09-05 Phase4N/O 增量：N 的 `f324ed2` 两组 GitHub checks/Android/Windows 均 success，
+51 项原生依赖材料和包内完整文本实际日志复核通过。O 新增 6 个许可单元测试、6 个 Widget 场景、
+3 张 Golden：无 SDK 组件标签的文本组、全文/引用/指纹、超时/畸形/重试与脱敏、搜索/返回/Esc、
+四种手机横竖/平板/Windows 布局与 130% 字号。270 Flutter（35 Golden）、56 Node、严格分析、
+格式与 Android Debug/48资产/六包许可/原生材料通过。Windows 构建与发布状态以各批精确报告为准。
+
 当前Phase4N新增5项原生许可回归；本地255 Flutter/56 Node、源码/三变体依赖精确比对、Android包内
 许可和48项设计资产/v2签名通过。云端结果见[本批报告](phase_4n_native_notices_report.md)，
 不能把只读Release依赖解析当作Release构建成功。下文旧候选状态仅保留历史归属。

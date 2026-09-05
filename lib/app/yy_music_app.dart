@@ -32,6 +32,7 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp> {
       _router = AppRouter(
         platform: platform,
         viewState: ref.read(dependencyGraphProvider).viewState,
+        licenses: ref.read(dependencyGraphProvider).licenses,
         initialLocation: widget.initialLocation,
       );
     }
