@@ -122,3 +122,10 @@ Phase4G本地证据：Node 35/35、Flutter 232/232、严格analyze、152文件fo
 Android Debug及48项资产、原ZIP 24/24均通过。APK仍为279,085,047字节、SHA-256
 `bba16856f7cdbc3c909172cafa75ee07c345067cb50f66dcc6cfe21e9adbf601`。机器审计通过的含义是
 `blocked`状态和证据自洽，不是许可证通过；GitHub标准三job须按目标提交另行记录。
+
+Phase4J实现提交`25747bc`：本地Flutter 248/248、Node 43/43、Dart格式156文件零变化、严格analyze零问题、
+原始ZIP 24/24、生成代码/Drift v1零差异、Android Debug及48项包内资产通过。标准PR运行33951027905的
+checks、Windows Debug、Android Debug全部成功；Profile诊断运行33951039057成功，1项一天artifact、0 Release。
+同一GitHub Profile包在本机两个独立目录各执行原来的1项真实native WAV case且退出0，
+load分别333/301 ms、首次进度158/160 ms、seek均2 ms、duration均3000 ms，completed/stop/释放均通过；
+启动前后64项运行文件指纹不变。它不证明主观听感、网络来源、后台/媒体会话或生产应用可用。
