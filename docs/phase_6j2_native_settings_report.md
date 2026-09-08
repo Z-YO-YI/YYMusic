@@ -49,3 +49,11 @@ figma-design-to-code 技能用于复用既有 Token/组件/原始 SVG。只有�
 前置 J1 `993aab2` 的两组云端成功不是本批验收。普通 CI 的 Android 构建没有上传 APK artifact，Windows artifact 是依赖 Debug CRT 的开发包；不虚构下载链接或通用安装版。
 本报告不宣称完整 Settings、Phase 6–11 或正式上线已完成。设置中的来源/导入/高级播放分类、对应深链接仍随后续实际能力推进。
 下一阶段按总指令推进 Phase 7 独立播放/歌词/队列，之后 Phase 8 真实扫描授权、Phase 9 合法音乐源、Phase 10 平台媒体、Phase 11 QA/Release；不跳过真实安装与设备验收。
+
+## 精确 GitHub 验收回填（Phase 7A 核对）
+
+提交 `1d24bdccffb4f4d104795e3fded012a009355a5a` 的 Push [34275288838](https://github.com/Z-YO-YI/YYMusic/actions/runs/34275288838) 与 PR [34275328689](https://github.com/Z-YO-YI/YYMusic/actions/runs/34275328689) 均已 SUCCESS；[PR #63](https://github.com/Z-YO-YI/YYMusic/pull/63) 仍 Draft/OPEN，未合并。
+两组 Linux 各 971 Flutter 通过/112 宿主 Golden 跳过；Windows 各 112 Golden 与 1 项真实窗口生命周期通过。
+Android 两组均完成 51 个原生音频坐标、3 份完整法律文本、48 项包内资产及 v2 签名验证；Windows 完整验证 65 文件和六音频包/原生完整许可。
+Push 的 [Windows Debug artifact](https://github.com/Z-YO-YI/YYMusic/actions/runs/34275288838/artifacts/10075968686) 为 67,470,184 bytes，SHA-256 `4cfa5511ada3d71bfc214717fba420fad4103610591a69baae6ecc246a91966e`，核对时未过期，到期 UTC 2026-09-22 20:45:40。
+它依赖 Debug CRT，不是通用安装版；普通 Android CI 未上传 APK artifact。未发布 Release 或手动运行诊断，本证据只属于 Phase 6J2，不代替 Phase 7A 新提交验收。

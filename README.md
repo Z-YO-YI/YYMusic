@@ -1,12 +1,14 @@
 # YYMusic
 
+当前增量：**Phase 7A 共享歌词同步核心**。新增真实仓储读取、偏移时间轴、根播放位置同步、快照授权 Seek 与关闭排空；三端共用一个状态，未接入原生歌词页面。1127 项 Flutter、117 项 Node、112 张旧 Golden、严格分析和本地 Android Debug 预检通过，精确 GitHub 构建状态见对应 Draft PR。详见[本批报告](docs/phase_7a_lyrics_synchronization_report.md)与[计划](docs/phase_7a_lyrics_synchronization_plan.md)。前置 J2 两组 Android/Windows 已 SUCCESS，[验收回填](docs/phase_6j2_native_settings_report.md)。下方保留各历史阶段记录。
+
 当前增量：**Phase 6J2 原生外观与关于设置**。正式“设置”已替换工程占位页，提供三套原生布局，共用根外观与本机保存。包含浅色/深色/系统、五预设/自定义 Hex、玻璃/减少动态、保存进度与失败重试，以及关于/开源许可。详见[本批报告](docs/phase_6j2_native_settings_report.md)和[计划](docs/phase_6j2_native_settings_plan.md)。前置 J1 `993aab2` 的 GitHub Android/Windows 两组构建均已成功，[验收回填](docs/phase_6j1_appearance_persistence_report.md)。以下是前置阶段记录，不代表新功能已全部上线。
 
 当前增量：**Phase 6I2 本地音乐原生概览**。音乐库→本地已接入真实统计、20条目录分页、配置状态和历史扫描日期，手机、平板、Windows采用独立布局并共用根状态。隐藏/覆盖取消读取，旋转保留分页，错误可重试；不展示私有路径或冒充当前授权。最终1029项Flutter（104张Golden）、113项Node、严格分析和Android本地Debug预检通过。详见[本批报告](docs/phase_6i2_local_music_surfaces_report.md)、[计划](docs/phase_6i2_local_music_surfaces_plan.md)及对应Draft PR；本批精确云端结果另行核对。前置I1 `79540d0` 的push/PR双平台均已成功，见[I1回填](docs/phase_6i1_local_library_overview_report.md)。下一步按Phase6推进Settings；下方旧阶段记录保留历史归属。
 
 当前阶段：**Android + Windows · Phase 6H14 系统歌单管理**。喜欢列表已支持更多/长按/右键菜单取消喜欢，包括失效和未解析歌曲；最近页已加入原生确认清除。操作共用根写入器，离页不丢失写入失败，关闭等待完成；不删除音乐文件或改动队列。984项Flutter（98张Golden）、108项Node通过，严格分析零问题。精确GitHub双平台状态见[本批报告](docs/phase_6h14_system_playlist_management_report.md)/对应Draft PR；前置Phase6H13 `891a9f1` 两组源码/Android/Windows已成功。Local Music/Settings、真实导入、完整播放器与发行仍待开发，默认新安装为空库。
 
-距离“新安装后可日常听本地音乐”仍有四组工作：Phase6页面收尾；Phase7完整播放器/歌词/队列；Phase8双平台真实导入、扫描与授权；Phase10—11后台/系统媒体控制、Release打包与设备验收。完整产品还需要Phase9第三方来源。现有Debug构建不等于可用发行版：默认空库没有导入入口，Windows开发Debug包还依赖Debug CRT；不以测试数量或阶段编号换算虚假完成百分比。
+距离“新安装后可日常听本地音乐”主要还有三组工作：Phase7完整播放器/歌词/队列；Phase8双平台真实导入、扫描与授权；Phase10—11后台/系统媒体控制、Release打包与设备验收。完整产品还需要Phase9第三方来源；设置中的相应分类随真实能力接入。现有Debug构建不等于可用发行版：默认空库没有导入入口，Windows开发Debug包还依赖Debug CRT；不以测试数量或阶段编号换算虚假完成百分比。
 
 Phase6E 后续修正：初始云端 Android/源码成功，Windows 旧首页 Golden 因测试样本逐首读取时钟而排序不稳定。
 已固定样本批次时间；425 Flutter/71 Node 与本地 Android 通过，55 张基线和生产代码均未改。

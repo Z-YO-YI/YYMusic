@@ -16,6 +16,9 @@ final class FakeAudioEngine implements AudioEngine {
   Object? stateStreamError;
   Object? disposeError;
   Future<void>? loadGate;
+  Future<void>? pauseGate;
+  Future<void>? seekGate;
+  Object? seekError;
   Duration position = Duration.zero;
   Duration buffered = Duration.zero;
   double volume = 1;
@@ -54,6 +57,8 @@ final class FakeAudioEngine implements AudioEngine {
   @override
   Future<void> pause() async {
     calls.add('pause');
+    final gate = pauseGate;
+    if (gate != null) await gate;
     _emit(AudioEnginePhase.paused);
   }
 
@@ -71,6 +76,10 @@ final class FakeAudioEngine implements AudioEngine {
   @override
   Future<void> seek(Duration value) async {
     calls.add('seek:${value.inMilliseconds}');
+    final gate = seekGate;
+    if (gate != null) await gate;
+    final error = seekError;
+    if (error != null) throw error;
     position = value;
     _emit(AudioEnginePhase.paused);
   }
