@@ -9,11 +9,12 @@ import '../../../domain/models/pagination.dart';
 import '../../../domain/models/system_playlist_content.dart';
 import '../../../domain/repositories/collection_repository.dart';
 import '../../../playback/playback_controller.dart';
+import 'system_playlist_writer.dart';
 
 part 'system_playlist_sessions.dart';
 part 'system_playlist_actions.dart';
 
-/// A read-only, fixed-type window over the root collection repository.
+/// A fixed-type read window with guarded commands delegated to the root writer.
 /// Construction is idle; callers explicitly start outside Widget.build.
 final class SystemPlaylistController extends ChangeNotifier {
   SystemPlaylistController._(
@@ -21,16 +22,22 @@ final class SystemPlaylistController extends ChangeNotifier {
     this._repository,
     this._onClosed,
     this._playback,
-  );
+    this._writer,
+  ) {
+    _writer.addListener(_notify);
+  }
 
   final SystemPlaylistType type;
   final CollectionRepository? _repository;
   final VoidCallback _onClosed;
   final PlaybackController? _playback;
+  final SystemPlaylistWriter _writer;
   bool _actionBusy = false;
   int _intent = 0;
   String? _actionError;
-  bool get busy => _actionBusy;
+  bool get busy => _actionBusy || _writer.busy;
+  bool get writeBusy => _writer.busy;
+  SystemPlaylistWriteFailure? get writeFailure => _writer.failure;
   String? get actionError => _actionError;
   String? get currentQueueEntryId => _playback?.state.queue.currentEntryId;
   static const pageSize = 20, maxVisibleCount = 200;
@@ -268,6 +275,7 @@ final class SystemPlaylistController extends ChangeNotifier {
   void dispose() {
     if (!_disposed) {
       _disposed = true;
+      _writer.removeListener(_notify);
       _watchGeneration++;
       _readRevision++;
       _readAgain = _watchReady = false;

@@ -59,5 +59,31 @@ test('system queue actions preserve exact IDs and guard own current-ID refresh s
   assert.match(actions, /playEntry\(entry.entryId!, canPlay: current\)/);
   assert.match(actions, /playCatalogTrack\(entry.reference, canPlay: current\)/);
   assert.match(read('lib/features/playlists/common/system_playlist_controller.dart'), /type != SystemPlaylistType.queue\) _intent\+\+/);
-  assert(!/saveQueue\(|setFavorite\(|clearHistory\(|recordHistory\(|deletePlaylist\(/.test(actions));
+  assert(!/saveQueue\(|setFavorite\(|recordHistory\(|deletePlaylist\(/.test(actions));
+  assert.match(actions, /return _writer.clearHistory\(\)/);
+  assert.match(actions, /return _writer.removeFavorite\(reference\)/);
+});
+
+test('system writes remain root-owned, typed and registered before dependencies', () => {
+  const writer = read('lib/features/playlists/common/system_playlist_writer.dart');
+  assert.match(writer, /setFavorite\(reference, favorite: false\)/);
+  assert.match(writer, /identical\(history!\.collection, repository\)/);
+  assert(writer.indexOf('_work = done.future;') < writer.indexOf('await action();'));
+  assert(!/AppDatabase|deletePlaylist|saveQueue|File\(|Directory\(/.test(writer));
+  const sessions = read('lib/features/playlists/common/system_playlist_sessions.dart');
+  assert.match(sessions, /writer.dispose\(\)/);
+  assert.match(sessions, /writer.close\(\)/);
+});
+
+test('native system management guards snapshots, confirmation and covered callbacks', () => {
+  const screen = read('lib/features/playlists/common/system_playlist_screen.dart');
+  assert.match(screen, /!identical\(_request, request\)/);
+  assert.match(screen, /!identical\(controller.content, request.snapshot\)/);
+  assert.match(screen, /ExcludeFocus\(/);
+  assert.match(screen, /PopScope\(/);
+  const panel = read('lib/features/playlists/common/system_playlist_management_panel.dart');
+  for (const component of ['YYContextMenu', 'YYDialog', 'YYBottomSheet']) assert(panel.includes(`${component}(`));
+  assert.match(panel, /label: '确认清除'/);
+  assert.match(panel, /glyph: YYGlyph.heart/);
+  assert(!/Icons\.|WebView|\.setFavorite\(|\.recordHistory\(/.test(panel));
 });

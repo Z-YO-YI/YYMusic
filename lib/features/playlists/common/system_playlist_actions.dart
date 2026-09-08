@@ -2,6 +2,40 @@ part of 'system_playlist_controller.dart';
 
 /// Commands use the single root player; projections never write a second queue.
 extension SystemPlaylistActions on SystemPlaylistController {
+  bool _canManage(SystemPlaylistContent snapshot) =>
+      _canBrowse && _watchReady && identical(content, snapshot);
+
+  bool canRemoveFavorite(SystemPlaylistContent snapshot, Object identity) =>
+      type == SystemPlaylistType.favorites &&
+      _canManage(snapshot) &&
+      _writer.canRemoveFavorite &&
+      snapshot.entries.any((e) => e.identity == identity);
+
+  /// Accepts exact displayed references without requiring playable metadata.
+  Future<void> removeFavorite(SystemPlaylistContent snapshot, Object identity) {
+    if (!canRemoveFavorite(snapshot, identity)) return Future.value();
+    final reference = snapshot.entries
+        .firstWhere((e) => e.identity == identity)
+        .reference;
+    return _writer.removeFavorite(reference);
+  }
+
+  bool canClearHistory(SystemPlaylistContent snapshot) =>
+      type == SystemPlaylistType.recent &&
+      _canManage(snapshot) &&
+      snapshot.totalCount > 0 &&
+      _writer.canClearHistory;
+
+  /// Only called after explicit native confirmation; preserves music and queue.
+  Future<void> clearHistory(SystemPlaylistContent snapshot) {
+    if (!canClearHistory(snapshot)) return Future.value();
+    return _writer.clearHistory();
+  }
+
+  void dismissWriteFailure(SystemPlaylistWriteFailure expected) {
+    if (!_disposed && _active) _writer.dismissFailure(expected);
+  }
+
   bool canPlayEntry(SystemPlaylistContent snapshot, Object identity) {
     if (!_canBrowse ||
         !identical(content, snapshot) ||
