@@ -18,6 +18,7 @@ import '../features/library/common/library_controller.dart';
 import '../features/playlists/common/playlist_add_controller.dart';
 import '../features/playlists/common/playlist_content_controller.dart';
 import '../features/playlists/common/playlist_controller.dart';
+import '../features/playlists/common/system_playlist_controller.dart';
 import '../features/search/common/search_controller.dart';
 import '../platform/contracts/fullscreen_gateway.dart';
 import '../platform/contracts/media_session_gateway.dart';
@@ -113,6 +114,7 @@ final class DependencyGraph {
       playback: playback,
       writer: playlists,
     );
+    systemPlaylists = SystemPlaylistSessions(repository: this.collection);
   }
 
   final AudioEngine _audioEngine;
@@ -140,6 +142,7 @@ final class DependencyGraph {
   late final PlaylistController playlists;
   late final PlaylistAddSessions playlistAdds;
   late final PlaylistContentSessions playlistContents;
+  late final SystemPlaylistSessions systemPlaylists;
   Future<void>? _closeFuture;
 
   Future<void> initialize() => playback.initialize();
@@ -160,6 +163,7 @@ final class DependencyGraph {
     playlists.dispose();
     playlistAdds.dispose();
     playlistContents.dispose();
+    systemPlaylists.dispose();
     playbackPresenter.dispose();
     playback.dispose();
     appearance.dispose();
@@ -176,6 +180,7 @@ final class DependencyGraph {
       playlists.close,
       playlistAdds.close,
       playlistContents.close,
+      systemPlaylists.close,
       playback.close,
       _audioEngine.dispose,
       _mediaSession.dispose,

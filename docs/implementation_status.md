@@ -1,12 +1,13 @@
 # 实施状态
 
-当前增量Phase6H10：系统歌单只读数据层，喜欢/最近/队列通过枚举读取，不持久化伪Playlist父记录。
-同语句读取计数/有界页/完整曲目署名/当前队列ID；先限页后艺人展开，无逐项查曲，失效/缺失引用与重复队列项保留。
-类型相关的失效通知无初始查询，真正取消后不再通知；队列全局位置、状态缺失/悬空和页内坏Metadata安全失败。
-839 Flutter（84 Golden全部未改）/100 Node通过，343 Dart文件格式零修改，严格分析零问题；Fake的Unicode排序已与SQLite一致。
-分支`codex/system-playlist-projections`，Android预检/精确云端结果见[Phase6H10报告](phase_6h10_system_playlist_data_report.md)。
-前置Phase6H9 `243299c`、Draft PR #54两组GitHub源码/Android/Windows成功，未合并。
-下一步接系统歌单会话/原生入口与根播放动作，并验收真正开始播放后的历史记录；本批没有新系统页面或历史写入行为。
+当前增量Phase6H11：系统歌单共用只读会话，固定类型、同根Repository，不持久化伪Playlist父记录或复制队列。
+显式start先订阅后读取，idle/loading/data/empty/error完整；失效风暴合并，旧成功/错误不覆盖新状态。
+20→200条完整窗口与前后分组，末组越界回退后重读；完整来源、缺失引用、重复条目和页外当前队列ID保留。
+旧快照、失活、加载、错误、关闭后的导航不查询；真实读与取消排空后根才释放共享SQLite。
+868 Flutter（84 Golden全部未改）/101 Node通过，350 Dart文件格式零修改，严格分析零问题；新增29项会话/真实SQLite测试。
+分支`codex/system-playlist-sessions`，Android预检/精确云端结果见[Phase6H11报告](phase_6h11_system_playlist_sessions_report.md)。
+前置Phase6H10 `2c22cad`、Draft PR #55两组GitHub源码/Android/Windows成功，未合并。
+下一步接系统歌单原生入口与根播放动作，并验收真正开始播放后的历史记录；本批没有新系统页面或历史写入行为。
 之后仍有Local Music/Settings，不代表整个Phase6完成；运行时失效的完整跳过策略仍待Phase7。
 详情真实封面、实时REST、导入/恢复、完整播放器、网页对照和上线仍未完成，默认新安装仍是无Fixture的空库。
 下方旧阶段记录保留历史归属。

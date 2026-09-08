@@ -158,6 +158,11 @@ final class FakeCollectionRepository implements CollectionRepository {
   final _systemChanges = StreamController<SystemPlaylistType?>.broadcast(
     sync: true,
   );
+  final systemReadCalls = <({SystemPlaylistType type, PageRequest page})>[];
+  final systemWatchCalls = <SystemPlaylistType>[];
+  Future<SystemPlaylistContent> Function(SystemPlaylistType, PageRequest)?
+  systemReader;
+  Stream<void> Function(SystemPlaylistType)? systemChangesReader;
   final contentReadCalls = <({String id, PageRequest page})>[];
   int contentWatchCount = 0;
   Future<PlaylistContent?> Function(String id, PageRequest page)? contentReader;
@@ -358,11 +363,17 @@ final class FakeCollectionRepository implements CollectionRepository {
   Future<SystemPlaylistContent> readSystemPlaylistContent(
     SystemPlaylistType type,
     PageRequest page,
-  ) => _systemContent(type, page);
+  ) async {
+    if (_systemChanges.isClosed) throw StateError('Collection disposed');
+    systemReadCalls.add((type: type, page: page));
+    return systemReader?.call(type, page) ?? _systemContent(type, page);
+  }
 
   @override
   Stream<void> watchSystemPlaylistChanges(SystemPlaylistType type) {
     if (_systemChanges.isClosed) throw StateError('Collection disposed');
+    systemWatchCalls.add(type);
+    if (systemChangesReader != null) return systemChangesReader!(type);
     return _systemChanges.stream
         .where((value) => value == null || value == type)
         .map<void>((_) {});
