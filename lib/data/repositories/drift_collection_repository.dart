@@ -11,6 +11,8 @@ import '../../domain/repositories/collection_repository.dart';
 import '../database/app_database.dart';
 import 'collection_row_mapper.dart';
 
+part 'drift_playlist_entry_commands.dart';
+
 final class DriftCollectionRepository implements CollectionRepository {
   factory DriftCollectionRepository(
     AppDatabase database, {
@@ -189,6 +191,23 @@ final class DriftCollectionRepository implements CollectionRepository {
       );
     });
   }
+
+  @override
+  Future<void> appendPlaylistEntry(
+    String playlistId,
+    PlaylistEntryDraft entry,
+  ) => _appendEntry(playlistId, entry);
+
+  @override
+  Future<void> removePlaylistEntry(String playlistId, String entryId) =>
+      _removeEntry(playlistId, entryId);
+
+  @override
+  Future<void> movePlaylistEntry(
+    String playlistId,
+    String entryId, {
+    String? beforeEntryId,
+  }) => _moveEntry(playlistId, entryId, beforeEntryId);
 
   @override
   Future<void> replacePlaylistEntries(

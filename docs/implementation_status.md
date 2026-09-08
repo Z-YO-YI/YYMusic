@@ -1,11 +1,11 @@
 # 实施状态
 
-当前增量Phase6H2：音乐库歌单分类已接三端创建、重命名、确认删除；Phone底部/Tablet与Windows居中，
-复用原子命令与单一Library订阅。独立草稿代次、跨断点/零尺寸恢复、IME、焦点/返回及关闭后安全反馈通过。
-572 Flutter（73 Golden，旧70未改）/84 Node、严格分析和本地Android Debug通过；
-分支`codex/playlist-editor-surfaces`，精确APK/云端状态见[Phase6H2报告](phase_6h2_playlist_editor_report.md)。
-前置Phase6H1 `1dd92ef`、Draft PR #46两组GitHub checks/Android/Windows成功，未合并。
-本批可以编辑自定义歌单元数据，歌曲添加/排序/播放全部与系统歌单入口仍待后续增量，不代表整个Phase6完成。
+当前增量Phase6H3：歌曲追加/移除/按条目锚点排序的底层原子命令已实现；全局ID碰撞/跨歌单/系统保护、
+正数位置区间迁移与事务回滚、完整来源软引用、父时间单调更新，复用根busy/排空和原有Library订阅。
+615 Flutter（73 Golden未改）/86 Node、严格分析和本地Android Debug通过；
+分支`codex/playlist-entry-commands`，精确APK/云端状态见[Phase6H3报告](phase_6h3_playlist_entry_commands_report.md)。
+前置Phase6H2 `a7dd5d0`、Draft PR #47两组GitHub checks/Android/Windows成功，未合并。
+三端元数据编辑界面继续可用；条目读取/管理入口/播放全部与系统歌单入口待后续增量，不代表整个Phase6完成。
 详情播放全部/真实封面、歌单条目管理、实时REST、导入/恢复、完整播放器、网页对照和上线仍未完成，默认新安装仍是无Fixture的空库。
 下方旧阶段记录保留历史归属。
 
@@ -25,6 +25,7 @@ v2签名通过；Windows既有真实Profile包只做新增许可复核。初始�
 
 | 阶段/能力 | 状态 |
 | --- | --- |
+| Phase 6H3 歌单条目命令 | 原子追加/移除/锚点移动、ID/系统/来源保护、回滚与根关闭排空；615 Flutter/73 Golden未改/86 Node，本机Android通过；歌曲管理界面仍待接线 |
 | Phase 6H2 原生歌单编辑 | 三端创建/改名/确认删除、原生文本/IME、草稿代次/跨断点、关闭后失败反馈；572 Flutter/73 Golden/84 Node，本机Android通过；条目管理待开发 |
 | Phase 6H1 歌单写入基础 | 原子create-only/rename-existing、系统保护、名称校验、共享根命令和关闭排空；551 Flutter/70 Golden未改/82 Node，本机Android通过；尚无编辑界面 |
 | Phase 6G4 详情曲目菜单 | 三端受控原生菜单、不可用曲目收藏、按需读取/独立重试、离页写入排空及键鼠/返回/焦点；531 Flutter/70 Golden/80 Node，本机Android通过；无下载或第二收藏存储 |

@@ -55,8 +55,12 @@
 前置实现 `1dd92ef` 的 [push 33994757759](https://github.com/Z-YO-YI/YYMusic/actions/runs/33994757759)
 与 [PR 33994765770](https://github.com/Z-YO-YI/YYMusic/actions/runs/33994765770)
 均 checks/Android/Windows success，已回填 H1 报告；Draft PR #46 仍 OPEN。
-本批审查提交后推送 stacked Draft PR，base 为 `codex/playlist-metadata-commands`。
-本批精确提交、Android 与 Windows 云端结果记录在对应 PR，不用前置或本地结果替代本提交云端验收。
+本批实现 `a7dd5d05c4064951b281da7718bb0c48e076405e` 已推送
+[Draft PR #47](https://github.com/Z-YO-YI/YYMusic/pull/47)，base 为 `codex/playlist-metadata-commands`。
+2026-09-08 复核该精确 HEAD 的 [push 34195449767](https://github.com/Z-YO-YI/YYMusic/actions/runs/34195449767)
+及 [PR 34195529670](https://github.com/Z-YO-YI/YYMusic/actions/runs/34195529670)：
+两组 checks、Android Debug、Windows native build 均 success；专用音频/诊断任务 skipped，未作为本批新音频证据。
+PR 保持 OPEN Draft，未合并、未发布。
 
 没有合并 main、发布 Release、改写历史、上传日志/凭据/用户数据/构建产物。
 普通 push 的 Android job 不上传 APK；Windows Debug 为开发包，不能当作通用发行安装包。

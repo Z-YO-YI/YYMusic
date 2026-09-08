@@ -38,6 +38,20 @@ final class Playlist {
   final SystemPlaylistType? systemType;
 }
 
+/// An append intent; the repository assigns a position using current storage.
+final class PlaylistEntryDraft {
+  PlaylistEntryDraft({
+    required String id,
+    required this.track,
+    required DateTime addedAt,
+  }) : id = DomainValidation.identifier(id, 'id'),
+       addedAt = DomainValidation.utc(addedAt, 'addedAt');
+
+  final String id;
+  final TrackRef track;
+  final DateTime addedAt;
+}
+
 final class PlaylistEntry {
   PlaylistEntry({
     required String id,
