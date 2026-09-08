@@ -9,6 +9,7 @@ import '../domain/repositories/catalog_browse_repository.dart';
 import '../domain/repositories/catalog_search_repository.dart';
 import '../domain/repositories/collection_repository.dart';
 import '../domain/repositories/library_repository.dart';
+import '../domain/repositories/local_library_repository.dart';
 import '../domain/repositories/lyrics_repository.dart';
 import '../domain/repositories/music_source_repository.dart';
 import '../domain/repositories/search_history_repository.dart';
@@ -94,6 +95,9 @@ final class DatabaseAppDataServices implements AppDataServices {
 
   @override
   LibraryRepository get library => _library;
+
+  @override
+  LocalLibraryRepository get localLibrary => _library;
 
   @override
   CatalogSearchRepository get catalogSearch => _library;

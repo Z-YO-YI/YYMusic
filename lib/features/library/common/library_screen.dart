@@ -10,6 +10,7 @@ import '../../../design_system/yy_context_menu.dart';
 import '../../../design_system/yy_icon.dart';
 import '../../../design_system/yy_theme.dart';
 import '../../../domain/models/track.dart';
+import '../../local_music/common/local_music_panel.dart';
 import '../phone/phone_library_layout.dart';
 import '../tablet/tablet_library_layout.dart';
 import '../windows/windows_library_layout.dart';
@@ -36,6 +37,7 @@ class LibraryScreen extends StatefulWidget {
 
 class _LibraryScreenState extends State<LibraryScreen> {
   late final ScrollController _scroll;
+  final _localPanelKey = GlobalKey(debugLabel: 'Library local overview');
   int _revision = 0;
   Track? _menuTrack;
   FocusNode? _returnFocus;
@@ -142,6 +144,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
           playback: widget.playback,
           navigation: widget.navigation,
           menu: _openMenu,
+          localPanel: widget.controller.localMusic == null
+              ? null
+              : LocalMusicPanel(
+                  key: _localPanelKey,
+                  controller: widget.controller.localMusic!,
+                  platform: widget.platform,
+                  enabled: !_pickerOpen && _menuTrack == null,
+                ),
           canNavigateSystem: () =>
               mounted &&
               !_pickerOpen &&

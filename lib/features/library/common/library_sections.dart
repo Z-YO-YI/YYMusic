@@ -31,12 +31,14 @@ final class LibrarySections {
     required this.navigation,
     required this.menu,
     required this.canNavigateSystem,
+    this.localPanel,
   });
   final LibraryController controller;
   final PlaybackPresenter playback;
   final AppNavigation navigation;
   final ValueChanged<Track> menu;
   final bool Function() canNavigateSystem;
+  final Widget? localPanel;
 
   Widget header({required bool wide}) => Builder(
     builder: (context) {
@@ -85,6 +87,11 @@ final class LibrarySections {
             onChanged: controller.selectCategory,
           ),
           const SizedBox(height: 16),
+          if (controller.category == LibraryCategory.local &&
+              localPanel != null) ...[
+            localPanel!,
+            const SizedBox(height: 20),
+          ],
           if (controller.category != LibraryCategory.playlists) ...[
             Wrap(
               spacing: wide ? 16 : 8,

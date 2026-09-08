@@ -876,3 +876,14 @@ enabled只表示已保存配置，历史扫描时间只表示已保存记录，�
 轻量变化流只使消费者失效，不加载全曲库；消费者负责刷新、撤销旧结果、取消订阅并在关闭数据库前排空已接受读取。
 沿用SearchCancellation协作取消：前后检查并丢弃旧结果，不承诺中断原生SQL；SQL错误转换为安全DomainFailure。
 模型不可变，计数和分页元数据保持一致，调试字符串脱敏。本批不接入UI/平台扫描、不添加Schema或模拟生产数据。
+
+## ADR-072：本地概览根状态在三套受控原生布局之间保留
+
+2026-09-09，Phase6I2。AppDataServices以同一DriftLibraryRepository提供localLibrary；DependencyGraph拥有唯一LocalMusicController，LibraryController仅借用。
+本地概览Panel挂载后显式start，依当前页面/正尺寸/TickerMode设活动状态；隐藏、覆盖或卸载撤销订阅代次和读取令牌，保留已显示窗口但不再授权旧操作。
+先订阅后读取，最多一个读取worker；失效合并、分页快照身份校验，页尾删除回退最后有效页；错误不替换成虚假零值。
+根关闭先停止新工作，再排空已登记读取及异步取消，之后才释放数据库；同一根播放器和队列不受影响。
+Phone竖向、Tablet按横竖屏重排、Windows宽屏统计与目录组合，复用YY组件/原始SVG/Token；统计/文件夹普通纯色表面，不使用玻璃。
+保留20条目录分页与历史扫描日期，明确不是当前权限/文件可读验证；不新增导入/扫描/授权按钮、文件操作或平台依赖。
+LibraryScreen用稳定GlobalKey迁移唯一LocalMusicPanel，避免Phone/Tablet布局替换时旧Panel在新Panel激活后dispose，错误地停用共享Controller。
+同一Element保留活动状态和回调身份；真正卸载仍立即撤销。YYSurface新增可选radius参数保留原默认值，仅本地统计18/目录16使用App.tsx精修Token。

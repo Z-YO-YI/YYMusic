@@ -1,6 +1,6 @@
 # YYMusic
 
-当前增量：**Phase 6I1 本地音乐数据概览**。现有数据库连接已提供本地曲目可用性/总时长统计与分页文件夹摘要，一次SQL保持统计一致；不读取路径或授权引用，不把历史扫描记录当成当前访问权限。新增16项回归，最终1000项Flutter（98张Golden未改）、111项Node通过，严格分析零问题，Android本地Debug预检通过。详见[本批报告](docs/phase_6i1_local_library_overview_report.md)及对应Draft PR。此批是数据层，尚未接入新的本地音乐界面；下一步Phase6I页面与Settings。下文Phase6H14保留前置记录，其精确提交`2b756d1`的push/PR双平台检查均已成功。
+当前增量：**Phase 6I2 本地音乐原生概览**。音乐库→本地已接入真实统计、20条目录分页、配置状态和历史扫描日期，手机、平板、Windows采用独立布局并共用根状态。隐藏/覆盖取消读取，旋转保留分页，错误可重试；不展示私有路径或冒充当前授权。最终1029项Flutter（104张Golden）、113项Node、严格分析和Android本地Debug预检通过。详见[本批报告](docs/phase_6i2_local_music_surfaces_report.md)、[计划](docs/phase_6i2_local_music_surfaces_plan.md)及对应Draft PR；本批精确云端结果另行核对。前置I1 `79540d0` 的push/PR双平台均已成功，见[I1回填](docs/phase_6i1_local_library_overview_report.md)。下一步按Phase6推进Settings；下方旧阶段记录保留历史归属。
 
 当前阶段：**Android + Windows · Phase 6H14 系统歌单管理**。喜欢列表已支持更多/长按/右键菜单取消喜欢，包括失效和未解析歌曲；最近页已加入原生确认清除。操作共用根写入器，离页不丢失写入失败，关闭等待完成；不删除音乐文件或改动队列。984项Flutter（98张Golden）、108项Node通过，严格分析零问题。精确GitHub双平台状态见[本批报告](docs/phase_6h14_system_playlist_management_report.md)/对应Draft PR；前置Phase6H13 `891a9f1` 两组源码/Android/Windows已成功。Local Music/Settings、真实导入、完整播放器与发行仍待开发，默认新安装为空库。
 
@@ -15,6 +15,12 @@ Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭
 历史 Phase4D 实现提交 `913f3d75` 增加 HEAD-only 脱敏网络探针、Android Debug-only 只读 Provider 及受控 HTTPS 测试；标准 PR 33878401743 和原生运行 33878710671 均成功。该原生证据属于后来被移除的 media_kit 候选，不能替代当前 just_audio 的 HTTPS 验收。历史记录和定位不变，生产入口、TLS 默认值及 Release Manifest 未改变。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
+
+## 本地音乐概览
+
+在音乐库选择“本地”，可查看已入库本地歌曲数、保存的可用性、总时长和文件夹记录；目录每页20条，用“上一页目录/下一页目录”切换。“刷新概览”只刷新数据库读取，不会扫描文件或申请权限。文件夹的启用状态和上次扫描时间仅是保存记录，不代表当前可以读取；尚无导入/扫描/重授权入口，新安装显示真实零值和空态。读取失败显示重试；保留旧数据时会明确提示更新失败。
+
+手机纵向排列统计，平板横屏统计与目录分栏、竖屏横排统计，Windows采用横排统计。旋转与分屏保留同一目录页；离开/覆盖页面会停止监听并丢弃晚到结果，回到页面重新读取。Windows可用Tab和Enter刷新，操作不改变播放或队列。
 
 ## 系统歌单浏览与播放
 

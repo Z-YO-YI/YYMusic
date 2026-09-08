@@ -14,6 +14,7 @@ import '../../../domain/repositories/catalog_browse_repository.dart';
 import '../../../domain/repositories/collection_repository.dart';
 import '../../../domain/repositories/music_source_repository.dart';
 import '../../../playback/playback_controller.dart';
+import '../../local_music/common/local_music_controller.dart';
 
 enum LibraryCategory {
   albums('专辑'),
@@ -64,11 +65,13 @@ final class LibraryController extends ChangeNotifier {
     this.repository,
     this.collection,
     this.sources,
+    this.localMusic,
   });
   final PlaybackController playback;
   final CatalogBrowseRepository? repository;
   final CollectionRepository? collection;
   final MusicSourceRepository? sources;
+  final LocalMusicController? localMusic;
   final _pages = {
     for (final category in LibraryCategory.values)
       category: LibraryPage(category),

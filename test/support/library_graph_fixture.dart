@@ -8,6 +8,7 @@ import 'package:yymusic/domain/models/track.dart';
 import 'fake_audio_engine.dart';
 import 'fake_catalog_browse_repository.dart';
 import 'fake_domain_repositories.dart';
+import 'fake_local_library_repository.dart';
 import 'fake_playback_dependencies.dart';
 
 typedef BrowseCall = ({
@@ -136,10 +137,12 @@ class LibraryGraphFixture {
         ),
     ];
     repository = BrowseStub(tracks);
+    localLibrary.tracks.addAll(tracks);
     collection = collections ?? FakeCollectionRepository();
     graph = DependencyGraph(
       catalogBrowse: repository,
       library: FakeLibraryRepository(tracks: tracks),
+      localLibrary: localLibrary,
       collection: collection,
       musicSources: sources,
       audioEngine: engine,
@@ -150,9 +153,11 @@ class LibraryGraphFixture {
   late final BrowseStub repository;
   late final FakeCollectionRepository collection;
   final sources = FakeMusicSourceRepository();
+  final localLibrary = FakeLocalLibraryRepository();
   final engine = FakeAudioEngine();
   late final DependencyGraph graph;
   Future<void> disposeFakes() async {
+    await localLibrary.close();
     await collection.dispose();
     await sources.dispose();
   }

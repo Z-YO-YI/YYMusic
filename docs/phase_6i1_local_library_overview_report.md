@@ -49,3 +49,15 @@ enabled只表示保存配置；lastScannedAt只表示已有历史记录；统计
 数据合同完成不等于本地音乐页面、导入或授权已实现。后续接同一根数据范围与原生Phone/Tablet/Windows页面，再按顺序推进Settings和Phase7–11。
 当前已有曲目分类仍是此前界面，默认新安装为空库。没有读取真实个人音乐目录、没有长期保存在线音频、没有发布Release或自动合并。
 完整播放器/歌词/队列、Phase8扫描与失效恢复、第三方来源、后台/系统媒体、设备性能/网页视觉对照和正式发行仍未完成。
+
+## 精确 GitHub 验收回填（2026-09-09）
+
+提交`79540d0b0dd99c0024277457b3d39da951be727d`，Draft [PR #60](https://github.com/Z-YO-YI/YYMusic/pull/60)仍OPEN、未合并。
+[push 34261549723](https://github.com/Z-YO-YI/YYMusic/actions/runs/34261549723)与[PR 34261554903](https://github.com/Z-YO-YI/YYMusic/actions/runs/34261554903)均completed/success，完成日志已逐项核对：
+
+- 两组Linux各902通过、98张Windows宿主Golden按平台跳过；111 Node、严格分析、生成/迁移/24条ZIP一致性通过。
+- 两组Windows各98 Golden与1项真实窗口状态/关闭握手通过；Debug构建及65文件完整包/六音频许可/原生完整许可校验通过。
+- 两组Android Debug及v2签名通过；51实际音频坐标/3完整法律文本/48原始资产校验通过。常规运行未创建Release或启动手动音频诊断。
+- push的[Windows Debug产物10070752389](https://github.com/Z-YO-YI/YYMusic/actions/runs/34261549723/artifacts/10070752389)：67,420,874 bytes，SHA-256 `b8b2cade2ee56a9be98795ce66a9cb57a63e55616c6ff61f28b76ea8f1e41551`，API复查未过期，UTC到期2026-09-22T18:29:01Z。
+
+上述仅证明I1精确提交的开发构建，不作为后续I2提交的验收，也不代表Windows通用安装包或Android日常可用发行版。
