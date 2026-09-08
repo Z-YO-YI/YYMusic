@@ -8,6 +8,7 @@ import '../../domain/models/domain_validation.dart';
 import '../../domain/models/pagination.dart';
 import '../../domain/models/playlist_content.dart';
 import '../../domain/models/playlist_name.dart';
+import '../../domain/models/playlist_name_query.dart';
 import '../../domain/models/track.dart';
 import '../../domain/repositories/collection_repository.dart';
 import '../database/app_database.dart';
@@ -75,6 +76,41 @@ final class DriftCollectionRepository implements CollectionRepository {
         ..where((table) => table.playlistId.equals(playlistId));
       final row = await query.getSingleOrNull();
       return row == null ? null : _mapper.playlistFromRow(row);
+    });
+  }
+
+  @override
+  Future<PageResult<Playlist>> readCustomPlaylists(
+    PlaylistNameQuery query,
+    PageRequest page,
+  ) {
+    _requireReady();
+    return _guard('read-custom-playlists', () async {
+      final rows = await _database
+          .customSelect(
+            '''
+        SELECT * FROM playlists
+        WHERE is_system = 0 AND instr(lower(name), ?) > 0
+        ORDER BY updated_at_ms DESC, playlist_id COLLATE BINARY ASC
+        LIMIT ? OFFSET ?
+        ''',
+            variables: [
+              Variable<String>(query.folded),
+              Variable<int>(page.limit + 1),
+              Variable<int>(page.offset),
+            ],
+          )
+          .get();
+      return PageResult(
+        items: rows
+            .take(page.limit)
+            .map(
+              (row) => _mapper.playlistFromRow(
+                _database.playlistRecords.map(row.data),
+              ),
+            ),
+        hasMore: rows.length > page.limit,
+      );
     });
   }
 

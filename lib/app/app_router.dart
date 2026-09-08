@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../design_system/yy_button.dart';
 import '../design_system/yy_feedback.dart';
 import '../domain/models/catalog_reference.dart';
+import '../domain/models/track.dart';
 import '../domain/repositories/license_repository.dart';
 import '../features/catalog_detail/common/catalog_detail_controller.dart';
 import '../features/catalog_detail/common/catalog_detail_screen.dart';
@@ -15,6 +16,8 @@ import '../features/home/common/home_controller.dart';
 import '../features/home/common/home_screen.dart';
 import '../features/library/common/library_controller.dart';
 import '../features/library/common/library_screen.dart';
+import '../features/playlists/common/playlist_add_controller.dart';
+import '../features/playlists/common/playlist_add_dialog.dart';
 import '../features/playlists/common/playlist_content_controller.dart';
 import '../features/playlists/common/playlist_content_screen.dart';
 import '../features/playlists/common/playlist_controller.dart';
@@ -47,7 +50,42 @@ final class AppRouter implements AppNavigation {
     CatalogDetailSessions? catalogDetails,
     PlaylistController? playlistController,
     PlaylistContentSessions? playlistContents,
+    PlaylistAddSessions? playlistAdds,
   }) {
+    _showPlaylistPicker = (track, title) async {
+      final navigator = _rootNavigator.currentState;
+      if (navigator == null || _pickerShowing) return;
+      _pickerShowing = true;
+      try {
+        await navigator.push<void>(
+          RawDialogRoute<void>(
+            settings: const RouteSettings(name: 'playlist-add'),
+            barrierDismissible: true,
+            barrierLabel: '关闭添加到歌单',
+            barrierColor: const Color(0x33000000),
+            transitionDuration: Duration.zero,
+            pageBuilder: (context, _, _) => playlistAdds == null
+                ? Center(
+                    child: YYErrorBanner(
+                      title: '歌单存储不可用',
+                      message: '请返回后重试。',
+                      actionLabel: '返回',
+                      onAction: back,
+                    ),
+                  )
+                : PlaylistAddDialog(
+                    sessions: playlistAdds,
+                    track: track,
+                    title: title,
+                    platform: platform,
+                    onClose: back,
+                  ),
+          ),
+        );
+      } finally {
+        _pickerShowing = false;
+      }
+    };
     Widget screen(AppRoute route) =>
         route == AppRoute.home &&
             homeController != null &&
@@ -87,6 +125,7 @@ final class AppRouter implements AppNavigation {
             audioBackendSelected: audioBackendSelected,
           );
     _router = GoRouter(
+      navigatorKey: _rootNavigator,
       initialLocation: initialLocation,
       routes: [
         GoRoute(path: '/', redirect: (_, _) => AppRoute.home.path),
@@ -257,6 +296,9 @@ final class AppRouter implements AppNavigation {
   }
 
   late final GoRouter _router;
+  final _rootNavigator = GlobalKey<NavigatorState>();
+  late final Future<void> Function(TrackRef, String) _showPlaylistPicker;
+  bool _pickerShowing = false;
   RouterConfig<Object> get config => _router;
 
   @override
@@ -309,6 +351,10 @@ final class AppRouter implements AppNavigation {
       }),
     );
   }
+
+  @override
+  Future<void> addToPlaylist(TrackRef track, {required String title}) =>
+      _showPlaylistPicker(track, title);
 
   void dispose() => _router.dispose();
 }

@@ -1,6 +1,8 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 6H5 原生歌单内容管理**。音乐库自定义歌单可查看歌曲、单首播放、移除及上下移动；Phone、Tablet横竖屏、Windows分别布局，共用根播放器和原子写入。680项Flutter（78张Golden）、90项Node、严格分析通过；Android预检及GitHub精确提交双平台构建状态见报告/对应Draft PR。前置Phase6H4 `9746506` 两组GitHub checks/Android/Windows均成功。当前最多展示前200条；添加选择器、播放全部/随机、系统歌单、导入/REST、完整播放器及发布仍未完成，尚不是完整可用或上线版本。
+当前阶段：**Android + Windows · Phase 6H6 添加到已有歌单**。音乐库与专辑/艺人详情的歌曲菜单已接入原生歌单选择器，支持显式名称筛选、有界分页和真实持久化；三端共用根写入，只保存完整歌曲引用。718项Flutter（81张Golden）、92项Node、严格分析通过；Android预检及精确GitHub双平台构建状态见[本批报告](docs/phase_6h6_playlist_add_picker_report.md)/对应Draft PR。前置Phase6H5 `4847f29` 两组GitHub checks/Android/Windows均成功。歌单内容仍最多展示前200条，选择器超过200个匹配时须缩小名称范围；播放全部/随机、系统歌单和大歌单完整浏览待开发。
+
+距离“新安装后可日常听本地音乐”仍有四组工作：Phase6页面收尾；Phase7完整播放器/歌词/队列；Phase8双平台真实导入、扫描与授权；Phase10—11后台/系统媒体控制、Release打包与设备验收。完整产品还需要Phase9第三方来源。现有Debug构建不等于可用发行版：默认空库没有导入入口，Windows开发Debug包还依赖Debug CRT；不以测试数量或阶段编号换算虚假完成百分比。
 
 Phase6E 后续修正：初始云端 Android/源码成功，Windows 旧首页 Golden 因测试样本逐首读取时钟而排序不稳定。
 已固定样本批次时间；425 Flutter/71 Node 与本地 Android 通过，55 张基线和生产代码均未改。
@@ -14,6 +16,7 @@ Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭
 
 ## 开发入口
 
+- [Phase 6H6 歌单选择器计划](docs/phase_6h6_playlist_add_picker_plan.md)、[报告](docs/phase_6h6_playlist_add_picker_report.md)：歌曲菜单→已有歌单，原生筛选/返回/焦点、根原子追加、真实SQLite与查询/写入排空；复用App.tsx最终SVG及YY组件，无WebView，无音频复制或新依赖。
 - [Phase 6H5 原生内容管理计划](docs/phase_6h5_playlist_content_surfaces_plan.md)、[报告](docs/phase_6h5_playlist_content_surfaces_report.md)：三端原生歌曲列表与条目菜单、稳定身份路由、共享播放/移除/移动、过期回调隔离和离页写入反馈；复用原始SVG与YY组件，无WebView。
 - [Phase 6H4 内容会话计划](docs/phase_6h4_playlist_content_plan.md)、[报告](docs/phase_6h4_playlist_content_report.md)：单条SQL一致读取、条目身份/完整来源保留、窗口刷新/重试和实际查询排空；自定义歌单最多200条可见前缀，系统视图与原生管理入口后续接入。
 - [Phase 6H3 条目命令计划](docs/phase_6h3_playlist_entry_commands_plan.md)、[报告](docs/phase_6h3_playlist_entry_commands_report.md)：原子追加/移除/锚点排序、完整软引用和事务回滚，复用根 busy/排空；不宣称歌曲管理界面已接线。

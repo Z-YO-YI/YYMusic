@@ -1,4 +1,5 @@
 import '../domain/models/catalog_reference.dart';
+import '../domain/models/track.dart';
 
 enum AppRoute {
   home('/home', '首页'),
@@ -26,5 +27,6 @@ abstract interface class AppNavigation {
   void openAlbum(AlbumRef reference);
   void openArtist(ArtistRef reference);
   void openPlaylist(String id);
+  Future<void> addToPlaylist(TrackRef track, {required String title});
   void back();
 }

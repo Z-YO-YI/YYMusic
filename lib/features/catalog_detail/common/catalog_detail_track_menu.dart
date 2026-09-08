@@ -48,6 +48,12 @@ class CatalogDetailTrackMenu extends StatelessWidget {
           label: '重试收藏状态',
           glyph: YYGlyph.refresh,
         ),
+      YYContextMenuItem(
+        id: 'playlist',
+        label: '添加到歌单',
+        glyph: YYGlyph.playlist,
+        enabled: controller.canOpenActions(track.ref),
+      ),
       const YYContextMenuItem(id: 'close', label: '关闭菜单', glyph: YYGlyph.close),
     ],
     onDismiss: onDismiss,
