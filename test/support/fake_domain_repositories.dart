@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:yymusic/domain/models/collection_models.dart';
 import 'package:yymusic/domain/models/domain_failure.dart';
+import 'package:yymusic/domain/models/domain_validation.dart';
 import 'package:yymusic/domain/models/library_entities.dart';
 import 'package:yymusic/domain/models/lyrics.dart';
 import 'package:yymusic/domain/models/music_source.dart';
@@ -257,6 +258,130 @@ final class FakeCollectionRepository implements CollectionRepository {
   @override
   Future<List<PlaylistEntry>> getPlaylistEntries(String playlistId) async =>
       List.unmodifiable(_entries[playlistId] ?? const []);
+
+  @override
+  Future<void> appendPlaylistEntry(
+    String playlistId,
+    PlaylistEntryDraft entry,
+  ) => _editEntries('append-entry', playlistId, (entries) {
+    if (_entries.values.expand((list) => list).any((e) => e.id == entry.id)) {
+      throw _playlistForbidden('playlist-entry-id-exists');
+    }
+    entries.add(
+      PlaylistEntry(
+        id: entry.id,
+        playlistId: playlistId,
+        track: entry.track,
+        position: entries.length,
+        addedAt: entry.addedAt,
+      ),
+    );
+    return true;
+  });
+
+  @override
+  Future<void> removePlaylistEntry(String playlistId, String entryId) {
+    DomainValidation.identifier(playlistId, 'playlistId');
+    DomainValidation.identifier(entryId, 'entryId');
+    return _editEntries('remove-entry', playlistId, (entries) {
+      final entry = _findScopedEntry(playlistId, entryId);
+      if (entry == null) return false;
+      entries.removeWhere((e) => e.id == entryId);
+      return true;
+    });
+  }
+
+  @override
+  Future<void> movePlaylistEntry(
+    String playlistId,
+    String entryId, {
+    String? beforeEntryId,
+  }) {
+    DomainValidation.identifier(playlistId, 'playlistId');
+    DomainValidation.identifier(entryId, 'entryId');
+    if (beforeEntryId != null) {
+      DomainValidation.identifier(beforeEntryId, 'beforeEntryId');
+    }
+    return _editEntries('move-entry', playlistId, (entries) {
+      final entry = _findScopedEntry(playlistId, entryId);
+      if (entry == null) throw _entryNotFound();
+      final anchor = beforeEntryId == null
+          ? null
+          : _findScopedEntry(playlistId, beforeEntryId);
+      if (beforeEntryId != null && anchor == null) throw _entryNotFound();
+      if (anchor?.id == entryId) return false;
+      final from = entry.position;
+      final to = anchor == null
+          ? entries.length - 1
+          : anchor.position > from
+          ? anchor.position - 1
+          : anchor.position;
+      if (from == to) return false;
+      entries.insert(to, entries.removeAt(from));
+      return true;
+    });
+  }
+
+  PlaylistEntry? _findScopedEntry(String playlistId, String entryId) {
+    final entry = _entries.values
+        .expand((list) => list)
+        .where((e) => e.id == entryId)
+        .firstOrNull;
+    if (entry != null && entry.playlistId != playlistId) throw _entryNotFound();
+    return entry;
+  }
+
+  DomainFailure _entryNotFound() => DomainFailure(
+    code: DomainFailureCode.notFound,
+    diagnosticId: 'collection-repository.playlist-entry-not-found',
+  );
+
+  Future<void> _editEntries(
+    String operation,
+    String playlistId,
+    bool Function(List<PlaylistEntry>) edit,
+  ) async {
+    DomainValidation.identifier(playlistId, 'playlistId');
+    playlistMutationCalls.add(operation);
+    await onPlaylistMutation?.call(operation, playlistId);
+    final playlist = _playlists.where((p) => p.id == playlistId).firstOrNull;
+    if (playlist == null) {
+      throw DomainFailure(
+        code: DomainFailureCode.notFound,
+        diagnosticId: 'collection-repository.playlist-not-found',
+      );
+    }
+    if (playlist.isSystem) throw _playlistForbidden('playlist-system-entries');
+    final entries = List<PlaylistEntry>.of(_entries[playlistId] ?? const []);
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i].position != i) {
+        throw DomainFailure(
+          code: DomainFailureCode.databaseCorrupted,
+          diagnosticId: 'collection-repository.playlist-entry-positions',
+        );
+      }
+    }
+    if (!edit(entries)) return;
+    final now = _playlistClock().toUtc();
+    final updated = Playlist(
+      id: playlist.id,
+      name: playlist.name,
+      description: playlist.description,
+      createdAt: playlist.createdAt,
+      updatedAt: now.isBefore(playlist.updatedAt) ? playlist.updatedAt : now,
+    );
+    _entries[playlistId] = [
+      for (var i = 0; i < entries.length; i++)
+        PlaylistEntry(
+          id: entries[i].id,
+          playlistId: playlistId,
+          track: entries[i].track,
+          position: i,
+          addedAt: entries[i].addedAt,
+        ),
+    ];
+    await savePlaylist(updated);
+  }
 
   @override
   Future<void> replacePlaylistEntries(

@@ -7,6 +7,7 @@ import '../../../domain/models/collection_models.dart';
 import '../../../domain/models/domain_failure.dart';
 import '../../../domain/models/domain_validation.dart';
 import '../../../domain/models/playlist_name.dart';
+import '../../../domain/models/track.dart';
 import '../../../domain/repositories/collection_repository.dart';
 import 'playlist_command_result.dart';
 
@@ -15,11 +16,14 @@ final class PlaylistController extends ChangeNotifier {
   PlaylistController({
     this.collection,
     String Function()? idFactory,
+    String Function()? entryIdFactory,
     DateTime Function()? clock,
   }) : _idFactory = idFactory ?? _newId,
+       _entryIdFactory = entryIdFactory ?? _newEntryId,
        _clock = clock ?? DateTime.now;
   final CollectionRepository? collection;
   final String Function() _idFactory;
+  final String Function() _entryIdFactory;
   final DateTime Function() _clock;
   bool _disposed = false, _busy = false;
   bool get busy => _busy;
@@ -69,6 +73,48 @@ final class PlaylistController extends ChangeNotifier {
     return id;
   });
 
+  Future<PlaylistCommandResult> addTrack(String playlistId, TrackRef track) =>
+      _run(() async {
+        DomainValidation.identifier(playlistId, 'playlistId');
+        await collection!.appendPlaylistEntry(
+          playlistId,
+          PlaylistEntryDraft(
+            id: _entryIdFactory(),
+            track: track,
+            addedAt: _clock().toUtc(),
+          ),
+        );
+        return playlistId;
+      });
+
+  Future<PlaylistCommandResult> removeEntry(
+    String playlistId,
+    String entryId,
+  ) => _run(() async {
+    DomainValidation.identifier(playlistId, 'playlistId');
+    DomainValidation.identifier(entryId, 'entryId');
+    await collection!.removePlaylistEntry(playlistId, entryId);
+    return playlistId;
+  });
+
+  Future<PlaylistCommandResult> moveEntry(
+    String playlistId,
+    String entryId, {
+    String? beforeEntryId,
+  }) => _run(() async {
+    DomainValidation.identifier(playlistId, 'playlistId');
+    DomainValidation.identifier(entryId, 'entryId');
+    if (beforeEntryId != null) {
+      DomainValidation.identifier(beforeEntryId, 'beforeEntryId');
+    }
+    await collection!.movePlaylistEntry(
+      playlistId,
+      entryId,
+      beforeEntryId: beforeEntryId,
+    );
+    return playlistId;
+  });
+
   Future<PlaylistCommandResult> _run(Future<String> Function() action) {
     if (!isAvailable) {
       return Future.value(
@@ -99,6 +145,7 @@ final class PlaylistController extends ChangeNotifier {
                     'collection-repository.playlist-system-create',
                     'collection-repository.playlist-system-rename',
                     'collection-repository.playlist-system-delete',
+                    'collection-repository.playlist-system-entries',
                   }.contains(error.diagnosticId)
             ? PlaylistCommandStatus.protectedPlaylist
             : PlaylistCommandStatus.failed;
@@ -131,7 +178,10 @@ final class PlaylistController extends ChangeNotifier {
   }
 }
 
-String _newId() {
+String _newId() => _randomId('playlist');
+String _newEntryId() => _randomId('playlist-entry');
+
+String _randomId(String prefix) {
   final random = Random.secure();
-  return 'playlist-${List.generate(16, (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0')).join()}';
+  return '$prefix-${List.generate(16, (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0')).join()}';
 }

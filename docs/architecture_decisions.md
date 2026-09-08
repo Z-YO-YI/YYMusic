@@ -668,3 +668,25 @@ Phone使用YYBottomSheet，Tablet/Windows使用YYDialog；原生名称输入保�
 共享搜索输入既有的原生选择手柄/编辑菜单，不复制搜索图标、清空搜索文案或search输入动作。
 宿主覆盖整个Shell的点击、焦点和语义，处理Back/Esc及快捷导航离页，输入时不触发播放快捷键。
 SafeArea和viewInsets参与可用高度计算；变更后仍按完整App.tsx覆盖层与基础HTML检查三端Golden。
+
+## ADR-059：歌单条目以身份和锚点原子编辑（2026-09-08）
+
+既有 replacePlaylistEntries 保持引导/导入整表替换合同；交互不能读取列表后整表覆盖，
+否则会丢失期间的追加或改序。新增 PlaylistEntryDraft（ID、完整 TrackRef、UTC addedAt），
+appendPlaylistEntry 在事务内确定尾部位置；removePlaylistEntry 按条目 ID 移除；
+movePlaylistEntry 的 beforeEntryId 指定同歌单现存锚点，null 表示移动到当前末尾。
+条目身份独立于曲目，同一曲目可重复加入，本地/在线/已失效来源的完整软引用均保留。
+
+三命令只允许现存自定义歌单，系统歌单拒绝交互编辑。追加 ID 为全表唯一，碰撞失败而非覆盖。
+缺失歌单、移动目标或锚点，以及跨歌单条目引用返回 notFound。移除真正不存在的条目幂等；
+自己作为锚点、已相邻或已在末尾均无操作，无操作不修改 updatedAt。
+位置必须从零连续；通过 count/max 与既有唯一/非负约束验证，不默默修复损坏数据。
+受影响位置先移入空闲正数区间，再回填最终位置，避免 SQLite 唯一冲突和负数 CHECK 失败；
+目标移动、邻居位移、父歌单 updatedAt 在同一事务，任何失败整体回滚。
+仅真实改变触发父歌单时间更新，取当前 UTC 与旧值较晚者；不改变名称、说明、createdAt、
+条目 addedAt、曲目/收藏/历史/队列/来源或文件，不添加 schema/依赖。
+
+根 PlaylistController 复用已有命令通道，追加 ID 采用独立随机 128 位身份且仅在接受命令后生成。
+元数据与条目命令共享 busy；接受后先登记再通知，关闭排空后才能释放根存储。
+失败使用固定状态/安全文案，不自动重试不确定写入，不构造第二份列表或播放实例。
+Phase6H3 只实现可验证命令基础，后续增量再接读取会话和原生管理入口。

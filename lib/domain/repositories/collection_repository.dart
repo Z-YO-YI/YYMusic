@@ -15,6 +15,21 @@ abstract interface class CollectionRepository {
   Future<void> savePlaylist(Playlist playlist);
   Future<void> deletePlaylist(String id);
   Future<List<PlaylistEntry>> getPlaylistEntries(String playlistId);
+
+  /// Append to a current custom playlist, rejecting a globally collided entry ID.
+  Future<void> appendPlaylistEntry(String playlistId, PlaylistEntryDraft entry);
+
+  /// Remove only this entry. An absent entry is a no-op, a wrong scope is notFound.
+  Future<void> removePlaylistEntry(String playlistId, String entryId);
+
+  /// Move before a current same-playlist anchor, or to the end when null.
+  Future<void> movePlaylistEntry(
+    String playlistId,
+    String entryId, {
+    String? beforeEntryId,
+  });
+
+  /// Bootstrap/import replacement; interactive edits use atomic commands above.
   Future<void> replacePlaylistEntries(
     String playlistId,
     Iterable<PlaylistEntry> entries,

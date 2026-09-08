@@ -1,6 +1,17 @@
 # 原生基础验证矩阵
 
-Phase6H2 当前：572 Flutter（73 Golden，旧70未改）、84 Node、严格analyze0、283文件格式零修改。
+Phase6H3 当前：615 Flutter（73 Golden未改）、86 Node、严格analyze0、287文件格式零修改。
+新增43项Flutter（21模型/共用真SQLite与Fake合同、11 SQLite专项、11根命令）与2项Node；
+覆盖并发追加/ID碰撞/混合命令、重复/失效来源完整引用、系统/跨歌单/缺失/非法/引号身份、
+首中末移除/前后改序/幂等、两存储各120步确定性随机回归、元数据/逐条addedAt保持、时钟回退。
+SQLite六阶段注入失败整体回滚、追加与移除父更新失败回滚、损坏位置拒绝，未改变其他集合与曲目；
+既有Library投影随根命令更新且无音频，busy/ID工厂/异常/不可用/重入及三命令成功失败关闭排空通过。
+共享未找到文案包含歌曲条目，旧Widget对应断言更新；布局/73张基线字节未改。
+生成代码/Schema/迁移/lockfile、指纹/ZIP24/许可均通过；本地Android Debug/48资产/v2单签名通过。
+前置a7dd5d0两组GitHub checks/Android/Windows成功已复核；本批云端精确结果见对应PR。
+无新管理界面、实机音频或HTML网页对照证据。
+
+Phase6H2 历史：572 Flutter（73 Golden，旧70未改）、84 Node、严格analyze0、283文件格式零修改。
 新增18项Widget、3张逐张查看的三端Golden与2项Node；覆盖共享投影的真实命令调用、系统保护、确认/取消、
 不存在目标、名称/IME/原生复制粘贴、忙时重复点击/Space、Tab/Esc/Back/离页/覆盖路由、焦点恢复、
 600断点/旋转/零尺寸草稿恢复、130%文字/SafeArea/键盘、旧const请求的迟到回调及根关闭排空。

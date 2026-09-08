@@ -295,7 +295,7 @@ void main() {
       await fixture.collection.deletePlaylist('custom');
       await tester.tap(editorKey('playlist-submit'));
       await settlePlaylist(tester);
-      expect(find.text('此歌单已不存在，请刷新列表。'), findsOneWidget);
+      expect(find.text('此歌单或歌曲条目已不存在，请刷新列表。'), findsOneWidget);
       expect(
         tester.widget<EditableText>(find.byType(EditableText)).controller.text,
         '保留我的草稿',
