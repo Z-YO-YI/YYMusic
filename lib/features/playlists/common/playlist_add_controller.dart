@@ -7,6 +7,7 @@ import '../../../domain/models/domain_failure.dart';
 import '../../../domain/models/domain_validation.dart';
 import '../../../domain/models/load_state.dart';
 import '../../../domain/models/pagination.dart';
+import '../../../domain/models/playlist_name.dart';
 import '../../../domain/models/playlist_name_query.dart';
 import '../../../domain/models/track.dart';
 import '../../../domain/repositories/collection_repository.dart';
@@ -73,6 +74,11 @@ final class PlaylistAddController extends ChangeNotifier {
       _addedTo == null &&
       _writer.isAvailable &&
       (_snapshot?.items.any((p) => p.id == id && !p.isSystem) ?? false);
+
+  bool get canCreate =>
+      !_disposed && _active && !busy && _addedTo == null && _writer.isAvailable;
+  bool _created = false;
+  bool get created => _created;
 
   void setActive(bool value) {
     if (!_disposed) _active = value;
@@ -228,6 +234,33 @@ final class PlaylistAddController extends ChangeNotifier {
   Future<void> addTo(String id, PageResult<Playlist> snapshot) {
     if (!identical(_snapshot, snapshot) || !canAdd(id)) return Future.value();
     final name = snapshot.items.firstWhere((p) => p.id == id).name;
+    return _submit(name, () => _writer.addTrack(id, track));
+  }
+
+  Future<void> createAndAdd(String value) {
+    if (!canCreate) return Future.value();
+    final String name;
+    try {
+      name = PlaylistName.normalize(value);
+    } catch (_) {
+      _actionError = const PlaylistCommandResult(
+        PlaylistCommandStatus.invalidName,
+      ).message;
+      _notify();
+      return Future.value();
+    }
+    return _submit(
+      name,
+      () => _writer.createPlaylistWithTrack(name, track),
+      created: true,
+    );
+  }
+
+  Future<void> _submit(
+    String name,
+    Future<PlaylistCommandResult> Function() action, {
+    bool created = false,
+  }) {
     _submitting = true;
     _actionError = null;
     final result = Completer<PlaylistCommandResult>();
@@ -238,6 +271,7 @@ final class PlaylistAddController extends ChangeNotifier {
         if (!_disposed) {
           if (outcome.succeeded) {
             _addedTo = name;
+            _created = created;
           } else {
             _actionError = outcome.message;
           }
@@ -248,7 +282,7 @@ final class PlaylistAddController extends ChangeNotifier {
       }
     });
     try {
-      result.complete(_writer.addTrack(id, track));
+      result.complete(action());
     } catch (_) {
       result.complete(
         const PlaylistCommandResult(PlaylistCommandStatus.failed),

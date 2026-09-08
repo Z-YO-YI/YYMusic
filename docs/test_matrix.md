@@ -1,6 +1,17 @@
 # 原生基础验证矩阵
 
-Phase6H6 当前：718 Flutter（81 Golden）、92 Node、严格analyze0、319个Dart文件格式零修改。
+Phase6H7 当前：754 Flutter（81 Golden）、94 Node、严格analyze0、323个Dart文件格式零修改。
+新增36项Flutter：18真实SQLite/Fake合同与实际事务关闭、9根命令/会话、8三端Widget、1真实SQLite全根界面。
+父/条目碰撞不覆盖、系统/名称拒绝、完整失效引用/时间/说明保留、同名独立身份、并发同父仅成功一次通过。
+观察者只见完整父子记录；SQLite父插入/条目插入/插入后故障全部回滚，原记录不变，明确重试成功。
+根ID/时钟单次生成、全命令共享busy、同步关闭重入、写入中关闭后安全失败及数据库实际事务排空通过。
+原生名称输入和筛选草稿独立、IME组合/非法/旧回调/覆盖与关闭保护、旋转/零尺寸/键盘和低视口通过。
+旧Windows键盘测试改为requestScopeFocus明确停在作用域，并额外验证输入框空格；不误把合法取消按钮激活当成泄漏。
+81张Golden中仅3张选择器表单变化逐张检查更新，其他78张字节不变；Node原子事务计数相应由3更新为4。
+生成/Schema/lock、指纹/ZIP/许可、Android预检及精确GitHub状态见[报告](phase_6h7_create_and_add_report.md)。
+不代表实机音频、HTML网页对照、导入或发行验证已完成。
+
+Phase6H6 历史：718 Flutter（81 Golden）、92 Node、严格analyze0、319个Dart文件格式零修改。
 新增38项Flutter：7查询/真实SQLite与Fake合同、13根会话、14三端Widget、1真实SQLite全根界面、3Golden。
 单条绑定SQL只读自定义元数据、limit+1哨兵不解析、字面筛选/ASCII折叠/Unicode稳定ID排序及偏移通过。
 20→200前缀、235份样本中筛选末项、loading/empty/安全错误/订阅重建和过期请求隔离通过。

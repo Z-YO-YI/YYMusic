@@ -9,7 +9,8 @@ test('interactive entries have atomic identity and anchor contracts, not stale w
   }
   assert.match(contract, /String\? beforeEntryId/);
   const commands = read('lib/data/repositories/drift_playlist_entry_commands.dart');
-  assert.equal((commands.match(/_database.transaction/g) ?? []).length, 3);
+  // Append/remove/move plus atomic create-with-first-entry.
+  assert.equal((commands.match(/_database.transaction/g) ?? []).length, 4);
   assert(!/replacePlaylistEntries|insertOnConflictUpdate|savePlaylist\(/.test(commands));
   assert.match(commands, /playlist-entry-id-exists/);
   assert.match(commands, /playlist-system-entries/);

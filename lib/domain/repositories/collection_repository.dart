@@ -17,6 +17,13 @@ abstract interface class CollectionRepository {
   /// Create a custom playlist without overwriting an existing ID.
   Future<void> createPlaylist(Playlist playlist);
 
+  /// Atomically create a custom playlist with its first complete track reference.
+  /// Neither identity may collide; failure must leave no new parent or entry.
+  Future<void> createPlaylistWithEntry(
+    Playlist playlist,
+    PlaylistEntryDraft entry,
+  );
+
   /// Rename an existing custom playlist without recreating a removed target.
   Future<void> renamePlaylist(String id, String name);
 

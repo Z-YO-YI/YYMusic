@@ -60,6 +60,30 @@ final class PlaylistController extends ChangeNotifier {
     });
   }
 
+  Future<PlaylistCommandResult> createPlaylistWithTrack(
+    String name,
+    TrackRef track,
+  ) {
+    final String normalized;
+    try {
+      normalized = PlaylistName.normalize(name);
+    } catch (_) {
+      return Future.value(
+        const PlaylistCommandResult(PlaylistCommandStatus.invalidName),
+      );
+    }
+    return _run(() async {
+      final id = _idFactory();
+      final entryId = _entryIdFactory();
+      final now = _clock().toUtc();
+      await collection!.createPlaylistWithEntry(
+        Playlist(id: id, name: normalized, createdAt: now, updatedAt: now),
+        PlaylistEntryDraft(id: entryId, track: track, addedAt: now),
+      );
+      return id;
+    }, entryCommand: true);
+  }
+
   Future<PlaylistCommandResult> renamePlaylist(String id, String name) {
     final String normalized;
     try {
