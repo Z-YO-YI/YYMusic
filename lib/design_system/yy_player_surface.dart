@@ -23,6 +23,7 @@ class YYMiniPlayer extends StatelessWidget {
     super.key,
     required this.data,
     this.onOpen,
+    this.onOpenLyrics,
     this.onTogglePlayback,
     this.onNext,
     this.loading = false,
@@ -30,6 +31,7 @@ class YYMiniPlayer extends StatelessWidget {
 
   final YYNowPlayingViewData data;
   final VoidCallback? onOpen;
+  final VoidCallback? onOpenLyrics;
   final VoidCallback? onTogglePlayback;
   final VoidCallback? onNext;
   final bool loading;
@@ -55,6 +57,7 @@ class YYMiniPlayer extends StatelessWidget {
                 compact: true,
                 loading: loading,
                 onPressed: onOpen,
+                onLongPressed: onOpenLyrics,
               ),
             ),
             const SizedBox(width: 2),
@@ -160,6 +163,7 @@ class YYDesktopPlayerBar extends StatelessWidget {
                         compact: compact,
                         loading: loading,
                         onPressed: onOpen,
+                        onLongPressed: onOpenLyrics,
                       ),
                     ),
                     _TransportButton(
@@ -194,6 +198,7 @@ class YYDesktopPlayerBar extends StatelessWidget {
                       compact: compact,
                       loading: loading,
                       onPressed: onOpen,
+                      onLongPressed: onOpenLyrics,
                     ),
                   ),
                   SizedBox(width: compact ? 8 : 18),
@@ -249,6 +254,7 @@ class _TrackAction extends StatelessWidget {
     required this.compact,
     required this.loading,
     required this.onPressed,
+    this.onLongPressed,
   });
 
   final YYNowPlayingViewData data;
@@ -257,6 +263,7 @@ class _TrackAction extends StatelessWidget {
   final bool compact;
   final bool loading;
   final VoidCallback? onPressed;
+  final VoidCallback? onLongPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -279,6 +286,7 @@ class _TrackAction extends StatelessWidget {
     return YYControlAction(
       label: '打开正在播放，${data.title}，${data.artist}',
       onActivate: loading ? null : onPressed,
+      onLongActivate: loading ? null : onLongPressed,
       loading: loading,
       builder: _buildContent,
     );

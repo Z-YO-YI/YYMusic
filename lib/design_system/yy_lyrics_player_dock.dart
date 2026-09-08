@@ -27,6 +27,7 @@ class YYLyricsPlayerDock extends StatelessWidget {
     this.onSeekCancel,
     this.onToggleFavorite,
     this.onReturnToPlayer,
+    this.showFavorite = true,
   });
 
   final YYNowPlayingViewData data;
@@ -40,6 +41,7 @@ class YYLyricsPlayerDock extends StatelessWidget {
   final VoidCallback? onSeekCancel;
   final VoidCallback? onToggleFavorite;
   final VoidCallback? onReturnToPlayer;
+  final bool showFavorite;
 
   @override
   Widget build(BuildContext context) => Semantics(
@@ -86,7 +88,7 @@ class YYLyricsPlayerDock extends StatelessWidget {
         );
         final actions = _LyricsDockActions(
           favorite: data.favorite,
-          hideFavorite: phone,
+          hideFavorite: phone || !showFavorite,
           loading: loading,
           onToggleFavorite: onToggleFavorite,
           onReturnToPlayer: onReturnToPlayer,

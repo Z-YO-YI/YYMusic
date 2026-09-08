@@ -13,6 +13,7 @@ class YYControlAction extends StatefulWidget {
     super.key,
     required this.label,
     required this.onActivate,
+    this.onLongActivate,
     required this.builder,
     this.selected,
     this.toggled,
@@ -23,6 +24,7 @@ class YYControlAction extends StatefulWidget {
   });
   final String label;
   final VoidCallback? onActivate;
+  final VoidCallback? onLongActivate;
   final Widget Function(BuildContext, YYControlInteraction) builder;
   final bool? selected, toggled;
   final bool loading;
@@ -38,6 +40,10 @@ class _YYControlActionState extends State<YYControlAction> {
   bool get _enabled => widget.onActivate != null && !widget.loading;
   void _activate() {
     if (_enabled) widget.onActivate!();
+  }
+
+  void _longActivate() {
+    if (_enabled) widget.onLongActivate?.call();
   }
 
   @override
@@ -60,6 +66,9 @@ class _YYControlActionState extends State<YYControlAction> {
     value: widget.loading ? '加载中' : null,
     excludeSemantics: true,
     onTap: _enabled ? _activate : null,
+    onLongPress: _enabled && widget.onLongActivate != null
+        ? _longActivate
+        : null,
     child: FocusableActionDetector(
       focusNode: widget.focusNode,
       enabled: _enabled,
@@ -94,6 +103,9 @@ class _YYControlActionState extends State<YYControlAction> {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: _enabled ? _activate : null,
+        onLongPress: _enabled && widget.onLongActivate != null
+            ? _longActivate
+            : null,
         onTapDown: _enabled ? (_) => setState(() => _pressed = true) : null,
         onTapUp: _enabled ? (_) => setState(() => _pressed = false) : null,
         onTapCancel: () => setState(() => _pressed = false),
