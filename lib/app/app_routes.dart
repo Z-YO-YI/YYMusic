@@ -25,5 +25,6 @@ abstract interface class AppNavigation {
   void openLicenses();
   void openAlbum(AlbumRef reference);
   void openArtist(ArtistRef reference);
+  void openPlaylist(String id);
   void back();
 }

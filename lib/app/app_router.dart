@@ -15,6 +15,8 @@ import '../features/home/common/home_controller.dart';
 import '../features/home/common/home_screen.dart';
 import '../features/library/common/library_controller.dart';
 import '../features/library/common/library_screen.dart';
+import '../features/playlists/common/playlist_content_controller.dart';
+import '../features/playlists/common/playlist_content_screen.dart';
 import '../features/playlists/common/playlist_controller.dart';
 import '../features/playlists/common/playlist_editor_host.dart';
 import '../features/search/common/search_controller.dart';
@@ -29,6 +31,7 @@ import 'flutter_license_repository.dart';
 import 'foundation_screen.dart';
 import 'layout_class.dart';
 import 'playback_presenter.dart';
+import 'playlist_location.dart';
 
 final class AppRouter implements AppNavigation {
   AppRouter({
@@ -43,6 +46,7 @@ final class AppRouter implements AppNavigation {
     LibraryController? libraryController,
     CatalogDetailSessions? catalogDetails,
     PlaylistController? playlistController,
+    PlaylistContentSessions? playlistContents,
   }) {
     Widget screen(AppRoute route) =>
         route == AppRoute.home &&
@@ -181,6 +185,48 @@ final class AppRouter implements AppNavigation {
             },
           ),
         GoRoute(
+          path: '/playlist',
+          pageBuilder: (context, state) {
+            final id = parsePlaylistLocation(state.uri);
+            return NoTransitionPage<void>(
+              key: ValueKey((state.pageKey, id)),
+              child:
+                  id != null &&
+                      playlistContents != null &&
+                      playbackPresenter != null
+                  ? PlaylistContentScreen(
+                      playlistId: id,
+                      sessions: playlistContents,
+                      platform: platform,
+                      navigation: this,
+                      playback: playbackPresenter,
+                      frame: (child) => AdaptiveRoot(
+                        platform: platform,
+                        navigation: this,
+                        selected: AppRoute.library,
+                        playbackPresenter: playbackPresenter,
+                        child: child,
+                      ),
+                    )
+                  : SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          children: [
+                            YYButton(label: '返回', onPressed: back),
+                            const SizedBox(height: 20),
+                            const YYErrorBanner(
+                              title: '无法打开歌单',
+                              message: '链接或歌单存储不可用，请从音乐库重新打开。',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+            );
+          },
+        ),
+        GoRoute(
           path: '/settings/licenses',
           pageBuilder: (context, state) => NoTransitionPage<void>(
             key: state.pageKey,
@@ -245,6 +291,23 @@ final class AppRouter implements AppNavigation {
     )) {
       _router.go(AppRoute.home.path);
     }
+  }
+
+  @override
+  void openPlaylist(String id) {
+    final focus = FocusManager.instance.primaryFocus;
+    unawaited(
+      _router.push<void>(playlistLocation(id).toString()).then((_) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final context = focus?.context;
+          if (context != null &&
+              context.mounted &&
+              TickerMode.valuesOf(context).enabled) {
+            focus!.requestFocus();
+          }
+        });
+      }),
+    );
   }
 
   void dispose() => _router.dispose();
