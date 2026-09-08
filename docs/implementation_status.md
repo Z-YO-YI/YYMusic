@@ -1,5 +1,12 @@
 # 实施状态
 
+当前增量Phase6I1：LocalLibraryRepository由现有DriftLibraryRepository实现，同一SQL读取本地五类可用性计数/总时长、全部文件夹计数及最多200行窗口。
+同名稳定排序，超出末页仍保留真实统计；摘要不读取路径/Content URI/grantRef，启用配置与历史扫描记录不代表当前系统授权。
+轻量表变更流不执行曲库查询，支持协作取消及安全错误；没有新增Schema、平台操作、UI接线或生产Fixture。
+新增16 Flutter（13 SQLite/2模型/1Fake），最终1000 Flutter/111 Node、严格分析零问题；385文件格式零差异、98旧Golden未改、Android Debug预检通过。
+见[Phase6I1报告](phase_6i1_local_library_overview_report.md)，分支`codex/local-library-overview`。下一步本地音乐原生页面；真实导入/授权/扫描仍属于Phase8。
+前置H14 `2b756d1` / Draft PR #59 两组精确源码、Android、Windows均SUCCESS，报告已回填。下方旧阶段记录保留历史归属。
+
 当前增量Phase6H14：喜欢菜单可取消完整来源引用（含失效/未解析）；最近页原生确认清除，三端共用根SystemPlaylistWriter和H13有序历史通道。
 只改收藏/历史，不删除歌曲文件、其他收藏、队列或自定义歌单；失效/旧快照/遮挡/最小化拒绝旧动作。
 写入先登记后调用依赖，重复提交保护、离页失败保留、返回可见，根关闭等待真实SQLite删除排空。

@@ -7,21 +7,25 @@ import '../../domain/models/catalog_reference.dart';
 import '../../domain/models/catalog_search.dart';
 import '../../domain/models/domain_failure.dart';
 import '../../domain/models/library_entities.dart';
+import '../../domain/models/local_library_overview.dart';
 import '../../domain/models/pagination.dart';
 import '../../domain/models/track.dart';
 import '../../domain/repositories/catalog_browse_repository.dart';
 import '../../domain/repositories/catalog_search_repository.dart';
 import '../../domain/repositories/library_repository.dart';
+import '../../domain/repositories/local_library_repository.dart';
 import '../database/app_database.dart';
 import 'library_row_mapper.dart';
 
 part 'drift_catalog_browse.dart';
+part 'drift_local_library.dart';
 
 final class DriftLibraryRepository
     implements
         LibraryRepository,
         CatalogSearchRepository,
-        CatalogBrowseRepository {
+        CatalogBrowseRepository,
+        LocalLibraryRepository {
   factory DriftLibraryRepository(
     AppDatabase database, {
     bool closeDatabaseOnDispose = false,
@@ -54,6 +58,15 @@ final class DriftLibraryRepository
 
   bool _initialized = false;
   bool _disposed = false;
+
+  @override
+  Future<LocalLibraryOverview> readLocalOverview(
+    PageRequest folders, {
+    SearchCancellation? cancellation,
+  }) => _readLocalOverview(folders, cancellation);
+
+  @override
+  Stream<void> watchLocalChanges() => _watchLocalChanges();
 
   @override
   Future<PageResult<Track>> browseTracks(

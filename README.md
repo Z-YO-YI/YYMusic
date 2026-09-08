@@ -1,5 +1,7 @@
 # YYMusic
 
+当前增量：**Phase 6I1 本地音乐数据概览**。现有数据库连接已提供本地曲目可用性/总时长统计与分页文件夹摘要，一次SQL保持统计一致；不读取路径或授权引用，不把历史扫描记录当成当前访问权限。新增16项回归，最终1000项Flutter（98张Golden未改）、111项Node通过，严格分析零问题，Android本地Debug预检通过。详见[本批报告](docs/phase_6i1_local_library_overview_report.md)及对应Draft PR。此批是数据层，尚未接入新的本地音乐界面；下一步Phase6I页面与Settings。下文Phase6H14保留前置记录，其精确提交`2b756d1`的push/PR双平台检查均已成功。
+
 当前阶段：**Android + Windows · Phase 6H14 系统歌单管理**。喜欢列表已支持更多/长按/右键菜单取消喜欢，包括失效和未解析歌曲；最近页已加入原生确认清除。操作共用根写入器，离页不丢失写入失败，关闭等待完成；不删除音乐文件或改动队列。984项Flutter（98张Golden）、108项Node通过，严格分析零问题。精确GitHub双平台状态见[本批报告](docs/phase_6h14_system_playlist_management_report.md)/对应Draft PR；前置Phase6H13 `891a9f1` 两组源码/Android/Windows已成功。Local Music/Settings、真实导入、完整播放器与发行仍待开发，默认新安装为空库。
 
 距离“新安装后可日常听本地音乐”仍有四组工作：Phase6页面收尾；Phase7完整播放器/歌词/队列；Phase8双平台真实导入、扫描与授权；Phase10—11后台/系统媒体控制、Release打包与设备验收。完整产品还需要Phase9第三方来源。现有Debug构建不等于可用发行版：默认空库没有导入入口，Windows开发Debug包还依赖Debug CRT；不以测试数量或阶段编号换算虚假完成百分比。

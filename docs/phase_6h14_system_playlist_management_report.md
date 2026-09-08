@@ -51,6 +51,16 @@ BEFORE DELETE故障触发器验证失败回滚与重试，延迟实际DELETE时�
 5张新基线覆盖Phone菜单/清除、Tablet清除、Windows菜单/清除；更新4张旧基线：Phone喜欢、Tablet最近、Phone/Windows历史失败。
 九张最终图已逐张查看，其余89张旧Golden字节不变；不把这些Flutter截图当成网页像素对照或实机性能验收。
 
+## 精确云端结果（后续批次回填）
+
+实现提交`2b756d18c45af2ff7a7def2082ddbb72ccf5113e`，Draft [PR #59](https://github.com/Z-YO-YI/YYMusic/pull/59)仍OPEN，未合并。
+[push 34259595465](https://github.com/Z-YO-YI/YYMusic/actions/runs/34259595465)与[PR 34259601022](https://github.com/Z-YO-YI/YYMusic/actions/runs/34259601022)均SUCCESS；六项常规检查通过，四项可选音频诊断SKIPPED（不算通过）。
+已读取两组完成日志：各108 Node、380文件格式零差异、严格分析零问题；Linux886 Flutter通过/98宿主Golden跳过，Windows98 Golden通过且实际窗口集成1项通过。
+Windows默认入口重新Debug构建并验证65文件/六音频包/原生完整许可；Android51原生坐标/三份完整法律材料、48资产/六音频包、v2签名校验通过。
+Windows push产物[10069772276](https://github.com/Z-YO-YI/YYMusic/actions/runs/34259595465/artifacts/10069772276)，67,400,970 bytes，
+SHA-256 `4bc3f0c6e8801ea45461f47eb9275c1914098662e51cca65fe811268f99e466f`，到期时间2026-09-22T18:03:47Z（UTC）；API核对时未过期。
+本批核对日志与artifact API，未下载或人工运行该包；这是依赖Debug CRT的开发包，不是安装器/Release。普通push/PR没有创建Android Release或上传APK产物。
+
 ## 剩余范围与下一阶段
 
 取消喜欢与清除是本机集合操作，未删除任何用户音乐文件或生产数据；测试只使用隔离内存/SQLite夹具。
