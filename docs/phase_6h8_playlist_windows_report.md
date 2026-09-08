@@ -48,3 +48,15 @@ PR #52保持Draft/OPEN，Windows开发包与精确元数据已回填对应报告
 选择器的200个匹配歌单上限仍要求缩小名称范围。播放全部/随机、系统歌单、Local Music/Settings仍在Phase6后续。
 Phase7完整播放器/歌词/队列、Phase8真实导入/权限、Phase9在线来源、Phase10–11平台媒体/QA/发行均未完成。
 默认新安装空库，Android Debug可构建不等于能导入日常听歌；Windows Debug依赖调试运行库，不是普通安装程序。
+
+## 精确云端结果回填（Phase6H9开始时核验）
+
+实现提交`33187c0491a6e6850f5a5bc6986df61f24e0c075`，Draft [PR #53](https://github.com/Z-YO-YI/YYMusic/pull/53) OPEN，未合并。
+[push 34222808426](https://github.com/Z-YO-YI/YYMusic/actions/runs/34222808426)与
+[PR 34222814936](https://github.com/Z-YO-YI/YYMusic/actions/runs/34222814936)均精确对应此head，
+三项常规源码/Android/Windows job各自success；两项专用音频诊断job按条件skipped，不计为通过。
+Linux690通过/84Golden跳过，Windows84Golden与1项真实窗口测试通过；默认Debug重建及65文件运行包检查通过。
+Android51原生坐标/3全文法律材料/六包许可/48资产/v2单签名门禁通过。
+push唯一Windows附件`10054902807`，名称`YYMusic-windows-debug-33187c0491a6e6850f5a5bc6986df61f24e0c075`，
+67,329,030字节，digest `sha256:ed513106859ab5f739affe3161a6240b97591f8e3476e9754e6ddbcf5d1f21a7`，
+过期时间`2026-09-22T12:03:56Z`。仅核验API元数据和运行日志，未下载/执行该附件；PR运行无附件，无新APK Release。

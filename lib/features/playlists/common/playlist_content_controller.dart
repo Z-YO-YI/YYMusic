@@ -33,6 +33,8 @@ final class PlaylistContentController extends ChangeNotifier {
   int _intent = 0;
   String? _actionError;
   String? get actionError => _actionError;
+  String? _actionNote;
+  String? get actionNote => _actionNote;
   bool get busy => _actionBusy || (_writer?.busy ?? false);
   Listenable? get writerChanges => _writer;
   static const pageSize = 20, maxVisibleCount = 200;

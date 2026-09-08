@@ -93,6 +93,45 @@ final class PlaylistContentSections {
                 color: theme.colors.secondary,
               ),
             ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 12,
+              runSpacing: 8,
+              children: [
+                YYButton(
+                  key: const ValueKey('playlist-play-all'),
+                  label: '播放全部',
+                  glyph: YYGlyph.play,
+                  style: YYButtonStyle.primary,
+                  onPressed: controller.canPlayAll && data != null
+                      ? () {
+                          if (canInteract()) {
+                            unawaited(controller.playAll(data, shuffle: false));
+                          }
+                        }
+                      : null,
+                ),
+                YYButton(
+                  key: const ValueKey('playlist-play-shuffle'),
+                  label: '随机播放',
+                  glyph: YYGlyph.shuffle,
+                  onPressed: controller.canPlayAll && data != null
+                      ? () {
+                          if (canInteract()) {
+                            unawaited(controller.playAll(data, shuffle: true));
+                          }
+                        }
+                      : null,
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '播放整份歌单的可用歌曲，替换当前队列。',
+              style: YYTypography.caption.copyWith(
+                color: theme.colors.secondary,
+              ),
+            ),
           ],
         ),
       );
@@ -123,6 +162,13 @@ final class PlaylistContentSections {
             if (controller.actionError case final message?) ...[
               const SizedBox(height: 12),
               YYErrorBanner(title: '歌曲操作未完成', message: message),
+            ],
+            if (controller.actionNote case final message?) ...[
+              const SizedBox(height: 12),
+              Semantics(
+                liveRegion: true,
+                child: Text(message, style: YYTypography.caption),
+              ),
             ],
             if (controller.phase == LoadPhase.error) ...[
               const SizedBox(height: 12),
@@ -200,7 +246,7 @@ final class PlaylistContentSections {
               _loadMoreButton(controller.content!),
             ],
             const SizedBox(height: 12),
-            Text('可从歌曲菜单添加。播放全部与随机播放尚未接入。', style: YYTypography.caption),
+            Text('可从歌曲菜单添加。播放操作不改变歌单内容。', style: YYTypography.caption),
           ],
         ),
       ),

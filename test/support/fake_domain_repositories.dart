@@ -10,6 +10,7 @@ import 'package:yymusic/domain/models/pagination.dart';
 import 'package:yymusic/domain/models/playlist_content.dart';
 import 'package:yymusic/domain/models/playlist_name.dart';
 import 'package:yymusic/domain/models/playlist_name_query.dart';
+import 'package:yymusic/domain/models/playlist_playback_plan.dart';
 import 'package:yymusic/domain/models/sensitive_credential.dart';
 import 'package:yymusic/domain/models/track.dart';
 import 'package:yymusic/domain/repositories/collection_repository.dart';
@@ -153,6 +154,8 @@ final class FakeCollectionRepository implements CollectionRepository {
   final contentReadCalls = <({String id, PageRequest page})>[];
   int contentWatchCount = 0;
   Future<PlaylistContent?> Function(String id, PageRequest page)? contentReader;
+  final playbackPlanReadCalls = <String>[];
+  Future<PlaylistPlaybackPlan?> Function(String id)? playbackPlanReader;
   Stream<void> Function()? contentChangesReader;
   final selectionReadCalls = <({PlaylistNameQuery query, PageRequest page})>[];
   Future<PageResult<Playlist>> Function(PlaylistNameQuery, PageRequest)?
@@ -180,6 +183,9 @@ final class FakeCollectionRepository implements CollectionRepository {
   int favoriteWatchCount = 0;
   Stream<List<FavoriteEntry>> Function()? favoriteReader;
   int disposeCount = 0;
+
+  final queueWrites = <QueueSnapshot>[];
+  Future<void> Function(QueueSnapshot)? beforeQueueWrite;
 
   @override
   Stream<List<Playlist>> watchPlaylists() async* {
@@ -397,6 +403,30 @@ final class FakeCollectionRepository implements CollectionRepository {
   });
 
   @override
+  Future<PlaylistPlaybackPlan?> readPlaylistPlaybackPlan(
+    String playlistId,
+  ) async {
+    DomainValidation.identifier(playlistId, 'playlistId');
+    playbackPlanReadCalls.add(playlistId);
+    if (playbackPlanReader != null) return playbackPlanReader!(playlistId);
+    final playlist = _playlists.where((p) => p.id == playlistId).firstOrNull;
+    if (playlist == null) return null;
+    if (playlist.isSystem) throw _playlistForbidden('playlist-system-playback');
+    return PlaylistPlaybackPlan(
+      playlistId: playlistId,
+      entries: [
+        for (final entry in _entries[playlistId] ?? const <PlaylistEntry>[])
+          PlaylistPlaybackEntry(
+            id: entry.id,
+            position: entry.position,
+            track: entry.track,
+            availability: _contentTracks[entry.track]?.availability,
+          ),
+      ],
+    );
+  }
+
+  @override
   Future<void> removePlaylistEntry(String playlistId, String entryId) {
     DomainValidation.identifier(playlistId, 'playlistId');
     DomainValidation.identifier(entryId, 'entryId');
@@ -524,6 +554,9 @@ final class FakeCollectionRepository implements CollectionRepository {
 
   @override
   Future<void> saveQueue(QueueSnapshot snapshot) async {
+    final before = beforeQueueWrite;
+    if (before != null) await before(snapshot);
+    queueWrites.add(snapshot);
     _queue = snapshot;
     _queueChanges.add(snapshot);
   }

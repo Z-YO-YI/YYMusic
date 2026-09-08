@@ -9,6 +9,7 @@ import '../../domain/models/pagination.dart';
 import '../../domain/models/playlist_content.dart';
 import '../../domain/models/playlist_name.dart';
 import '../../domain/models/playlist_name_query.dart';
+import '../../domain/models/playlist_playback_plan.dart';
 import '../../domain/models/track.dart';
 import '../../domain/repositories/collection_repository.dart';
 import '../database/app_database.dart';
@@ -17,6 +18,7 @@ import 'library_row_mapper.dart';
 
 part 'drift_playlist_entry_commands.dart';
 part 'drift_playlist_content.dart';
+part 'drift_playlist_playback_plan.dart';
 
 final class DriftCollectionRepository implements CollectionRepository {
   factory DriftCollectionRepository(
@@ -245,6 +247,10 @@ final class DriftCollectionRepository implements CollectionRepository {
     String playlistId,
     PageRequest page,
   ) => _readContent(playlistId, page);
+
+  @override
+  Future<PlaylistPlaybackPlan?> readPlaylistPlaybackPlan(String playlistId) =>
+      _readPlaybackPlan(playlistId);
 
   @override
   Stream<void> watchPlaylistContentChanges() {

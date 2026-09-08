@@ -14,6 +14,8 @@ import 'audio_engine_state.dart';
 import 'playback_source_resolver.dart';
 import 'playback_state.dart';
 
+part 'catalog_selection_playback.dart';
+
 typedef PlaybackRandomIndex = int Function(int upperBound);
 
 final class PlaybackController extends ChangeNotifier {
@@ -213,6 +215,15 @@ final class PlaybackController extends ChangeNotifier {
   Future<void> skipNext() => _schedule(
     () => _guarded('skip-next', () => _advanceInternal(isAutomatic: false)),
   );
+
+  /// Replaces the queue and begins a complete reference selection in one command.
+  /// Returns false for empty/revoked work. Committed queues are never rolled back
+  /// when a route leaves; a revoked pending load must not start audio.
+  Future<bool> playCatalogSelection(
+    Iterable<TrackRef> tracks, {
+    required bool shuffle,
+    bool Function()? canPlay,
+  }) => _playSelection(tracks, shuffle: shuffle, canPlay: canPlay);
 
   Future<void> skipPrevious() => _schedule(() async {
     _requireEngine();
@@ -538,26 +549,43 @@ final class PlaybackController extends ChangeNotifier {
     }
   }
 
-  Future<void> _commitQueue(
+  Future<bool> _commitQueue(
     QueueSnapshot snapshot, {
     bool rebuildShuffle = true,
+    _SelectionMode? selectionMode,
+    bool Function()? canCommit,
   }) async {
+    if (canCommit?.call() == false) return false;
     if (!_retainsCurrentTrack(snapshot) &&
         _state.currentTrack != null &&
         _engine.isAvailable) {
       await _stopEngine();
     }
+    if (canCommit?.call() == false) return false;
     _checkNotDisposed();
     final collection = _collectionRepository;
     if (collection != null) await collection.saveQueue(snapshot);
-    _applyQueue(snapshot, rebuildShuffle: rebuildShuffle);
+    _applyQueue(
+      snapshot,
+      rebuildShuffle: rebuildShuffle,
+      selectionMode: selectionMode,
+    );
+    return true;
   }
 
-  void _applyQueue(QueueSnapshot queue, {bool rebuildShuffle = true}) {
+  void _applyQueue(
+    QueueSnapshot queue, {
+    bool rebuildShuffle = true,
+    _SelectionMode? selectionMode,
+  }) {
     final currentTrack = _retainsCurrentTrack(queue)
         ? _state.currentTrack
         : null;
     final currentId = queue.currentEntryId;
+    if (selectionMode != null) {
+      _shuffleOrder = selectionMode.order;
+      _shuffleCursor = selectionMode.enabled ? 0 : -1;
+    }
     _publish(
       _state.copyWith(
         phase: currentTrack == null ? PlaybackPhase.idle : _state.phase,
@@ -566,10 +594,11 @@ final class PlaybackController extends ChangeNotifier {
         buffered: currentTrack == null ? Duration.zero : _state.buffered,
         duration: currentTrack == null ? null : _state.duration,
         queue: queue,
+        shuffleEnabled: selectionMode?.enabled,
         failure: currentTrack == null ? null : _state.failure,
       ),
     );
-    if (_state.shuffleEnabled) {
+    if (selectionMode == null && _state.shuffleEnabled) {
       if (rebuildShuffle) {
         _rebuildShuffleOrder();
       } else if (currentId != null) {

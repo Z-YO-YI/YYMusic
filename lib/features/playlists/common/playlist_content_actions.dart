@@ -23,6 +23,60 @@ extension PlaylistContentActions on PlaylistContentController {
   bool canManageEntry(String id) =>
       canOpenEntry(id) && !busy && (_writer?.isAvailable ?? false);
 
+  bool get canPlayAll =>
+      _canBrowse &&
+      (_playback?.isAvailable ?? false) &&
+      (content?.totalCount ?? 0) > 0;
+
+  /// Reads a complete lightweight plan, not the currently displayed window.
+  Future<void> playAll(PlaylistContent expected, {required bool shuffle}) {
+    if (!canPlayAll || !identical(content, expected)) return Future.value();
+    final intent = ++_intent;
+    bool current() => !_disposed && _active && intent == _intent;
+    _actionBusy = true;
+    _actionError = _actionNote = null;
+    final work = _track(() async {
+      try {
+        if (!current()) return;
+        final plan = await _repository!.readPlaylistPlaybackPlan(playlistId);
+        if (!current()) return;
+        if (plan == null) {
+          _actionError = '此歌单已不存在，请刷新。';
+          return;
+        }
+        if (plan.playlistId != playlistId) {
+          throw StateError('Wrong playlist plan');
+        }
+        final tracks = plan.entries
+            .where((e) => e.isAvailable)
+            .map((e) => e.track)
+            .toList();
+        if (tracks.isEmpty) {
+          _actionNote = '歌单中没有可播放的歌曲，当前队列未改变。';
+          return;
+        }
+        final started = await _playback!.playCatalogSelection(
+          tracks,
+          shuffle: shuffle,
+          canPlay: current,
+        );
+        if (current() && started) {
+          final skipped = plan.entries.length - tracks.length;
+          _actionNote =
+              '已切换到包含 ${tracks.length} 首歌曲的队列。'
+              '${skipped == 0 ? '' : '跳过 $skipped 条不可用引用，原歌单仍保留。'}';
+        }
+      } catch (_) {
+        if (current()) _actionError = '歌单播放未完成，请重试。';
+      } finally {
+        _actionBusy = false;
+        _notify();
+      }
+    });
+    _notify();
+    return work;
+  }
+
   bool canMoveEntry(String id, {required bool up}) {
     if (!canManageEntry(id)) return false;
     final items = content!.entries;
@@ -39,6 +93,7 @@ extension PlaylistContentActions on PlaylistContentController {
     final intent = _intent;
     _actionBusy = true;
     _actionError = null;
+    _actionNote = null;
     final work = _track(() async {
       try {
         await _playback!.playCatalogTrack(
@@ -78,6 +133,7 @@ extension PlaylistContentActions on PlaylistContentController {
   Future<void> _writeEntry(Future<PlaylistCommandResult> Function() invoke) {
     _actionBusy = true;
     _actionError = null;
+    _actionNote = null;
     _intent++;
     final result = Completer<PlaylistCommandResult>();
     // Register first, then let the root writer synchronously accept the command.
