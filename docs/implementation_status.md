@@ -1,13 +1,13 @@
 # 实施状态
 
-当前增量Phase6H9：Phone/Tablet/Windows自定义歌单支持播放全部和随机播放，显式替换根队列。
-同一SQL读取完整轻量引用，不受200条浏览窗口限制、不N+1/艺人展开；重复条目保留，已知不可用引用跳过并提示。
-单串行根命令先校验随机序列再持久化与发布队列/模式；没有可用项不改变队列，关闭等待真实查询与已接受命令。
-Windows零尺寸原先卸载Navigator的问题已修复：保留有效布局离屏子树，暂停Ticker/隔离焦点，恢复同一路由会话。
-812 Flutter（84 Golden：8更新、76未改）/98 Node通过；
-分支`codex/playlist-play-all`，严格分析/Android预检/精确云端状态见[Phase6H9报告](phase_6h9_playlist_playback_report.md)。
-前置Phase6H8 `33187c0`、Draft PR #53两组GitHub源码/Android/Windows成功，未合并。
-下一步仍需系统歌单，之后Local Music/Settings，不代表整个Phase6完成；运行时失效的完整跳过策略仍待Phase7。
+当前增量Phase6H10：系统歌单只读数据层，喜欢/最近/队列通过枚举读取，不持久化伪Playlist父记录。
+同语句读取计数/有界页/完整曲目署名/当前队列ID；先限页后艺人展开，无逐项查曲，失效/缺失引用与重复队列项保留。
+类型相关的失效通知无初始查询，真正取消后不再通知；队列全局位置、状态缺失/悬空和页内坏Metadata安全失败。
+839 Flutter（84 Golden全部未改）/100 Node通过，343 Dart文件格式零修改，严格分析零问题；Fake的Unicode排序已与SQLite一致。
+分支`codex/system-playlist-projections`，Android预检/精确云端结果见[Phase6H10报告](phase_6h10_system_playlist_data_report.md)。
+前置Phase6H9 `243299c`、Draft PR #54两组GitHub源码/Android/Windows成功，未合并。
+下一步接系统歌单会话/原生入口与根播放动作，并验收真正开始播放后的历史记录；本批没有新系统页面或历史写入行为。
+之后仍有Local Music/Settings，不代表整个Phase6完成；运行时失效的完整跳过策略仍待Phase7。
 详情真实封面、实时REST、导入/恢复、完整播放器、网页对照和上线仍未完成，默认新安装仍是无Fixture的空库。
 下方旧阶段记录保留历史归属。
 

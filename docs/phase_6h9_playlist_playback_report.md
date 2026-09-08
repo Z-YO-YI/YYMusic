@@ -47,3 +47,14 @@
 Phase6仍有系统歌单、Local Music/Settings；之后Phase7完整播放器/歌词/队列、Phase8真实导入/权限、
 Phase9在线来源、Phase10–11平台媒体/QA/发行。读取后才出现的来源/文件错误仍用现有安全错误态，完整运行时跳过另行实现。
 尚无实机大库Profile/网页像素对照；默认新安装为空库，Windows Debug依赖调试运行库，不是普通安装程序或日常听歌成品。
+
+## 精确云端结果回填（Phase6H10开始时核验）
+
+实现`243299c755f9e0c11b6fd15a073eba1aae11faa6`，Draft [PR #54](https://github.com/Z-YO-YI/YYMusic/pull/54) OPEN，未合并。
+[push 34228349118](https://github.com/Z-YO-YI/YYMusic/actions/runs/34228349118)和
+[PR 34228368456](https://github.com/Z-YO-YI/YYMusic/actions/runs/34228368456)精确head相同，两组三项常规源码/Android/Windows均success，
+两项专用音频job按条件skipped而非通过。Linux728通过/84Golden跳过，Windows84Golden与1真实窗口测试通过、默认Debug重建成功。
+65文件Windows包/六包许可/完整原生材料，以及Android51坐标/3全文法律材料/48资产/v2单签名门禁通过。
+push唯一附件ID`10057182055`，名称`YYMusic-windows-debug-243299c755f9e0c11b6fd15a073eba1aae11faa6`，67,338,002字节，
+digest `sha256:2948d23d360003ef2de709a204f7a83d0689d90a864faf300e26e13022206b1e`，过期时间`2026-09-22T13:02:46Z`。
+仅核验API元数据与日志，未下载/执行该附件；PR附件为0，创建APK Release步骤明确skipped。
