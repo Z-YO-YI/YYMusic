@@ -105,6 +105,8 @@ final class SystemPlaylistSections {
 
   List<Widget> get content {
     final data = controller.content;
+    final historyFailure = playback.historyFailure;
+    final canRetryHistory = playback.canRetryHistory;
     return [
       SliverToBoxAdapter(
         child: Padding(
@@ -132,6 +134,33 @@ final class SystemPlaylistSections {
               if (controller.actionError case final message?) ...[
                 const SizedBox(height: 12),
                 YYErrorBanner(title: '播放未完成', message: message),
+              ],
+              if (controller.type == SystemPlaylistType.recent &&
+                  historyFailure != null) ...[
+                const SizedBox(height: 12),
+                YYErrorBanner(
+                  title: '播放历史未保存',
+                  message: playback.historyBusy
+                      ? '正在保存记录，播放不受影响。'
+                      : canRetryHistory
+                      ? '最近一次记录保存失败，当前播放不受影响。'
+                      : '部分记录未保存。可重新播放对应歌曲再记录，当前播放不受影响。',
+                  actionLabel: playback.historyBusy
+                      ? null
+                      : canRetryHistory
+                      ? '重试保存'
+                      : '知道了',
+                  onAction: playback.historyBusy
+                      ? null
+                      : () {
+                          if (!canInteract()) return;
+                          if (canRetryHistory) {
+                            unawaited(playback.retryHistory(historyFailure));
+                          } else {
+                            playback.dismissHistoryFailure(historyFailure);
+                          }
+                        },
+                ),
               ],
               if (controller.phase == LoadPhase.error) ...[
                 const SizedBox(height: 12),

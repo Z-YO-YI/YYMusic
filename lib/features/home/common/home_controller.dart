@@ -248,7 +248,7 @@ final class HomeController extends ChangeNotifier {
     _notify();
     return _track(() async {
       try {
-        await collection!.clearHistory();
+        await playback.history.clear();
       } catch (_) {
         _actionError = '历史未能清除，请重试。';
       } finally {

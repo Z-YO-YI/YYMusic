@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../design_system/yy_player_data.dart';
+import '../domain/models/domain_failure.dart';
 import '../domain/models/track.dart';
 import '../playback/playback_controller.dart';
 import '../playback/playback_state.dart';
@@ -9,6 +10,7 @@ import '../playback/playback_state.dart';
 final class PlaybackPresenter extends ChangeNotifier {
   PlaybackPresenter(this._playback) {
     _playback.addListener(_changed);
+    _playback.history.addListener(_historyChanged);
   }
 
   final PlaybackController _playback;
@@ -17,6 +19,13 @@ final class PlaybackPresenter extends ChangeNotifier {
   bool _actionFailed = false;
 
   String? get entryId => _playback.state.queue.currentEntryId;
+  DomainFailure? get historyFailure => _playback.history.failure;
+  bool get canRetryHistory => _playback.history.canRetry;
+  bool get historyBusy => _playback.history.busy;
+  Future<void> retryHistory(DomainFailure expected) =>
+      _playback.history.retry(expected);
+  void dismissHistoryFailure(DomainFailure expected) =>
+      _playback.history.dismissFailure(expected);
   TrackRef? get trackRef => _playback.state.currentTrack?.ref;
   int get queueCount => _playback.state.queue.entries.length;
   String get sourceLabel => switch (_playback.state.currentTrack?.sourceType) {
@@ -143,11 +152,16 @@ final class PlaybackPresenter extends ChangeNotifier {
     notifyListeners();
   }
 
+  void _historyChanged() {
+    if (!_disposed) notifyListeners();
+  }
+
   @override
   void dispose() {
     if (_disposed) return;
     _disposed = true;
     _playback.removeListener(_changed);
+    _playback.history.removeListener(_historyChanged);
     super.dispose();
   }
 }

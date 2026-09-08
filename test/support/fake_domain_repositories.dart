@@ -622,12 +622,24 @@ final class FakeCollectionRepository implements CollectionRepository {
 
   @override
   Stream<List<PlayHistoryEntry>> watchHistory() async* {
+    final reader = historyReader;
+    if (reader != null) {
+      yield* reader();
+      return;
+    }
     yield List.unmodifiable(_history);
     yield* _historyChanges.stream;
   }
 
   @override
   Future<void> recordHistory(PlayHistoryEntry entry) async {
+    await onHistoryRecord?.call(entry);
+    if (_history.any((old) => old.id == entry.id && old.track != entry.track)) {
+      throw DomainFailure(
+        code: DomainFailureCode.schemaMismatch,
+        diagnosticId: 'collection.history-id-conflict',
+      );
+    }
     _history = [
       entry,
       ..._history.where(
@@ -641,10 +653,15 @@ final class FakeCollectionRepository implements CollectionRepository {
 
   @override
   Future<void> clearHistory() async {
+    await onHistoryClear?.call();
     _history = [];
     _historyChanges.add(const []);
     _systemChanges.add(SystemPlaylistType.recent);
   }
+
+  Future<void> Function(PlayHistoryEntry)? onHistoryRecord;
+  Future<void> Function()? onHistoryClear;
+  Stream<List<PlayHistoryEntry>> Function()? historyReader;
 
   Future<void> dispose() async {
     await Future.wait([
