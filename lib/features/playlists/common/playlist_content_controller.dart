@@ -8,19 +8,33 @@ import '../../../domain/models/load_state.dart';
 import '../../../domain/models/pagination.dart';
 import '../../../domain/models/playlist_content.dart';
 import '../../../domain/repositories/collection_repository.dart';
+import '../../../playback/playback_controller.dart';
+import 'playlist_command_result.dart';
+import 'playlist_controller.dart';
 
+part 'playlist_content_actions.dart';
 part 'playlist_content_sessions.dart';
 
-/// Root-registered, read-only projection. Construction performs no work.
+/// Root-registered projection with borrowed actions. Construction performs no work.
 final class PlaylistContentController extends ChangeNotifier {
   PlaylistContentController._(
     this.playlistId,
     this._repository,
     this._onClosed,
+    this._playback,
+    this._writer,
   );
   final String playlistId;
   final CollectionRepository? _repository;
   final VoidCallback _onClosed;
+  final PlaybackController? _playback;
+  final PlaylistController? _writer;
+  bool _active = true, _actionBusy = false;
+  int _intent = 0;
+  String? _actionError;
+  String? get actionError => _actionError;
+  bool get busy => _actionBusy || (_writer?.busy ?? false);
+  Listenable? get writerChanges => _writer;
   static const pageSize = 20, maxVisibleCount = 200;
   final _pending = <Future<void>>{};
   StreamSubscription<void>? _subscription;
@@ -53,6 +67,7 @@ final class PlaylistContentController extends ChangeNotifier {
   /// Re-establishes invalidation before re-reading the requested visible window.
   void refresh() {
     if (_disposed) return;
+    _intent++;
     _started = true;
     final generation = ++_watchGeneration;
     _watchReady = false;
@@ -127,6 +142,7 @@ final class PlaylistContentController extends ChangeNotifier {
 
   void _requestRead() {
     if (_disposed || !_watchReady) return;
+    _intent++;
     _readRevision++;
     _readAgain = true;
     _phase = LoadPhase.loading;
@@ -182,6 +198,7 @@ final class PlaylistContentController extends ChangeNotifier {
       !_disposed && _watchReady && revision == _readRevision;
 
   void _setFailure(Object error, String diagnostic) {
+    _intent++; // A failed/ended update stream cannot authorize delayed playback.
     _phase = LoadPhase.error;
     _failure = DomainFailure(
       code: error is DomainFailure ? error.code : DomainFailureCode.unknown,

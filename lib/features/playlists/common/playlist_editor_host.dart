@@ -209,8 +209,11 @@ class _PlaylistEditorHostState extends State<PlaylistEditorHost> {
     builder: (context, _) {
       final request = _request;
       return PlaylistEditorScope(
-        failure: _lateFailure,
-        dismissFailure: () => setState(() => _lateFailure = null),
+        failure: _lateFailure ?? widget.controller.entryFailure,
+        dismissFailure: () {
+          setState(() => _lateFailure = null);
+          widget.controller.dismissEntryFailure();
+        },
         open: widget.controller.isAvailable && !widget.controller.busy
             ? _open
             : null,

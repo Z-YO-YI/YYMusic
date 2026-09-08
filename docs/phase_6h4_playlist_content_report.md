@@ -59,6 +59,13 @@
 两组 checks/Android Debug/Windows native 全成功，Draft PR #48仍OPEN，本批回填其报告。
 本批审查后推送 stacked Draft PR，base=`codex/playlist-entry-commands`；
 精确提交与本次云端结果记录于对应PR。本地或前置成功不代表新提交云端验收。
+后续H5开工复核：本批精确提交 `97465063ba8b48195ed3e117169c84c0af6ab48a` 的
+[push34203551280](https://github.com/Z-YO-YI/YYMusic/actions/runs/34203551280) 与
+[PR34203648385](https://github.com/Z-YO-YI/YYMusic/actions/runs/34203648385)
+两组源码检查、Android Debug、Windows native 均成功；两个专用音频诊断job均跳过，非新音频验收。
+[PR #49](https://github.com/Z-YO-YI/YYMusic/pull/49) 保持OPEN Draft，未合并。
+push的Windows Debug artifact `10047205746` 为67,280,781字节，
+到期 `2026-09-22T08:27:28Z`；仍为依赖Debug CRT的开发审查包。
 普通push的Android job不上传APK，Windows Debug artifact为需开发运行环境的14天审查包。
 未合并/发布/改写历史，未提交凭据、日志、构建产物或用户数据；Windows继续由GitHub构建，
 不把本机缺失C++/Debug CRT的限制当作已经解决，也未重跑专用实机音频测试。

@@ -1,13 +1,14 @@
 # 实施状态
 
-当前增量Phase6H4：自定义歌单内容单SQL快照与根注册只读会话已实现，重复歌曲按条目身份保留，
-缺失Track不伪造；同毫秒改序/曲目与艺人变化重读完整可见窗口，失效通知不当作提交日志。
-20→200的有界前缀、明确capped、缺失/空/加载/安全错误与重试、旧响应隔离、实际查询与订阅排空已验证。
-650 Flutter（73 Golden未改）/88 Node、严格分析通过；分支`codex/playlist-content-sessions`，
-Android预检/精确云端状态见[Phase6H4报告](phase_6h4_playlist_content_report.md)。
-前置Phase6H3 `cbe7bdc`、Draft PR #48两组GitHub checks/Android/Windows成功，未合并。
-三端元数据编辑界面继续可用；歌曲管理入口/播放全部与系统歌单入口待后续增量，不代表整个Phase6完成。
-详情播放全部/真实封面、歌单条目管理、实时REST、导入/恢复、完整播放器、网页对照和上线仍未完成，默认新安装仍是无Fixture的空库。
+当前增量Phase6H5：三端原生自定义歌单内容页已实现，音乐库稳定ID入口、真实读取状态/更多/200条上限、
+重复及失效引用保留；单首播放、移除和上下移动借用唯一根服务，不覆盖队列或整份歌单。
+菜单请求/快照身份隔离、未知窗口边界保护、Back/Esc/焦点恢复、旋转/零尺寸保留会话、离页写入反馈已验证。
+读取监听出错或提前结束同样撤销加载中的播放意图，两个先失败的回归已修复通过。
+680 Flutter（78 Golden：5新、3旧更新、70旧未改）/90 Node、严格分析通过；
+分支`codex/playlist-content-surfaces`，Android预检/精确云端状态见[Phase6H5报告](phase_6h5_playlist_content_surfaces_report.md)。
+前置Phase6H4 `9746506`、Draft PR #49两组GitHub checks/Android/Windows成功，未合并。
+下一步仍需添加歌曲选择器、播放全部/随机、系统歌单和超过200条浏览策略，不代表整个Phase6完成。
+详情真实封面、实时REST、导入/恢复、完整播放器、网页对照和上线仍未完成，默认新安装仍是无Fixture的空库。
 下方旧阶段记录保留历史归属。
 
 更新：2026-09-05。当前在 Phase 5 三套 Shell 接线；Phase 0—4 已有实现与审计产物，Phase 2 仍欠网页截图对照。Phase4L 已在同一实现提交验证 Android WAV/content URI/HTTPS 与 Windows WAV/HTTPS。Phase4G 的 `media_kit` 分发审计未通过，Phase4H 已移除该活动候选。许可材料、查看入口及 ADR-044 工程选型已完成，默认入口不再使用 UnavailableAudioEngine；独立测试 Graph/main_dev 仍保留不可用后端。正式 Shell 底栏已可控制根播放器，业务曲库/导入、完整播放页面与 Phase5 其余部分/Phase6—11 未完成，不能作为可用音乐应用交付。下文旧阶段的未接线描述保留历史归属。
@@ -26,6 +27,7 @@ v2签名通过；Windows既有真实Profile包只做新增许可复核。初始�
 
 | 阶段/能力 | 状态 |
 | --- | --- |
+| Phase 6H5 原生歌单内容管理 | 三套布局/原生路由与菜单、单首根播放、原子移除/上下移动、过期快照保护及离页写入反馈；680 Flutter/78 Golden/90 Node；前200条上限明确，添加/播放全部/随机/系统歌单待开发 |
 | Phase 6H4 歌单内容会话 | 单SQL一致窗口、实时失效刷新、缺失引用保留、旧响应隔离/根排空；650 Flutter/73 Golden未改/88 Node；不新增UI，最多200条可见前缀明确标记上限 |
 | Phase 6H3 歌单条目命令 | 原子追加/移除/锚点移动、ID/系统/来源保护、回滚与根关闭排空；615 Flutter/73 Golden未改/86 Node，本机Android通过；歌曲管理界面仍待接线 |
 | Phase 6H2 原生歌单编辑 | 三端创建/改名/确认删除、原生文本/IME、草稿代次/跨断点、关闭后失败反馈；572 Flutter/73 Golden/84 Node，本机Android通过；条目管理待开发 |

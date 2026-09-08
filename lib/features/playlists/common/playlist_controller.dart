@@ -26,6 +26,16 @@ final class PlaylistController extends ChangeNotifier {
   final String Function() _entryIdFactory;
   final DateTime Function() _clock;
   bool _disposed = false, _busy = false;
+  bool _notifierDisposed = false;
+  int _notificationDepth = 0;
+  String? _entryFailure;
+  String? get entryFailure => _entryFailure;
+  void dismissEntryFailure() {
+    if (_disposed || _entryFailure == null) return;
+    _entryFailure = null;
+    _notify();
+  }
+
   bool get busy => _busy;
   bool get isAvailable => !_disposed && collection != null;
   Future<PlaylistCommandResult>? _pending;
@@ -85,7 +95,7 @@ final class PlaylistController extends ChangeNotifier {
           ),
         );
         return playlistId;
-      });
+      }, entryCommand: true);
 
   Future<PlaylistCommandResult> removeEntry(
     String playlistId,
@@ -95,7 +105,7 @@ final class PlaylistController extends ChangeNotifier {
     DomainValidation.identifier(entryId, 'entryId');
     await collection!.removePlaylistEntry(playlistId, entryId);
     return playlistId;
-  });
+  }, entryCommand: true);
 
   Future<PlaylistCommandResult> moveEntry(
     String playlistId,
@@ -113,9 +123,12 @@ final class PlaylistController extends ChangeNotifier {
       beforeEntryId: beforeEntryId,
     );
     return playlistId;
-  });
+  }, entryCommand: true);
 
-  Future<PlaylistCommandResult> _run(Future<String> Function() action) {
+  Future<PlaylistCommandResult> _run(
+    Future<String> Function() action, {
+    bool entryCommand = false,
+  }) {
     if (!isAvailable) {
       return Future.value(
         const PlaylistCommandResult(PlaylistCommandStatus.unavailable),
@@ -127,6 +140,7 @@ final class PlaylistController extends ChangeNotifier {
       );
     }
     _busy = true;
+    if (entryCommand) _entryFailure = null;
     // Register before executing or notifying. Accepted work is not cancelled by close.
     final operation = _pending = Future<PlaylistCommandResult>(() async {
       try {
@@ -149,7 +163,9 @@ final class PlaylistController extends ChangeNotifier {
                   }.contains(error.diagnosticId)
             ? PlaylistCommandStatus.protectedPlaylist
             : PlaylistCommandStatus.failed;
-        return PlaylistCommandResult(status);
+        final result = PlaylistCommandResult(status);
+        if (entryCommand) _entryFailure = '歌曲条目：${result.message}';
+        return result;
       } finally {
         _busy = false;
         _pending = null;
@@ -161,14 +177,24 @@ final class PlaylistController extends ChangeNotifier {
   }
 
   void _notify() {
-    if (!_disposed) notifyListeners();
+    if (_disposed) return;
+    _notificationDepth++;
+    try {
+      notifyListeners();
+    } finally {
+      _notificationDepth--;
+      if (_disposed) dispose();
+    }
   }
 
   @override
   void dispose() {
-    if (_disposed) return;
-    _disposed = true;
-    _closeFuture = _pending?.then((_) {}) ?? Future.value();
+    if (!_disposed) {
+      _disposed = true;
+      _closeFuture = _pending?.then((_) {}) ?? Future.value();
+    }
+    if (_notifierDisposed || _notificationDepth != 0) return;
+    _notifierDisposed = true;
     super.dispose();
   }
 

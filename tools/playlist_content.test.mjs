@@ -30,12 +30,42 @@ test('root playlist projections borrow storage and drain explicit reads plus str
   assert.match(controller, /await subscription.cancel\(\)/);
   assert.match(controller, /Future.wait<void>\(_pending\)[\s\S]*?whenComplete\(_onClosed\)/);
   assert.match(controller, /_notificationDepth != 0/);
-  assert(!/AppDatabase|Drift|AudioEngine|PlaybackController|Fake|Fixture|WebView|watchTracks|replacePlaylistEntries|\.dispose\(\);.*repository/.test(controller));
+  assert(!/AppDatabase|Drift|AudioEngine|PlaybackController\(|Fake|Fixture|WebView|watchTracks|replacePlaylistEntries|\.dispose\(\);.*repository/.test(controller));
   const graph = read('lib/app/dependency_graph.dart');
-  assert.match(graph, /playlistContents = PlaylistContentSessions\(repository: this.collection\)/);
+  assert.match(graph, /playlistContents = PlaylistContentSessions\(\s*repository: this.collection,\s*playback: playback,\s*writer: playlists,/);
   assert.match(graph, /playlistContents.dispose\(\)/);
   assert.match(graph, /playlistContents.close,[\s\S]*?services.dispose/);
   const registry = read('lib/features/playlists/common/playlist_content_sessions.dart');
   assert.match(registry, /if \(_disposed\) throw StateError/);
   assert.match(registry, /\(\) => _sessions.remove\(session\)/);
+});
+
+test('playlist route and layouts reuse one native session while stale menu callbacks fail closed', () => {
+  const router = read('lib/app/app_router.dart');
+  assert.match(router, /parsePlaylistLocation\(state.uri\)/);
+  assert.match(router, /PlaylistContentScreen\([\s\S]*?frame: \(child\) => AdaptiveRoot/);
+  const screen = read('lib/features/playlists/common/playlist_content_screen.dart');
+  assert.match(screen, /widget.sessions.open\(widget.playlistId\)/);
+  assert.match(screen, /identical\(_menu, request\)/);
+  assert.match(screen, /identical\(controller.content, request.snapshot\)/);
+  assert.match(screen, /controller.setActive\(_active\)/);
+  assert.match(screen, /controller.close\(\)/);
+  for (const platform of ['phone', 'tablet', 'windows']) {
+    const layout = read(`lib/features/playlists/${platform}/${platform}_playlist_content_layout.dart`);
+    assert.match(layout, /PageStorageKey\('playlist-scroll'\)/);
+    assert(!/sessions.open|\.start\(|\.refresh\(|playCatalogTrack|AppDatabase|WebView|Material/.test(layout));
+  }
+});
+
+test('playlist actions borrow root writer and player with registered work, identity anchors and retained safe failure', () => {
+  const actions = read('lib/features/playlists/common/playlist_content_actions.dart');
+  assert.match(actions, /_playback!\.playCatalogTrack/);
+  assert.match(actions, /canPlay: \(\) => !_disposed && _active && intent == _intent/);
+  assert.match(actions, /index \+ 2 < items.length \|\| !content!\.hasMore/);
+  assert.match(actions, /_writer!\.moveEntry\(playlistId, id, beforeEntryId: anchor\)/);
+  assert(actions.indexOf('final work = _track', actions.indexOf('Future<void> _writeEntry')) < actions.indexOf('result.complete(invoke())'));
+  assert(!/replacePlaylistEntries|savePlaylist|AudioEngine\(|PlaybackController\(|AppDatabase|HttpClient/.test(actions));
+  const host = read('lib/features/playlists/common/playlist_editor_host.dart');
+  assert.match(host, /_lateFailure \?\? widget.controller.entryFailure/);
+  assert.match(host, /widget.controller.dismissEntryFailure\(\)/);
 });

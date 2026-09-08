@@ -103,7 +103,11 @@ final class DependencyGraph {
       collection: this.collection,
     );
     playlists = PlaylistController(collection: this.collection);
-    playlistContents = PlaylistContentSessions(repository: this.collection);
+    playlistContents = PlaylistContentSessions(
+      repository: this.collection,
+      playback: playback,
+      writer: playlists,
+    );
   }
 
   final AudioEngine _audioEngine;

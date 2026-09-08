@@ -2,8 +2,10 @@ part of 'playlist_content_controller.dart';
 
 /// No shared content cache: sessions borrow the root collection repository.
 final class PlaylistContentSessions {
-  PlaylistContentSessions({this.repository});
+  PlaylistContentSessions({this.repository, this.playback, this.writer});
   final CollectionRepository? repository;
+  final PlaybackController? playback;
+  final PlaylistController? writer;
   final _sessions = <PlaylistContentController>{};
   bool _disposed = false;
   Future<void>? _closeFuture;
@@ -17,6 +19,8 @@ final class PlaylistContentSessions {
       playlistId,
       repository,
       () => _sessions.remove(session),
+      playback,
+      writer,
     );
     _sessions.add(session);
     return session;

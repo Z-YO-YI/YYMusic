@@ -146,7 +146,7 @@ final class LibrarySections {
             ),
           ] else ...[
             Text(
-              '管理自定义歌单名称；歌曲添加、排序和系统歌单入口仍在开发。',
+              '查看自定义歌单、管理名称和歌曲；添加歌曲与系统歌单入口仍在开发。',
               style: YYTypography.caption.copyWith(color: colors.secondary),
             ),
             const SizedBox(height: 12),
@@ -344,6 +344,12 @@ final class LibrarySections {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
+                    YYButton(
+                      key: ValueKey(('playlist-open', item.id)),
+                      label: '查看歌曲',
+                      glyph: YYGlyph.chevronRight,
+                      onPressed: () => navigation.openPlaylist(item.id),
+                    ),
                     YYButton(
                       key: ValueKey(('playlist-rename', item.id)),
                       label: '重命名',
