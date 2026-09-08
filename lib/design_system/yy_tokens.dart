@@ -145,6 +145,7 @@ abstract final class YYRadius {
   static const lyricsDockArtwork = 13.0;
   static const sourceCard = 16.0, sourceIcon = 13.0;
   static const playlistCard = 20.0, playlistIcon = 14.0;
+  static const metricCard = 18.0, folderRow = 16.0;
 }
 
 /// Variable axes preserve the non-hundred CSS weights instead of rounding them.

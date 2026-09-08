@@ -38,3 +38,31 @@ test('local overview domain and contract remain immutable and platform independe
   assert(!/package:flutter|package:drift|dart:io|scan\(|pickFiles\(|delete|saveGrant/.test(contract));
   assert.match(contract, /SearchCancellation\? cancellation/);
 });
+
+test('local music root borrows the same repository and drains before database shutdown', () => {
+  assert.match(read('lib/app/database_app_data_services.dart'), /LocalLibraryRepository get localLibrary => _library/);
+  const graph = read('lib/app/dependency_graph.dart');
+  assert.match(graph, /localMusic = LocalMusicController\(repository: this.localLibrary\)/);
+  assert.match(graph, /localMusic.dispose\(\)/);
+  assert(graph.indexOf('localMusic.close,') < graph.indexOf('services.dispose'));
+  const state = read('lib/features/local_music/common/local_music_controller.dart');
+  assert.match(state, /_token\?\.cancel\(\)/);
+  assert.match(state, /!identical\(content, expected\)/);
+  assert.match(state, /Future.wait<void>\(_pending\)/);
+  assert(!/AppDatabase|PlaybackController\(|scan\(|setFavorite\(|saveQueue\(/.test(state));
+});
+
+test('local native layouts reuse exact folder glyph and controlled opaque surfaces', () => {
+  const panel = read('lib/features/local_music/common/local_music_panel.dart');
+  assert.match(panel, /ModalRoute.isCurrentOf\(context\)/);
+  assert.match(panel, /TickerMode.valuesOf\(context\).enabled/);
+  assert.match(panel, /size.width > 0 &&/);
+  const sections = read('lib/features/local_music/common/local_music_sections.dart');
+  assert.match(sections, /YYGlyph.folder/);
+  assert.match(sections, /YYRadius.metricCard/);
+  assert.match(sections, /YYRadius.folderRow/);
+  assert(!/YYGlass|File\(|Directory\(|scan\(|pickFiles\(|grantRef/.test(sections));
+  for (const platform of ['phone', 'tablet', 'windows']) {
+    assert.match(read(`lib/features/local_music/${platform}/${platform}_local_music_layout.dart`), /extends StatelessWidget/);
+  }
+});

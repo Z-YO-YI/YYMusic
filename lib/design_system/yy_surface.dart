@@ -11,9 +11,11 @@ class YYSurface extends StatelessWidget {
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(20),
+    this.radius = YYRadius.surface,
   });
   final Widget child;
   final EdgeInsetsGeometry padding;
+  final double radius;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,7 @@ class YYSurface extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: colors.elevated,
-        borderRadius: BorderRadius.circular(YYRadius.surface),
+        borderRadius: BorderRadius.circular(radius),
         border: Border.all(color: colors.border),
         boxShadow: YYShadows.surface,
       ),

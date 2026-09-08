@@ -1,5 +1,13 @@
 # 实施状态
 
+当前增量Phase6I2：音乐库“本地”已接入原生统计/20条目录分页、配置/历史标记及加载/空/错误重试；Phone/Tablet/Windows独立布局，共用同一LocalMusicController和数据库。
+先监听再读、单一查询通道、旧回调隔离、末页删除回退，隐藏/覆盖/零尺寸撤销读取，根关闭排空查询与订阅取消。
+真实路由回归发现并修复布局替换时旧Panel误停新状态，稳定GlobalKey迁移唯一Element；不复制播放器或数据库。
+最终1029 Flutter（104 Golden：新增6/更新1/原97不变）、113 Node、397文件格式、严格分析零问题；生成/迁移/指纹/许可与本地Android Debug资产/签名通过。
+见[Phase6I2报告](phase_6i2_local_music_surfaces_report.md)，分支`codex/local-music-surfaces`；对应精确提交的GitHub双平台另行验收，不借用前置结果。
+前置I1 `79540d0` / Draft PR #60 的push/PR源码、Android、Windows已全部SUCCESS，完成日志和Windows产物已回填。
+本阶段只读已保存索引，不获取系统权限或验证文件，默认新安装为空；下一步Settings，之后Phase7–11，真实导入扫描仍属Phase8。以下均为历史阶段记录。
+
 当前增量Phase6I1：LocalLibraryRepository由现有DriftLibraryRepository实现，同一SQL读取本地五类可用性计数/总时长、全部文件夹计数及最多200行窗口。
 同名稳定排序，超出末页仍保留真实统计；摘要不读取路径/Content URI/grantRef，启用配置与历史扫描记录不代表当前系统授权。
 轻量表变更流不执行曲库查询，支持协作取消及安全错误；没有新增Schema、平台操作、UI接线或生产Fixture。

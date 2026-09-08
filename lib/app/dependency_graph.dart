@@ -9,12 +9,14 @@ import '../domain/repositories/catalog_search_repository.dart';
 import '../domain/repositories/collection_repository.dart';
 import '../domain/repositories/library_repository.dart';
 import '../domain/repositories/license_repository.dart';
+import '../domain/repositories/local_library_repository.dart';
 import '../domain/repositories/lyrics_repository.dart';
 import '../domain/repositories/music_source_repository.dart';
 import '../domain/repositories/search_history_repository.dart';
 import '../features/catalog_detail/common/catalog_detail_controller.dart';
 import '../features/home/common/home_controller.dart';
 import '../features/library/common/library_controller.dart';
+import '../features/local_music/common/local_music_controller.dart';
 import '../features/playlists/common/playlist_add_controller.dart';
 import '../features/playlists/common/playlist_content_controller.dart';
 import '../features/playlists/common/playlist_controller.dart';
@@ -40,6 +42,7 @@ final class DependencyGraph {
     MediaSessionGateway? mediaSession,
     this.dataServices,
     LibraryRepository? library,
+    LocalLibraryRepository? localLibrary,
     CatalogSearchRepository? catalogSearch,
     CatalogBrowseRepository? catalogBrowse,
     SearchHistoryRepository? searchHistory,
@@ -52,6 +55,7 @@ final class DependencyGraph {
   }) : assert(
          dataServices == null ||
              (library == null &&
+                 localLibrary == null &&
                  catalogSearch == null &&
                  catalogBrowse == null &&
                  searchHistory == null &&
@@ -64,6 +68,7 @@ final class DependencyGraph {
        _audioEngine = audioEngine ?? UnavailableAudioEngine(),
        _mediaSession = mediaSession ?? const UnavailableMediaSessionGateway(),
        library = dataServices?.library ?? library,
+       localLibrary = dataServices?.localLibrary ?? localLibrary,
        catalogSearch = dataServices?.catalogSearch ?? catalogSearch,
        catalogBrowse = dataServices?.catalogBrowse ?? catalogBrowse,
        searchHistory = dataServices?.searchHistory ?? searchHistory,
@@ -92,7 +97,9 @@ final class DependencyGraph {
       historyRepository: this.searchHistory,
       sourceRepository: this.musicSources,
     );
+    localMusic = LocalMusicController(repository: this.localLibrary);
     libraryController = LibraryController(
+      localMusic: localMusic,
       playback: playback,
       repository: this.catalogBrowse,
       collection: this.collection,
@@ -124,6 +131,7 @@ final class DependencyGraph {
   final MediaSessionGateway _mediaSession;
   final AppDataServices? dataServices;
   final LibraryRepository? library;
+  final LocalLibraryRepository? localLibrary;
   final CatalogSearchRepository? catalogSearch;
   final CatalogBrowseRepository? catalogBrowse;
   final SearchHistoryRepository? searchHistory;
@@ -141,6 +149,7 @@ final class DependencyGraph {
   late final HomeController home;
   late final CatalogSearchController search;
   late final LibraryController libraryController;
+  late final LocalMusicController localMusic;
   late final CatalogDetailSessions catalogDetails;
   late final PlaylistController playlists;
   late final PlaylistAddSessions playlistAdds;
@@ -162,6 +171,7 @@ final class DependencyGraph {
     home.dispose();
     search.dispose();
     libraryController.dispose();
+    localMusic.dispose();
     catalogDetails.dispose();
     playlists.dispose();
     playlistAdds.dispose();
@@ -179,6 +189,7 @@ final class DependencyGraph {
       home.close,
       search.close,
       libraryController.close,
+      localMusic.close,
       catalogDetails.close,
       playlists.close,
       playlistAdds.close,

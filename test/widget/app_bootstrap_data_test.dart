@@ -22,6 +22,7 @@ import '../support/close_graph.dart';
 import '../support/fake_audio_engine.dart';
 import '../support/fake_catalog_browse_repository.dart';
 import '../support/fake_domain_repositories.dart';
+import '../support/fake_local_library_repository.dart';
 import '../support/fake_search_repositories.dart';
 
 void main() {
@@ -195,6 +196,8 @@ void main() {
 
 final class _FakeAppDataServices implements AppDataServices {
   @override
+  final FakeLocalLibraryRepository localLibrary = FakeLocalLibraryRepository();
+  @override
   final CatalogBrowseRepository catalogBrowse = FakeCatalogBrowseRepository();
   @override
   final CatalogSearchRepository catalogSearch = FakeSearchRepository();
@@ -220,6 +223,7 @@ final class _FakeAppDataServices implements AppDataServices {
   @override
   Future<void> dispose() async {
     disposeCount += 1;
+    await localLibrary.close();
     await library.dispose();
     await searchHistory.dispose();
     await (collection as FakeCollectionRepository).dispose();

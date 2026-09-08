@@ -1,5 +1,13 @@
 # 原生基础验证矩阵
 
+Phase6I2当前：1029 Flutter、104 Windows宿主Golden、113 Node；[完成报告](phase_6i2_local_music_surfaces_report.md)。
+新增29项：13 Controller、8 Widget、2真实SQLite、6 Golden；另补齐既有根Fake和受影响精确关闭顺序门禁，未移除测试或放宽阈值。
+Controller覆盖无I/O构造、先订阅、20条稳定分页/过期回调、30次失效合并、晚返回丢弃、末页删除回退、安全错误、监听错误/结束、读完前根不得关闭、可重入监听/通知关闭。
+Widget覆盖三端130%字体、原生点击分页/重试、零尺寸、旋转/分屏、遮挡与真实播放路由返回；真实Windows应用Tab/Enter刷新不触发音频。
+真实SQLite覆盖同一根仓储、表变更后配置刷新和延迟SELECT期间根等待后再关数据库；没有访问用户音乐文件或授权。
+六张新Golden逐张检查：手机空/数据、平板横/竖、Windows数据/错误；仅更新新增概览影响的library_phone_empty.png，其余97旧图字节未变。
+本地397文件格式、严格分析、生成/迁移/Schema/依赖/平台/原始资产零漂移、指纹/24ZIP/完整许可、Android Debug/48资产/v2单签名者通过；本批云端Windows验收以精确提交PR结果为准。
+
 Phase6I1当前：1000 Flutter（98 Golden字节未改）、111 Node，见[报告](phase_6i1_local_library_overview_report.md)。
 新增16项：13真实SQLite空库/多来源/状态/分页/取消/错误/失效通知/同一快照/生命周期，2不可变模型与安全校验，1可替换Fake合同。
 一次SQL无artist关联膨胀，425文件夹窗口仅200行，变更通知无曲库查询，恶意或损坏元数据不进入概览错误。
