@@ -33,3 +33,26 @@ test('root restores one visual state and drains appearance before owned storage'
   const theme = read('lib/design_system/yy_theme.dart');
   assert(!/repository|database|Future<|save\(/i.test(theme));
 });
+
+test('native settings reuse the root theme and never access storage or platform plugins', () => {
+  const screen = read('lib/features/settings/common/settings_screen.dart');
+  const sections = read('lib/features/settings/common/settings_sections.dart');
+  assert.match(read('lib/app/yy_music_app.dart').replace(/\s/g, ''), /appearanceSettings:ref.read\(dependencyGraphProvider\).appearanceSettings/);
+  assert.match(read('lib/app/app_router.dart'), /SettingsScreen\(/);
+  assert.match(screen, /generation != _generation/);
+  assert.match(screen, /box.size.width > 0/);
+  assert.match(screen, /if \(_dirty\) return/);
+  assert.match(screen, /_hex.value.composing.isCollapsed/);
+  assert.match(screen, /_panelKey = GlobalKey/);
+  assert.match(screen, /widget.routeActive\?\.value \?\? true/);
+  assert.match(read('lib/app/app_router.dart'), /currentConfiguration.uri.path/);
+  for (const token of ['YYToggle(', 'YYThemeSwatch(', 'YYTextField(', 'YYSegmentedControl<', 'YYSurface(', 'YYRadius.settingsNavigation']) assert(sections.includes(token));
+  assert.match(sections, /appearance.setReduceGlass\(!value\)/);
+  assert.match(sections, /controller.retry/);
+  for (const platform of ['phone', 'tablet', 'windows']) {
+    const layout = read(`lib/features/settings/${platform}/${platform}_settings_layout.dart`);
+    assert(layout.includes('sections.panel(context)'));
+    assert(!/repository|Database|YYAppearanceController\(|PlaybackController\(/.test(layout));
+  }
+  assert(!/dart:io|package:drift|package:http|package:just_audio|WebView|AppDatabase|\.repository\.|\.initialize\(|\.save\(/.test(screen + sections));
+});

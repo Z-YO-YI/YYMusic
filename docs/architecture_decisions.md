@@ -898,3 +898,14 @@ DriftAppearanceSettingsRepository借用同一数据库，只查询themeMode/acce
 读取失败保持原界面，不自动覆盖损坏存储；显式重试先读成功再保存尚未落库的用户变更。保存失败可重试最新快照，新用户变更可触发下一次保存。
 无仓储的隔离Fixture保持明确session-only语义，正式AppDataServices必须提供同连接外观仓储。原生Settings UI下一批消费状态，不在本批增加无效平台开关。
 外观通知期间重入根关闭时，YYAppearanceController先停止变更，等待当前通知展开结束再释放ChangeNotifier；已接受偏好仍由桥接器排空，不在notifyListeners栈内直接销毁。
+
+## ADR-074：原生设置只编辑根外观，草稿与持久化状态分离
+
+2026-09-09，Phase 6J2。AppRouter 借用根 AppearanceSettingsController，正式 `/settings` 使用三套原生布局，共用受控内容组件，不拥有仓储生命周期。
+显示模式/主题色/玻璃/动效修改唯一 YYAppearanceController，由既有桥接器保存。读取失败禁用偏好编辑并显式重试；保存失败保留当前视觉并可重试最新快照，不谎报已保存。
+自定义 Hex 是页面草稿，显式应用并校验六位格式；未应用草稿不进入数据库。布局、主题或后台保存通知不得覆盖脏草稿或选区。
+路由/活动代次和实时正尺寸限制每个事件，隐藏或覆盖后旧回调失效，界面卸载不取消根已经接受的保存。
+Phone 使用横向紧凑分类与单列内容；Tablet 横屏主从、竖屏上分类；Windows 分类侧栏与内容栏。设置分类用 App.tsx 圆角 11，普通内容用纯色 YYSurface。
+只呈现已实现的外观与关于（真实许可入口、准确开发版本与本机存储说明）；其他分类随对应能力实现再接入，不引入模拟导入/音源/播放开关。
+精确路由活动状态由 AppRouter 通过只读 ValueListenable<bool> 借给 SettingsScreen；go_router 仅留在 app 组合层，Feature 不依赖第三方路由类型。控件按活动变化撤销代次，测试不得放宽既有架构边界门禁。
+滚动视口与编辑面板分别使用根页面持有的稳定 GlobalKey，在 Phone/Tablet 重排时迁移视口/编辑 Element，保留滚动偏移与原生选区，不要求 Flutter 的内部 ScrollPosition 实例身份不变；内容变短时仅按新的合法滚动范围收敛。

@@ -72,6 +72,9 @@ void main() {
       final repository = _Repository(() async => _licenses);
       await _mount(tester, repository, route: '/settings');
       await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('settings-section-about')));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('开源许可'));
       await tester.tap(find.text('开源许可'));
       await tester.pumpAndSettle();
       expect(find.byType(LicensesScreen), findsOneWidget);

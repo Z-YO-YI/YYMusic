@@ -1,6 +1,6 @@
 # YYMusic
 
-当前增量：**Phase 6J1 外观设置持久化**。显示模式、五预设/自定义主题色、减少玻璃和减少动态效果已接入同一数据库，重启恢复真实保存的外观。根状态在启动读取后呈现，连续变更串行合并，退出排空保存；损坏设置不被默认值覆盖。1056项Flutter、115项Node、104张原Golden、严格分析和Android本地Debug预检通过，详见[本批报告](docs/phase_6j1_appearance_persistence_report.md)和[计划](docs/phase_6j1_appearance_persistence_plan.md)。下一批Phase6J2原生设置页接入保存/失败/重试反馈；本批没有新增正式设置页面或平台功能开关。以下是前置阶段记录。
+当前增量：**Phase 6J2 原生外观与关于设置**。正式“设置”已替换工程占位页，提供三套原生布局，共用根外观与本机保存。包含浅色/深色/系统、五预设/自定义 Hex、玻璃/减少动态、保存进度与失败重试，以及关于/开源许可。详见[本批报告](docs/phase_6j2_native_settings_report.md)和[计划](docs/phase_6j2_native_settings_plan.md)。前置 J1 `993aab2` 的 GitHub Android/Windows 两组构建均已成功，[验收回填](docs/phase_6j1_appearance_persistence_report.md)。以下是前置阶段记录，不代表新功能已全部上线。
 
 当前增量：**Phase 6I2 本地音乐原生概览**。音乐库→本地已接入真实统计、20条目录分页、配置状态和历史扫描日期，手机、平板、Windows采用独立布局并共用根状态。隐藏/覆盖取消读取，旋转保留分页，错误可重试；不展示私有路径或冒充当前授权。最终1029项Flutter（104张Golden）、113项Node、严格分析和Android本地Debug预检通过。详见[本批报告](docs/phase_6i2_local_music_surfaces_report.md)、[计划](docs/phase_6i2_local_music_surfaces_plan.md)及对应Draft PR；本批精确云端结果另行核对。前置I1 `79540d0` 的push/PR双平台均已成功，见[I1回填](docs/phase_6i1_local_library_overview_report.md)。下一步按Phase6推进Settings；下方旧阶段记录保留历史归属。
 
@@ -18,9 +18,13 @@ Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
-## 外观设置持久化
+## 原生设置与外观持久化
 
-外观设置的现有根控件（包括开发预览）现在会保存到本机，读取不会创建默认记录；保存失败不会停止播放。只持久化已实现的外观选项，不保存凭据或启用尚未实现的音频/授权能力。正式设置页的失败提示与重试入口将在Phase6J2接入，开发预览不等于正式功能页面。
+打开底部导航/侧栏“设置”（Windows 也可按 Ctrl+,）。外观修改即时生效并保存本机；自定义颜色输入六位 Hex，点击“应用颜色”或按 Enter 才应用，输入草稿不会自动入库。选择预设会放弃当前颜色草稿。关闭“Liquid Glass 导航”即减少玻璃效果；“减少动态效果”同时尊重系统偏好。
+
+页面明确区分读取中、保存中、已保存和错误。读取失败不覆盖原设置，重试成功后才可编辑；保存失败保留当前视觉并可重试，播放不因此停止。Android 旋转/分屏、页面切换保留草稿与本次会话状态；退出应用只恢复已成功保存的偏好。仅持久化已实现的外观选项，不保存凭据或启用未实现的音频/授权能力。
+
+“设置 → 关于 YYMusic → 开源许可”可查看实际打包组件许可。音乐源、本地扫描和高级播放分类将在相应能力阶段接入，目前不提供模拟开关。
 
 ## 本地音乐概览
 

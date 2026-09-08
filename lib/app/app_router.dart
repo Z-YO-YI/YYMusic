@@ -27,7 +27,9 @@ import '../features/playlists/common/system_playlist_controller.dart';
 import '../features/playlists/common/system_playlist_screen.dart';
 import '../features/search/common/search_controller.dart';
 import '../features/search/common/search_screen.dart';
+import '../features/settings/common/appearance_settings_controller.dart';
 import '../features/settings/common/licenses_screen.dart';
+import '../features/settings/common/settings_screen.dart';
 import '../shared/foundation_button.dart';
 import 'adaptive_root.dart';
 import 'app_routes.dart';
@@ -56,6 +58,7 @@ final class AppRouter implements AppNavigation {
     PlaylistContentSessions? playlistContents,
     PlaylistAddSessions? playlistAdds,
     SystemPlaylistSessions? systemPlaylists,
+    AppearanceSettingsController? appearanceSettings,
   }) {
     _showPlaylistPicker = (track, title) async {
       final navigator = _rootNavigator.currentState;
@@ -119,6 +122,15 @@ final class AppRouter implements AppNavigation {
             platform: platform,
             controller: libraryController,
             playback: playbackPresenter,
+            navigation: this,
+            viewState: viewState,
+          )
+        : route == AppRoute.settings && appearanceSettings != null
+        ? SettingsScreen(
+            key: const ValueKey('screen-settings'),
+            platform: platform,
+            controller: appearanceSettings,
+            routeActive: _settingsActivity,
             navigation: this,
             viewState: viewState,
           )
@@ -336,9 +348,18 @@ final class AppRouter implements AppNavigation {
         ),
       ),
     );
+    _refreshSettingsActivity();
+    _router.routerDelegate.addListener(_refreshSettingsActivity);
   }
 
   late final GoRouter _router;
+  final _settingsActivity = ValueNotifier(false);
+  void _refreshSettingsActivity() {
+    _settingsActivity.value =
+        _router.routerDelegate.currentConfiguration.uri.path ==
+        AppRoute.settings.path;
+  }
+
   final _rootNavigator = GlobalKey<NavigatorState>();
   late final Future<void> Function(TrackRef, String) _showPlaylistPicker;
   bool _pickerShowing = false;
@@ -417,5 +438,9 @@ final class AppRouter implements AppNavigation {
     );
   }
 
-  void dispose() => _router.dispose();
+  void dispose() {
+    _router.routerDelegate.removeListener(_refreshSettingsActivity);
+    _router.dispose();
+    _settingsActivity.dispose();
+  }
 }

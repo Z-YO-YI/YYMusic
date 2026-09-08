@@ -62,6 +62,9 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp> {
         playlistContents: ref.read(dependencyGraphProvider).playlistContents,
         playlistAdds: ref.read(dependencyGraphProvider).playlistAdds,
         systemPlaylists: ref.read(dependencyGraphProvider).systemPlaylists,
+        appearanceSettings: ref
+            .read(dependencyGraphProvider)
+            .appearanceSettings,
         audioBackendSelected: ref
             .read(dependencyGraphProvider)
             .playback
