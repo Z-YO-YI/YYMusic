@@ -11,6 +11,7 @@ import '../domain/repositories/library_repository.dart';
 import '../platform/contracts/media_session_gateway.dart';
 import 'audio_engine.dart';
 import 'audio_engine_state.dart';
+import 'playback_history_recorder.dart';
 import 'playback_source_resolver.dart';
 import 'playback_state.dart';
 
@@ -27,12 +28,18 @@ final class PlaybackController extends ChangeNotifier {
     MediaSessionGateway? mediaSession,
     DateTime Function()? clock,
     PlaybackRandomIndex? randomIndex,
+    String Function()? historyIdFactory,
   }) : _libraryRepository = library,
        _collectionRepository = collection,
        _resolver = sourceResolver,
        _mediaSession = mediaSession ?? const UnavailableMediaSessionGateway(),
        _clock = clock ?? _utcNow,
-       _randomIndex = randomIndex ?? Random().nextInt {
+       _randomIndex = randomIndex ?? Random().nextInt,
+       history = PlaybackHistoryRecorder(
+         collection: collection,
+         clock: clock,
+         idFactory: historyIdFactory,
+       ) {
     _subscription = _engine.states.listen(
       _acceptEngineState,
       onError: (Object error, StackTrace stack) {
@@ -48,6 +55,7 @@ final class PlaybackController extends ChangeNotifier {
   final MediaSessionGateway _mediaSession;
   final DateTime Function() _clock;
   final PlaybackRandomIndex _randomIndex;
+  final PlaybackHistoryRecorder history;
   late final StreamSubscription<AudioEngineState> _subscription;
 
   PlaybackState _state = PlaybackState();
@@ -106,6 +114,7 @@ final class PlaybackController extends ChangeNotifier {
         _state.phase != PlaybackPhase.error) {
       await _guarded('play', () async {
         if (_state.phase == PlaybackPhase.completed) {
+          history.begin(_state.currentTrack!.ref);
           await _engine.seek(Duration.zero);
         }
         await _startPlayback();
@@ -128,6 +137,7 @@ final class PlaybackController extends ChangeNotifier {
 
   Future<void> pause() => _schedule(() async {
     _requireEngine();
+    history.suspend();
     _sessionRevision++;
     await _guarded('pause', _engine.pause);
   });
@@ -152,7 +162,14 @@ final class PlaybackController extends ChangeNotifier {
           ? duration
           : position;
       _sessionRevision++;
+      final replay =
+          _state.phase == PlaybackPhase.completed &&
+          _state.currentTrack != null &&
+          (duration == null || target < duration);
+      if (replay) history.begin(_state.currentTrack!.ref);
+      history.suspend();
       await _guarded('seek', () => _engine.seek(target));
+      history.activate();
     },
   );
 
@@ -409,10 +426,12 @@ final class PlaybackController extends ChangeNotifier {
       );
       _syncShuffleCursor(entryId);
       _loadingSource = true;
+      history.end();
       await _engine.load(source);
       _loadingSource = false;
       _checkNotDisposed();
       _loadedEntryId = entryId;
+      history.begin(track.ref);
       if (canPlay?.call() == false) {
         await _stopEngine();
         return;
@@ -420,6 +439,7 @@ final class PlaybackController extends ChangeNotifier {
       await _startPlayback();
     } catch (error, stack) {
       _loadingSource = false;
+      history.end();
       final failure = _safeFailure(error, 'load-entry');
       _publish(_state.copyWith(phase: PlaybackPhase.error, failure: failure));
       Error.throwWithStackTrace(failure, stack);
@@ -430,6 +450,7 @@ final class PlaybackController extends ChangeNotifier {
     _requireEngine();
     if (isAutomatic && _state.repeatMode == RepeatMode.one) {
       if (_state.currentTrack != null) {
+        history.begin(_state.currentTrack!.ref);
         await _engine.seek(Duration.zero);
         await _startPlayback();
       }
@@ -497,6 +518,7 @@ final class PlaybackController extends ChangeNotifier {
       return;
     }
     if (value.phase == AudioEnginePhase.idle && !_loadingSource) {
+      history.end();
       _loadedEntryId = null;
       _sessionRevision++;
       _completionHandled = true;
@@ -509,6 +531,12 @@ final class PlaybackController extends ChangeNotifier {
       _completionHandled = false;
     }
     final revision = _sessionRevision;
+    if (!_loadingSource &&
+        _loadedEntryId != null &&
+        _loadedEntryId == _state.queue.currentEntryId &&
+        _state.currentTrack != null) {
+      history.observe(value);
+    }
     final completedEntryId = _loadedEntryId;
     final shouldAdvance =
         value.phase == AudioEnginePhase.completed && !_completionHandled;
@@ -620,12 +648,17 @@ final class PlaybackController extends ChangeNotifier {
 
   Future<void> _startPlayback() async {
     _checkNotDisposed();
+    if (history.ended && _state.currentTrack != null) {
+      history.begin(_state.currentTrack!.ref);
+    }
+    history.activate();
     _sessionRevision++;
     _completionHandled = false;
     await _engine.play();
   }
 
   Future<void> _stopEngine() async {
+    history.end();
     _sessionRevision++;
     _completionHandled = true;
     await _engine.stop();
@@ -679,6 +712,7 @@ final class PlaybackController extends ChangeNotifier {
       await callback();
     } catch (error, stack) {
       if (error is UnsupportedError || error is ArgumentError) rethrow;
+      history.end();
       final failure = _safeFailure(error, operation);
       _publish(_state.copyWith(phase: PlaybackPhase.error, failure: failure));
       Error.throwWithStackTrace(failure, stack);
@@ -715,6 +749,7 @@ final class PlaybackController extends ChangeNotifier {
 
   void _publishFailure(Object error, String operation) {
     if (_disposed) return;
+    history.end();
     final failure = _safeFailure(error, operation);
     _publish(_state.copyWith(phase: PlaybackPhase.error, failure: failure));
   }
@@ -844,6 +879,7 @@ final class PlaybackController extends ChangeNotifier {
   void dispose() {
     if (_disposed) return;
     _disposed = true;
+    history.dispose();
     _closeFuture = _drain();
     unawaited(_closeFuture!.catchError((Object _) {}));
     super.dispose();
@@ -861,6 +897,7 @@ final class PlaybackController extends ChangeNotifier {
     } finally {
       await _operationTail;
       await _mediaSyncTail;
+      await history.close();
     }
   }
 }

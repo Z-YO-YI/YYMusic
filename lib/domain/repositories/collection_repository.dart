@@ -87,6 +87,9 @@ abstract interface class CollectionRepository {
   Future<void> setFavorite(TrackRef track, {required bool favorite});
 
   Stream<List<PlayHistoryEntry>> watchHistory();
+
+  /// Deduplicates the full track reference and retains the latest 20.
+  /// An ID owned by another full reference must fail without changing history.
   Future<void> recordHistory(PlayHistoryEntry entry);
   Future<void> clearHistory();
 }

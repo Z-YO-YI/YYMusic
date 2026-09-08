@@ -32,6 +32,16 @@
   APK及日志仅位于忽略build目录，不加入源码版本管理；本地预检不代替GitHub构建。
 - 提交前36份变更文本的常见秘密模式扫描零命中，diff检查无空白错误；模式扫描不等于完整安全审计。
 
+## 后续核验的精确GitHub记录
+
+实现`07ee2dbe579456b24c96e80e6b262fa0fdfeb8c1`的[PR运行34245944539](https://github.com/Z-YO-YI/YYMusic/actions/runs/34245944539)成功。
+[push运行34245902355](https://github.com/Z-YO-YI/YYMusic/actions/runs/34245902355)首次仅Windows上传FinalizeArtifact返回403，源码/编译/测试及包校验已通过，但当时没有完成的可下载artifact。
+只重跑失败job后attempt2成功，未修改源码、工作流或权限；不据此猜测403根因。
+两组最终六项常规检查成功，四项显式音频诊断跳过。Linux816通过/91 Golden按宿主跳过；Windows91 Golden及1真实窗口集成通过。
+Android51个原生依赖坐标、3组原生材料、6包许可、48资产和v2单签名通过；Windows65项运行文件验证通过。
+最终Windows artifact ID `10064972814`，67,382,759字节，SHA256 `30c63627892f0964a08aaee8e78c4bc1cef9883ae9641128facfb364dedb6798`，UTC到期2026-09-22T16:01:11Z。
+该记录只经API和日志核验，未重新下载/手动启动；开发Debug依赖Debug CRT，非安装器。Draft PR #57保持未合并，没有创建Release。
+
 ## 剩余范围
 
 本批未新增取消收藏/清历史/队列移除排序菜单、系统整体播放或自动记录真正开始的历史；最近视图读取已有真实记录。

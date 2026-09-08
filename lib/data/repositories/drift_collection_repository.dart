@@ -479,6 +479,18 @@ final class DriftCollectionRepository implements CollectionRepository {
     _requireReady();
     return _guard('record-history', () async {
       await _database.transaction(() async {
+        final existing = await (_database.select(
+          _database.playHistoryRecords,
+        )..where((row) => row.historyId.equals(entry.id))).getSingleOrNull();
+        if (existing != null &&
+            (existing.trackSourceType != entry.track.sourceType.name ||
+                existing.trackSourceId != entry.track.sourceId ||
+                existing.trackId != entry.track.trackId)) {
+          throw DomainFailure(
+            code: DomainFailureCode.schemaMismatch,
+            diagnosticId: 'collection.history-id-conflict',
+          );
+        }
         await (_database.delete(_database.playHistoryRecords)..where(
               (table) =>
                   table.trackSourceType.equals(entry.track.sourceType.name) &

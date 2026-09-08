@@ -1,5 +1,15 @@
 # 原生基础验证矩阵
 
+Phase6H13 当前：951 Flutter（93 Golden）、106 Node；详见[报告](phase_6h13_playback_history_report.md)。
+新增44项：28播放确认/生命周期/Recorder、6真实SQLite、5三端界面/失败交互、2生产适配器接线、1真实SQLite页面实时更新、2 Golden。
+ack/静止playing/加载/缓冲不写；短曲completed前进确认，seek重置基线，pause/resume不重复，新源/明确重放另建周期。
+25首同毫秒最多20、来源类型/ID隔离、时钟回拨及Recorder重建置顶，冻结重试身份/时间、不允许旧失败重排新记录。
+SQLite外来历史ID碰撞保护与INSERT触发故障事务回滚；根关闭等待实际SQL读写，保存失败不停止音频。
+既有首页确认清除串行排在旧写入之后、新聆听之前；清除失败不污染后续保存，旧重试不复活数据，关闭等待清除。
+三端页面播放后最近置顶；覆盖路由旧回调无效，保存提示脱敏且可重试；实际SQLite空页无需重开即显示新记录。
+两张新Golden已逐张检查，旧91张字节未改；音频适配器使用Fake原生后端，不冒充本批实机出声验证。
+无WebView、Schema/依赖/权限变化；实机性能、HTML像素对照与Release仍须后续验收。
+
 Phase6H12 当前：907 Flutter（91 Golden）、103 Node；分析/构建详见[报告](phase_6h12_system_playlist_surfaces_report.md)。
 
 Phase6H12新增39项：16路由/播放动作、12原生交互/生命周期、3真实SQLite页面、7 Golden与1 Windows入口焦点测试。

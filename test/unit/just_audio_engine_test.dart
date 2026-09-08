@@ -7,8 +7,64 @@ import 'package:yymusic/playback/audio_engine_state.dart';
 import 'package:yymusic/playback/just_audio_backend.dart';
 import 'package:yymusic/playback/just_audio_engine.dart';
 import 'package:yymusic/playback/playable_source.dart';
+import 'package:yymusic/playback/playback_controller.dart';
+
+import '../support/catalog_detail_probe.dart';
+import '../support/fake_domain_repositories.dart';
+import '../support/fake_playback_dependencies.dart';
+import '../support/playback_history_probe.dart';
+import 'system_playlist_repository_test.dart' show systemQueue;
 
 void main() {
+  for (final buffered in [false, true]) {
+    test(
+      'production adapter clock confirms history after seek/buffering=$buffered, not command acknowledgements',
+      () async {
+        final track = detailTrack('adapter');
+        final backend = _FakeJustAudioBackend();
+        final engine = JustAudioEngine(backend);
+        final library = FakeLibraryRepository(tracks: [track]);
+        final collection = FakeCollectionRepository();
+        await collection.saveQueue(systemQueue([track.ref], current: 'q-0'));
+        final player = PlaybackController(
+          engine,
+          library: library,
+          collection: collection,
+          sourceResolver: FakePlaybackSourceResolver(),
+        );
+        addTearDown(() async {
+          await player.close();
+          await engine.dispose();
+          await library.dispose();
+          await collection.dispose();
+        });
+        await player.initialize();
+        await player.play();
+        await player.setVolume(0.5);
+        expect(await collection.watchHistory().first, isEmpty);
+        await player.seek(const Duration(seconds: 30));
+        if (buffered) {
+          backend.emit(processing: JustAudioProcessingPhase.buffering);
+          backend.emit(position: const Duration(seconds: 31));
+        }
+        backend.emit(processing: JustAudioProcessingPhase.ready);
+        expect(await collection.watchHistory().first, isEmpty);
+        backend.emit(position: const Duration(seconds: 32));
+        await waitHistory(player.history);
+        final original = (await collection.watchHistory().first).single;
+        expect(original.track, track.ref);
+        expect(original.lastPosition, const Duration(seconds: 32));
+        await player.pause();
+        await player.play();
+        backend.emit(position: const Duration(seconds: 33));
+        await waitHistory(player.history);
+        expect((await collection.watchHistory().first).single.id, original.id);
+        expect(backend.calls.where((c) => c == 'open'), hasLength(1));
+        expect(player.history.failure, isNull);
+      },
+    );
+  }
+
   final localTrack = TrackRef(
     trackId: 'local-track',
     sourceId: 'local-source',

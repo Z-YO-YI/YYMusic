@@ -15,6 +15,7 @@ import '../support/close_graph.dart';
 import '../support/design_harness.dart';
 import '../support/fake_audio_engine.dart';
 import '../support/fake_playback_dependencies.dart';
+import '../support/playback_history_probe.dart';
 import '../support/playlist_content_harness.dart' show settleContent;
 import '../support/playlist_content_probe.dart';
 import '../support/system_playlist_harness.dart';
@@ -22,6 +23,65 @@ import '../unit/system_playlist_repository_test.dart' show systemQueue;
 
 void main() {
   setUpAll(loadDesignAssets);
+  testWidgets(
+    'empty recent SQLite page observes confirmed root playback without reopening the route',
+    (tester) async {
+      tester.view.physicalSize = const Size(390, 1000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final track = detailTrack('recorded-sqlite'), engine = FakeAudioEngine();
+      final graph = (await tester.runAsync(() async {
+        final services = await DatabaseAppDataServices.open(
+          AppDatabase(NativeDatabase.memory()),
+        );
+        await services.library.upsertTracks([track]);
+        await services.collection.saveQueue(
+          systemQueue([track.ref], current: 'q-0'),
+        );
+        final graph = DependencyGraph(
+          dataServices: services,
+          audioEngine: engine,
+          playbackSourceResolver: FakePlaybackSourceResolver(),
+        );
+        await graph.initialize();
+        return graph;
+      }))!;
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [dependencyGraphProvider.overrideWithValue(graph)],
+          child: YYMusicApp(
+            platform: YYPlatform.android,
+            initialLocation: systemPlaylistLocation(SystemPlaylistType.recent)
+                .toString(),
+          ),
+        ),
+      );
+      await settleContent(tester);
+      final controller = systemState(tester).controller;
+      expect(controller.content!.entries, isEmpty);
+      await tester.runAsync(graph.playback.play);
+      await settleContent(tester);
+      expect(controller.content!.entries, isEmpty);
+      await tester.runAsync(() async {
+        engine.events.add(historyState(100));
+        await waitHistory(graph.playback.history);
+      });
+      await settleContent(tester);
+      expect(systemState(tester).controller, same(controller));
+      expect(controller.content!.entries.single.reference, track.ref);
+      final saved = (await tester.runAsync(
+        () => graph.collection!.watchHistory().first,
+      ))!;
+      expect(saved.single.track, track.ref);
+      expect(saved.single.lastPosition, const Duration(milliseconds: 100));
+      expect(engine.calls, ['load', 'play']);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+      await closeGraph(tester, graph);
+    },
+  );
+
   for (final type in SystemPlaylistType.values) {
     testWidgets(
       '$type real SQLite row reaches the single root player and persists exact queue identity',
