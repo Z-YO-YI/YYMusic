@@ -46,3 +46,12 @@ SQLite真实延迟SELECT证明根关闭等待查询结束再关数据库；真�
 
 当前可查看原生本地概览不等于日常可用播放器，新安装仍为空库且没有导入入口；Windows Debug依赖Debug CRT，不是通用安装版。
 下一步按Phase6顺序开发Settings，然后Phase7完整播放/歌词/队列、Phase8真实导入与授权扫描、Phase9来源、Phase10平台媒体、Phase11设备/性能/视觉与发行验收。整个产品和上线尚未完成。
+
+## 精确 GitHub 验收回填（2026-09-09）
+
+提交`b1adbce399ba1a798b2d0b65c2ecb2f11c9ccbd6`，[Draft PR #61](https://github.com/Z-YO-YI/YYMusic/pull/61)未合并。
+[push 34266399867](https://github.com/Z-YO-YI/YYMusic/actions/runs/34266399867)与[PR 34266442192](https://github.com/Z-YO-YI/YYMusic/actions/runs/34266442192)均completed/success，完成日志已核对。
+两组Linux各925测试通过/104宿主Golden跳过、113 Node通过，严格分析/生成/迁移/指纹通过；两组Windows各104 Golden和1真实窗口集成通过，Debug构建及65文件完整包/六音频许可/原生完整许可检查通过。
+两组Android Debug/签名/51实际音频坐标/3完整法律文本/48包内原始资产通过；未创建Release或运行手动音频诊断。
+push的[Windows开发Debug产物10072561045](https://github.com/Z-YO-YI/YYMusic/actions/runs/34266399867/artifacts/10072561045)：67,425,978 bytes，SHA-256 `26ae4257b1e06e02732c89aba77d4d7c127b8f879869d27525db8f8f54d96a60`，API复查未过期，UTC到期2026-09-22T19:15:18Z。
+这些结果只属于I2，不作为后续设置实现的云端验收；开发Debug仍不是通用安装版或正式发行。

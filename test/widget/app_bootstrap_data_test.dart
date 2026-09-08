@@ -8,6 +8,8 @@ import 'package:yymusic/app/app_data_services.dart';
 import 'package:yymusic/app/dependency_graph.dart';
 import 'package:yymusic/app/layout_class.dart';
 import 'package:yymusic/app/yy_music_app.dart';
+import 'package:yymusic/design_system/yy_theme.dart';
+import 'package:yymusic/domain/models/appearance_settings.dart';
 import 'package:yymusic/domain/repositories/catalog_browse_repository.dart';
 import 'package:yymusic/domain/repositories/catalog_search_repository.dart';
 import 'package:yymusic/domain/repositories/collection_repository.dart';
@@ -19,6 +21,7 @@ import 'package:yymusic/platform/contracts/secure_credential_gateway.dart';
 import 'package:yymusic/playback/audio_engine.dart';
 
 import '../support/close_graph.dart';
+import '../support/fake_appearance_settings_repository.dart';
 import '../support/fake_audio_engine.dart';
 import '../support/fake_catalog_browse_repository.dart';
 import '../support/fake_domain_repositories.dart';
@@ -26,6 +29,67 @@ import '../support/fake_local_library_repository.dart';
 import '../support/fake_search_repositories.dart';
 
 void main() {
+  testWidgets(
+    'bootstrap waits for saved appearance before the first business frame',
+    (tester) async {
+      final gate = Completer<AppearanceSettings>();
+      final services = _FakeAppDataServices();
+      services.appearanceSettings.onRead = () => gate.future;
+      final engine = FakeAudioEngine();
+      await tester.pumpWidget(
+        AppBootstrap(
+          platform: YYPlatform.android,
+          dataServicesFactory: (_) async => services,
+          audioEngineFactory: (_) async => engine,
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(YYMusicApp), findsNothing);
+      expect(find.text('YYMusic 正在准备应用'), findsOneWidget);
+      gate.complete(
+        AppearanceSettings(mode: AppearanceMode.dark, glassEnabled: false),
+      );
+      await tester.pumpAndSettle();
+      final graph = ProviderScope.containerOf(
+        tester.element(find.byType(YYMusicApp)),
+      ).read(dependencyGraphProvider);
+      expect(graph.appearance.mode, YYThemeMode.dark);
+      expect(graph.appearance.reduceGlass, isTrue);
+      expect(services.appearanceSettings.saves, isEmpty);
+      expect(engine.calls.where((e) => e == 'play'), isEmpty);
+      await tester.pumpWidget(const SizedBox.shrink());
+      await closeGraph(tester, graph);
+    },
+  );
+
+  testWidgets(
+    'late appearance restoration after bootstrap unmount releases acquired scope',
+    (tester) async {
+      final gate = Completer<AppearanceSettings>();
+      final services = _FakeAppDataServices();
+      services.appearanceSettings.onRead = () => gate.future;
+      final engine = FakeAudioEngine();
+      await tester.pumpWidget(
+        AppBootstrap(
+          platform: YYPlatform.android,
+          dataServicesFactory: (_) async => services,
+          audioEngineFactory: (_) async => engine,
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.pumpWidget(const SizedBox.shrink());
+      gate.complete(AppearanceSettings(mode: AppearanceMode.dark));
+      await tester.pumpAndSettle();
+      for (var i = 0; i < 12 && services.disposeCount == 0; i++) {
+        await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+        await tester.pump(Duration.zero);
+      }
+      expect(services.disposeCount, 1);
+      expect(engine.disposalCount, 1);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('bootstrap shows loading, then owns and disposes injected data', (
     tester,
   ) async {
@@ -196,6 +260,9 @@ void main() {
 
 final class _FakeAppDataServices implements AppDataServices {
   @override
+  final FakeAppearanceSettingsRepository appearanceSettings =
+      FakeAppearanceSettingsRepository();
+  @override
   final FakeLocalLibraryRepository localLibrary = FakeLocalLibraryRepository();
   @override
   final CatalogBrowseRepository catalogBrowse = FakeCatalogBrowseRepository();
@@ -223,6 +290,7 @@ final class _FakeAppDataServices implements AppDataServices {
   @override
   Future<void> dispose() async {
     disposeCount += 1;
+    await appearanceSettings.dispose();
     await localLibrary.close();
     await library.dispose();
     await searchHistory.dispose();

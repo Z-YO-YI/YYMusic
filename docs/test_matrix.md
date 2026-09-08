@@ -1,5 +1,11 @@
 # 原生基础验证矩阵
 
+Phase6J1当前：1056 Flutter/115 Node通过，104旧Golden字节未改；[报告](phase_6j1_appearance_persistence_report.md)。
+新增27项：15 Controller（含3显示模式×6色类型映射、原子恢复不写库、早到变更、30次合并、读写失败/重试、关闭排空、可重入仓储/通知退出）、9真实SQLite、1模型、2启动Widget。
+SQLite覆盖空库只读、旧themeMode单键、无关坏JSON不读取、五键同事务与无关值保留、中途UPDATE失败全回滚、非法类型/枚举/颜色不重写、延迟SELECT/INSERT关库屏障和真实磁盘重启恢复。
+两个启动Widget证明业务第一帧之前等待外观恢复，以及卸载后的晚返回完整释放范围；不新增假系统选项，不把保存错误当成功。
+404文件格式/严格分析、生成/迁移/指纹/24ZIP/源码完整许可、本地Android Debug/48资产/v2单签名者通过；不声称本批Windows实机构建或Android安装/出声已验收。
+
 Phase6I2当前：1029 Flutter、104 Windows宿主Golden、113 Node；[完成报告](phase_6i2_local_music_surfaces_report.md)。
 新增29项：13 Controller、8 Widget、2真实SQLite、6 Golden；另补齐既有根Fake和受影响精确关闭顺序门禁，未移除测试或放宽阈值。
 Controller覆盖无I/O构造、先订阅、20条稳定分页/过期回调、30次失效合并、晚返回丢弃、末页删除回退、安全错误、监听错误/结束、读完前根不得关闭、可重入监听/通知关闭。

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../design_system/yy_theme.dart';
 import '../domain/models/domain_failure.dart';
+import '../domain/repositories/appearance_settings_repository.dart';
 import '../domain/repositories/catalog_browse_repository.dart';
 import '../domain/repositories/catalog_search_repository.dart';
 import '../domain/repositories/collection_repository.dart';
@@ -22,6 +23,7 @@ import '../features/playlists/common/playlist_content_controller.dart';
 import '../features/playlists/common/playlist_controller.dart';
 import '../features/playlists/common/system_playlist_controller.dart';
 import '../features/search/common/search_controller.dart';
+import '../features/settings/common/appearance_settings_controller.dart';
 import '../platform/contracts/fullscreen_gateway.dart';
 import '../platform/contracts/media_session_gateway.dart';
 import '../platform/contracts/secure_credential_gateway.dart';
@@ -41,6 +43,7 @@ final class DependencyGraph {
     PlaybackSourceResolver? playbackSourceResolver,
     MediaSessionGateway? mediaSession,
     this.dataServices,
+    AppearanceSettingsRepository? appearanceRepository,
     LibraryRepository? library,
     LocalLibraryRepository? localLibrary,
     CatalogSearchRepository? catalogSearch,
@@ -55,6 +58,7 @@ final class DependencyGraph {
   }) : assert(
          dataServices == null ||
              (library == null &&
+                 appearanceRepository == null &&
                  localLibrary == null &&
                  catalogSearch == null &&
                  catalogBrowse == null &&
@@ -76,6 +80,10 @@ final class DependencyGraph {
        lyrics = dataServices?.lyrics ?? lyrics,
        musicSources = dataServices?.musicSources ?? musicSources,
        credentials = dataServices?.credentials ?? credentials {
+    appearanceSettings = AppearanceSettingsController(
+      appearance: appearance,
+      repository: dataServices?.appearanceSettings ?? appearanceRepository,
+    );
     playback = PlaybackController(
       _audioEngine,
       library: this.library,
@@ -143,6 +151,7 @@ final class DependencyGraph {
   final LicenseRepository licenses;
   final viewState = AppViewState();
   final appearance = YYAppearanceController();
+  late final AppearanceSettingsController appearanceSettings;
   late final PlaybackController playback;
   late final QueueController queue;
   late final PlaybackPresenter playbackPresenter;
@@ -157,7 +166,11 @@ final class DependencyGraph {
   late final SystemPlaylistSessions systemPlaylists;
   Future<void>? _closeFuture;
 
-  Future<void> initialize() => playback.initialize();
+  Future<void> initialize() async {
+    await appearanceSettings.initialize();
+    if (_closeFuture != null) return;
+    await playback.initialize();
+  }
 
   void dispose() {
     unawaited(close().catchError((Object _) {}));
@@ -179,6 +192,7 @@ final class DependencyGraph {
     systemPlaylists.dispose();
     playbackPresenter.dispose();
     playback.dispose();
+    appearanceSettings.dispose();
     appearance.dispose();
     return _closeFuture = _closeOwnedResources();
   }
@@ -187,6 +201,7 @@ final class DependencyGraph {
     var failed = false;
     for (final release in <Future<void> Function()>[
       home.close,
+      appearanceSettings.close,
       search.close,
       libraryController.close,
       localMusic.close,
