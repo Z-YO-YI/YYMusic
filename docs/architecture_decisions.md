@@ -649,3 +649,22 @@ AppNavigation增加类型化openAlbum/openArtist，URI路径只放实体ID，sou
 所有命令在发出通知前登记，已接受的写入不因离页或根关闭而撤回，关闭拒绝新命令并等待已登记工作，
 最后才释放共享数据库。创建碰撞失败而不是覆写，用户可重试；不自动重试可能已成功的存储写入。
 Phase6H1只提供这个数据/状态基础，Phase6H2再接三端原生编辑界面，未接线不得宣称用户已能管理歌单。
+
+## ADR-058：歌单草稿位于自适应 Shell 之上，确认与写入分离（2026-09-08）
+
+AppRouter借用根PlaylistController，在StatefulShellRoute的AdaptiveRoot上方放置编辑宿主，
+以受控作用域向Library提供创建/重命名/删除请求，不扩展持久化或建立第二份列表。
+宿主拥有未提交文本与焦点，Phone/Tablet Shell替换和窗口尺寸变化不销毁草稿；
+离开Library或覆盖其路由时关闭草稿。接受的命令仍由根Controller排空，不因Widget销毁取消。
+异步完成必须检查宿主挂载及每次打开的独立递增代次，不能关闭或覆盖随后打开的新草稿。
+请求值可能是Dart规范化的同一const对象，不能用identical(request)作为会话身份。
+关闭后的失败在Library显示可确认的安全提示，不改变新草稿；进程关闭后不尝试通知已销毁的界面。
+
+删除请求只打开确认UI，明确只删除歌单和条目，不删除歌曲文件或来源；确认按钮才调用命令。
+系统歌单无编辑入口，命令层系统保护仍独立生效；busy禁用输入/提交，失败保留文本及安全反馈。
+列表继续响应既有Library投影，不乐观捏造成功或对已删除身份执行upsert。
+
+Phone使用YYBottomSheet，Tablet/Windows使用YYDialog；原生名称输入保持field语义与done动作，
+共享搜索输入既有的原生选择手柄/编辑菜单，不复制搜索图标、清空搜索文案或search输入动作。
+宿主覆盖整个Shell的点击、焦点和语义，处理Back/Esc及快捷导航离页，输入时不触发播放快捷键。
+SafeArea和viewInsets参与可用高度计算；变更后仍按完整App.tsx覆盖层与基础HTML检查三端Golden。

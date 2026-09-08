@@ -1,6 +1,15 @@
 # 原生基础验证矩阵
 
-Phase6H1 当前：551 Flutter（70 Golden未改）、82 Node、严格analyze0、278文件格式零修改。
+Phase6H2 当前：572 Flutter（73 Golden，旧70未改）、84 Node、严格analyze0、283文件格式零修改。
+新增18项Widget、3张逐张查看的三端Golden与2项Node；覆盖共享投影的真实命令调用、系统保护、确认/取消、
+不存在目标、名称/IME/原生复制粘贴、忙时重复点击/Space、Tab/Esc/Back/离页/覆盖路由、焦点恢复、
+600断点/旋转/零尺寸草稿恢复、130%文字/SafeArea/键盘、旧const请求的迟到回调及根关闭排空。
+独立代次与弹层整体TextFieldTapRegion修复分别由先失败的重开/IME回归验证；关闭后的失败返回Library可见且不暴露原始异常。
+全部已有真实SQLite/搜索输入/Golden通过；生成代码/Schema/迁移/lockfile和参考原件不变。
+指纹/ZIP24/源码与包内许可/Android Debug/48资产/v2单签名通过，精确云端结果见对应PR。
+前置1dd92ef两组GitHub checks/Android/Windows成功已复核；无新的实机音频或HTML网页对照证据。
+
+Phase6H1 历史：551 Flutter（70 Golden未改）、82 Node、严格analyze0、278文件格式零修改。
 新增12项Controller单位、8项真实SQLite、2项Node：无构造期读取/订阅、原子创建碰撞/并发不覆盖、
 同名不同ID、系统创建/改名/删除保护、修剪/512边界/C0与C1控制字符、未找到改名不复活、删除幂等，
 改名保留说明/创建时间/混合来源条目且updatedAt不倒退；删除只影响目标歌单及条目，曲目/收藏/历史/队列/其他歌单保留。

@@ -19,6 +19,7 @@ import '../../../domain/models/collection_models.dart';
 import '../../../domain/models/library_entities.dart';
 import '../../../domain/models/load_state.dart';
 import '../../../domain/models/track.dart';
+import '../../playlists/common/playlist_editor_host.dart';
 import 'library_controller.dart';
 
 /// Controlled native sections; platform layouts own their composition.
@@ -37,6 +38,7 @@ final class LibrarySections {
   Widget header({required bool wide}) => Builder(
     builder: (context) {
       final colors = YYTheme.of(context).colors;
+      final openPlaylistEditor = PlaylistEditorScope.maybeOf(context)?.open;
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -142,11 +144,24 @@ final class LibrarySections {
                 ),
               ],
             ),
-          ] else
+          ] else ...[
             Text(
-              '已保存的歌单元数据；创建、编辑和系统歌单在后续增量接入。',
+              '管理自定义歌单名称；歌曲添加、排序和系统歌单入口仍在开发。',
               style: YYTypography.caption.copyWith(color: colors.secondary),
             ),
+            const SizedBox(height: 12),
+            YYButton(
+              key: const ValueKey('playlist-create'),
+              label: '新建歌单',
+              glyph: YYGlyph.plus,
+              style: YYButtonStyle.primary,
+              onPressed: openPlaylistEditor == null
+                  ? null
+                  : () => openPlaylistEditor(
+                      const PlaylistEditorRequest.create(),
+                    ),
+            ),
+          ],
           if (controller.category == LibraryCategory.local) ...[
             const SizedBox(height: 12),
             Text(
@@ -157,6 +172,16 @@ final class LibrarySections {
           if (controller.actionError case final error?) ...[
             const SizedBox(height: 12),
             YYErrorBanner(title: '音乐库操作未完成', message: error),
+          ],
+          if (PlaylistEditorScope.maybeOf(context)?.failure
+              case final failure?) ...[
+            const SizedBox(height: 12),
+            YYErrorBanner(
+              title: '关闭面板后的歌单操作未完成',
+              message: failure,
+              actionLabel: '知道了',
+              onAction: PlaylistEditorScope.maybeOf(context)?.dismissFailure,
+            ),
           ],
           if (controller.favoriteError case final error?) ...[
             const SizedBox(height: 12),
@@ -310,6 +335,34 @@ final class LibrarySections {
       item.id,
       item.name,
       item.isSystem ? '系统歌单 · 不可删除' : '自定义歌单 · 保存在本机',
+      action: item.isSystem
+          ? null
+          : Builder(
+              builder: (context) {
+                final open = PlaylistEditorScope.maybeOf(context)?.open;
+                return Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    YYButton(
+                      key: ValueKey(('playlist-rename', item.id)),
+                      label: '重命名',
+                      onPressed: open == null
+                          ? null
+                          : () => open(PlaylistEditorRequest.rename(item)),
+                    ),
+                    YYButton(
+                      key: ValueKey(('playlist-delete', item.id)),
+                      label: '删除歌单',
+                      style: YYButtonStyle.quiet,
+                      onPressed: open == null
+                          ? null
+                          : () => open(PlaylistEditorRequest.delete(item)),
+                    ),
+                  ],
+                );
+              },
+            ),
     ),
     _ => const SizedBox.shrink(),
   };

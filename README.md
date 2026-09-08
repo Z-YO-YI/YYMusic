@@ -1,6 +1,6 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 6H1 歌单写入基础（界面待接线）**。创建歌单不覆盖碰撞ID，重命名只修改仍存在的自定义歌单；系统歌单受保护，删除只影响歌单及其条目，根关闭等待已接受写入。551项Flutter（70张Golden未改）、82项Node、严格分析及本地Android Debug通过；本批GitHub精确提交构建状态见报告/对应Draft PR。前置Phase6G4 `3ac653b` 两组GitHub checks/Android/Windows均成功。详情曲目菜单与收藏已接线；歌单编辑界面、导入/REST、完整播放器及发布仍未完成，尚不是完整可用或上线版本。
+当前阶段：**Android + Windows · Phase 6H2 原生歌单编辑**。音乐库 → 歌单可创建、重命名及确认删除自定义歌单，删除不影响歌曲文件；Phone 底部面板、Tablet/Windows 对话框共用根写入与列表订阅。草稿跨尺寸保留，IME/重复提交受保护，关闭后的写入失败有可见反馈。572项Flutter（73张Golden，旧70张未改）、84项Node、严格分析及本地Android Debug通过；本批GitHub精确提交构建状态见报告/对应Draft PR。前置Phase6H1 `1dd92ef` 两组GitHub checks/Android/Windows均成功。歌单歌曲添加/排序/播放全部、导入/REST、完整播放器及发布仍未完成，尚不是完整可用或上线版本。
 
 Phase6E 后续修正：初始云端 Android/源码成功，Windows 旧首页 Golden 因测试样本逐首读取时钟而排序不稳定。
 已固定样本批次时间；425 Flutter/71 Node 与本地 Android 通过，55 张基线和生产代码均未改。
@@ -14,7 +14,8 @@ Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭
 
 ## 开发入口
 
-- [Phase 6H1 歌单命令计划](docs/phase_6h1_playlist_metadata_plan.md)、[报告](docs/phase_6h1_playlist_metadata_report.md)：原子创建/改名、系统歌单保护、根写入排空；UI创建/改名/删除入口下一批接入。
+- [Phase 6H2 歌单界面计划](docs/phase_6h2_playlist_editor_plan.md)、[报告](docs/phase_6h2_playlist_editor_report.md)：三端创建/改名/确认删除，原生文本选择、草稿代次和关闭后失败反馈；条目管理仍待开发。
+- [Phase 6H1 歌单命令计划](docs/phase_6h1_playlist_metadata_plan.md)、[报告](docs/phase_6h1_playlist_metadata_report.md)：原子创建/改名、系统歌单保护、根写入排空；界面已在H2增量接线。
 - [Phase 6G4 详情菜单计划](docs/phase_6g4_catalog_detail_actions_plan.md)、[报告](docs/phase_6g4_catalog_detail_actions_report.md)：按需收藏投影、原生菜单、返回／焦点恢复和关闭期间写入／订阅排空。
 - [Phase 6G3 搜索详情入口计划](docs/phase_6g3_search_detail_navigation_plan.md)、[报告](docs/phase_6g3_search_detail_navigation_report.md)：专辑/艺人完整引用跳转、搜索返回状态/焦点及取消安全，不改变既有搜索语义。
 - [Phase 6G2 原生详情计划](docs/phase_6g2_catalog_detail_surfaces_plan.md)、[报告](docs/phase_6g2_catalog_detail_surfaces_report.md)：完整来源路由、三端布局、保留返回/滚动状态、取消安全播放和可重试的真实状态。
