@@ -1,6 +1,6 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 6H8 大歌单分组浏览**。自定义歌单可浏览200条以后的全部内容：首组仍按20条扩展，达到200条后用“下一组／上一组”切换，每次最多保留200条一致快照，界面显示真实范围。删除导致末组越界时自动回到最后有效组；过期回调、菜单/覆盖路由、窗口缩小及根关闭均有保护。774项Flutter（84张Golden，原81张未改）、96项Node通过；严格分析、Android预检及精确GitHub双平台状态见[本批报告](docs/phase_6h8_playlist_windows_report.md)/对应Draft PR。前置Phase6H7 `c142daf` 两组GitHub源码/Android/Windows均成功。播放全部/随机、系统歌单仍待开发；已有歌单选择器超过200个匹配时仍需缩小名称范围。
+当前阶段：**Android + Windows · Phase 6H9 歌单播放全部／随机播放**。自定义歌单可一键读取整份轻量引用并替换根队列，不受当前200条浏览窗口限制；保留重复条目，跳过读取时已标记不可用的引用，原歌单不变。随机播放也随机选择首项；全部不可用时不改变现有队列。补齐延迟读取/加载撤销、关闭排空及Windows零尺寸保留路由。812项Flutter（84张Golden：更新8张，其余76张未改）、98项Node通过；严格分析、Android预检及精确GitHub双平台状态见[本批报告](docs/phase_6h9_playlist_playback_report.md)/对应Draft PR。前置Phase6H8 `33187c0` 两组GitHub源码/Android/Windows均成功。系统歌单、真实导入、完整播放器及发行仍待开发；默认新安装仍为空库。
 
 距离“新安装后可日常听本地音乐”仍有四组工作：Phase6页面收尾；Phase7完整播放器/歌词/队列；Phase8双平台真实导入、扫描与授权；Phase10—11后台/系统媒体控制、Release打包与设备验收。完整产品还需要Phase9第三方来源。现有Debug构建不等于可用发行版：默认空库没有导入入口，Windows开发Debug包还依赖Debug CRT；不以测试数量或阶段编号换算虚假完成百分比。
 
@@ -14,8 +14,13 @@ Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
 
+## 自定义歌单整体播放
+
+打开歌单后，“播放全部”按原歌单顺序开始并关闭随机，“随机播放”打乱播放次序；二者都会**替换当前队列**，不是追加，也不只播放当前显示的一组。缺失或已标记不可用的条目被跳过并提示数量，重复歌曲保留为不同队列条目，原歌单不会修改。全部不可用时保留现有队列。读取/加载期间离开或最小化不会在稍后突然开始播放；已经开始的音频继续由根播放器管理。读取之后才发生的文件/来源失效仍可能进入安全错误态，尚未实现所有运行时错误的自动跳过。
+
 ## 开发入口
 
+- [Phase 6H9 歌单整体播放计划](docs/phase_6h9_playlist_playback_plan.md)、[报告](docs/phase_6h9_playlist_playback_report.md)：单SQL轻量完整播放计划、根串行队列替换与随机顺序、不可用引用过滤和Windows最小化保留页面。
 - [Phase 6H8 分组浏览计划](docs/phase_6h8_playlist_windows_plan.md)、[报告](docs/phase_6h8_playlist_windows_report.md)：原生范围/前后组导航、单SQL有界快照、末组删除恢复、旧回调保护和根关闭排空，真实SQLite遍历1003条且不合并跨版本页。
 - [Phase 6H7 新建并添加计划](docs/phase_6h7_create_and_add_plan.md)、[报告](docs/phase_6h7_create_and_add_report.md)：父歌单/首条引用同事务保存、碰撞不覆盖、真实SQLite故障回滚和根排空；三端复用原生名称表单与原始plus SVG，没有独立创建后再追加的半成品窗口。
 - [Phase 6H6 歌单选择器计划](docs/phase_6h6_playlist_add_picker_plan.md)、[报告](docs/phase_6h6_playlist_add_picker_report.md)：歌曲菜单→已有歌单，原生筛选/返回/焦点、根原子追加、真实SQLite与查询/写入排空；复用App.tsx最终SVG及YY组件，无WebView，无音频复制或新依赖。

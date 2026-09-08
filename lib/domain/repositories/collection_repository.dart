@@ -2,6 +2,7 @@ import '../models/collection_models.dart';
 import '../models/pagination.dart';
 import '../models/playlist_content.dart';
 import '../models/playlist_name_query.dart';
+import '../models/playlist_playback_plan.dart';
 import '../models/track.dart';
 
 abstract interface class CollectionRepository {
@@ -38,6 +39,10 @@ abstract interface class CollectionRepository {
     String playlistId,
     PageRequest page,
   );
+
+  /// Complete custom-playlist references and availability from one snapshot.
+  /// Null means a missing parent; no full track metadata or media is loaded.
+  Future<PlaylistPlaybackPlan?> readPlaylistPlaybackPlan(String playlistId);
 
   /// Invalidation only, no initial event or content queries. May conservatively
   /// include other playlists or rolled-back transactions; this is not a commit

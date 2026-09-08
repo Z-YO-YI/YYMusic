@@ -41,56 +41,85 @@ class WindowChrome extends StatelessWidget {
 }
 
 /// Keeps native window controls reachable on modal and non-Shell routes too.
-class WindowFrame extends StatelessWidget {
+class WindowFrame extends StatefulWidget {
   const WindowFrame({super.key, required this.presenter, required this.child});
   final WindowPresenter presenter;
   final Widget child;
   @override
+  State<WindowFrame> createState() => _WindowFrameState();
+}
+
+class _WindowFrameState extends State<WindowFrame> {
+  Size? _lastSize;
+  @override
   Widget build(BuildContext context) => ListenableBuilder(
-    listenable: presenter,
+    listenable: widget.presenter,
     builder: (context, _) => LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxHeight <= YYWindowsMetrics.toolbarHeight ||
-            constraints.maxWidth <= 0) {
-          return const SizedBox.shrink();
-        }
-        if (!presenter.available) {
-          final error = presenter.errorMessage;
-          return error == null
-              ? child
-              : Column(
-                  children: [
-                    YYErrorBanner(title: '窗口控制不可用', message: error),
-                    Expanded(child: child),
-                  ],
-                );
-        }
-        return Overlay.wrap(
-          child: Column(
-            // Paint native chrome after Navigator's modal semantics barrier.
-            // Its visual position remains at the top, above every app route.
-            verticalDirection: VerticalDirection.up,
-            children: [
-              Expanded(child: WindowFrameScope(child: child)),
-              Semantics(
-                container: true,
-                explicitChildNodes: true,
-                sortKey: const OrdinalSortKey(-1),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: MediaQuery.sizeOf(context).width < 1024
-                        ? 12
-                        : 16,
-                  ),
-                  child: WindowChrome(presenter: presenter),
-                ),
+        final visible =
+            constraints.maxHeight > YYWindowsMetrics.toolbarHeight &&
+            constraints.maxWidth > 0;
+        if (visible) _lastSize = constraints.biggest;
+        final size = _lastSize;
+        if (size == null) return const SizedBox.shrink();
+        // Minimize must not unmount Navigator or lose route-owned sessions.
+        // Keep the previous finite layout offstage, with input and tickers off.
+        return Offstage(
+          offstage: !visible,
+          child: ExcludeFocus(
+            excluding: !visible,
+            child: TickerMode(
+              enabled: visible,
+              child: OverflowBox(
+                alignment: Alignment.topLeft,
+                minWidth: size.width,
+                maxWidth: size.width,
+                minHeight: size.height,
+                maxHeight: size.height,
+                child: _frame(context),
               ),
-            ],
+            ),
           ),
         );
       },
     ),
   );
+
+  Widget _frame(BuildContext context) {
+    final presenter = widget.presenter;
+    final child = widget.child;
+    if (!presenter.available) {
+      final error = presenter.errorMessage;
+      return error == null
+          ? child
+          : Column(
+              children: [
+                YYErrorBanner(title: '窗口控制不可用', message: error),
+                Expanded(child: child),
+              ],
+            );
+    }
+    return Overlay.wrap(
+      child: Column(
+        // Paint native chrome after Navigator's modal semantics barrier.
+        verticalDirection: VerticalDirection.up,
+        children: [
+          Expanded(child: WindowFrameScope(child: child)),
+          Semantics(
+            container: true,
+            explicitChildNodes: true,
+            sortKey: const OrdinalSortKey(-1),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.sizeOf(context).width < 1024 ? 12 : 16,
+              ),
+              child: WindowChrome(presenter: presenter),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class WindowFrameScope extends InheritedWidget {

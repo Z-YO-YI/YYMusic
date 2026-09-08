@@ -49,6 +49,9 @@ void main() {
         await tester.tap(find.bySemanticsLabel('最小化'));
         await tester.pumpAndSettle();
         expect(window.calls, contains('minimize'));
+        final navigator = tester.state<NavigatorState>(
+          find.byType(Navigator).last,
+        );
         for (final size in const [
           Size(840, 640),
           Size(599, 720),
@@ -57,6 +60,15 @@ void main() {
         ]) {
           tester.view.physicalSize = size;
           await tester.pumpAndSettle();
+          expect(
+            tester.state<NavigatorState>(
+              find.byType(Navigator, skipOffstage: false).last,
+            ),
+            same(navigator),
+          );
+          if (size == Size.zero) {
+            expect(TickerMode.valuesOf(navigator.context).enabled, isFalse);
+          }
           expect(tester.takeException(), isNull);
         }
         expect(window.calls.where((c) => c == 'initialize').length, 1);
