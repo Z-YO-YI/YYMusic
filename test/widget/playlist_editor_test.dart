@@ -350,7 +350,10 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.comma);
       await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
       await tester.pumpAndSettle();
-      expect(find.byType(YYTextField), findsNothing);
+      // Settings now has its own color field; only the playlist draft must close.
+      expect(find.byType(YYBottomSheet), findsNothing);
+      expect(editorKey('playlist-submit'), findsNothing);
+      expect(find.byKey(const ValueKey('settings-custom-hex')), findsOneWidget);
       await tester.tap(editorKey('nav-library'));
       await tester.pumpAndSettle();
       await openPlaylistEditor(tester, 'playlist-create');

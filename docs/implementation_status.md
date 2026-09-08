@@ -1,5 +1,12 @@
 # 实施状态
 
+当前增量 Phase 6J2：正式设置页提供原生外观/关于，三端布局共用根主题和持久化状态，真实保存/读取失败重试；颜色草稿、选区与滚动跨布局保留，失效页面不接受旧操作。
+最终 1083 Flutter（新增 19 Widget/8 Golden）、116 Node、112 Golden、412 文件格式和严格分析通过；104 旧图不变，Schema/锁文件/平台不变，最终 Android Debug/包内许可/资产/v2 签名预检通过。
+本批分支 `codex/native-settings-surfaces`，[计划](phase_6j2_native_settings_plan.md)与[报告](phase_6j2_native_settings_report.md)。GitHub 精确新提交构建在 push/PR 后核对；前置 #62 两组 Android/Windows 已成功且回填。
+没有真实文件扫描、后台媒体或正式发行；下一步 Phase 7。以下为保留的历史阶段记录。
+
+## 历史阶段记录
+
 当前增量Phase6J1：外观设置以五键白名单和单事务保存于既有app_settings表，同一数据范围/唯一YYAppearanceController；显示模式、预设/自定义色、glassEnabled/reduceMotion已真实持久化。
 根启动先恢复，不回写默认；早到用户变更优先，连续修改单worker合并，读取失败不覆盖，保存失败安全保留/可重试，根关闭排空并保护通知栈内重入退出。
 最终1056 Flutter（新增27：15 Controller/9 SQLite/1模型/2启动Widget）、115 Node、404文件格式、严格分析通过；104旧Golden字节不变，Schema/依赖/平台无变化，Android Debug预检通过。

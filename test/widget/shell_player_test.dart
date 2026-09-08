@@ -179,6 +179,9 @@ void main() {
     expect(fixture.engine.calls, ['load', 'play']);
     await tester.tap(find.byKey(const ValueKey('windows-nav-settings')));
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('settings-section-about')));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('开源许可'));
     await tester.tap(find.text('开源许可'));
     await tester.pumpAndSettle();
     await tester.tap(find.byType(EditableText));

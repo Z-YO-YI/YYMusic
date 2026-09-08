@@ -1,5 +1,11 @@
 # 原生基础验证矩阵
 
+Phase 6J2：1083 Flutter、116 Node、112 Golden、412 文件格式与严格分析通过；新增 19 Widget、8 Golden，104 旧图字节未变，[报告](phase_6j2_native_settings_report.md)。
+设置回归覆盖根持久化反馈、加载/保存失败重试、三模式/五预设/原始自定义 Hex、玻璃映射、系统亮度无写入、键盘不误播、130% 尺寸、输入/选区/滚动保留、零尺寸/隐藏/覆盖/卸载旧回调和离页继续保存。
+本地最终 Android Debug、48 项资产/六音频包与完整原生许可、v2 单签名者验证通过；源码完整许可与生成/迁移无漂移。新提交 GitHub 双平台及实机安装/出声分别记录，不能互相替代。
+
+## 历史阶段记录
+
 Phase6J1当前：1056 Flutter/115 Node通过，104旧Golden字节未改；[报告](phase_6j1_appearance_persistence_report.md)。
 新增27项：15 Controller（含3显示模式×6色类型映射、原子恢复不写库、早到变更、30次合并、读写失败/重试、关闭排空、可重入仓储/通知退出）、9真实SQLite、1模型、2启动Widget。
 SQLite覆盖空库只读、旧themeMode单键、无关坏JSON不读取、五键同事务与无关值保留、中途UPDATE失败全回滚、非法类型/枚举/颜色不重写、延迟SELECT/INSERT关库屏障和真实磁盘重启恢复。
