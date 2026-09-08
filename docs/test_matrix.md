@@ -1,6 +1,19 @@
 # 原生基础验证矩阵
 
-Phase6H5 当前：680 Flutter（78 Golden）、90 Node、严格analyze0、309个Dart文件格式零修改。
+Phase6H6 当前：718 Flutter（81 Golden）、92 Node、严格analyze0、319个Dart文件格式零修改。
+新增38项Flutter：7查询/真实SQLite与Fake合同、13根会话、14三端Widget、1真实SQLite全根界面、3Golden。
+单条绑定SQL只读自定义元数据、limit+1哨兵不解析、字面筛选/ASCII折叠/Unicode稳定ID排序及偏移通过。
+20→200前缀、235份样本中筛选末项、loading/empty/安全错误/订阅重建和过期请求隔离通过。
+根busy/同名独立ID/完整失效TrackRef/独立重复条目、旧菜单与快照/草稿回调、关闭回调幂等通过。
+覆盖路由阻断动作、Android Back、Windows Tab/Space/Esc/原行焦点、原生IME、513字符草稿保护通过。
+130%文字、旋转/跨断点/零尺寸/低视口键盘与滚动保持，迟到加载撤销且既有播放不受弹层开关影响通过。
+真实SQLite连续追加保留歌曲路径，根关闭等待实际SQLite查询及已接受写入；离页失败脱敏可见。
+新3张及旧12张变更Golden逐张查看：旧图只因4个菜单入口和8处背景/底部说明变化而更新，旧66张字节不变。
+首轮旧Golden失败已核对；复查中旧关闭回调误关新面板的先失败测试已锁定修复，无阈值放宽。
+指纹/ZIP24/许可、Drift生成/Schema/lock、Android预检和精确云端结果见[报告](phase_6h6_playlist_add_picker_report.md)。
+不以Golden代替HTML网页对照或真实媒体/设备验收，默认空库与未实现导入不变。
+
+Phase6H5 历史：680 Flutter（78 Golden）、90 Node、严格analyze0、309个Dart文件格式零修改。
 新增30项Flutter：11动作/路由单位、13完整根接线Widget、1真实SQLite界面、5三端Golden；另新增2项Node。
 完整不透明ID（斜杠/百分号/点段/中文）、重复条目、失效引用可管理不可播放、根队列复用及未知窗口移动边界通过。
 更多20→40及200/237上限、空/缺失/系统保护/安全错误/重试、旧行不可操作与请求/快照身份隔离通过。

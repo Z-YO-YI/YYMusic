@@ -45,6 +45,8 @@ class CatalogDetailScreenState extends State<CatalogDetailScreen> {
   int _revision = 0;
   Track? _menuTrack;
   FocusNode? _returnFocus;
+  int _menuGeneration = 0;
+  bool _pickerOpen = false;
   @override
   void initState() {
     super.initState();
@@ -57,7 +59,7 @@ class CatalogDetailScreenState extends State<CatalogDetailScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final active = TickerMode.valuesOf(context).enabled;
+    final active = !_pickerOpen && TickerMode.valuesOf(context).enabled;
     controller.setActive(active);
     if (!active && _menuTrack != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -74,7 +76,8 @@ class CatalogDetailScreenState extends State<CatalogDetailScreen> {
   }
 
   void _openMenu(Track track) {
-    if (!controller.canOpenActions(track.ref)) return;
+    if (_pickerOpen || !controller.canOpenActions(track.ref)) return;
+    _menuGeneration++;
     _returnFocus = FocusManager.instance.primaryFocus;
     setState(() => _menuTrack = track);
     controller.prepareTrackActions();
@@ -82,6 +85,7 @@ class CatalogDetailScreenState extends State<CatalogDetailScreen> {
 
   void _dismiss({bool restoreFocus = true}) {
     if (_menuTrack == null) return;
+    _menuGeneration++;
     setState(() => _menuTrack = null);
     final focus = _returnFocus;
     _returnFocus = null;
@@ -89,6 +93,32 @@ class CatalogDetailScreenState extends State<CatalogDetailScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && focus?.context != null) focus!.requestFocus();
       });
+    }
+  }
+
+  Future<void> _pickPlaylist(Track track) async {
+    if (_pickerOpen || !controller.canOpenActions(track.ref)) return;
+    final focus = _returnFocus;
+    _dismiss(restoreFocus: false);
+    _pickerOpen = true;
+    controller.setActive(false);
+    try {
+      await widget.navigation.addToPlaylist(track.ref, title: track.title);
+    } finally {
+      if (mounted) {
+        _pickerOpen = false;
+        final active = TickerMode.valuesOf(context).enabled;
+        controller.setActive(active);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted &&
+              !_pickerOpen &&
+              TickerMode.valuesOf(context).enabled &&
+              (ModalRoute.isCurrentOf(context) ?? true) &&
+              focus?.context != null) {
+            focus!.requestFocus();
+          }
+        });
+      }
     }
   }
 
@@ -133,6 +163,7 @@ class CatalogDetailScreenState extends State<CatalogDetailScreen> {
                   landscape: size.width > size.height,
                 );
           final track = _menuTrack;
+          final generation = _menuGeneration;
           return PopScope(
             canPop: track == null,
             onPopInvokedWithResult: (didPop, _) {
@@ -174,6 +205,15 @@ class CatalogDetailScreenState extends State<CatalogDetailScreen> {
                               track: track,
                               onDismiss: _dismiss,
                               onSelected: (id) {
+                                if (_pickerOpen ||
+                                    generation != _menuGeneration ||
+                                    !identical(_menuTrack, track)) {
+                                  return;
+                                }
+                                if (id == 'playlist') {
+                                  unawaited(_pickPlaylist(track));
+                                  return;
+                                }
                                 if (id == 'retry-favorites') {
                                   controller.retryFavorites();
                                   return;

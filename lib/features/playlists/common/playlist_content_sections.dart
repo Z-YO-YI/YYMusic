@@ -189,7 +189,7 @@ final class PlaylistContentSections {
               YYButton(label: '更多歌曲', onPressed: controller.loadMore),
             ],
             const SizedBox(height: 12),
-            Text('添加歌曲、播放全部与随机播放尚未接入。', style: YYTypography.caption),
+            Text('可从歌曲菜单添加。播放全部与随机播放尚未接入。', style: YYTypography.caption),
           ],
         ),
       ),

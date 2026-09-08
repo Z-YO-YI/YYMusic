@@ -732,3 +732,23 @@ AppNavigation增加openPlaylist(id)，严格URI编解码只携带稳定自定义
 菜单覆盖包括Shell的页面交互，Back/Esc优先关闭菜单，完成后仅向仍有效的控件恢复焦点。
 Phone/Tablet/Windows各自布局使用原有YY组件/SVG/Token，不将HTML运行时或在线Figma节点猜测带入客户端。
 本批不交付添加选择器、播放全部/随机、拖拽、系统视图或超过200条的连续浏览，不能声明整个Phase6完成。
+
+## ADR-062：添加歌单选择器使用显式有界读取与根原子追加（2026-09-08）
+
+CollectionRepository增加readCustomPlaylists(PlaylistNameQuery, PageRequest)，只读自定义歌单元数据。
+名称为修剪后0–512字符、无控制符的字面子串，仅ASCII大小写折叠（中文原样匹配）；百分号/下划线不是通配符。
+按updatedAt降序、ID的Unicode标量顺序升序稳定分页；SQLite BINARY UTF-8与Fake同序。
+limit+1在单次查询判断hasMore，窗口外元数据不解码，不查询歌曲/条目/来源或返回假计数。
+
+根PlaylistAddSessions拥有惰性独立会话，复用watchPlaylistContentChanges的失效信号与显式读取，
+查询Future/订阅创建取消/已接受写入分别登记排空，最终才释放共享库。会话不依赖Library页面是否启动。
+20→200完整可见前缀，每次重读而非拼接异步排序版本；达到上限明确提示筛选缩小范围。
+筛选输入显式提交；草稿与已读筛选不同或IME合成时旧选项不能提交，快照/请求代次阻止迟到回调。
+
+AppNavigation添加Future<void> addToPlaylist(TrackRef, title)，根原生模态路由不将完整Track、路径或URI传入路由参数。
+调用页面在模态期间撤销待执行播放并阻止旧菜单；关闭后仅在原页面仍有效时恢复活动状态与行焦点。
+Phone BottomSheet与Tablet/Windows Dialog共用业务会话，模态覆盖Shell并阻隔键盘/语义，Back/Esc关闭。
+写入只调用根PlaylistController.addTrack，目标必须是当前快照的自定义歌单，最终原子命令再次校验父身份。
+重复TrackRef允许独立条目；只保存引用，不解析/下载/复制文件，也不创建第二播放或持久状态。
+接受后即使离页或关闭仍排空；失败安全化，离页后的错误由既有根entryFailure返回Library显示。
+本批仅已有歌单选择；新建并添加需要后续真正原子组合，不将两个独立成功/失败冒充原子操作。

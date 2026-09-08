@@ -1,10 +1,17 @@
 import '../models/collection_models.dart';
 import '../models/pagination.dart';
 import '../models/playlist_content.dart';
+import '../models/playlist_name_query.dart';
 import '../models/track.dart';
 
 abstract interface class CollectionRepository {
   Stream<List<Playlist>> watchPlaylists();
+
+  /// Bounded custom metadata only, updatedAt DESC / ID ASC; literal name filter.
+  Future<PageResult<Playlist>> readCustomPlaylists(
+    PlaylistNameQuery query,
+    PageRequest page,
+  );
   Future<Playlist?> getPlaylist(String id);
 
   /// Create a custom playlist without overwriting an existing ID.

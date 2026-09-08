@@ -399,6 +399,14 @@ final class LibraryController extends ChangeNotifier {
       playback.isAvailable;
   bool canFavorite(Track track) =>
       !_disposed && _active && !_busy && _visible(track) && _favoritesReady;
+  bool canAddToPlaylist(Track track) =>
+      !_disposed &&
+      _active &&
+      !_busy &&
+      collection != null &&
+      page.phase == LoadPhase.data &&
+      !page.loading &&
+      _visible(track);
   bool _valid(int intent) => !_disposed && _active && intent == _intent;
   void setActive(bool value) {
     if (_disposed || value == _active) return;

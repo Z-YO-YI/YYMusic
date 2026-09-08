@@ -15,6 +15,7 @@ import '../domain/repositories/search_history_repository.dart';
 import '../features/catalog_detail/common/catalog_detail_controller.dart';
 import '../features/home/common/home_controller.dart';
 import '../features/library/common/library_controller.dart';
+import '../features/playlists/common/playlist_add_controller.dart';
 import '../features/playlists/common/playlist_content_controller.dart';
 import '../features/playlists/common/playlist_controller.dart';
 import '../features/search/common/search_controller.dart';
@@ -103,6 +104,10 @@ final class DependencyGraph {
       collection: this.collection,
     );
     playlists = PlaylistController(collection: this.collection);
+    playlistAdds = PlaylistAddSessions(
+      repository: this.collection,
+      writer: playlists,
+    );
     playlistContents = PlaylistContentSessions(
       repository: this.collection,
       playback: playback,
@@ -133,6 +138,7 @@ final class DependencyGraph {
   late final LibraryController libraryController;
   late final CatalogDetailSessions catalogDetails;
   late final PlaylistController playlists;
+  late final PlaylistAddSessions playlistAdds;
   late final PlaylistContentSessions playlistContents;
   Future<void>? _closeFuture;
 
@@ -152,6 +158,7 @@ final class DependencyGraph {
     libraryController.dispose();
     catalogDetails.dispose();
     playlists.dispose();
+    playlistAdds.dispose();
     playlistContents.dispose();
     playbackPresenter.dispose();
     playback.dispose();
@@ -167,6 +174,7 @@ final class DependencyGraph {
       libraryController.close,
       catalogDetails.close,
       playlists.close,
+      playlistAdds.close,
       playlistContents.close,
       playback.close,
       _audioEngine.dispose,

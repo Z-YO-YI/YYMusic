@@ -39,6 +39,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
   int _revision = 0;
   Track? _menuTrack;
   FocusNode? _returnFocus;
+  int _menuGeneration = 0;
+  bool _pickerOpen = false;
   @override
   void initState() {
     super.initState();
@@ -53,7 +55,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final active = TickerMode.valuesOf(context).enabled;
+    final active = !_pickerOpen && TickerMode.valuesOf(context).enabled;
     widget.controller.setActive(active);
     if (!active && _menuTrack != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -74,12 +76,15 @@ class _LibraryScreenState extends State<LibraryScreen> {
   void _save() =>
       widget.viewState.saveScrollOffset(AppRoute.library, _scroll.offset);
   void _openMenu(Track track) {
+    if (_pickerOpen) return;
+    _menuGeneration++;
     _returnFocus = FocusManager.instance.primaryFocus;
     setState(() => _menuTrack = track);
   }
 
   void _dismiss({bool restoreFocus = true}) {
     if (_menuTrack == null) return;
+    _menuGeneration++;
     setState(() => _menuTrack = null);
     final focus = _returnFocus;
     _returnFocus = null;
@@ -87,6 +92,32 @@ class _LibraryScreenState extends State<LibraryScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && focus?.context != null) focus!.requestFocus();
       });
+    }
+  }
+
+  Future<void> _pickPlaylist(Track track) async {
+    if (!widget.controller.canAddToPlaylist(track) || _pickerOpen) return;
+    final focus = _returnFocus;
+    _dismiss(restoreFocus: false);
+    _pickerOpen = true;
+    widget.controller.setActive(false);
+    try {
+      await widget.navigation.addToPlaylist(track.ref, title: track.title);
+    } finally {
+      if (mounted) {
+        _pickerOpen = false;
+        final active = TickerMode.valuesOf(context).enabled;
+        widget.controller.setActive(active);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted &&
+              !_pickerOpen &&
+              TickerMode.valuesOf(context).enabled &&
+              (ModalRoute.isCurrentOf(context) ?? true) &&
+              focus?.context != null) {
+            focus!.requestFocus();
+          }
+        });
+      }
     }
   }
 
@@ -122,6 +153,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 landscape: size.width > size.height,
               );
         final track = _menuTrack;
+        final generation = _menuGeneration;
         return PopScope(
           canPop: track == null,
           onPopInvokedWithResult: (didPop, _) {
@@ -177,9 +209,26 @@ class _LibraryScreenState extends State<LibraryScreen> {
                                 glyph: YYGlyph.heart,
                                 enabled: widget.controller.canFavorite(track),
                               ),
+                              YYContextMenuItem(
+                                id: 'playlist',
+                                label: '添加到歌单',
+                                glyph: YYGlyph.playlist,
+                                enabled: widget.controller.canAddToPlaylist(
+                                  track,
+                                ),
+                              ),
                             ],
                             onDismiss: _dismiss,
                             onSelected: (id) {
+                              if (_pickerOpen ||
+                                  generation != _menuGeneration ||
+                                  !identical(_menuTrack, track)) {
+                                return;
+                              }
+                              if (id == 'playlist') {
+                                unawaited(_pickPlaylist(track));
+                                return;
+                              }
                               _dismiss();
                               if (id == 'play') {
                                 unawaited(widget.controller.play(track));

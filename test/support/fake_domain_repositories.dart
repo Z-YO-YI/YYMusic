@@ -9,6 +9,7 @@ import 'package:yymusic/domain/models/music_source.dart';
 import 'package:yymusic/domain/models/pagination.dart';
 import 'package:yymusic/domain/models/playlist_content.dart';
 import 'package:yymusic/domain/models/playlist_name.dart';
+import 'package:yymusic/domain/models/playlist_name_query.dart';
 import 'package:yymusic/domain/models/sensitive_credential.dart';
 import 'package:yymusic/domain/models/track.dart';
 import 'package:yymusic/domain/repositories/collection_repository.dart';
@@ -153,6 +154,9 @@ final class FakeCollectionRepository implements CollectionRepository {
   int contentWatchCount = 0;
   Future<PlaylistContent?> Function(String id, PageRequest page)? contentReader;
   Stream<void> Function()? contentChangesReader;
+  final selectionReadCalls = <({PlaylistNameQuery query, PageRequest page})>[];
+  Future<PageResult<Playlist>> Function(PlaylistNameQuery, PageRequest)?
+  selectionReader;
   final DateTime Function() _playlistClock;
   Future<void> Function(String operation, String id)? onPlaylistMutation;
   final playlistMutationCalls = <String>[];
@@ -191,6 +195,25 @@ final class FakeCollectionRepository implements CollectionRepository {
       if (playlist.id == id) return playlist;
     }
     return null;
+  }
+
+  @override
+  Future<PageResult<Playlist>> readCustomPlaylists(
+    PlaylistNameQuery query,
+    PageRequest page,
+  ) async {
+    selectionReadCalls.add((query: query, page: page));
+    if (selectionReader != null) return selectionReader!(query, page);
+    final matches =
+        _playlists.where((p) => !p.isSystem && query.matches(p.name)).toList()
+          ..sort((a, b) {
+            final time = b.updatedAt.compareTo(a.updatedAt);
+            return time != 0 ? time : PlaylistNameQuery.compareIds(a.id, b.id);
+          });
+    return PageResult(
+      items: matches.skip(page.offset).take(page.limit),
+      hasMore: page.offset + page.limit < matches.length,
+    );
   }
 
   @override

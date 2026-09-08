@@ -60,7 +60,22 @@
 普通push只上传14天Windows开发Debug审查包，需要Debug CRT；普通Android job构建但不上传APK。
 没有合并、Release、手动发布或历史改写，不提交凭据、用户数据、日志、构建产物。
 
-下一增量仍需添加歌曲选择器、播放全部/随机、系统歌单、超过200条浏览策略；
+### 后续回填：H5精确提交云端证据
+
+提交 `4847f29b66d1b3d82f32e71aa43309cc3f6dfac4` 的
+[push34208980405](https://github.com/Z-YO-YI/YYMusic/actions/runs/34208980405) 与
+[PR34208990757](https://github.com/Z-YO-YI/YYMusic/actions/runs/34208990757)
+均完成源码checks、Android Debug和Windows native三类标准job，整体success；
+[Draft PR #50](https://github.com/Z-YO-YI/YYMusic/pull/50)保持OPEN，未合并。
+Windows标准job含真实窗口首帧/关闭集成、Windows宿主Golden、默认入口重建及完整文件包校验；
+两类专用音频job与Release按设计skipped，不计为本批新音频或发行证据。
+
+push的Windows Debug artifact `10049500733`，67,305,456字节，
+GitHub API digest `sha256:646f31d4f6150588c632d1ed49389bb708d4be0acb6a933a7ba73e0403d16a82`，
+到期时间 `2026-09-22T09:25:57Z`；本批未下载，不将API摘要冒充本地复算。
+此包依赖Debug CRT，不是通用Windows安装程序；Android标准job没有上传APK。
+
+H5结束时下一增量仍需添加歌曲选择器、播放全部/随机、系统歌单、超过200条浏览策略；
 导入/恢复、实时REST、完整播放器/歌词、平台集成及发行仍待后续主指令阶段。
 本机Windows缺C++/Debug CRT的限制未解决；本批无新设备音频验收或HTML网页截图对照。
 既有网页安全限制不绕过，Golden和常规Windows窗口CI不能代替这些证据。
