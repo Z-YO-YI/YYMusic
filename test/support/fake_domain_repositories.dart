@@ -12,12 +12,15 @@ import 'package:yymusic/domain/models/playlist_name.dart';
 import 'package:yymusic/domain/models/playlist_name_query.dart';
 import 'package:yymusic/domain/models/playlist_playback_plan.dart';
 import 'package:yymusic/domain/models/sensitive_credential.dart';
+import 'package:yymusic/domain/models/system_playlist_content.dart';
 import 'package:yymusic/domain/models/track.dart';
 import 'package:yymusic/domain/repositories/collection_repository.dart';
 import 'package:yymusic/domain/repositories/library_repository.dart';
 import 'package:yymusic/domain/repositories/lyrics_repository.dart';
 import 'package:yymusic/domain/repositories/music_source_repository.dart';
 import 'package:yymusic/platform/contracts/secure_credential_gateway.dart';
+
+part 'fake_system_playlists.dart';
 
 final class FakeLibraryRepository implements LibraryRepository {
   FakeLibraryRepository({
@@ -151,6 +154,9 @@ final class FakeCollectionRepository implements CollectionRepository {
   final Map<String, List<PlaylistEntry>> _entries = {};
   Map<TrackRef, Track> _contentTracks;
   final _contentChanges = StreamController<void>.broadcast(sync: true);
+  final _systemChanges = StreamController<SystemPlaylistType?>.broadcast(
+    sync: true,
+  );
   final contentReadCalls = <({String id, PageRequest page})>[];
   int contentWatchCount = 0;
   Future<PlaylistContent?> Function(String id, PageRequest page)? contentReader;
@@ -344,6 +350,21 @@ final class FakeCollectionRepository implements CollectionRepository {
   void setContentTracks(Iterable<Track> tracks) {
     _contentTracks = {for (final track in tracks) track.ref: track};
     _contentChanges.add(null);
+    _systemChanges.add(null);
+  }
+
+  @override
+  Future<SystemPlaylistContent> readSystemPlaylistContent(
+    SystemPlaylistType type,
+    PageRequest page,
+  ) => _systemContent(type, page);
+
+  @override
+  Stream<void> watchSystemPlaylistChanges(SystemPlaylistType type) {
+    if (_systemChanges.isClosed) throw StateError('Collection disposed');
+    return _systemChanges.stream
+        .where((value) => value == null || value == type)
+        .map<void>((_) {});
   }
 
   @override
@@ -559,6 +580,7 @@ final class FakeCollectionRepository implements CollectionRepository {
     queueWrites.add(snapshot);
     _queue = snapshot;
     _queueChanges.add(snapshot);
+    _systemChanges.add(SystemPlaylistType.queue);
   }
 
   @override
@@ -579,13 +601,11 @@ final class FakeCollectionRepository implements CollectionRepository {
     _favorites = _favorites.where((entry) => entry.track != track).toList();
     if (favorite) {
       _favorites.add(
-        FavoriteEntry(
-          track: track,
-          addedAt: DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
-        ),
+        FavoriteEntry(track: track, addedAt: _playlistClock().toUtc()),
       );
     }
     _favoriteChanges.add(List.unmodifiable(_favorites));
+    _systemChanges.add(SystemPlaylistType.favorites);
   }
 
   @override
@@ -596,19 +616,28 @@ final class FakeCollectionRepository implements CollectionRepository {
 
   @override
   Future<void> recordHistory(PlayHistoryEntry entry) async {
-    _history = [entry, ..._history.where((item) => item.id != entry.id)];
+    _history = [
+      entry,
+      ..._history.where(
+        (item) => item.id != entry.id && item.track != entry.track,
+      ),
+    ]..sort(_compareHistory);
+    _history = _history.take(20).toList();
     _historyChanges.add(List.unmodifiable(_history));
+    _systemChanges.add(SystemPlaylistType.recent);
   }
 
   @override
   Future<void> clearHistory() async {
     _history = [];
     _historyChanges.add(const []);
+    _systemChanges.add(SystemPlaylistType.recent);
   }
 
   Future<void> dispose() async {
     await Future.wait([
       _contentChanges.close(),
+      _systemChanges.close(),
       _playlistChanges.close(),
       _queueChanges.close(),
       _favoriteChanges.close(),

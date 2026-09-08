@@ -1,6 +1,6 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 6H9 歌单播放全部／随机播放**。自定义歌单可一键读取整份轻量引用并替换根队列，不受当前200条浏览窗口限制；保留重复条目，跳过读取时已标记不可用的引用，原歌单不变。随机播放也随机选择首项；全部不可用时不改变现有队列。补齐延迟读取/加载撤销、关闭排空及Windows零尺寸保留路由。812项Flutter（84张Golden：更新8张，其余76张未改）、98项Node通过；严格分析、Android预检及精确GitHub双平台状态见[本批报告](docs/phase_6h9_playlist_playback_report.md)/对应Draft PR。前置Phase6H8 `33187c0` 两组GitHub源码/Android/Windows均成功。系统歌单、真实导入、完整播放器及发行仍待开发；默认新安装仍为空库。
+当前阶段：**Android + Windows · Phase 6H10 系统歌单只读数据层**。喜欢的音乐、最近播放和当前队列已具备同一SQL快照的分页投影与类型相关刷新通知，不创建可删除的伪歌单；保留完整来源、失效引用和重复队列条目，最近播放最多20条。837项Flutter（84张Golden未修改）、100项Node通过，严格分析零问题。精确GitHub双平台状态见[本批报告](docs/phase_6h10_system_playlist_data_report.md)/对应Draft PR。前置Phase6H9 `243299c` 两组GitHub源码/Android/Windows均成功，其自定义歌单整体播放功能保持不变。本批未新增系统歌单页面，也未接入真正开始播放后的历史写入；真实导入、完整播放器及发行仍待开发，默认新安装为空库。
 
 距离“新安装后可日常听本地音乐”仍有四组工作：Phase6页面收尾；Phase7完整播放器/歌词/队列；Phase8双平台真实导入、扫描与授权；Phase10—11后台/系统媒体控制、Release打包与设备验收。完整产品还需要Phase9第三方来源。现有Debug构建不等于可用发行版：默认空库没有导入入口，Windows开发Debug包还依赖Debug CRT；不以测试数量或阶段编号换算虚假完成百分比。
 
@@ -20,6 +20,7 @@ Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭
 
 ## 开发入口
 
+- [Phase 6H10 系统歌单数据计划](docs/phase_6h10_system_playlist_data_plan.md)、[报告](docs/phase_6h10_system_playlist_data_report.md)：枚举选择的喜欢/最近/队列投影、计数/当前项一致性、限页后署名展开、失效通知、真实SQLite损坏与重开验证；UI接线另行开发。
 - [Phase 6H9 歌单整体播放计划](docs/phase_6h9_playlist_playback_plan.md)、[报告](docs/phase_6h9_playlist_playback_report.md)：单SQL轻量完整播放计划、根串行队列替换与随机顺序、不可用引用过滤和Windows最小化保留页面。
 - [Phase 6H8 分组浏览计划](docs/phase_6h8_playlist_windows_plan.md)、[报告](docs/phase_6h8_playlist_windows_report.md)：原生范围/前后组导航、单SQL有界快照、末组删除恢复、旧回调保护和根关闭排空，真实SQLite遍历1003条且不合并跨版本页。
 - [Phase 6H7 新建并添加计划](docs/phase_6h7_create_and_add_plan.md)、[报告](docs/phase_6h7_create_and_add_report.md)：父歌单/首条引用同事务保存、碰撞不覆盖、真实SQLite故障回滚和根排空；三端复用原生名称表单与原始plus SVG，没有独立创建后再追加的半成品窗口。

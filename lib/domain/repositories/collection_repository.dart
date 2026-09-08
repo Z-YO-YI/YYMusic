@@ -3,9 +3,20 @@ import '../models/pagination.dart';
 import '../models/playlist_content.dart';
 import '../models/playlist_name_query.dart';
 import '../models/playlist_playback_plan.dart';
+import '../models/system_playlist_content.dart';
 import '../models/track.dart';
 
 abstract interface class CollectionRepository {
+  /// Consistent read-only system view; does not create a persisted Playlist.
+  Future<SystemPlaylistContent> readSystemPlaylistContent(
+    SystemPlaylistType type,
+    PageRequest page,
+  );
+
+  /// No initial event or content read; subscribe before reading a fresh window.
+  /// May conservatively invalidate after rollback; not a mutation/commit log.
+  Stream<void> watchSystemPlaylistChanges(SystemPlaylistType type);
+
   Stream<List<Playlist>> watchPlaylists();
 
   /// Bounded custom metadata only, updatedAt DESC / ID ASC; literal name filter.
