@@ -41,3 +41,11 @@
 当前居中使用即时精确定位，不声称跨任意距离平滑滚动、实机性能 Profile 或屏幕阅读器人工验收完成。仅原生焦点和语义自动测试通过；窗口与 Android 设备验收单列。
 没有本机 Windows 构建、本批 Android 安装/出声、Release/AAB/商店发布。新安装仍为空库，真实导入/扫描、来源、后台媒体和发行仍待后续 Phase8–11。
 阶段提交/push 后核对精确 GitHub Android/Windows 流水线；不自动合并、触发手动诊断或提交安装包/凭据。Windows Debug 依赖 Debug CRT，普通 Android CI 尚无 APK artifact，不能当作通用安装版交付。
+
+## 精确 GitHub 验收回填
+
+实现提交 `aad2d06d96b22e25a861bc466045b7529eebee5c`；[Draft PR #66](https://github.com/Z-YO-YI/YYMusic/pull/66)，base=`codex/native-player-route`。
+[Push 34288308684](https://github.com/Z-YO-YI/YYMusic/actions/runs/34288308684) 与 [PR 34288312667](https://github.com/Z-YO-YI/YYMusic/actions/runs/34288312667) 均完成 SUCCESS，head SHA 均一致。
+两组 Linux 1061 测试通过、127 Windows 宿主截图按预期跳过；Windows 127 Golden 与 1 项真实窗口测试通过，65 文件 Debug bundle/六音频包/完整原生许可通过；Android 51 原生坐标、3 份完整法律文本、48 资产和 v2 单签名者通过。
+Push 的 [Windows 开发 Debug 产物](https://github.com/Z-YO-YI/YYMusic/actions/runs/34288308684/artifacts/10080777403) 为 67,502,002 bytes，SHA-256 `e4388ebd09746d438039bd5a3334c40d466c4dfb29320c5bad52f749969e12cd`，到期 UTC `2026-09-22T23:11:38Z`。依赖 Debug CRT，非通用安装版；普通 Android 未上传 artifact。
+上述证据只归属于 7C1，不代替下一批新提交的验证。未合并、未发布 Release、未运行手动音频诊断。

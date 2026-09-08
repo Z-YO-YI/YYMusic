@@ -28,11 +28,23 @@ test('independent native player composes three layouts around the root presenter
   assert.match(screen, /isIntentCurrent:/);
   assert.match(screen, /PopScope<Object\?>/);
   assert.match(screen, /SystemPlaylistType\.queue/);
-  assert(!/LyricsController\(|PlaybackController\(|QueueController\(|Timer\(|dart:io|\.openLyrics\(/.test(screen));
+  assert.match(screen, /widget\.navigation\.openLyrics/);
+  assert(!/LyricsController\(|PlaybackController\(|QueueController\(|Timer\(|dart:io/.test(screen));
   const router = read('lib/app/app_router.dart');
   assert.match(router, /route == AppRoute\.player && playbackPresenter != null/);
   assert.match(router, /lastOrNull\?\.matchedLocation/);
   assert.match(router, /_playerActivity\.value \|\| _playerPushPending/);
+});
+
+test('independent lyrics route borrows root state and revokes hidden page intents', () => {
+  const screen = read('lib/features/lyrics/common/lyrics_screen.dart');
+  for (const target of ['phone/phone_lyrics_layout', 'tablet/tablet_lyrics_layout', 'windows/windows_lyrics_layout']) {
+    assert.match(read(`lib/features/lyrics/${target}.dart`), /extends StatelessWidget/);
+  }
+  for (const pattern of [/LyricsViewport\(/, /YYLyricsPlayerDock\(/, /isIntentCurrent:/, /addPostFrameCallback/, /setActive\(false\)/, /showFavorite: false/]) assert.match(screen, pattern);
+  assert(!/LyricsController\(|PlaybackController\(|QueueController\(|Timer\(|dart:io|Repository|Fixture/.test(screen));
+  assert.match(read('lib/app/yy_music_app.dart'), /lyricsController: ref\.read\(dependencyGraphProvider\)\.lyricsController/);
+  assert.match(read('lib/playback/lyrics_controller.dart'), /isIntentCurrent\?\.call\(\)/);
 });
 
 test('lyrics synchronization borrows one root player and repository without a second clock', () => {

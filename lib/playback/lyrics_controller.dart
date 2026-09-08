@@ -166,12 +166,14 @@ final class LyricsController extends ChangeNotifier {
   Future<void> seekLine(
     int index, {
     required LoadState<LyricsDocument> expectedState,
+    bool Function()? isIntentCurrent,
   }) {
     final identity = _identity;
     final generation = _generation;
     if (identity == null ||
         !identical(expectedState, _state) ||
-        !_canSeek(generation, identity)) {
+        !_canSeek(generation, identity) ||
+        !(isIntentCurrent?.call() ?? true)) {
       return Future<void>.value();
     }
     final target = _timeline?.seekTarget(
@@ -187,6 +189,7 @@ final class LyricsController extends ChangeNotifier {
           target,
           expectedEntryId: identity.entryId,
           canSeek: () =>
+              (isIntentCurrent?.call() ?? true) &&
               identical(expectedState, _state) &&
               _canSeek(generation, identity) &&
               _timeline?.seekTarget(

@@ -17,6 +17,7 @@ import '../features/home/common/home_controller.dart';
 import '../features/home/common/home_screen.dart';
 import '../features/library/common/library_controller.dart';
 import '../features/library/common/library_screen.dart';
+import '../features/lyrics/common/lyrics_screen.dart';
 import '../features/player/common/player_screen.dart';
 import '../features/playlists/common/playlist_add_controller.dart';
 import '../features/playlists/common/playlist_add_dialog.dart';
@@ -31,6 +32,7 @@ import '../features/search/common/search_screen.dart';
 import '../features/settings/common/appearance_settings_controller.dart';
 import '../features/settings/common/licenses_screen.dart';
 import '../features/settings/common/settings_screen.dart';
+import '../playback/lyrics_controller.dart';
 import '../shared/foundation_button.dart';
 import 'adaptive_root.dart';
 import 'app_routes.dart';
@@ -51,6 +53,7 @@ final class AppRouter implements AppNavigation {
     LicenseRepository licenses = const FlutterLicenseRepository(),
     bool audioBackendSelected = false,
     PlaybackPresenter? playbackPresenter,
+    LyricsController? lyricsController,
     HomeController? homeController,
     CatalogSearchController? searchController,
     LibraryController? libraryController,
@@ -143,6 +146,17 @@ final class AppRouter implements AppNavigation {
             navigation: this,
             routeActive: _playerActivity,
           )
+        : route == AppRoute.lyrics &&
+              lyricsController != null &&
+              playbackPresenter != null
+        ? LyricsScreen(
+            key: const ValueKey('screen-lyrics'),
+            platform: platform,
+            controller: lyricsController,
+            playback: playbackPresenter,
+            navigation: this,
+            routeActive: _lyricsActivity,
+          )
         : FoundationScreen(
             route: route,
             navigation: this,
@@ -194,6 +208,7 @@ final class AppRouter implements AppNavigation {
             path: route.path,
             pageBuilder: (context, state) => NoTransitionPage<void>(
               key: state.pageKey,
+              name: route.path,
               child: screen(route),
             ),
           ),
@@ -364,25 +379,33 @@ final class AppRouter implements AppNavigation {
   late final GoRouter _router;
   final _settingsActivity = ValueNotifier(false);
   final _playerActivity = ValueNotifier(false);
+  final _lyricsActivity = ValueNotifier(false);
   String? get _activePath =>
       _router.routerDelegate.currentConfiguration.lastOrNull?.matchedLocation;
 
   void _refreshRouteActivity() {
     _settingsActivity.value = _activePath == AppRoute.settings.path;
     _playerActivity.value = _activePath == AppRoute.player.path;
+    _lyricsActivity.value = _activePath == AppRoute.lyrics.path;
   }
 
   final _rootNavigator = GlobalKey<NavigatorState>();
   late final Future<void> Function(TrackRef, String) _showPlaylistPicker;
   bool _pickerShowing = false;
   bool _playerPushPending = false;
+  bool _lyricsPushPending = false;
   RouterConfig<Object> get config => _router;
 
   @override
   void goTo(AppRoute route) => _router.go(route.path);
   @override
   void openPlayer() {
+    if (_restoreRoute(AppRoute.player)) return;
     if (_playerActivity.value || _playerPushPending) return;
+    if (_lyricsActivity.value) {
+      unawaited(_router.replace<void>(AppRoute.player.path));
+      return;
+    }
     _playerPushPending = true;
     unawaited(
       _router.push<void>(AppRoute.player.path).whenComplete(() {
@@ -392,7 +415,32 @@ final class AppRouter implements AppNavigation {
   }
 
   @override
-  void openLyrics() => unawaited(_router.push<void>(AppRoute.lyrics.path));
+  void openLyrics() {
+    if (_restoreRoute(AppRoute.lyrics)) return;
+    if (_lyricsActivity.value || _lyricsPushPending) return;
+    _lyricsPushPending = true;
+    unawaited(
+      _router.push<void>(AppRoute.lyrics.path).whenComplete(() {
+        _lyricsPushPending = false;
+      }),
+    );
+  }
+
+  // Named independent pages are reused instead of cycling player/lyrics stacks.
+  bool _restoreRoute(AppRoute route) {
+    // Configuration is updated before Navigator has built a just-pushed page.
+    if (_activePath == route.path) return true;
+    if (!_router.routerDelegate.currentConfiguration.matches.any(
+      (match) => match.matchedLocation == route.path,
+    )) {
+      return false;
+    }
+    _rootNavigator.currentState?.popUntil(
+      (page) => page.settings.name == route.path,
+    );
+    return true;
+  }
+
   @override
   void openDesignGallery() => unawaited(_router.push<void>('/design-system'));
   @override
@@ -465,5 +513,6 @@ final class AppRouter implements AppNavigation {
     _router.dispose();
     _settingsActivity.dispose();
     _playerActivity.dispose();
+    _lyricsActivity.dispose();
   }
 }

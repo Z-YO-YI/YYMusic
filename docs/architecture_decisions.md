@@ -942,3 +942,11 @@ Windows 保持桌面双栏；Phone 竖单列/短横双栏，Tablet 横双栏/竖
 本批为独立歌词页正文组件，路由/Dock/加载空错状态和平台沉浸接线在后续增量，不能宣称完整歌词功能已可用。
 无 Seek 回调的歌词渲染为真实只读语义，不冒充禁用按钮或再次降低文本透明度。YYControlAction 可选 onFocusReveal 让自定义双向视口按实际位置显示已获焦点的行，默认消费者保持既有行为；这不授予组件请求焦点的权力。
 双向居中采用实际 RenderBox 中心差值而非通用 ensureVisible 的边缘假设；rebase 同时更换滚动子树身份，避免只换 ScrollController 时仍复用旧 ScrollPosition。当前测量行换索引时使用新 Key，不把原来已获焦点的控件身份冒用于另一句歌词；同一行翻译重排可保留焦点。
+
+## ADR-078：独立歌词页面借用单根活动状态，导航不堆叠播放器
+
+2026-09-09，Phase 7C2。正式 LyricsScreen 借用根 LyricsController/PlaybackPresenter，三端布局只排列头部/正文/Dock；页面仅持有翻译显示、手势草稿、快照代次，不拥有媒体或仓储。
+app 注入只读路由活动；结合 ModalRoute/TickerMode/正尺寸判定，激活在安全后帧合并，失效同步撤销页面意图。LyricsController.seekLine 的可选 isIntentCurrent 在入队和实际执行前检查，不能用稍后停用同步器代替旧手势保护。
+独立 player/lyrics 页面有明确路由名称，重复打开去重；Dock 返回播放页复用已有命名播放页，否则替换当前歌词页；普通返回保留原始入口关系，不停止音乐。
+底栏元数据添加受控原生长按歌词动作，普通单击仍打开播放页；YYControlAction 新增长按回调默认关闭，旧使用者行为不变。Windows L 不拦截原生文字输入，Ctrl+L仍为音乐库。
+歌词页使用深色单一兜底色与现有玻璃Dock；隐藏本批未接的收藏控件，不提供伪全屏/来源/权限开关。封面提色、平台沉浸和独立队列后续验收。

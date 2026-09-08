@@ -54,6 +54,7 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp> {
         viewState: ref.read(dependencyGraphProvider).viewState,
         licenses: ref.read(dependencyGraphProvider).licenses,
         playbackPresenter: ref.read(dependencyGraphProvider).playbackPresenter,
+        lyricsController: ref.read(dependencyGraphProvider).lyricsController,
         homeController: ref.read(dependencyGraphProvider).home,
         searchController: ref.read(dependencyGraphProvider).search,
         libraryController: ref.read(dependencyGraphProvider).libraryController,
@@ -90,6 +91,15 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp> {
     unawaited(
       ref.read(dependencyGraphProvider).playbackPresenter.togglePlayback(),
     );
+  }
+
+  void _lyricsFromKeyboard() {
+    final focused = FocusManager.instance.primaryFocus?.context;
+    if (focused?.widget is EditableText ||
+        focused?.findAncestorWidgetOfExactType<EditableText>() != null) {
+      return;
+    }
+    _router?.openLyrics();
   }
 
   @override
@@ -133,6 +143,13 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp> {
                             LogicalKeyboardKey.space,
                             includeRepeats: false,
                           ): _toggleFromKeyboard,
+                        if ((widget.platform ??
+                                YYPlatform.fromTarget(defaultTargetPlatform)) ==
+                            YYPlatform.windows)
+                          const SingleActivator(
+                            LogicalKeyboardKey.keyL,
+                            includeRepeats: false,
+                          ): _lyricsFromKeyboard,
                         const SingleActivator(
                           LogicalKeyboardKey.arrowLeft,
                           alt: true,

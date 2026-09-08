@@ -43,6 +43,7 @@ class AdaptiveRoot extends StatelessWidget {
           : ShellPlayer(
               presenter: presenter,
               onOpen: navigation.openPlayer,
+              onOpenLyrics: navigation.openLyrics,
               phone: layout == YYLayoutClass.androidPhone,
               compact:
                   layout == YYLayoutClass.windowsNarrow ||
