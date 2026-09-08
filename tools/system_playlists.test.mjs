@@ -25,3 +25,18 @@ test('system views are immutable separate models with scoped query-free invalida
   for (const type of ['favorites', 'recent', 'queue']) assert(watcher.includes(`type == SystemPlaylistType.${type}`));
   assert(!/\.get\(|\.watch\(|readSystem|playlistRecords/.test(watcher));
 });
+
+test('system sessions borrow the root repository and drain before storage without mutation APIs', () => {
+  const graph = read('lib/app/dependency_graph.dart');
+  assert.match(graph, /systemPlaylists = SystemPlaylistSessions\(repository: this.collection\)/);
+  assert.match(graph, /systemPlaylists.dispose\(\)/);
+  assert(graph.indexOf('systemPlaylists.close,') < graph.indexOf('services.dispose'));
+  const session = read('lib/features/playlists/common/system_playlist_controller.dart');
+  assert.match(session, /final SystemPlaylistType type;/);
+  assert.match(session, /watchSystemPlaylistChanges\(type\)/);
+  assert.match(session, /readSystemPlaylistContent\(/);
+  assert.match(session, /maxVisibleCount = 200/);
+  assert.match(session, /revision == _readRevision/);
+  assert.match(session, /!identical\(content, expected\)/);
+  assert(!/readPlaylistContent\(|getTrack\(|saveQueue\(|setFavorite\(|recordHistory\(|PlaybackController|AppDatabase|\.addAll\(/.test(session));
+});

@@ -1,6 +1,15 @@
 # 原生基础验证矩阵
 
-Phase6H10 当前：839 Flutter（84 Golden未改）、100 Node；分析/构建详见[报告](phase_6h10_system_playlist_data_report.md)。
+Phase6H11 当前：868 Flutter（84 Golden未改）、101 Node；分析/构建详见[报告](phase_6h11_system_playlist_sessions_report.md)。
+
+Phase6H11新增29项：12控制器/三类型、8生命周期、6窗口导航、3实际SQLite根会话测试。
+构造无I/O、先订阅后读、三种空状态、类型相关变化与共享曲库变化、完整引用/真实重复ID/页外当前ID通过。
+单worker合并100次失效，旧成功/错误隔离；监听error/done/throw安全失败并显式重建，类型/offset/limit响应校验。
+收藏/队列各1003条可达且单窗口最多200，不缓存所有页；旧回调/失活/加载/错误/关闭禁止导航，末组缩短/清空正确回退。
+订阅getter重入关闭、初始/终态监听者关闭和重刷、取消失败脱敏、一个会话关闭不影响另一个、根等待读与取消均覆盖。
+实际SQLite千首队列每组一个绑定SQL，五组双艺人展开行400/400/400/400/6，无读事务或音频调用。
+实际查询被暂停时根不关闭SQLite，释放查询后才关闭一次；没有新增UI、Schema、依赖或Golden。
+既有根关闭顺序Node断言明确纳入systemPlaylists.close，新门禁检查会话无写API且借用单根Repository。
 
 Phase6H10新增27项：3模型、10 Fake/SQLite共用合同、11 SQL投影/通知/损坏边界、1真实文件库重开、2 Unicode排序跨实现对照。
 同时间收藏按完整来源身份稳定排序、新时间置顶；最近20/同曲重放置顶/清除保留曲库；队列重复及页外当前项保留。
