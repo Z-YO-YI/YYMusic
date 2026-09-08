@@ -53,8 +53,16 @@ H6精确提交 `b2845a3b23852deb01f41538f4d79cc18a7a2076` 的
 [PR34215576065](https://github.com/Z-YO-YI/YYMusic/actions/runs/34215576065) 标准三job全部成功，
 Draft PR #51保持OPEN、未合并；本批回填其报告，明确Windows开发包而非通用安装程序。
 
-本批审查后提交推送stacked Draft PR，base=`codex/playlist-add-picker`；对应PR记录本批精确提交、
-push/PR源码与Android/Windows结果和Windows artifact，不以前置/本地成功冒充本批云端通过。
+本批精确提交 `c142daf186efd6c1a4bb717ce02c986066e5ffd9`，
+[Draft PR #52](https://github.com/Z-YO-YI/YYMusic/pull/52)，base=`codex/playlist-add-picker`。
+[push34220162205](https://github.com/Z-YO-YI/YYMusic/actions/runs/34220162205) 与
+[PR34220259946](https://github.com/Z-YO-YI/YYMusic/actions/runs/34220259946) 两组源码/Android/Windows均成功。
+Linux673测试通过、81宿主Golden跳过；Windows81Golden及真实窗口状态/关闭握手1项通过，
+默认Debug重新构建及65文件完整包验证成功。Android48资产/原生材料/v2单签名通过。
+push的Windows Debug artifact `10053787689` 为67,332,648字节，
+API摘要 `sha256:bbb5a770e75f941487253d3118a153def305555c4725b2515d5ee698ecb2542c`，
+到期 `2026-09-22T11:31:47Z`，已核元数据与日志而未下载。
+专用音频job为skipped，不作为本批新的设备音频证据；Draft PR未合并。
 普通push仅上传保留14天的Windows开发Debug包，普通Android job构建验证但不上传APK；
 专用音频/Profile/Release未触发。无合并、历史覆盖、全局安装、用户凭据/数据/构建产物入库。
 

@@ -253,7 +253,7 @@ void main() {
   );
 
   testWidgets(
-    'more loads a consistent prefix and the 200 entry UI boundary is explicit',
+    'more expands a consistent group and its 200 entry boundary exposes real navigation',
     (tester) async {
       final f = PlaylistContentFixture(count: 237);
       await mountPlaylist(tester, f);
@@ -286,13 +286,23 @@ void main() {
       state.scroll.jumpTo(state.scroll.position.maxScrollExtent);
       await tester.pumpAndSettle();
       await tester.scrollUntilVisible(
-        find.text('当前显示前 200 条。完整大歌单浏览仍在开发。'),
+        find.byKey(const ValueKey(('playlist-window-next', 'bottom'))),
         500,
         scrollable: scrolling,
       );
-      await tester.ensureVisible(find.text('当前显示前 200 条。完整大歌单浏览仍在开发。'));
+      await tester.ensureVisible(
+        find.byKey(const ValueKey(('playlist-window-next', 'bottom'))),
+      );
       await tester.pumpAndSettle();
-      expect(find.text('已读取 200 / 237 条'), findsOneWidget);
+      expect(find.text('当前第 1–200 条 / 共 237 条'), findsWidgets);
+      expect(
+        tester
+            .widget<YYButton>(
+              find.byKey(const ValueKey(('playlist-window-next', 'bottom'))),
+            )
+            .onPressed,
+        isNotNull,
+      );
       await openEntryMenu(tester, 'e-199');
       final menu = tester.widget<YYContextMenu>(find.byType(YYContextMenu));
       expect(menu.items.singleWhere((e) => e.id == 'down').enabled, isFalse);
