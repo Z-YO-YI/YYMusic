@@ -1,6 +1,6 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 6H3 歌单条目原子命令**。继三端创建/改名/确认删除界面后，已实现歌曲追加、移除、按条目锚点排序的底层命令及并发/失败回滚保护，仍待接入歌曲管理界面。615项Flutter（73张Golden未改）、86项Node、严格分析及本地Android Debug通过；本批GitHub精确提交构建状态见报告/对应Draft PR。前置Phase6H2 `a7dd5d0` 两组GitHub checks/Android/Windows均成功。歌单歌曲管理入口/播放全部、导入/REST、完整播放器及发布仍未完成，尚不是完整可用或上线版本。
+当前阶段：**Android + Windows · Phase 6H4 歌单内容读取会话**。继三端元数据编辑界面与条目原子命令后，已实现单语句一致窗口、重复歌曲/失效引用保留、实时失效刷新及根关闭排空；本批不新增管理界面。650项Flutter（73张Golden未改）、88项Node、严格分析通过；Android预检及GitHub精确提交双平台构建状态见报告/对应Draft PR。前置Phase6H3 `cbe7bdc` 两组GitHub checks/Android/Windows均成功。下一步接歌单歌曲管理入口/播放动作；导入/REST、完整播放器及发布仍未完成，尚不是完整可用或上线版本。
 
 Phase6E 后续修正：初始云端 Android/源码成功，Windows 旧首页 Golden 因测试样本逐首读取时钟而排序不稳定。
 已固定样本批次时间；425 Flutter/71 Node 与本地 Android 通过，55 张基线和生产代码均未改。
@@ -14,6 +14,7 @@ Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭
 
 ## 开发入口
 
+- [Phase 6H4 内容会话计划](docs/phase_6h4_playlist_content_plan.md)、[报告](docs/phase_6h4_playlist_content_report.md)：单条SQL一致读取、条目身份/完整来源保留、窗口刷新/重试和实际查询排空；自定义歌单最多200条可见前缀，系统视图与原生管理入口后续接入。
 - [Phase 6H3 条目命令计划](docs/phase_6h3_playlist_entry_commands_plan.md)、[报告](docs/phase_6h3_playlist_entry_commands_report.md)：原子追加/移除/锚点排序、完整软引用和事务回滚，复用根 busy/排空；不宣称歌曲管理界面已接线。
 - [Phase 6H2 歌单界面计划](docs/phase_6h2_playlist_editor_plan.md)、[报告](docs/phase_6h2_playlist_editor_report.md)：三端创建/改名/确认删除，原生文本选择、草稿代次和关闭后失败反馈；条目管理仍待开发。
 - [Phase 6H1 歌单命令计划](docs/phase_6h1_playlist_metadata_plan.md)、[报告](docs/phase_6h1_playlist_metadata_report.md)：原子创建/改名、系统歌单保护、根写入排空；界面已在H2增量接线。

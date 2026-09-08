@@ -1,4 +1,6 @@
 import '../models/collection_models.dart';
+import '../models/pagination.dart';
+import '../models/playlist_content.dart';
 import '../models/track.dart';
 
 abstract interface class CollectionRepository {
@@ -15,6 +17,18 @@ abstract interface class CollectionRepository {
   Future<void> savePlaylist(Playlist playlist);
   Future<void> deletePlaylist(String id);
   Future<List<PlaylistEntry>> getPlaylistEntries(String playlistId);
+
+  /// One consistent custom-playlist window; null means its parent is missing.
+  /// System views use favorites/history/queue, not persisted playlist entries.
+  Future<PlaylistContent?> readPlaylistContent(
+    String playlistId,
+    PageRequest page,
+  );
+
+  /// Invalidation only, no initial event or content queries. May conservatively
+  /// include other playlists or rolled-back transactions; this is not a commit
+  /// log. Subscribe before the first read and query the current stored content.
+  Stream<void> watchPlaylistContentChanges();
 
   /// Append to a current custom playlist, rejecting a globally collided entry ID.
   Future<void> appendPlaylistEntry(String playlistId, PlaylistEntryDraft entry);
