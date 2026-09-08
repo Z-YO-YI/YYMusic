@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../design_system/yy_button.dart';
 import '../design_system/yy_feedback.dart';
 import '../domain/models/catalog_reference.dart';
+import '../domain/models/collection_models.dart';
 import '../domain/models/track.dart';
 import '../domain/repositories/license_repository.dart';
 import '../features/catalog_detail/common/catalog_detail_controller.dart';
@@ -22,6 +23,8 @@ import '../features/playlists/common/playlist_content_controller.dart';
 import '../features/playlists/common/playlist_content_screen.dart';
 import '../features/playlists/common/playlist_controller.dart';
 import '../features/playlists/common/playlist_editor_host.dart';
+import '../features/playlists/common/system_playlist_controller.dart';
+import '../features/playlists/common/system_playlist_screen.dart';
 import '../features/search/common/search_controller.dart';
 import '../features/search/common/search_screen.dart';
 import '../features/settings/common/licenses_screen.dart';
@@ -35,6 +38,7 @@ import 'foundation_screen.dart';
 import 'layout_class.dart';
 import 'playback_presenter.dart';
 import 'playlist_location.dart';
+import 'system_playlist_location.dart';
 
 final class AppRouter implements AppNavigation {
   AppRouter({
@@ -51,6 +55,7 @@ final class AppRouter implements AppNavigation {
     PlaylistController? playlistController,
     PlaylistContentSessions? playlistContents,
     PlaylistAddSessions? playlistAdds,
+    SystemPlaylistSessions? systemPlaylists,
   }) {
     _showPlaylistPicker = (track, title) async {
       final navigator = _rootNavigator.currentState;
@@ -266,6 +271,44 @@ final class AppRouter implements AppNavigation {
           },
         ),
         GoRoute(
+          path: '/system-playlist',
+          pageBuilder: (context, state) {
+            final type = parseSystemPlaylistLocation(state.uri);
+            return NoTransitionPage<void>(
+              key: ValueKey((state.pageKey, type)),
+              child:
+                  type != null &&
+                      systemPlaylists != null &&
+                      playbackPresenter != null
+                  ? SystemPlaylistScreen(
+                      type: type,
+                      sessions: systemPlaylists,
+                      platform: platform,
+                      navigation: this,
+                      playback: playbackPresenter,
+                      frame: (child) => AdaptiveRoot(
+                        platform: platform,
+                        navigation: this,
+                        selected: AppRoute.library,
+                        playbackPresenter: playbackPresenter,
+                        child: child,
+                      ),
+                    )
+                  : SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: YYErrorBanner(
+                          title: '无法打开系统歌单',
+                          message: '链接或存储不可用，请从音乐库重新打开。',
+                          actionLabel: '返回',
+                          onAction: back,
+                        ),
+                      ),
+                    ),
+            );
+          },
+        ),
+        GoRoute(
           path: '/settings/licenses',
           pageBuilder: (context, state) => NoTransitionPage<void>(
             key: state.pageKey,
@@ -355,6 +398,24 @@ final class AppRouter implements AppNavigation {
   @override
   Future<void> addToPlaylist(TrackRef track, {required String title}) =>
       _showPlaylistPicker(track, title);
+
+  @override
+  void openSystemPlaylist(SystemPlaylistType type) {
+    final focus = FocusManager.instance.primaryFocus;
+    unawaited(
+      _router.push<void>(systemPlaylistLocation(type).toString()).then((_) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final context = focus?.context;
+          if (context != null &&
+              context.mounted &&
+              TickerMode.valuesOf(context).enabled &&
+              (ModalRoute.isCurrentOf(context) ?? true)) {
+            focus!.requestFocus();
+          }
+        });
+      }),
+    );
+  }
 
   void dispose() => _router.dispose();
 }

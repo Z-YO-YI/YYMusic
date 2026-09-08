@@ -114,7 +114,10 @@ final class DependencyGraph {
       playback: playback,
       writer: playlists,
     );
-    systemPlaylists = SystemPlaylistSessions(repository: this.collection);
+    systemPlaylists = SystemPlaylistSessions(
+      repository: this.collection,
+      playback: playback,
+    );
   }
 
   final AudioEngine _audioEngine;

@@ -20,6 +20,7 @@ import '../../../domain/models/library_entities.dart';
 import '../../../domain/models/load_state.dart';
 import '../../../domain/models/track.dart';
 import '../../playlists/common/playlist_editor_host.dart';
+import '../../playlists/common/system_playlist_links.dart';
 import 'library_controller.dart';
 
 /// Controlled native sections; platform layouts own their composition.
@@ -29,11 +30,13 @@ final class LibrarySections {
     required this.playback,
     required this.navigation,
     required this.menu,
+    required this.canNavigateSystem,
   });
   final LibraryController controller;
   final PlaybackPresenter playback;
   final AppNavigation navigation;
   final ValueChanged<Track> menu;
+  final bool Function() canNavigateSystem;
 
   Widget header({required bool wide}) => Builder(
     builder: (context) {
@@ -146,7 +149,7 @@ final class LibrarySections {
             ),
           ] else ...[
             Text(
-              '查看自定义歌单、管理名称和歌曲；可从歌曲菜单添加，系统歌单入口仍在开发。',
+              '浏览系统收藏与队列，或管理自己的歌单。',
               style: YYTypography.caption.copyWith(color: colors.secondary),
             ),
             const SizedBox(height: 12),
@@ -160,6 +163,11 @@ final class LibrarySections {
                   : () => openPlaylistEditor(
                       const PlaylistEditorRequest.create(),
                     ),
+            ),
+            const SizedBox(height: 16),
+            SystemPlaylistLinks(
+              navigation: navigation,
+              canNavigate: canNavigateSystem,
             ),
           ],
           if (controller.category == LibraryCategory.local) ...[

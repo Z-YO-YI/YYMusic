@@ -168,8 +168,9 @@ final class PlaybackController extends ChangeNotifier {
     await _guarded('set-playback-rate', () => _engine.setPlaybackRate(value));
   });
 
-  Future<void> playEntry(String entryId) =>
-      _schedule(() => _playEntryInternal(entryId));
+  /// Plays this exact queue entry, optionally canceling a pending UI intent.
+  Future<void> playEntry(String entryId, {bool Function()? canPlay}) =>
+      _schedule(() => _playEntryInternal(entryId, canPlay: canPlay));
 
   /// One serialized command, preserving the queue and full source identity.
   /// A revoked UI intent never starts audio after a queued/read/load boundary.

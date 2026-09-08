@@ -2,8 +2,9 @@ part of 'system_playlist_controller.dart';
 
 /// Root-owned sessions borrow one repository and never own another queue/store.
 final class SystemPlaylistSessions {
-  SystemPlaylistSessions({this.repository});
+  SystemPlaylistSessions({this.repository, this.playback});
   final CollectionRepository? repository;
+  final PlaybackController? playback;
   final _sessions = <SystemPlaylistController>{};
   bool _disposed = false;
   Future<void>? _closeFuture;
@@ -17,6 +18,7 @@ final class SystemPlaylistSessions {
       type,
       repository,
       () => _sessions.remove(session),
+      playback,
     );
     _sessions.add(session);
     return session;

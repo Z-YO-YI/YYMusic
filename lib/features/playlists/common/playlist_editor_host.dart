@@ -38,18 +38,22 @@ class PlaylistEditorScope extends InheritedWidget {
   const PlaylistEditorScope({
     super.key,
     required this.open,
+    this.interactionEnabled = true,
     this.failure,
     this.dismissFailure,
     required super.child,
   });
   final ValueChanged<PlaylistEditorRequest>? open;
+  final bool interactionEnabled;
   final String? failure;
   final VoidCallback? dismissFailure;
   static PlaylistEditorScope? maybeOf(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<PlaylistEditorScope>();
   @override
   bool updateShouldNotify(PlaylistEditorScope oldWidget) =>
-      open != oldWidget.open || failure != oldWidget.failure;
+      interactionEnabled != oldWidget.interactionEnabled ||
+      open != oldWidget.open ||
+      failure != oldWidget.failure;
 }
 
 /// Lives above AdaptiveRoot so replacing a Phone/Tablet Shell keeps the draft.
@@ -209,6 +213,7 @@ class _PlaylistEditorHostState extends State<PlaylistEditorHost> {
     builder: (context, _) {
       final request = _request;
       return PlaylistEditorScope(
+        interactionEnabled: request == null && _routeCurrent && widget.active,
         failure: _lateFailure ?? widget.controller.entryFailure,
         dismissFailure: () {
           setState(() => _lateFailure = null);

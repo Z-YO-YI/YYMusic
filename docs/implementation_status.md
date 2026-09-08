@@ -1,13 +1,13 @@
 # 实施状态
 
-当前增量Phase6H11：系统歌单共用只读会话，固定类型、同根Repository，不持久化伪Playlist父记录或复制队列。
-显式start先订阅后读取，idle/loading/data/empty/error完整；失效风暴合并，旧成功/错误不覆盖新状态。
-20→200条完整窗口与前后分组，末组越界回退后重读；完整来源、缺失引用、重复条目和页外当前队列ID保留。
-旧快照、失活、加载、错误、关闭后的导航不查询；真实读与取消排空后根才释放共享SQLite。
-868 Flutter（84 Golden全部未改）/101 Node通过，350 Dart文件格式零修改，严格分析零问题；新增29项会话/真实SQLite测试。
-分支`codex/system-playlist-sessions`，Android预检/精确云端结果见[Phase6H11报告](phase_6h11_system_playlist_sessions_report.md)。
-前置Phase6H10 `2c22cad`、Draft PR #55两组GitHub源码/Android/Windows成功，未合并。
-下一步接系统歌单原生入口与根播放动作，并验收真正开始播放后的历史记录；本批没有新系统页面或历史写入行为。
+当前增量Phase6H12：音乐库三系统入口、闭合枚举路由、Phone/Tablet/Windows独立原生布局，共用H11会话与唯一根播放器。
+20→200条窗口、上下组、空/加载/错误重试、保留不可用引用；没有复制队列、伪造计数或创建系统父记录。
+收藏/最近通过完整TrackRef复用或追加根队列，队列通过真实entry ID与完整引用校验播放，重复项不会归并到第一项。
+离页/覆盖/零尺寸/刷新/失败撤销待开始播放，已开始音频继续；自己的current ID写入触发刷新不自取消。
+907 Flutter（91 Golden：新7、受影响更新3、原81未改）/103 Node通过，严格分析零问题；新增39项动作/界面/SQLite/视觉测试。
+分支`codex/system-playlist-surfaces`，Android预检/精确云端结果见[Phase6H12报告](phase_6h12_system_playlist_surfaces_report.md)。
+前置Phase6H11 `428a49f`、Draft PR #56两组GitHub源码/Android/Windows成功，未合并。
+下一步接真正开始播放后的历史记录和剩余系统动作；本批只读已有最近记录，不以测试Fixture冒充自动历史。
 之后仍有Local Music/Settings，不代表整个Phase6完成；运行时失效的完整跳过策略仍待Phase7。
 详情真实封面、实时REST、导入/恢复、完整播放器、网页对照和上线仍未完成，默认新安装仍是无Fixture的空库。
 下方旧阶段记录保留历史归属。

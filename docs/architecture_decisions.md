@@ -824,3 +824,18 @@ open(SystemPlaylistType)创建独立会话但不工作，start显式订阅类型
 订阅错误/结束使内容失效；取消异步Future、重入产生的订阅及已接受读取必须注册并排空，之后根才关闭存储。
 只读会话关闭不停止根播放；当前队列ID完全来自同一投影，可在页外且不触发选曲。
 本批没有写命令/新UI/Schema/平台或播放器变更，系统入口与动作以及真正开始播放后的历史持久化分批验收。
+
+## ADR-068：系统入口用枚举路由，队列单项播放必须保留真实条目身份
+
+2026-09-08，Phase6H12。AppNavigation.openSystemPlaylist(SystemPlaylistType)路由到独立/system-playlist?type=闭合枚举，
+不复用/猜测自定义Playlist ID、不分配系统父记录。Library三入口复用最终YYPlaylistCard/heart/history/queue资产，
+未读取汇总前只显示说明不伪造计数；页面会话读取实际总数。三端独立布局共用H11根会话，UI不访问SQL/插件。
+
+SystemPlaylistSessions借用唯一PlaybackController。会话从当前活动快照接受单项播放并登记Future，旧快照/关闭/显式刷新和翻页撤销未开始动作。
+喜欢/最近使用根playCatalogTrack(完整TrackRef)，队列使用既有真实entry ID并在根队列验证完整引用一致，不能按歌曲去重选择第一项。
+PlaybackController.playEntry增加可选canPlay，复用已有内部查询/解析/持久化/load边界检查，不创建第二队列或播放器。
+队列自身currentEntryId持久化会引发会话刷新，不能仅凭readRevision变化取消它自己的合法动作；通过动作代次、活动状态、监听健康与根条目身份保护。
+喜欢/最近的集合失效可撤销未开始播放；读取失败/监听结束不可授权后续播放。正常离页仅撤销待开始工作，不停止已播放音频。
+系统路由状态位于可替换Shell之上；覆盖/零尺寸撤销待播放且保持滚动/会话，恢复时按窗口偏移重置必要滚动。
+本批不新增系统集合写菜单/真实播放历史/Schema/权限，不以UI错误提示或Fixture替代真实数据；新增及受影响Golden逐张验证。
+PlaylistEditorScope额外暴露只读interactionEnabled，让新系统入口在编辑面板遮挡期间拒绝保留的旧导航回调，不携带业务写状态。
