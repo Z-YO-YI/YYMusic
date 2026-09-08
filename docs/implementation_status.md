@@ -1,14 +1,13 @@
 # 实施状态
 
-当前增量Phase6H7：歌曲菜单的原生选择器支持新建歌单并添加当前歌曲。
-父歌单与首条完整来源引用同事务保存，ID碰撞不覆盖，任何阶段失败整体回滚；复用唯一根writer与排空机制。
-Phone/Tablet/Windows保留独立名称草稿，原生IME/非法名称/过期回调/活动路由和busy保护通过。
-已有列表读取失败仍可尝试独立原子创建；成功只来自实际提交，关闭后失败保留根级脱敏提示。
-真实SQLite界面故障回滚与显式重试、父插入后的根关闭等待、三端旋转和键盘返回均已验证。
-754 Flutter（81 Golden：3旧更新、78旧未改）/94 Node、严格分析通过；
-分支`codex/playlist-create-and-add`，Android预检/精确云端状态见[Phase6H7报告](phase_6h7_create_and_add_report.md)。
-前置Phase6H6 `b2845a3`、Draft PR #51两组GitHub checks/Android/Windows成功，未合并。
-下一步仍需播放全部/随机、系统歌单和超过200条内容浏览策略，不代表整个Phase6完成。
+当前增量Phase6H8：Phone/Tablet/Windows自定义歌单可用上一组/下一组浏览超过200条的内容。
+首组20条递增至200，随后替换有界一致窗口，不拼接过期排序页；现有单SQL/Schema与根播放不变。
+真实范围、失效刷新保留组、末组删除回退、旧快照/菜单/覆盖路由/busy保护和真实查询关闭排空通过。
+窗口缩到零尺寸期间完成翻页也在恢复显示后回到新组顶部；旋转/同组刷新保持滚动。
+774 Flutter（84 Golden：3新、81旧未改）/96 Node通过；
+分支`codex/playlist-window-navigation`，严格分析/Android预检/精确云端状态见[Phase6H8报告](phase_6h8_playlist_windows_report.md)。
+前置Phase6H7 `c142daf`、Draft PR #52两组GitHub源码/Android/Windows成功，未合并。
+下一步仍需播放全部/随机、系统歌单，之后Local Music/Settings，不代表整个Phase6完成。
 详情真实封面、实时REST、导入/恢复、完整播放器、网页对照和上线仍未完成，默认新安装仍是无Fixture的空库。
 下方旧阶段记录保留历史归属。
 
@@ -28,6 +27,7 @@ v2签名通过；Windows既有真实Profile包只做新增许可复核。初始�
 
 | 阶段/能力 | 状态 |
 | --- | --- |
+| Phase 6H8 大歌单分组 | 同一有界SQL快照按200条组前后浏览、范围/末组删除恢复、原生分页与关闭/过期保护；774 Flutter/84 Golden/96 Node，旧81张不变；无Schema/依赖变化 |
 | Phase 6H7 新建并添加 | 一个事务/根命令创建父歌单与首条引用，三端独立名称表单、IME/旧回调保护、失败回滚/关闭排空；754 Flutter/81 Golden/94 Node；无Schema/依赖变化 |
 | Phase 6H6 添加到已有歌单 | 原生元数据选择器、显式名称筛选、根原子追加/排空、当前快照/覆盖路由/IME保护；718 Flutter/81 Golden/92 Node；不提供选择器内创建，200个匹配上限需缩小筛选 |
 | Phase 6H5 原生歌单内容管理 | 三套布局/原生路由与菜单、单首根播放、原子移除/上下移动、过期快照保护及离页写入反馈；680 Flutter/78 Golden/90 Node；前200条上限明确，添加/播放全部/随机/系统歌单待开发 |

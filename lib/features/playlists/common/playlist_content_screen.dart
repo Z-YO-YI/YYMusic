@@ -50,6 +50,8 @@ class PlaylistContentScreenState extends State<PlaylistContentScreen> {
   _MenuRequest? _menu;
   FocusNode? _returnFocus;
   bool _active = true;
+  int _shownOffset = 0;
+  int? _scrollResetOffset;
   @override
   void initState() {
     super.initState();
@@ -68,6 +70,7 @@ class PlaylistContentScreenState extends State<PlaylistContentScreen> {
         TickerMode.valuesOf(context).enabled &&
         (ModalRoute.isCurrentOf(context) ?? true);
     controller.setActive(_active);
+    _scheduleWindowScroll();
     if (!_active && _menu != null) {
       final request = _menu;
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -77,12 +80,32 @@ class PlaylistContentScreenState extends State<PlaylistContentScreen> {
   }
 
   void _changed() {
+    final offset = controller.content?.page.offset ?? 0;
+    if (controller.isCurrent && offset != _shownOffset) {
+      _shownOffset = offset;
+      _scrollResetOffset = offset;
+      _scheduleWindowScroll();
+    }
     final request = _menu;
     if (request != null &&
         (!controller.isCurrent ||
             !identical(controller.content, request.snapshot))) {
       _dismiss(restoreFocus: false);
     }
+  }
+
+  void _scheduleWindowScroll() {
+    final offset = _scrollResetOffset;
+    if (offset == null || !_active) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted &&
+          _active &&
+          _scrollResetOffset == offset &&
+          scroll.hasClients) {
+        _scrollResetOffset = null;
+        scroll.jumpTo(0);
+      }
+    });
   }
 
   void _openMenu(String id) {
@@ -148,6 +171,7 @@ class PlaylistContentScreenState extends State<PlaylistContentScreen> {
         navigation: widget.navigation,
         playback: widget.playback,
         menu: _openMenu,
+        canInteract: () => mounted && _active && _menu == null,
       );
       final content = widget.platform == YYPlatform.windows
           ? WindowsPlaylistContentLayout(sections: sections, scroll: scroll)

@@ -24,11 +24,13 @@ final class PlaylistContentSections {
     required this.navigation,
     required this.playback,
     required this.menu,
+    required this.canInteract,
   });
   final PlaylistContentController controller;
   final AppNavigation navigation;
   final PlaybackPresenter playback;
   final ValueChanged<String> menu;
+  final bool Function() canInteract;
 
   Widget get toolbar => Padding(
     padding: const EdgeInsets.only(bottom: 16),
@@ -107,6 +109,13 @@ final class PlaylistContentSections {
             Text('歌单歌曲', style: YYTypography.sectionTitle),
             const SizedBox(height: 8),
             Text('按歌单顺序 · 长按或右键管理条目', style: YYTypography.caption),
+            if (controller.content case final data?
+                when data.totalCount >
+                        PlaylistContentController.maxVisibleCount ||
+                    data.page.offset > 0) ...[
+              const SizedBox(height: 12),
+              _windowNavigation(data, 'top'),
+            ],
             if (controller.busy) ...[
               const SizedBox(height: 12),
               const Text('正在处理歌曲操作…'),
@@ -176,17 +185,19 @@ final class PlaylistContentSections {
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: Column(
           children: [
-            if (controller.content case final data?)
-              Text(
-                '已读取 ${data.entries.length} / ${data.totalCount} 条',
-                style: YYTypography.caption,
-              ),
-            if (controller.capped) ...[
-              const SizedBox(height: 8),
-              const Text('当前显示前 200 条。完整大歌单浏览仍在开发。'),
-            ] else if (controller.canLoadMore) ...[
+            if (controller.content case final data?) ...[
+              if (data.totalCount > PlaylistContentController.maxVisibleCount ||
+                  data.page.offset > 0)
+                _windowNavigation(data, 'bottom')
+              else
+                Text(
+                  '已读取 ${data.entries.length} / ${data.totalCount} 条',
+                  style: YYTypography.caption,
+                ),
+            ],
+            if (controller.canLoadMore) ...[
               const SizedBox(height: 12),
-              YYButton(label: '更多歌曲', onPressed: controller.loadMore),
+              _loadMoreButton(controller.content!),
             ],
             const SizedBox(height: 12),
             Text('可从歌曲菜单添加。播放全部与随机播放尚未接入。', style: YYTypography.caption),
@@ -195,6 +206,50 @@ final class PlaylistContentSections {
       ),
     ),
   ];
+
+  Widget _loadMoreButton(PlaylistContent snapshot) => YYButton(
+    label: '更多歌曲',
+    onPressed: () {
+      if (canInteract()) controller.loadMore(snapshot);
+    },
+  );
+
+  Widget _windowNavigation(PlaylistContent snapshot, String location) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        snapshot.entries.isEmpty
+            ? '共 ${snapshot.totalCount} 条'
+            : '当前第 ${snapshot.page.offset + 1}–${snapshot.page.offset + snapshot.entries.length} 条 / 共 ${snapshot.totalCount} 条',
+        style: YYTypography.caption,
+      ),
+      const SizedBox(height: 8),
+      Wrap(
+        spacing: 12,
+        runSpacing: 8,
+        children: [
+          YYButton(
+            key: ValueKey(('playlist-window-previous', location)),
+            label: '上一组',
+            onPressed: controller.canShowPreviousWindow
+                ? () {
+                    if (canInteract()) controller.showPreviousWindow(snapshot);
+                  }
+                : null,
+          ),
+          YYButton(
+            key: ValueKey(('playlist-window-next', location)),
+            label: '下一组',
+            onPressed: controller.canShowNextWindow
+                ? () {
+                    if (canInteract()) controller.showNextWindow(snapshot);
+                  }
+                : null,
+          ),
+        ],
+      ),
+    ],
+  );
 
   static String entryTitle(PlaylistContentEntry entry) =>
       entry.track?.title ?? '未解析的歌曲';

@@ -43,7 +43,7 @@ final class PlaylistContentController extends ChangeNotifier {
   bool _readAgain = false, _cleanupFailed = false;
   bool _notifierDisposed = false;
   int _notificationDepth = 0;
-  int _watchGeneration = 0, _readRevision = 0, _limit = pageSize;
+  int _watchGeneration = 0, _readRevision = 0, _limit = pageSize, _offset = 0;
   LoadPhase _phase = LoadPhase.idle;
   PlaylistContent? _content;
   DomainFailure? _failure;
@@ -56,8 +56,11 @@ final class PlaylistContentController extends ChangeNotifier {
       !_disposed && (phase == LoadPhase.data || phase == LoadPhase.empty);
   bool get capped =>
       content?.hasMore == true && content!.page.limit >= maxVisibleCount;
-  bool get canLoadMore =>
-      !_disposed && isCurrent && content?.hasMore == true && !capped;
+  bool get _canBrowse => !_disposed && _active && isCurrent && !busy;
+  bool get canLoadMore => _canBrowse && content?.hasMore == true && !capped;
+  bool get canShowNextWindow => _canBrowse && capped;
+  bool get canShowPreviousWindow =>
+      _canBrowse && (content?.page.offset ?? 0) > 0;
 
   void start() {
     if (_disposed || _started) return;
@@ -122,10 +125,28 @@ final class PlaylistContentController extends ChangeNotifier {
     _notify();
   }
 
-  /// Expands a single consistent prefix, never appends a potentially stale page.
-  void loadMore() {
-    if (!canLoadMore) return;
+  /// Expands only this consistent window, never appends a potentially stale page.
+  void loadMore([PlaylistContent? expected]) {
+    if (!canLoadMore || (expected != null && !identical(content, expected))) {
+      return;
+    }
     _limit = (_limit + pageSize).clamp(pageSize, maxVisibleCount);
+    _requestRead();
+  }
+
+  /// Replaces the current window; retained callbacks cannot skip a newer group.
+  void showNextWindow(PlaylistContent expected) {
+    if (!canShowNextWindow || !identical(content, expected)) return;
+    _offset = expected.page.offset + maxVisibleCount;
+    _limit = maxVisibleCount;
+    _requestRead();
+  }
+
+  /// Reads the preceding full group without keeping a second page cache.
+  void showPreviousWindow(PlaylistContent expected) {
+    if (!canShowPreviousWindow || !identical(content, expected)) return;
+    _offset = (expected.page.offset - maxVisibleCount).clamp(0, _offset);
+    _limit = maxVisibleCount;
     _requestRead();
   }
 
@@ -158,20 +179,31 @@ final class PlaylistContentController extends ChangeNotifier {
         _readAgain = false;
         final revision = _readRevision;
         final limit = _limit;
+        final offset = _offset;
         try {
           final result = await _repository!.readPlaylistContent(
             playlistId,
-            PageRequest(limit: limit),
+            PageRequest(limit: limit, offset: offset),
           );
           if (!_validRead(revision)) continue;
           if (result != null &&
               (result.playlist.id != playlistId ||
-                  result.page.offset != 0 ||
+                  result.page.offset != offset ||
                   result.page.limit != limit)) {
             throw DomainFailure(
               code: DomainFailureCode.schemaMismatch,
               diagnosticId: 'playlist-content.identity-mismatch',
             );
+          }
+          if (result != null && offset > 0 && offset >= result.totalCount) {
+            // Deletion can remove this entire group. Never publish an empty
+            // out-of-range window as an empty playlist; re-read the last group.
+            _offset = result.totalCount == 0
+                ? 0
+                : ((result.totalCount - 1) ~/ maxVisibleCount) *
+                      maxVisibleCount;
+            _readAgain = true;
+            continue;
           }
           _content = result;
           _phase = result == null || result.entries.isEmpty
