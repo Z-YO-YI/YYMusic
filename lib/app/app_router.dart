@@ -15,6 +15,8 @@ import '../features/home/common/home_controller.dart';
 import '../features/home/common/home_screen.dart';
 import '../features/library/common/library_controller.dart';
 import '../features/library/common/library_screen.dart';
+import '../features/playlists/common/playlist_controller.dart';
+import '../features/playlists/common/playlist_editor_host.dart';
 import '../features/search/common/search_controller.dart';
 import '../features/search/common/search_screen.dart';
 import '../features/settings/common/licenses_screen.dart';
@@ -40,6 +42,7 @@ final class AppRouter implements AppNavigation {
     CatalogSearchController? searchController,
     LibraryController? libraryController,
     CatalogDetailSessions? catalogDetails,
+    PlaylistController? playlistController,
   }) {
     Widget screen(AppRoute route) =>
         route == AppRoute.home &&
@@ -84,13 +87,24 @@ final class AppRouter implements AppNavigation {
       routes: [
         GoRoute(path: '/', redirect: (_, _) => AppRoute.home.path),
         StatefulShellRoute.indexedStack(
-          builder: (context, state, shell) => AdaptiveRoot(
-            platform: platform,
-            navigation: this,
-            selected: AppRoute.mainRoutes[shell.currentIndex],
-            playbackPresenter: playbackPresenter,
-            child: shell,
-          ),
+          builder: (context, state, shell) {
+            final selected = AppRoute.mainRoutes[shell.currentIndex];
+            final frame = AdaptiveRoot(
+              platform: platform,
+              navigation: this,
+              selected: selected,
+              playbackPresenter: playbackPresenter,
+              child: shell,
+            );
+            return playlistController == null
+                ? frame
+                : PlaylistEditorHost(
+                    controller: playlistController,
+                    platform: platform,
+                    active: selected == AppRoute.library,
+                    child: frame,
+                  );
+          },
           branches: [
             for (final route in AppRoute.mainRoutes)
               StatefulShellBranch(

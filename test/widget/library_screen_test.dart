@@ -92,7 +92,7 @@ void main() {
       }
       controller.selectCategory(LibraryCategory.playlists);
       await tester.pumpAndSettle();
-      expect(find.textContaining('已保存的歌单元数据'), findsOneWidget);
+      expect(find.textContaining('管理自定义歌单名称'), findsOneWidget);
       controller.selectCategory(LibraryCategory.local);
       await tester.pumpAndSettle();
       expect(find.textContaining('文件导入、授权和失效恢复尚未接入'), findsOneWidget);
