@@ -57,6 +57,18 @@ Phone浅色和Windows深色保存失败两张新基线已逐张查看，原有91
 
 ## 已知限制与下一阶段
 
+### 精确GitHub验收补记
+
+实现`891a9f1fdf0da3dd8d2ba8920658452fe9931593`的[push运行34253476324](https://github.com/Z-YO-YI/YYMusic/actions/runs/34253476324)与[PR运行34253548784](https://github.com/Z-YO-YI/YYMusic/actions/runs/34253548784)均首次成功。
+两组各三项常规源码/Android/Windows检查成功，四项显式音频诊断按预期跳过；Draft PR #58未合并。
+两份完整日志均核对：Linux858通过/93 Golden按宿主跳过、106 Node通过、374文件格式零修改及严格分析零问题；Windows93 Golden和1真实窗口集成通过。
+Android51个音频坐标/3组完整原生法律文本/6包许可/48项资产/v2单签名通过；Windows65项运行文件校验通过。
+Windows artifact `10067397763`，67,396,077字节，SHA256 `dc59081c7ebd31f47dd2fedb634c25cdf2428f16c48feab36749973a9c9c862e`，UTC到期2026-09-22T17:03:18Z。
+只核对API身份/摘要与日志，没有下载或手动运行该新Debug包；普通push/PR未创建APK Release，不把诊断跳过当作本批实机出声证据。
+本地25项历史生命周期/Recorder/SQLite另连续4轮通过，重复轮数不计入951个独立测试总数。
+
+### 剩余范围
+
 历史依据引擎状态和位置前进，不保证外部扬声器实际可听；两次快照间过短且无前进证据的曲目保守不记录。
 待写任务串行且最终存储20条，但未新增挂起写入队列的数量上限或跨进程恢复日志；极端存储故障仍显示安全失败。
 系统最近页清空入口、收藏/队列管理动作仍待后续，Phase6的Local Music/Settings尚未完成。

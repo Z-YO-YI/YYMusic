@@ -608,6 +608,7 @@ final class FakeCollectionRepository implements CollectionRepository {
 
   @override
   Future<void> setFavorite(TrackRef track, {required bool favorite}) async {
+    await onFavoriteSet?.call(track, favorite);
     if (favoriteGate case final gate?) await gate;
     favoriteWriteCount++;
     _favorites = _favorites.where((entry) => entry.track != track).toList();
@@ -660,6 +661,7 @@ final class FakeCollectionRepository implements CollectionRepository {
   }
 
   Future<void> Function(PlayHistoryEntry)? onHistoryRecord;
+  Future<void> Function(TrackRef, bool)? onFavoriteSet;
   Future<void> Function()? onHistoryClear;
   Stream<List<PlayHistoryEntry>> Function()? historyReader;
 

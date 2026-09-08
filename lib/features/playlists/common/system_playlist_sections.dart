@@ -26,11 +26,17 @@ final class SystemPlaylistSections {
     required this.navigation,
     required this.playback,
     required this.canInteract,
+    required this.onFavoriteMenu,
+    required this.onClearHistory,
+    this.backFocus,
   });
   final SystemPlaylistController controller;
   final AppNavigation navigation;
   final PlaybackPresenter playback;
   final bool Function() canInteract;
+  final void Function(SystemPlaylistContent, Object) onFavoriteMenu;
+  final ValueChanged<SystemPlaylistContent> onClearHistory;
+  final FocusNode? backFocus;
 
   Widget get toolbar => Padding(
     padding: const EdgeInsets.only(bottom: 16),
@@ -38,6 +44,7 @@ final class SystemPlaylistSections {
       children: [
         YYButton(
           label: '返回',
+          focusNode: backFocus,
           style: YYButtonStyle.quiet,
           onPressed: () {
             if (canInteract()) navigation.back();
@@ -97,6 +104,18 @@ final class SystemPlaylistSections {
                 color: theme.colors.secondary,
               ),
             ),
+            if (controller.type == SystemPlaylistType.recent) ...[
+              const SizedBox(height: 12),
+              YYButton(
+                label: '清除播放历史',
+                glyph: YYGlyph.trash,
+                onPressed: data != null && controller.canClearHistory(data)
+                    ? () {
+                        if (canInteract()) onClearHistory(data);
+                      }
+                    : null,
+              ),
+            ],
           ],
         ),
       );
@@ -107,6 +126,7 @@ final class SystemPlaylistSections {
     final data = controller.content;
     final historyFailure = playback.historyFailure;
     final canRetryHistory = playback.canRetryHistory;
+    final writeFailure = controller.writeFailure;
     return [
       SliverToBoxAdapter(
         child: Padding(
@@ -129,11 +149,24 @@ final class SystemPlaylistSections {
               ],
               if (controller.busy) ...[
                 const SizedBox(height: 12),
-                const Text('正在准备播放…'),
+                Text(controller.writeBusy ? '正在保存操作…' : '正在准备播放…'),
               ],
               if (controller.actionError case final message?) ...[
                 const SizedBox(height: 12),
                 YYErrorBanner(title: '播放未完成', message: message),
+              ],
+              if (writeFailure != null) ...[
+                const SizedBox(height: 12),
+                YYErrorBanner(
+                  title: '系统歌单操作未完成',
+                  message: writeFailure.message,
+                  actionLabel: '知道了',
+                  onAction: () {
+                    if (canInteract()) {
+                      controller.dismissWriteFailure(writeFailure);
+                    }
+                  },
+                ),
               ],
               if (controller.type == SystemPlaylistType.recent &&
                   historyFailure != null) ...[
@@ -197,25 +230,41 @@ final class SystemPlaylistSections {
           final current = controller.type == SystemPlaylistType.queue
               ? playback.entryId == entry.entryId
               : track != null && playback.trackRef == track.ref;
-          return YYTrackTile(
-            key: ValueKey(('system-entry', entry.identity)),
-            title: track?.title ?? '未解析的歌曲',
-            subtitle:
-                '${current ? '当前项 · ' : ''}${track?.artists.join(' / ') ?? '保留来源引用'}',
-            sourceLabel: availabilityLabel(entry),
-            durationLabel: track == null
-                ? '—'
-                : '${track.duration.inMinutes}:${(track.duration.inSeconds % 60).toString().padLeft(2, '0')}',
-            artwork: YYArtworkKind.local,
-            playing: current && playback.data.playing,
-            showMore: false,
-            onPressed: controller.canPlayEntry(snapshot, entry.identity)
-                ? () {
-                    if (canInteract()) {
-                      unawaited(controller.playEntry(snapshot, entry.identity));
+          final canMenu = controller.canRemoveFavorite(
+            snapshot,
+            entry.identity,
+          );
+          void openMenu() {
+            if (canInteract()) onFavoriteMenu(snapshot, entry.identity);
+          }
+
+          return GestureDetector(
+            onLongPress: canMenu ? openMenu : null,
+            onSecondaryTap: canMenu ? openMenu : null,
+            child: YYTrackTile(
+              key: ValueKey(('system-entry', entry.identity)),
+              title: track?.title ?? '未解析的歌曲',
+              subtitle:
+                  '${current ? '当前项 · ' : ''}${track?.artists.join(' / ') ?? '保留来源引用'}',
+              sourceLabel: availabilityLabel(entry),
+              durationLabel: track == null
+                  ? '—'
+                  : '${track.duration.inMinutes}:${(track.duration.inSeconds % 60).toString().padLeft(2, '0')}',
+              artwork: YYArtworkKind.local,
+              playing: current && playback.data.playing,
+              showMore: controller.type == SystemPlaylistType.favorites,
+              allowMoreWhenDisabled: canMenu,
+              onMore: canMenu ? openMenu : null,
+              onPressed: controller.canPlayEntry(snapshot, entry.identity)
+                  ? () {
+                      if (canInteract()) {
+                        unawaited(
+                          controller.playEntry(snapshot, entry.identity),
+                        );
+                      }
                     }
-                  }
-                : null,
+                  : null,
+            ),
           );
         },
       ),

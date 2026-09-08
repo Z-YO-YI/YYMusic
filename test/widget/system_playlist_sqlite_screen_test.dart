@@ -8,6 +8,7 @@ import 'package:yymusic/app/layout_class.dart';
 import 'package:yymusic/app/system_playlist_location.dart';
 import 'package:yymusic/app/yy_music_app.dart';
 import 'package:yymusic/data/database/app_database.dart';
+import 'package:yymusic/design_system/yy_button.dart';
 import 'package:yymusic/domain/models/collection_models.dart';
 
 import '../support/catalog_detail_probe.dart';
@@ -150,6 +151,56 @@ void main() {
           await tester.runAsync(() => graph.library!.getTrack(track.ref)),
           isNotNull,
         );
+        if (type == SystemPlaylistType.favorites) {
+          await revealSystemRow(tester, id);
+          await tester.tap(
+            find
+                .descendant(
+                  of: systemRow(id),
+                  matching: find.byType(YYIconButton),
+                )
+                .last,
+          );
+          await tester.pumpAndSettle();
+          await tester.tap(find.text('取消喜欢'));
+          await settleContent(tester);
+          expect(
+            await tester.runAsync(
+              () => graph.collection!.watchFavorites().first,
+            ),
+            isEmpty,
+          );
+          expect(
+            await tester.runAsync(() => graph.collection!.watchHistory().first),
+            hasLength(1),
+          );
+        } else if (type == SystemPlaylistType.recent) {
+          await tester.ensureVisible(find.text('清除播放历史'));
+          await tester.pumpAndSettle();
+          await tester.tap(find.text('清除播放历史'));
+          await tester.pumpAndSettle();
+          await tester.tap(find.text('确认清除'));
+          await settleContent(tester);
+          expect(
+            await tester.runAsync(() => graph.collection!.watchHistory().first),
+            isEmpty,
+          );
+          expect(
+            await tester.runAsync(
+              () => graph.collection!.watchFavorites().first,
+            ),
+            hasLength(1),
+          );
+        }
+        expect(
+          (await tester.runAsync(() => graph.collection!.loadQueue()))!.entries,
+          hasLength(2),
+        );
+        expect(
+          await tester.runAsync(() => graph.library!.getTrack(track.ref)),
+          isNotNull,
+        );
+        expect(engine.calls, ['load', 'play']);
         expect(tester.takeException(), isNull);
         await tester.pumpWidget(const SizedBox.shrink());
         await closeGraph(tester, graph);
