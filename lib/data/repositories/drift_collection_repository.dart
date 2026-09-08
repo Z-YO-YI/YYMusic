@@ -5,13 +5,17 @@ import 'package:drift/drift.dart';
 import '../../domain/models/collection_models.dart';
 import '../../domain/models/domain_failure.dart';
 import '../../domain/models/domain_validation.dart';
+import '../../domain/models/pagination.dart';
+import '../../domain/models/playlist_content.dart';
 import '../../domain/models/playlist_name.dart';
 import '../../domain/models/track.dart';
 import '../../domain/repositories/collection_repository.dart';
 import '../database/app_database.dart';
 import 'collection_row_mapper.dart';
+import 'library_row_mapper.dart';
 
 part 'drift_playlist_entry_commands.dart';
+part 'drift_playlist_content.dart';
 
 final class DriftCollectionRepository implements CollectionRepository {
   factory DriftCollectionRepository(
@@ -190,6 +194,38 @@ final class DriftCollectionRepository implements CollectionRepository {
         rows.map(_mapper.playlistEntryFromRow),
       );
     });
+  }
+
+  @override
+  Future<PlaylistContent?> readPlaylistContent(
+    String playlistId,
+    PageRequest page,
+  ) => _readContent(playlistId, page);
+
+  @override
+  Stream<void> watchPlaylistContentChanges() {
+    _requireReady();
+    return _database
+        .tableUpdates(
+          TableUpdateQuery.onAllTables([
+            _database.playlistRecords,
+            _database.playlistEntryRecords,
+            _database.trackRecords,
+            _database.trackArtistRecords,
+            _database.artistRecords,
+          ]),
+        )
+        .map<void>((_) {})
+        .transform(
+          StreamTransformer.fromHandlers(
+            handleError: (Object error, StackTrace stack, sink) {
+              sink.addError(
+                _failureFor(error, 'playlist-content-changes'),
+                stack,
+              );
+            },
+          ),
+        );
   }
 
   @override

@@ -7,6 +7,7 @@ import 'package:yymusic/domain/models/library_entities.dart';
 import 'package:yymusic/domain/models/lyrics.dart';
 import 'package:yymusic/domain/models/music_source.dart';
 import 'package:yymusic/domain/models/pagination.dart';
+import 'package:yymusic/domain/models/playlist_content.dart';
 import 'package:yymusic/domain/models/playlist_name.dart';
 import 'package:yymusic/domain/models/sensitive_credential.dart';
 import 'package:yymusic/domain/models/track.dart';
@@ -131,8 +132,10 @@ final class FakeCollectionRepository implements CollectionRepository {
     QueueSnapshot? queue,
     Iterable<FavoriteEntry> favorites = const [],
     Iterable<PlayHistoryEntry> history = const [],
+    Iterable<Track> contentTracks = const [],
     DateTime Function()? clock,
   }) : _playlists = List.of(playlists),
+       _contentTracks = {for (final track in contentTracks) track.ref: track},
        _playlistClock = clock ?? DateTime.now,
        _queue =
            queue ??
@@ -144,6 +147,12 @@ final class FakeCollectionRepository implements CollectionRepository {
        _history = List.of(history);
 
   final Map<String, List<PlaylistEntry>> _entries = {};
+  Map<TrackRef, Track> _contentTracks;
+  final _contentChanges = StreamController<void>.broadcast(sync: true);
+  final contentReadCalls = <({String id, PageRequest page})>[];
+  int contentWatchCount = 0;
+  Future<PlaylistContent?> Function(String id, PageRequest page)? contentReader;
+  Stream<void> Function()? contentChangesReader;
   final DateTime Function() _playlistClock;
   Future<void> Function(String operation, String id)? onPlaylistMutation;
   final playlistMutationCalls = <String>[];
@@ -241,6 +250,7 @@ final class FakeCollectionRepository implements CollectionRepository {
       playlist,
     ];
     _playlistChanges.add(List.unmodifiable(_playlists));
+    _contentChanges.add(null);
   }
 
   @override
@@ -253,11 +263,59 @@ final class FakeCollectionRepository implements CollectionRepository {
     _playlists = _playlists.where((item) => item.id != id).toList();
     _entries.remove(id);
     _playlistChanges.add(List.unmodifiable(_playlists));
+    _contentChanges.add(null);
   }
 
   @override
   Future<List<PlaylistEntry>> getPlaylistEntries(String playlistId) async =>
       List.unmodifiable(_entries[playlistId] ?? const []);
+
+  @override
+  Stream<void> watchPlaylistContentChanges() {
+    contentWatchCount++;
+    return contentChangesReader?.call() ?? _contentChanges.stream;
+  }
+
+  void setContentTracks(Iterable<Track> tracks) {
+    _contentTracks = {for (final track in tracks) track.ref: track};
+    _contentChanges.add(null);
+  }
+
+  @override
+  Future<PlaylistContent?> readPlaylistContent(
+    String playlistId,
+    PageRequest page,
+  ) async {
+    DomainValidation.identifier(playlistId, 'playlistId');
+    contentReadCalls.add((id: playlistId, page: page));
+    if (contentReader != null) return contentReader!(playlistId, page);
+    final playlist = _playlists.where((p) => p.id == playlistId).firstOrNull;
+    if (playlist == null) return null;
+    if (playlist.isSystem) throw _playlistForbidden('playlist-system-content');
+    final entries = _entries[playlistId] ?? const <PlaylistEntry>[];
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i].position != i) {
+        throw DomainFailure(
+          code: DomainFailureCode.databaseCorrupted,
+          diagnosticId: 'collection-repository.playlist-entry-positions',
+        );
+      }
+    }
+    return PlaylistContent(
+      playlist: playlist,
+      page: page,
+      totalCount: entries.length,
+      entries: entries
+          .skip(page.offset)
+          .take(page.limit)
+          .map(
+            (entry) => PlaylistContentEntry(
+              entry: entry,
+              track: _contentTracks[entry.track],
+            ),
+          ),
+    );
+  }
 
   @override
   Future<void> appendPlaylistEntry(
@@ -393,6 +451,7 @@ final class FakeCollectionRepository implements CollectionRepository {
       throw ArgumentError('Fake playlist entries belong to another playlist');
     }
     _entries[playlistId] = copy;
+    _contentChanges.add(null);
   }
 
   @override
@@ -457,6 +516,7 @@ final class FakeCollectionRepository implements CollectionRepository {
 
   Future<void> dispose() async {
     await Future.wait([
+      _contentChanges.close(),
       _playlistChanges.close(),
       _queueChanges.close(),
       _favoriteChanges.close(),

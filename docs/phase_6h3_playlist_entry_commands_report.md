@@ -51,7 +51,11 @@
 前置 H2 精确提交 a7dd5d0 的 [push 34195449767](https://github.com/Z-YO-YI/YYMusic/actions/runs/34195449767)
 与 [PR 34195529670](https://github.com/Z-YO-YI/YYMusic/actions/runs/34195529670)
 两组 checks/Android/Windows 全成功，本批已回填 H2 报告；Draft PR #47 仍 OPEN。
-本批审查后推送 stacked Draft PR，base 为 `codex/playlist-editor-surfaces`；精确提交与本次云端结果记录于对应 PR。
+本批实现提交 `cbe7bdc1b8c3e11bde293250db82d48162e9693c` 已同步远端，
+[Draft PR #48](https://github.com/Z-YO-YI/YYMusic/pull/48) OPEN，base 为 `codex/playlist-editor-surfaces`。
+2026-09-08 在 H4 开工前复核该精确提交的 [push 34198822942](https://github.com/Z-YO-YI/YYMusic/actions/runs/34198822942)
+与 [PR 34198919253](https://github.com/Z-YO-YI/YYMusic/actions/runs/34198919253)：两组 checks/Android Debug/Windows native 均成功。
+专用音频诊断 job 按普通触发条件 skipped，不计作新的实机音频通过。
 本地结果或前置成功不代替新提交云端验收。普通 push 的 Android job 不上传 APK；Windows Debug 为开发包。
 未合并/发布/改写历史，未提交凭据、日志、用户数据或构建产物。本机 Windows C++/Debug CRT 限制仍在，Windows 由 GitHub 构建。
 
