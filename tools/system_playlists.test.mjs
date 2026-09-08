@@ -28,7 +28,7 @@ test('system views are immutable separate models with scoped query-free invalida
 
 test('system sessions borrow the root repository and drain before storage without mutation APIs', () => {
   const graph = read('lib/app/dependency_graph.dart');
-  assert.match(graph, /systemPlaylists = SystemPlaylistSessions\(repository: this.collection\)/);
+  assert.match(graph, /systemPlaylists = SystemPlaylistSessions\(\s*repository: this.collection,\s*playback: playback,?\s*\)/);
   assert.match(graph, /systemPlaylists.dispose\(\)/);
   assert(graph.indexOf('systemPlaylists.close,') < graph.indexOf('services.dispose'));
   const session = read('lib/features/playlists/common/system_playlist_controller.dart');
@@ -38,5 +38,26 @@ test('system sessions borrow the root repository and drain before storage withou
   assert.match(session, /maxVisibleCount = 200/);
   assert.match(session, /revision == _readRevision/);
   assert.match(session, /!identical\(content, expected\)/);
-  assert(!/readPlaylistContent\(|getTrack\(|saveQueue\(|setFavorite\(|recordHistory\(|PlaybackController|AppDatabase|\.addAll\(/.test(session));
+  assert(!/readPlaylistContent\(|getTrack\(|saveQueue\(|setFavorite\(|recordHistory\(|PlaybackController\(|AppDatabase|\.addAll\(/.test(session));
+});
+
+test('system native surfaces reuse final glyphs, three layouts, and fixed enum routes', () => {
+  const labels = read('lib/features/playlists/common/system_playlist_presentation.dart');
+  for (const glyph of ['heart', 'history', 'queue']) assert(labels.includes(`YYGlyph.${glyph}`));
+  for (const platform of ['phone', 'tablet', 'windows']) {
+    assert.match(read(`lib/features/playlists/${platform}/${platform}_system_playlist_layout.dart`), /extends StatelessWidget/);
+  }
+  assert.match(read('lib/app/system_playlist_location.dart'), /SystemPlaylistType.values/);
+  assert.match(read('lib/features/playlists/common/system_playlist_links.dart'), /YYPlaylistCard\(/);
+  assert.match(read('lib/features/playlists/common/system_playlist_sections.dart'), /YYTrackTile\(/);
+  assert.match(read('lib/app/yy_music_app.dart'), /systemPlaylists: ref.read\(dependencyGraphProvider\).systemPlaylists/);
+});
+
+test('system queue actions preserve exact IDs and guard own current-ID refresh separately', () => {
+  const actions = read('lib/features/playlists/common/system_playlist_actions.dart');
+  assert.match(actions, /e.id == entry.entryId && e.track == entry.reference/);
+  assert.match(actions, /playEntry\(entry.entryId!, canPlay: current\)/);
+  assert.match(actions, /playCatalogTrack\(entry.reference, canPlay: current\)/);
+  assert.match(read('lib/features/playlists/common/system_playlist_controller.dart'), /type != SystemPlaylistType.queue\) _intent\+\+/);
+  assert(!/saveQueue\(|setFavorite\(|clearHistory\(|recordHistory\(|deletePlaylist\(/.test(actions));
 });

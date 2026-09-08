@@ -8,17 +8,31 @@ import '../../../domain/models/load_state.dart';
 import '../../../domain/models/pagination.dart';
 import '../../../domain/models/system_playlist_content.dart';
 import '../../../domain/repositories/collection_repository.dart';
+import '../../../playback/playback_controller.dart';
 
 part 'system_playlist_sessions.dart';
+part 'system_playlist_actions.dart';
 
 /// A read-only, fixed-type window over the root collection repository.
 /// Construction is idle; callers explicitly start outside Widget.build.
 final class SystemPlaylistController extends ChangeNotifier {
-  SystemPlaylistController._(this.type, this._repository, this._onClosed);
+  SystemPlaylistController._(
+    this.type,
+    this._repository,
+    this._onClosed,
+    this._playback,
+  );
 
   final SystemPlaylistType type;
   final CollectionRepository? _repository;
   final VoidCallback _onClosed;
+  final PlaybackController? _playback;
+  bool _actionBusy = false;
+  int _intent = 0;
+  String? _actionError;
+  bool get busy => _actionBusy;
+  String? get actionError => _actionError;
+  String? get currentQueueEntryId => _playback?.state.queue.currentEntryId;
   static const pageSize = 20, maxVisibleCount = 200;
   final _pending = <Future<void>>{};
   StreamSubscription<void>? _subscription;
@@ -42,18 +56,18 @@ final class SystemPlaylistController extends ChangeNotifier {
       !_disposed && (phase == LoadPhase.data || phase == LoadPhase.empty);
   bool get capped =>
       content?.hasMore == true && content!.page.limit >= maxVisibleCount;
-  bool get _canBrowse => _active && isCurrent;
+  bool get _canBrowse => _active && isCurrent && !busy;
   bool get canLoadMore => _canBrowse && content?.hasMore == true && !capped;
   bool get canShowNextWindow => _canBrowse && capped;
   bool get canShowPreviousWindow =>
       _canBrowse && (content?.page.offset ?? 0) > 0;
 
-  /// Hiding/covering a route blocks retained navigation callbacks, not playback.
+  /// Hiding blocks retained callbacks and pending starts, not started audio.
   /// Its bounded projection can still refresh while hidden.
   void setActive(bool value) {
     if (_disposed || _active == value) return;
     _active = value;
-    _notify();
+    if (!value) _intent++;
   }
 
   /// Idempotent explicit start; opening a session alone performs no I/O.
@@ -65,6 +79,7 @@ final class SystemPlaylistController extends ChangeNotifier {
   /// Re-subscribes before reading the same target window, including after error.
   void refresh() {
     if (_disposed) return;
+    _intent++;
     _started = true;
     final generation = ++_watchGeneration;
     _watchReady = false;
@@ -111,6 +126,7 @@ final class SystemPlaylistController extends ChangeNotifier {
   /// Replaces the entire expanded window; never joins different query snapshots.
   void loadMore(SystemPlaylistContent expected) {
     if (!canLoadMore || !identical(content, expected)) return;
+    _intent++;
     _limit = (_limit + pageSize).clamp(pageSize, maxVisibleCount);
     _requestRead();
   }
@@ -118,6 +134,7 @@ final class SystemPlaylistController extends ChangeNotifier {
   /// Stale callbacks cannot skip over a newer group.
   void showNextWindow(SystemPlaylistContent expected) {
     if (!canShowNextWindow || !identical(content, expected)) return;
+    _intent++;
     _offset = expected.page.offset + maxVisibleCount;
     _limit = maxVisibleCount;
     _requestRead();
@@ -126,6 +143,7 @@ final class SystemPlaylistController extends ChangeNotifier {
   /// Reads the preceding group without retaining a second content cache.
   void showPreviousWindow(SystemPlaylistContent expected) {
     if (!canShowPreviousWindow || !identical(content, expected)) return;
+    _intent++;
     _offset = (expected.page.offset - maxVisibleCount).clamp(0, _offset);
     _limit = maxVisibleCount;
     _requestRead();
@@ -144,6 +162,8 @@ final class SystemPlaylistController extends ChangeNotifier {
 
   void _requestRead() {
     if (_disposed || !_watchReady) return;
+    // The queue current-ID write is part of its own accepted playback command.
+    if (type != SystemPlaylistType.queue) _intent++;
     _readRevision++;
     _readAgain = true;
     _phase = LoadPhase.loading;
@@ -204,6 +224,7 @@ final class SystemPlaylistController extends ChangeNotifier {
       !_disposed && _watchReady && revision == _readRevision;
 
   void _setFailure(Object error, String diagnostic) {
+    _intent++;
     _phase = LoadPhase.error;
     _failure = DomainFailure(
       code: error is DomainFailure ? error.code : DomainFailureCode.unknown,

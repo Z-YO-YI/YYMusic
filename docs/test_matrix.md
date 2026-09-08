@@ -1,6 +1,14 @@
 # 原生基础验证矩阵
 
-Phase6H11 当前：868 Flutter（84 Golden未改）、101 Node；分析/构建详见[报告](phase_6h11_system_playlist_sessions_report.md)。
+Phase6H12 当前：907 Flutter（91 Golden）、103 Node；分析/构建详见[报告](phase_6h12_system_playlist_surfaces_report.md)。
+
+Phase6H12新增39项：16路由/播放动作、12原生交互/生命周期、3真实SQLite页面、7 Golden与1 Windows入口焦点测试。
+三端点击按真实重复queue ID播放，缺失引用禁用；三入口枚举导航/返回、编辑浮层旧回调失效、Enter/Space不泄漏到Shell。
+收藏/最近保留根队列；自己current ID写入引起刷新仍正常播放；leave/refresh/watch-error/close撤销延迟load，失败脱敏与重试、关闭排空通过。
+旋转/分屏/零尺寸会话与滚动保持，覆盖路由/最小化取消未开始播放；20→200/下一组/上一组按钮读真实窗口并回顶部。
+SQLite三系统页面实际点击完成根播放和精确队列持久化，不产生可删除系统父记录或删除曲库。
+七张新基线与三张受系统入口影响的编辑器背景逐张检查，其余81张旧Golden字节未改；没有降低阈值或关闭Lint。
+沿用最终App.tsx导出图标、YY组件/Token，无WebView、新Schema/依赖/平台权限。实际设备/网页像素对照、自动播放历史与Release仍另行验收。
 
 Phase6H11新增29项：12控制器/三类型、8生命周期、6窗口导航、3实际SQLite根会话测试。
 构造无I/O、先订阅后读、三种空状态、类型相关变化与共享曲库变化、完整引用/真实重复ID/页外当前ID通过。

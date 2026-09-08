@@ -1,4 +1,5 @@
 import '../domain/models/catalog_reference.dart';
+import '../domain/models/collection_models.dart';
 import '../domain/models/track.dart';
 
 enum AppRoute {
@@ -27,6 +28,7 @@ abstract interface class AppNavigation {
   void openAlbum(AlbumRef reference);
   void openArtist(ArtistRef reference);
   void openPlaylist(String id);
+  void openSystemPlaylist(SystemPlaylistType type);
   Future<void> addToPlaylist(TrackRef track, {required String title});
   void back();
 }

@@ -1,5 +1,14 @@
 # Phase 6H11 — 系统歌单共用会话报告
 
+## 精确云端结果回填（H12开始前复验）
+
+实现提交`428a49f0049d51039da012639a07801e9880d025`，Draft [PR #56](https://github.com/Z-YO-YI/YYMusic/pull/56)开放、未合并。
+[push 34239083727](https://github.com/Z-YO-YI/YYMusic/actions/runs/34239083727)与[PR 34239089582](https://github.com/Z-YO-YI/YYMusic/actions/runs/34239089582)均成功：
+每组源码/Android/Windows三项通过，另两项可选音频诊断跳过，不能算成原生音频新证据。
+Linux784通过/84宿主Golden跳过，Windows84 Golden与1真实窗口测试通过；101 Node、350 Dart格式零修改、严格分析零问题。
+push Windows开发Debug产物ID10061880320，67,361,700字节，SHA256 `a4500e496ece7a97c3a0fbc55b0dd41108401212e05d2191e7412161656f1eb2`，UTC2026-09-22T14:50:19Z到期；仅核实元数据与构建日志，未下载/手动运行。
+Android51坐标/三份完整原生原文/六许可/48资产/v2单签名与Windows65文件包校验通过；无新增APK Release。
+
 2026-09-08，Z-YO-YI/YYMusic，分支`codex/system-playlist-sessions`。
 基于已fetch/pull的干净`2c22cadbcbfab1a6ef3420cd01758a0410ce1535`；前置PR #55两组常规源码/Android/Windows成功。
 五原始指纹、ZIP24项、44最终图标/52产物复验，完整重读主指令；本批依据17.4/23/Phase6继续歌单，不跳到后续导入阶段。

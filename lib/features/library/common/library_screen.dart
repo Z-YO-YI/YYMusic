@@ -142,6 +142,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
           playback: widget.playback,
           navigation: widget.navigation,
           menu: _openMenu,
+          canNavigateSystem: () =>
+              mounted &&
+              !_pickerOpen &&
+              _menuTrack == null &&
+              widget.controller.category == LibraryCategory.playlists &&
+              MediaQuery.sizeOf(context).width > 0 &&
+              MediaQuery.sizeOf(context).height > 0,
         );
         final content = widget.platform == YYPlatform.windows
             ? WindowsLibraryLayout(sections: sections, scroll: _scroll)

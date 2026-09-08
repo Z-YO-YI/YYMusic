@@ -174,7 +174,7 @@ final class PlaylistContentSections {
               const SizedBox(height: 12),
               YYErrorBanner(
                 title: '歌单读取失败',
-                message: '内容暂不可操作，可重试。系统歌单入口尚未接入。',
+                message: '内容暂不可操作，请重试。',
                 actionLabel: '重试歌单',
                 onAction: controller.refresh,
               ),
