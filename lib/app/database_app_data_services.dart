@@ -1,10 +1,12 @@
 import '../data/database/app_database.dart';
 import '../data/database/database_connection.dart';
+import '../data/repositories/drift_appearance_settings_repository.dart';
 import '../data/repositories/drift_collection_repository.dart';
 import '../data/repositories/drift_library_repository.dart';
 import '../data/repositories/drift_lyrics_repository.dart';
 import '../data/repositories/drift_music_source_repository.dart';
 import '../data/repositories/drift_search_history_repository.dart';
+import '../domain/repositories/appearance_settings_repository.dart';
 import '../domain/repositories/catalog_browse_repository.dart';
 import '../domain/repositories/catalog_search_repository.dart';
 import '../domain/repositories/collection_repository.dart';
@@ -60,6 +62,7 @@ final class DatabaseAppDataServices implements AppDataServices {
     final services = DatabaseAppDataServices._(
       database: database,
       library: library,
+      appearanceSettings: DriftAppearanceSettingsRepository(database),
       searchHistory: DriftSearchHistoryRepository(database),
       collection: DriftCollectionRepository(database),
       lyrics: DriftLyricsRepository(database),
@@ -78,6 +81,7 @@ final class DatabaseAppDataServices implements AppDataServices {
   DatabaseAppDataServices._({
     required this._database,
     required this._library,
+    required this._appearanceSettings,
     required this._searchHistory,
     required this._collection,
     required this._lyrics,
@@ -87,6 +91,7 @@ final class DatabaseAppDataServices implements AppDataServices {
 
   final AppDatabase _database;
   final DriftLibraryRepository _library;
+  final DriftAppearanceSettingsRepository _appearanceSettings;
   final DriftSearchHistoryRepository _searchHistory;
   final DriftCollectionRepository _collection;
   final DriftLyricsRepository _lyrics;
@@ -95,6 +100,9 @@ final class DatabaseAppDataServices implements AppDataServices {
 
   @override
   LibraryRepository get library => _library;
+
+  @override
+  AppearanceSettingsRepository get appearanceSettings => _appearanceSettings;
 
   @override
   LocalLibraryRepository get localLibrary => _library;
@@ -127,6 +135,7 @@ final class DatabaseAppDataServices implements AppDataServices {
     try {
       await Future.wait([
         _library.dispose(),
+        _appearanceSettings.dispose(),
         _searchHistory.dispose(),
         _collection.dispose(),
         _lyrics.dispose(),

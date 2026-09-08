@@ -887,3 +887,14 @@ Phone竖向、Tablet按横竖屏重排、Windows宽屏统计与目录组合，�
 保留20条目录分页与历史扫描日期，明确不是当前权限/文件可读验证；不新增导入/扫描/授权按钮、文件操作或平台依赖。
 LibraryScreen用稳定GlobalKey迁移唯一LocalMusicPanel，避免Phone/Tablet布局替换时旧Panel在新Panel激活后dispose，错误地停用共享Controller。
 同一Element保留活动状态和回调身份；真正卸载仍立即撤销。YYSurface新增可选radius参数保留原默认值，仅本地统计18/目录16使用App.tsx精修Token。
+
+## ADR-073：外观设置以白名单快照保存，根恢复与写入有序
+
+2026-09-09，Phase6J1。AppearanceSettings是纯Domain不可变模型，只含显示模式、五预设/自定义色、glassEnabled、reduceMotion；与YY设计类型在根控制器显式映射。
+DriftAppearanceSettingsRepository借用同一数据库，只查询themeMode/accentPreset/customAccent/glassEnabled/reduceMotion五键，并在一个事务内保存整个快照，保留其他设置。
+缺失键按明确默认值补齐但读取不写库；损坏/未知类型拒绝为安全Failure，不把错误假装默认成功，不接收任意键、原始JSON或凭据。
+根AppearanceSettingsController监听唯一YYAppearanceController，启动时先恢复再呈现业务UI；原子恢复只通知一次且不回写。启动前/期间已发生的用户变更优先于晚到读取。
+持久化最多一个worker，连续变更合并为最新快照但不并发写；已接受变更在关闭时继续排空，随后才释放共享数据范围，失败不会驱动音频或假报已保存。
+读取失败保持原界面，不自动覆盖损坏存储；显式重试先读成功再保存尚未落库的用户变更。保存失败可重试最新快照，新用户变更可触发下一次保存。
+无仓储的隔离Fixture保持明确session-only语义，正式AppDataServices必须提供同连接外观仓储。原生Settings UI下一批消费状态，不在本批增加无效平台开关。
+外观通知期间重入根关闭时，YYAppearanceController先停止变更，等待当前通知展开结束再释放ChangeNotifier；已接受偏好仍由桥接器排空，不在notifyListeners栈内直接销毁。

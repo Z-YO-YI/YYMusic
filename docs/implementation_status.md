@@ -1,5 +1,11 @@
 # 实施状态
 
+当前增量Phase6J1：外观设置以五键白名单和单事务保存于既有app_settings表，同一数据范围/唯一YYAppearanceController；显示模式、预设/自定义色、glassEnabled/reduceMotion已真实持久化。
+根启动先恢复，不回写默认；早到用户变更优先，连续修改单worker合并，读取失败不覆盖，保存失败安全保留/可重试，根关闭排空并保护通知栈内重入退出。
+最终1056 Flutter（新增27：15 Controller/9 SQLite/1模型/2启动Widget）、115 Node、404文件格式、严格分析通过；104旧Golden字节不变，Schema/依赖/平台无变化，Android Debug预检通过。
+见[Phase6J1报告](phase_6j1_appearance_persistence_report.md)，分支`codex/appearance-settings-persistence`。对应精确提交云端验收另行核对；前置I2 `b1adbce` 的push/PR源码、Android、Windows已全部SUCCESS并回填。
+本批是外观存储/根状态，不是完整原生设置页面；下一批Phase6J2接设置界面，之后仍有Phase7–11。无新的扫描、授权、后台或假播放开关。下方是历史记录。
+
 当前增量Phase6I2：音乐库“本地”已接入原生统计/20条目录分页、配置/历史标记及加载/空/错误重试；Phone/Tablet/Windows独立布局，共用同一LocalMusicController和数据库。
 先监听再读、单一查询通道、旧回调隔离、末页删除回退，隐藏/覆盖/零尺寸撤销读取，根关闭排空查询与订阅取消。
 真实路由回归发现并修复布局替换时旧Panel误停新状态，稳定GlobalKey迁移唯一Element；不复制播放器或数据库。

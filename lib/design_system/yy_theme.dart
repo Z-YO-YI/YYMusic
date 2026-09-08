@@ -5,48 +5,92 @@ import 'yy_tokens.dart';
 /// An explicit user choice; System resolves against the current OS brightness.
 enum YYThemeMode { light, dark, system }
 
-/// Session-only appearance. Persistence belongs to the later data phase.
+/// Shared visual state; the app-owned settings bridge handles persistence.
 final class YYAppearanceController extends ChangeNotifier {
   YYThemeMode _mode = YYThemeMode.light;
   YYAccent _accent = YYAccent.fromPreset(YYAccentPreset.coral);
   bool _reduceMotion = false;
   bool _reduceGlass = false;
+  bool _disposed = false, _notifierDisposed = false;
+  int _notificationDepth = 0;
   YYThemeMode get mode => _mode;
   YYAccent get accent => _accent;
   bool get reduceMotion => _reduceMotion;
   bool get reduceGlass => _reduceGlass;
 
+  /// Restores one validated snapshot with at most one visual notification.
+  void restore({
+    required YYThemeMode mode,
+    required YYAccent accent,
+    required bool reduceGlass,
+    required bool reduceMotion,
+  }) {
+    if (_disposed) return;
+    if (_mode == mode &&
+        _accent.preset == accent.preset &&
+        _accent.originalHex == accent.originalHex &&
+        _reduceGlass == reduceGlass &&
+        _reduceMotion == reduceMotion) {
+      return;
+    }
+    _mode = mode;
+    _accent = accent;
+    _reduceGlass = reduceGlass;
+    _reduceMotion = reduceMotion;
+    _notify();
+  }
+
   void setMode(YYThemeMode value) {
-    if (_mode == value) return;
+    if (_disposed || _mode == value) return;
     _mode = value;
-    notifyListeners();
+    _notify();
   }
 
   void setPreset(YYAccentPreset value) {
-    if (_accent.preset == value) return;
+    if (_disposed || _accent.preset == value) return;
     _accent = YYAccent.fromPreset(value);
-    notifyListeners();
+    _notify();
   }
 
   void setCustomAccent(String value) {
+    if (_disposed) return;
     final next = YYAccent.custom(value);
     if (_accent.originalHex == next.originalHex && _accent.preset == null) {
       return;
     }
     _accent = next;
-    notifyListeners();
+    _notify();
   }
 
   void setReduceMotion(bool value) {
-    if (_reduceMotion == value) return;
+    if (_disposed || _reduceMotion == value) return;
     _reduceMotion = value;
-    notifyListeners();
+    _notify();
   }
 
   void setReduceGlass(bool value) {
-    if (_reduceGlass == value) return;
+    if (_disposed || _reduceGlass == value) return;
     _reduceGlass = value;
-    notifyListeners();
+    _notify();
+  }
+
+  void _notify() {
+    if (_disposed) return;
+    _notificationDepth++;
+    try {
+      notifyListeners();
+    } finally {
+      _notificationDepth--;
+      if (_disposed) dispose();
+    }
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    if (_notifierDisposed || _notificationDepth != 0) return;
+    _notifierDisposed = true;
+    super.dispose();
   }
 
   YYThemeData resolve(
