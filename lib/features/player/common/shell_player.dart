@@ -14,12 +14,14 @@ class ShellPlayer extends StatelessWidget {
     this.phone = false,
     this.compact = false,
     this.inspector = false,
+    this.onOpen,
   });
 
   final PlaybackPresenter presenter;
   final bool phone;
   final bool compact;
   final bool inspector;
+  final VoidCallback? onOpen;
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
@@ -32,6 +34,7 @@ class ShellPlayer extends StatelessWidget {
         phone: phone,
         compact: compact,
         inspector: inspector,
+        onOpen: onOpen,
       );
       if (inspector) return controls;
       return Column(
@@ -60,11 +63,13 @@ class _PlayerControls extends StatefulWidget {
     required this.phone,
     required this.compact,
     required this.inspector,
+    required this.onOpen,
   });
   final PlaybackPresenter presenter;
   final bool phone;
   final bool compact;
   final bool inspector;
+  final VoidCallback? onOpen;
   @override
   State<_PlayerControls> createState() => _PlayerControlsState();
 }
@@ -138,6 +143,7 @@ class _PlayerControlsState extends State<_PlayerControls> {
       return YYMiniPlayer(
         data: view,
         loading: presenter.busy,
+        onOpen: widget.onOpen,
         onTogglePlayback: toggle,
         onNext: next,
       );
@@ -146,6 +152,7 @@ class _PlayerControlsState extends State<_PlayerControls> {
       data: view,
       compact: widget.compact,
       loading: presenter.busy,
+      onOpen: widget.onOpen,
       onTogglePlayback: toggle,
       onNext: next,
       onPrevious: previous,

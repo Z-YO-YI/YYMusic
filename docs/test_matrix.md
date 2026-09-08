@@ -1,5 +1,11 @@
 # 原生基础验证矩阵
 
+Phase 7B1：1160 Flutter、118 Node、120 Golden（新增 25 Widget/8 Golden，112 旧图字节不变），425 文件格式与严格分析通过；[报告](phase_7b1_native_player_report.md)。
+12 组 Android/Windows 尺寸均以 130% 字体验证真实播放/切歌，包括 Phone 590×360、Android 844×390、Tablet 横竖和 Windows 500×640 桌面窄窗；新增浅/深、空态和错误 Golden 已逐张检查。
+覆盖底栏入口、快速重复 push、打开/收起保持根音频、直接系统返回、真实队列浏览返回、预览/单次提交/原生 pointer cancel、音量/随机/循环、缓冲/未知时长、脱敏失败重试和减少动态。
+切歌、同 Phone 布局内尺寸变化、跨断点、覆盖/零面积/卸载撤销旧回调；离页后排队 Seek 不执行。Windows 聚焦“下一首”按 Space 仅切歌，不触发全局播放/暂停。
+最终 Android Debug 构建、包内 48 资产/六音频包与原生完整许可/v2 单签名者通过；本批云端 Windows、实机安装/出声与 Release 分开报告，不冒用前置 7A 的 SUCCESS。
+
 Phase 7A：1127 Flutter（新增 17 时间轴、25 控制器、2 实际 SQLite）、117 Node；112 旧 Golden 字节不变，418 文件格式和严格分析通过。[报告](phase_7a_lyrics_synchronization_report.md)。
 覆盖偏移/整数边界/半开区间/重复起点/纯文本双语，一万行二分 oracle 比对；无后台读、完整来源、单 worker、最新位置、读错重试、旧快照/离页/切回取消 Seek、原生 Seek 排空与通知/仓储重入关闭。
 真实 SQLite 同连接读完整引用/翻译/偏移并驱动根 Seek；延迟 SELECT 时根保持数据库与引擎存活直至排空。本地 Android Debug/包内资产许可/v2 签名通过；GitHub 新 SHA 双平台与设备安装验证分别报告，不混用前置证据。

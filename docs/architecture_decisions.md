@@ -921,3 +921,13 @@ UI 点击必须带当前 LoadState 快照身份；新读取即使返回同一文
 隐藏停止监听且丢弃晚到结果；根关闭同步撤销新工作，并等待已登记的歌词读取/Seek，随后排空播放器，最后释放引擎和数据。同步器只借用仓储，不自行销毁。
 歌词/播放器通知中重入关闭时先标记停止，ChangeNotifier 的最终 dispose 延迟到自身通知栈展开后；不修改队列、历史或音频资源所有权。
 本批只接共享核心，原生歌词页面、滚动跟随、翻译开关与沉浸能力由后续 Phase 7 增量消费，不提前接模拟 UI。
+
+## ADR-076：独立播放页面借用根投影，手势授权与媒体状态分离
+
+2026-09-09，Phase 7B1。`/player` 在主 Shell 之外显示原生 PlayerScreen，三个布局只排列视图，播放真相仍为根 PlaybackController / PlaybackPresenter。
+复用已有原始 SVG、ArtworkPlaceholder、Slider、TransportButton；新的受控全页内容不访问数据层或插件。封面语义明确兜底，普通页面为纯色，不模拟专辑数据。
+页面只拥有滚动与正在拖动的进度/音量预览；活动由 app 通过只读 ValueListenable 注入，结合 ModalRoute/TickerMode/正尺寸保护事件。切歌、离页和布局变化撤销代次，原生输入进行中不得误 Seek 新歌曲。
+PlaybackPresenter.seek 扩展可选 isIntentCurrent，传入根串行 Seek 的 canSeek 实际执行检查。取消手势不停止已接受的播放/暂停；返回保持队列/位置/根实例，重复打开当前 `/player` 不叠加页面。
+Windows 保持桌面双栏；Phone 竖单列/短横双栏，Tablet 横双栏/竖上下。进度按真实位置和总时长，未知时长禁用，减少动态不缩放封面。
+底栏元数据提供打开原生播放页回调，不启用未实现的 OS 全屏按钮；当前队列先复用既有真实系统队列路由，独立管理路由与歌词/沉浸/收藏后续按真实能力接入。
+活动判断读取 GoRouter 最后匹配的叶路由，而非仍可能指向底层主路由的 currentConfiguration.uri；第三方类型仅留 app 组合层。PlayerScreen 拦截系统返回并委托统一 back，直接进入无返回栈时也回首页；重复点击打开在异步 push 尚未生效时同样去重。

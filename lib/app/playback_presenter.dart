@@ -53,7 +53,13 @@ final class PlaybackPresenter extends ChangeNotifier {
       canControl &&
       _playback.state.currentTrack != null &&
       (_playback.state.duration?.inMicroseconds ?? 0) > 0 &&
-      _playback.state.phase != PlaybackPhase.error;
+      switch (_playback.state.phase) {
+        PlaybackPhase.ready ||
+        PlaybackPhase.playing ||
+        PlaybackPhase.paused ||
+        PlaybackPhase.completed => true,
+        _ => false,
+      };
   bool get canChangeVolume => !_disposed && !busy && _playback.isAvailable;
   String? get errorMessage => _actionFailed || _playback.state.failure != null
       ? '播放操作未完成，请重试或选择其他曲目。'
@@ -107,13 +113,19 @@ final class PlaybackPresenter extends ChangeNotifier {
     });
   }
 
-  Future<void> seek(double fraction, {required String expectedEntryId}) => _run(
+  /// Optional route intent is checked again when the root executes the seek.
+  Future<void> seek(
+    double fraction, {
+    required String expectedEntryId,
+    bool Function()? isIntentCurrent,
+  }) => _run(
     () => _playback.seek(
       Duration(
         microseconds: (_playback.state.duration!.inMicroseconds * fraction)
             .round(),
       ),
       expectedEntryId: expectedEntryId,
+      canSeek: isIntentCurrent,
     ),
     enabled:
         canSeek &&

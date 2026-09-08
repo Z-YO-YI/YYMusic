@@ -53,11 +53,11 @@ void main() {
             (widget) =>
                 widget is Semantics &&
                 widget.properties.label ==
-                    '正在播放，${fixture.tracks.first.title}，${fixture.tracks.first.artists.single}',
+                    '打开正在播放，${fixture.tracks.first.title}，${fixture.tracks.first.artists.single}',
           ),
         );
-        expect(metadata.properties.button, isNot(true));
-        expect(metadata.properties.onTap, isNull);
+        expect(metadata.properties.button, isTrue);
+        expect(metadata.properties.onTap, isNotNull);
         await tester.tap(control('$prefix-playback'));
         await tester.pumpAndSettle();
         expect(fixture.engine.calls.last, 'pause');
