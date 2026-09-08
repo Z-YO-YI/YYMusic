@@ -1,5 +1,11 @@
 # 实施状态
 
+当前增量 Phase 7B1：`/player` 已替换工程占位页，三端独立布局借用同一根播放投影，底栏元数据打开；播放/切歌/随机/循环/进度/音量和已有当前队列浏览均已接线。
+切歌、覆盖/隐藏/零面积、卸载及同类布局内尺寸变化撤销旧回调；排队 Seek 执行前再次授权。修复 imperative push 时路由活动判断、快速重复打开与直接路由系统返回；不停止根音频。
+1160 Flutter（新增 25 Widget、8 Golden）、118 Node、120 Golden、425 文件格式、严格分析及 Android Debug/48 原始资产/完整许可/v2 签名通过；112 旧图、Schema/锁/平台/原始资产未改。
+分支 `codex/native-player-route`，[计划](phase_7b1_native_player_plan.md)与[报告](phase_7b1_native_player_report.md)。前置 7A `ffb83e6` 两组 GitHub 源码/Android/Windows 均 SUCCESS；本批新提交云端验证独立核对，不自动合并。
+本批不是完整 Phase 7：封面仍为明确兜底，系统沉浸/原生歌词与独立队列管理待开发。真实导入/扫描、后台媒体、实机验收与正式发行仍未完成，新安装没有可导入歌曲的入口。以下为历史记录。
+
 当前增量 Phase 7A：纯 Domain 偏移时间轴与根 LyricsController 已接入依赖图，按完整来源/队列身份单通道读真实歌词；位置不重读，隐藏/刷新/切歌撤销旧快照 Seek，根关闭排空读取与跳转。
 1127 Flutter（新增 44）、117 Node、112 旧 Golden、418 文件格式和严格分析通过；Android Debug/48 资产/六音频包完整许可/v2 签名预检成功，Schema/锁/平台/原始资产不变。
 分支 `codex/lyrics-synchronization-core`，[计划](phase_7a_lyrics_synchronization_plan.md)与[报告](phase_7a_lyrics_synchronization_report.md)；本批精确 GitHub 构建在 push/PR 后核对。前置 J2 `1d24bdc` 两组源码/Android/Windows已 SUCCESS，#63 保持 Draft 未合并。

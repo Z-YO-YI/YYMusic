@@ -1,5 +1,7 @@
 # YYMusic
 
+当前增量：**Phase 7B1 原生独立播放页**。底栏曲目信息可打开 `/player`，Phone / Tablet / Windows 三套布局共用根播放器，接入真实播放、切歌、随机/循环、进度与音量；当前队列按钮复用已有队列浏览。1160 项 Flutter（含 120 张 Golden）、118 项 Node、严格分析及本地 Android Debug 预检通过。详见[本批报告](docs/phase_7b1_native_player_report.md)与[计划](docs/phase_7b1_native_player_plan.md)。前置 7A 两组 GitHub Android/Windows 均已 SUCCESS，[验收回填](docs/phase_7a_lyrics_synchronization_report.md)。本批精确云端状态见对应 Draft PR，不以前置构建代替。
+
 当前增量：**Phase 7A 共享歌词同步核心**。新增真实仓储读取、偏移时间轴、根播放位置同步、快照授权 Seek 与关闭排空；三端共用一个状态，未接入原生歌词页面。1127 项 Flutter、117 项 Node、112 张旧 Golden、严格分析和本地 Android Debug 预检通过，精确 GitHub 构建状态见对应 Draft PR。详见[本批报告](docs/phase_7a_lyrics_synchronization_report.md)与[计划](docs/phase_7a_lyrics_synchronization_plan.md)。前置 J2 两组 Android/Windows 已 SUCCESS，[验收回填](docs/phase_6j2_native_settings_report.md)。下方保留各历史阶段记录。
 
 当前增量：**Phase 6J2 原生外观与关于设置**。正式“设置”已替换工程占位页，提供三套原生布局，共用根外观与本机保存。包含浅色/深色/系统、五预设/自定义 Hex、玻璃/减少动态、保存进度与失败重试，以及关于/开源许可。详见[本批报告](docs/phase_6j2_native_settings_report.md)和[计划](docs/phase_6j2_native_settings_plan.md)。前置 J1 `993aab2` 的 GitHub Android/Windows 两组构建均已成功，[验收回填](docs/phase_6j1_appearance_persistence_report.md)。以下是前置阶段记录，不代表新功能已全部上线。
@@ -19,6 +21,14 @@ Phase4C新增确定性PCM16 WAV生成器、2项单元测试，以及默认关闭
 历史 Phase4D 实现提交 `913f3d75` 增加 HEAD-only 脱敏网络探针、Android Debug-only 只读 Provider 及受控 HTTPS 测试；标准 PR 33878401743 和原生运行 33878710671 均成功。该原生证据属于后来被移除的 media_kit 候选，不能替代当前 just_audio 的 HTTPS 验收。历史记录和定位不变，生产入口、TLS 默认值及 Release Manifest 未改变。
 
 设计依据为 `design_reference/YYMusic_HTML.zip` 中完整的 `src/App.tsx` 和基础 HTML，不能只使用旧 HTML。App 的 `NEW_ICON_SPRITE`、两项账户文字替换、全部 `POLISH_CSS` 均已纳入合成。YYMusic 是产品名，YY Listener 是账户 Fixture。
+
+## 原生独立播放页
+
+点击手机迷你播放器或桌面底栏的曲目信息，进入独立播放页。播放/暂停、上一首/下一首、随机/循环及音量控制使用同一个根播放器；进度拖动只预览，松手才提交一次跳转，取消拖动不改变播放位置。缓冲中或时长未知时不能跳转。播放失败显示可重试的安全提示，不展示私有路径或原始异常。
+
+“收起播放页”或系统返回会回到原页面，直接进入播放页则回首页；不会停止音频或重建队列。右上角队列按钮打开现有真实队列浏览，尚非独立队列管理页。手机纵向上下排布，短横屏紧凑双栏；平板横竖独立编排，Windows 即使窄窗口仍为桌面双栏。小尺寸和放大字体时可滚动查看全部控制。
+
+切歌、覆盖页面、改变窗口尺寸或离页后，旧手势不能跳转新曲目。封面明确显示“暂无封面”兜底，暂停时轻微缩小；开启减少动态则不缩放。真实封面读取、系统全屏/F、原生歌词自动滚动与独立队列编辑仍待后续 Phase 7；不提供模拟入口。默认新安装为空库，Phase 8 导入/扫描尚未接入。
 
 ## 原生设置与外观持久化
 

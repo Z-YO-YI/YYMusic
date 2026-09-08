@@ -4,6 +4,22 @@ import { read, sha, walk } from './design_audit.mjs';
 
 const sources = walk('lib').filter(path => path.endsWith('.dart'));
 
+test('independent native player composes three layouts around the root presenter', () => {
+  const screen = read('lib/features/player/common/player_screen.dart');
+  for (const target of ['phone/phone_player_layout', 'tablet/tablet_player_layout', 'windows/windows_player_layout']) {
+    assert.match(read(`lib/features/player/${target}.dart`), /extends StatelessWidget/);
+  }
+  assert.match(screen, /YYFullPlayerContent\(/);
+  assert.match(screen, /isIntentCurrent:/);
+  assert.match(screen, /PopScope<Object\?>/);
+  assert.match(screen, /SystemPlaylistType\.queue/);
+  assert(!/LyricsController\(|PlaybackController\(|QueueController\(|Timer\(|dart:io|\.openLyrics\(/.test(screen));
+  const router = read('lib/app/app_router.dart');
+  assert.match(router, /route == AppRoute\.player && playbackPresenter != null/);
+  assert.match(router, /lastOrNull\?\.matchedLocation/);
+  assert.match(router, /_playerActivity\.value \|\| _playerPushPending/);
+});
+
 test('lyrics synchronization borrows one root player and repository without a second clock', () => {
   const graph = read('lib/app/dependency_graph.dart');
   assert.equal((graph.match(/lyricsController = LyricsController\(/g) ?? []).length, 1);

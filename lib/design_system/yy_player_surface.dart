@@ -12,6 +12,7 @@ import 'yy_theme.dart';
 import 'yy_tokens.dart';
 import 'yy_tooltip.dart';
 
+part 'yy_full_player_content.dart';
 part 'yy_now_playing_inspector.dart';
 
 typedef YYPlayerValueChanged = void Function(double value);
@@ -569,6 +570,7 @@ class _TransportButton extends StatelessWidget {
     this.selected = false,
     this.toggled,
     this.inspector = false,
+    this.fullscreen = false,
   });
 
   final String id;
@@ -580,6 +582,7 @@ class _TransportButton extends StatelessWidget {
   final bool selected;
   final bool? toggled;
   final bool inspector;
+  final bool fullscreen;
 
   @override
   Widget build(BuildContext context) => YYTooltip(
@@ -595,7 +598,9 @@ class _TransportButton extends StatelessWidget {
         final theme = YYTheme.of(context);
         final colors = theme.colors;
         final active = selected || toggled == true;
-        final visual = inspector
+        final visual = fullscreen
+            ? (primary ? 70.0 : 46.0)
+            : inspector
             ? (primary ? 56.0 : 38.0)
             : primary
             ? YYPlayerMetrics.primaryControlVisual
@@ -617,14 +622,18 @@ class _TransportButton extends StatelessWidget {
             ? theme.accent.readableOn(fill)
             : colors.icon;
         return SizedBox.square(
-          dimension: inspector && primary ? 56 : YYSpace.touchTarget,
+          dimension: fullscreen
+              ? visual
+              : inspector && primary
+              ? 56
+              : YYSpace.touchTarget,
           child: Center(
             child: AnimatedScale(
               duration: theme.motion(YYMotion.press),
               curve: YYMotion.standard,
               scale: interaction.pressed
                   ? (inspector ? .96 : .94)
-                  : inspector && primary && interaction.hovered
+                  : (inspector || fullscreen) && primary && interaction.hovered
                   ? 1.04
                   : 1,
               child: AnimatedContainer(
@@ -643,7 +652,7 @@ class _TransportButton extends StatelessWidget {
                     width: 2,
                   ),
                   boxShadow: primary
-                      ? inspector
+                      ? inspector || fullscreen
                             ? [
                                 BoxShadow(
                                   color: Color(
@@ -664,7 +673,9 @@ class _TransportButton extends StatelessWidget {
                 alignment: Alignment.center,
                 child: YYIcon(
                   glyph: glyph,
-                  size: inspector
+                  size: fullscreen
+                      ? (primary ? 28 : 22)
+                      : inspector
                       ? (primary ||
                                 glyph == YYGlyph.previous ||
                                 glyph == YYGlyph.next

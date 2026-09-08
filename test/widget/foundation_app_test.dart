@@ -184,7 +184,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('screen-player')), findsOneWidget);
     expect(find.byType(AndroidPhoneShell), findsNothing);
-    await tester.tap(find.byKey(const ValueKey('open-lyrics')));
+    // The native player no longer exposes a fake lyrics-page button. The route
+    // contract remains independent while its native UI is the next increment.
+    libraryNavigation.openLyrics();
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('screen-lyrics')), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('route-back')));

@@ -17,6 +17,7 @@ import '../features/home/common/home_controller.dart';
 import '../features/home/common/home_screen.dart';
 import '../features/library/common/library_controller.dart';
 import '../features/library/common/library_screen.dart';
+import '../features/player/common/player_screen.dart';
 import '../features/playlists/common/playlist_add_controller.dart';
 import '../features/playlists/common/playlist_add_dialog.dart';
 import '../features/playlists/common/playlist_content_controller.dart';
@@ -133,6 +134,14 @@ final class AppRouter implements AppNavigation {
             routeActive: _settingsActivity,
             navigation: this,
             viewState: viewState,
+          )
+        : route == AppRoute.player && playbackPresenter != null
+        ? PlayerScreen(
+            key: const ValueKey('screen-player'),
+            platform: platform,
+            presenter: playbackPresenter,
+            navigation: this,
+            routeActive: _playerActivity,
           )
         : FoundationScreen(
             route: route,
@@ -348,27 +357,40 @@ final class AppRouter implements AppNavigation {
         ),
       ),
     );
-    _refreshSettingsActivity();
-    _router.routerDelegate.addListener(_refreshSettingsActivity);
+    _refreshRouteActivity();
+    _router.routerDelegate.addListener(_refreshRouteActivity);
   }
 
   late final GoRouter _router;
   final _settingsActivity = ValueNotifier(false);
-  void _refreshSettingsActivity() {
-    _settingsActivity.value =
-        _router.routerDelegate.currentConfiguration.uri.path ==
-        AppRoute.settings.path;
+  final _playerActivity = ValueNotifier(false);
+  String? get _activePath =>
+      _router.routerDelegate.currentConfiguration.lastOrNull?.matchedLocation;
+
+  void _refreshRouteActivity() {
+    _settingsActivity.value = _activePath == AppRoute.settings.path;
+    _playerActivity.value = _activePath == AppRoute.player.path;
   }
 
   final _rootNavigator = GlobalKey<NavigatorState>();
   late final Future<void> Function(TrackRef, String) _showPlaylistPicker;
   bool _pickerShowing = false;
+  bool _playerPushPending = false;
   RouterConfig<Object> get config => _router;
 
   @override
   void goTo(AppRoute route) => _router.go(route.path);
   @override
-  void openPlayer() => unawaited(_router.push<void>(AppRoute.player.path));
+  void openPlayer() {
+    if (_playerActivity.value || _playerPushPending) return;
+    _playerPushPending = true;
+    unawaited(
+      _router.push<void>(AppRoute.player.path).whenComplete(() {
+        _playerPushPending = false;
+      }),
+    );
+  }
+
   @override
   void openLyrics() => unawaited(_router.push<void>(AppRoute.lyrics.path));
   @override
@@ -439,8 +461,9 @@ final class AppRouter implements AppNavigation {
   }
 
   void dispose() {
-    _router.routerDelegate.removeListener(_refreshSettingsActivity);
+    _router.routerDelegate.removeListener(_refreshRouteActivity);
     _router.dispose();
     _settingsActivity.dispose();
+    _playerActivity.dispose();
   }
 }
