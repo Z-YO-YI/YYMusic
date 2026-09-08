@@ -1,8 +1,8 @@
 # 原生基础验证矩阵
 
-Phase6H10 当前：837 Flutter（84 Golden未改）、100 Node；分析/构建详见[报告](phase_6h10_system_playlist_data_report.md)。
+Phase6H10 当前：839 Flutter（84 Golden未改）、100 Node；分析/构建详见[报告](phase_6h10_system_playlist_data_report.md)。
 
-Phase6H10新增25项：3模型、10 Fake/SQLite共用合同、11 SQL投影/通知/损坏边界、1真实文件库重开。
+Phase6H10新增27项：3模型、10 Fake/SQLite共用合同、11 SQL投影/通知/损坏边界、1真实文件库重开、2 Unicode排序跨实现对照。
 同时间收藏按完整来源身份稳定排序、新时间置顶；最近20/同曲重放置顶/清除保留曲库；队列重复及页外当前项保留。
 1003队列三署名只返回两条目六展开行；1003收藏两署名只返回三条目六行，各仅一次绑定查询且不写事务。
 历史超量旧数据读取仍限20；页外Metadata不解码、页内错误脱敏；页外负数/断档位置、缺状态/悬空当前项安全失败。

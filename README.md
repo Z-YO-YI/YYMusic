@@ -1,6 +1,6 @@
 # YYMusic
 
-当前阶段：**Android + Windows · Phase 6H10 系统歌单只读数据层**。喜欢的音乐、最近播放和当前队列已具备同一SQL快照的分页投影与类型相关刷新通知，不创建可删除的伪歌单；保留完整来源、失效引用和重复队列条目，最近播放最多20条。837项Flutter（84张Golden未修改）、100项Node通过，严格分析零问题。精确GitHub双平台状态见[本批报告](docs/phase_6h10_system_playlist_data_report.md)/对应Draft PR。前置Phase6H9 `243299c` 两组GitHub源码/Android/Windows均成功，其自定义歌单整体播放功能保持不变。本批未新增系统歌单页面，也未接入真正开始播放后的历史写入；真实导入、完整播放器及发行仍待开发，默认新安装为空库。
+当前阶段：**Android + Windows · Phase 6H10 系统歌单只读数据层**。喜欢的音乐、最近播放和当前队列已具备同一SQL快照的分页投影与类型相关刷新通知，不创建可删除的伪歌单；保留完整来源、失效引用和重复队列条目，最近播放最多20条。839项Flutter（84张Golden未修改）、100项Node通过，严格分析零问题；追加Unicode排序用例并使Fake与SQLite一致。精确GitHub双平台状态见[本批报告](docs/phase_6h10_system_playlist_data_report.md)/对应Draft PR。前置Phase6H9 `243299c` 两组GitHub源码/Android/Windows均成功，其自定义歌单整体播放功能保持不变。本批未新增系统歌单页面，也未接入真正开始播放后的历史写入；真实导入、完整播放器及发行仍待开发，默认新安装为空库。
 
 距离“新安装后可日常听本地音乐”仍有四组工作：Phase6页面收尾；Phase7完整播放器/歌词/队列；Phase8双平台真实导入、扫描与授权；Phase10—11后台/系统媒体控制、Release打包与设备验收。完整产品还需要Phase9第三方来源。现有Debug构建不等于可用发行版：默认空库没有导入入口，Windows开发Debug包还依赖Debug CRT；不以测试数量或阶段编号换算虚假完成百分比。
 

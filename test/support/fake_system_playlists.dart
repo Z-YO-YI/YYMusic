@@ -14,7 +14,9 @@ extension _FakeSystemPlaylists on FakeCollectionRepository {
         final favorites = List.of(_favorites)
           ..sort((a, b) {
             final time = b.addedAt.compareTo(a.addedAt);
-            return time != 0 ? time : _key(a.track).compareTo(_key(b.track));
+            return time != 0
+                ? time
+                : _systemBinaryCompare(_key(a.track), _key(b.track));
           });
         records.addAll(
           favorites.map((e) => (ref: e.track, time: e.addedAt, id: null)),
@@ -55,5 +57,17 @@ extension _FakeSystemPlaylists on FakeCollectionRepository {
 
 int _compareHistory(PlayHistoryEntry a, PlayHistoryEntry b) {
   final time = b.startedAt.compareTo(a.startedAt);
-  return time != 0 ? time : a.id.compareTo(b.id);
+  return time != 0 ? time : _systemBinaryCompare(a.id, b.id);
+}
+
+// SQLite BINARY compares encoded UTF-8 bytes, while String.compareTo uses
+// UTF-16 code units and reverses some supplementary/BMP character pairs.
+int _systemBinaryCompare(String a, String b) {
+  final left = utf8.encode(a), right = utf8.encode(b);
+  final length = left.length < right.length ? left.length : right.length;
+  for (var i = 0; i < length; i++) {
+    final order = left[i].compareTo(right[i]);
+    if (order != 0) return order;
+  }
+  return left.length.compareTo(right.length);
 }

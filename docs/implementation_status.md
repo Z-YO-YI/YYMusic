@@ -3,7 +3,7 @@
 当前增量Phase6H10：系统歌单只读数据层，喜欢/最近/队列通过枚举读取，不持久化伪Playlist父记录。
 同语句读取计数/有界页/完整曲目署名/当前队列ID；先限页后艺人展开，无逐项查曲，失效/缺失引用与重复队列项保留。
 类型相关的失效通知无初始查询，真正取消后不再通知；队列全局位置、状态缺失/悬空和页内坏Metadata安全失败。
-837 Flutter（84 Golden全部未改）/100 Node通过，342 Dart文件格式零修改，严格分析零问题。
+839 Flutter（84 Golden全部未改）/100 Node通过，343 Dart文件格式零修改，严格分析零问题；Fake的Unicode排序已与SQLite一致。
 分支`codex/system-playlist-projections`，Android预检/精确云端结果见[Phase6H10报告](phase_6h10_system_playlist_data_report.md)。
 前置Phase6H9 `243299c`、Draft PR #54两组GitHub源码/Android/Windows成功，未合并。
 下一步接系统歌单会话/原生入口与根播放动作，并验收真正开始播放后的历史记录；本批没有新系统页面或历史写入行为。
