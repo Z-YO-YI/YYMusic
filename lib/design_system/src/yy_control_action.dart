@@ -18,6 +18,7 @@ class YYControlAction extends StatefulWidget {
     this.toggled,
     this.loading = false,
     this.focusNode,
+    this.onFocusReveal,
     this.inMutuallyExclusiveGroup = true,
   });
   final String label;
@@ -26,6 +27,7 @@ class YYControlAction extends StatefulWidget {
   final bool? selected, toggled;
   final bool loading;
   final FocusNode? focusNode;
+  final ValueChanged<BuildContext>? onFocusReveal;
   final bool inMutuallyExclusiveGroup;
   @override
   State<YYControlAction> createState() => _YYControlActionState();
@@ -68,7 +70,11 @@ class _YYControlActionState extends State<YYControlAction> {
       onFocusChange: (value) {
         setState(() => _hasFocus = value);
         if (value) {
-          unawaited(Scrollable.ensureVisible(context));
+          if (widget.onFocusReveal case final reveal?) {
+            reveal(context);
+          } else {
+            unawaited(Scrollable.ensureVisible(context));
+          }
         }
       },
       onShowHoverHighlight: (value) => setState(() => _hovered = value),

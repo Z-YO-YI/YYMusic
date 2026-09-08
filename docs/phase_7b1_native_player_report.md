@@ -50,3 +50,10 @@
 本批没有本机 Windows 编译、Android 实机安装/出声、性能 Profile 或 Release/AAB 验收。GitHub 必须按推送后的精确 SHA 单独核对 Android/Windows；前置 7A 双组 SUCCESS 仅归前置提交。
 普通 Android CI 构建并验证 APK，但未上传 APK artifact；Windows Debug artifact 依赖 Debug CRT，不是通用安装发行包。不发布 Release、不手动触发原生诊断、不自动合并 PR、不提交凭据/环境文件/构建产物。
 本批提交、Draft PR 和精确云端状态记录在 GitHub 对应开发分支及 PR；推送和权限检查未成功之前不能声称已同步。下一增量继续按 Phase 7 处理独立页面与真实交互，不跳到整项目生成。
+
+## 精确 GitHub 验收回填（Phase 7C1 核对）
+
+实现 `af1b07b9d751ee291a84723e156d4ab62004a931` 的 Push [34284120551](https://github.com/Z-YO-YI/YYMusic/actions/runs/34284120551) 与 PR [34284123475](https://github.com/Z-YO-YI/YYMusic/actions/runs/34284123475) 均 SUCCESS；[PR #65](https://github.com/Z-YO-YI/YYMusic/pull/65) 保持 Draft/OPEN、未合并。
+两组 Linux 各 1040 Flutter 通过/120 宿主 Golden 跳过；Windows 各 120 Golden + 1 真实窗口生命周期通过。两组 Android 均完成 51 音频坐标/3 完整法律文本、48 原始资产与 v2 单签名者复核；Windows 65 文件/六音频包/完整原生许可通过。
+Push [Windows Debug artifact](https://github.com/Z-YO-YI/YYMusic/actions/runs/34284120551/artifacts/10079250704) 为 67,503,064 bytes，SHA-256 `2e7ac69d8f983d657442cb650e1a91468a20af62989dc42b6bd505d65a2b0ad1`，核对时未过期，到期 UTC 2026-09-22 22:20:36。
+没有普通 Android APK artifact、没有 Release 或手动诊断；Windows Debug 仍依赖 Debug CRT。证据仅归本提交，不作为后续歌词正文批次验收。
