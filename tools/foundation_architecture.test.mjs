@@ -4,6 +4,21 @@ import { read, sha, walk } from './design_audit.mjs';
 
 const sources = walk('lib').filter(path => path.endsWith('.dart'));
 
+test('lyrics synchronization borrows one root player and repository without a second clock', () => {
+  const graph = read('lib/app/dependency_graph.dart');
+  assert.equal((graph.match(/lyricsController = LyricsController\(/g) ?? []).length, 1);
+  assert.match(graph, /lyricsController\.dispose\(\);\s+playback\.dispose\(\)/);
+  assert.match(graph, /lyricsController\.close,\s+playback\.close/);
+  const lyrics = read('lib/playback/lyrics_controller.dart');
+  assert.match(lyrics, /_repository!\.getLyrics\(identity\.track\)/);
+  assert.match(lyrics, /document\.track != identity\.track/);
+  assert.match(lyrics, /identical\(expectedState, _state\)/);
+  assert.match(lyrics, /_playback\.seek\(/);
+  assert.match(lyrics, /canSeek:/);
+  assert(!/Timer\(|Timer\.periodic|AudioEngine\(|PlaybackController\(|dart:io|Fixture|AppDatabase\(|\.saveLyrics\(|\.removeLyrics\(/.test(lyrics));
+  assert(!/package:|dart:async/.test(read('lib/domain/models/lyrics_timeline.dart')));
+});
+
 test('Home has independent native layouts and bounded repository-only reads', () => {
   for (const target of ['phone/phone_home_layout', 'tablet/tablet_home_layout', 'windows/windows_home_layout']) {
     assert.match(read(`lib/features/home/${target}.dart`), /extends StatelessWidget/);
@@ -24,7 +39,7 @@ test('Home has independent native layouts and bounded repository-only reads', ()
 test('Home uses root playback and confirms destructive history action', () => {
   const graph = read('lib/app/dependency_graph.dart');
   assert.match(graph, /home = HomeController\(/);
-  assert.match(graph, /home\.close,\s+appearanceSettings\.close,\s+search\.close,\s+libraryController\.close,\s+localMusic\.close,\s+catalogDetails\.close,\s+playlists\.close,\s+playlistAdds\.close,\s+playlistContents\.close,\s+systemPlaylists\.close,\s+playback\.close/);
+  assert.match(graph, /home\.close,\s+appearanceSettings\.close,\s+search\.close,\s+libraryController\.close,\s+localMusic\.close,\s+catalogDetails\.close,\s+playlists\.close,\s+playlistAdds\.close,\s+playlistContents\.close,\s+systemPlaylists\.close,\s+lyricsController\.close,\s+playback\.close/);
   assert.match(read('lib/app/yy_music_app.dart'), /homeController: ref\.read\(dependencyGraphProvider\)\.home/);
   const sections = read('lib/features/home/common/home_sections.dart');
   assert.match(sections, /YYRadius\.hero/);

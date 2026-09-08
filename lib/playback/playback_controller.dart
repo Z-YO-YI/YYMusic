@@ -71,6 +71,8 @@ final class PlaybackController extends ChangeNotifier {
   bool _completionHandled = true;
   bool _loadingSource = false;
   bool _disposed = false;
+  bool _notifierDisposed = false;
+  int _notificationDepth = 0;
   int _catalogSequence = 0;
   Future<void>? _closeFuture;
 
@@ -147,31 +149,35 @@ final class PlaybackController extends ChangeNotifier {
     await _guarded('stop', _stopEngine);
   });
 
-  Future<void> seek(Duration position, {String? expectedEntryId}) => _schedule(
-    () async {
-      if (expectedEntryId != null &&
-          expectedEntryId != _state.queue.currentEntryId) {
-        return;
-      }
-      _requireEngine();
-      if (position.isNegative) {
-        throw ArgumentError.value(position, 'position', 'must not be negative');
-      }
-      final duration = _state.duration;
-      final target = duration != null && position > duration
-          ? duration
-          : position;
-      _sessionRevision++;
-      final replay =
-          _state.phase == PlaybackPhase.completed &&
-          _state.currentTrack != null &&
-          (duration == null || target < duration);
-      if (replay) history.begin(_state.currentTrack!.ref);
-      history.suspend();
-      await _guarded('seek', () => _engine.seek(target));
-      history.activate();
-    },
-  );
+  /// Seeks through the shared command queue, optionally revoking a UI intent.
+  Future<void> seek(
+    Duration position, {
+    String? expectedEntryId,
+    bool Function()? canSeek,
+  }) => _schedule(() async {
+    if (canSeek?.call() == false) return;
+    if (expectedEntryId != null &&
+        expectedEntryId != _state.queue.currentEntryId) {
+      return;
+    }
+    _requireEngine();
+    if (position.isNegative) {
+      throw ArgumentError.value(position, 'position', 'must not be negative');
+    }
+    final duration = _state.duration;
+    final target = duration != null && position > duration
+        ? duration
+        : position;
+    _sessionRevision++;
+    final replay =
+        _state.phase == PlaybackPhase.completed &&
+        _state.currentTrack != null &&
+        (duration == null || target < duration);
+    if (replay) history.begin(_state.currentTrack!.ref);
+    history.suspend();
+    await _guarded('seek', () => _engine.seek(target));
+    history.activate();
+  });
 
   Future<void> setVolume(double value) => _schedule(() async {
     _requireEngine();
@@ -741,8 +747,14 @@ final class PlaybackController extends ChangeNotifier {
   void _publish(PlaybackState value) {
     if (_disposed) return;
     _state = value;
-    notifyListeners();
-    if (_mediaInitialized) {
+    _notificationDepth++;
+    try {
+      notifyListeners();
+    } finally {
+      _notificationDepth--;
+      if (_disposed) dispose();
+    }
+    if (!_disposed && _mediaInitialized) {
       unawaited(_queueMediaSynchronization(value));
     }
   }
@@ -877,11 +889,14 @@ final class PlaybackController extends ChangeNotifier {
 
   @override
   void dispose() {
-    if (_disposed) return;
-    _disposed = true;
-    history.dispose();
-    _closeFuture = _drain();
-    unawaited(_closeFuture!.catchError((Object _) {}));
+    if (!_disposed) {
+      _disposed = true;
+      history.dispose();
+      _closeFuture = _drain();
+      unawaited(_closeFuture!.catchError((Object _) {}));
+    }
+    if (_notifierDisposed || _notificationDepth != 0) return;
+    _notifierDisposed = true;
     super.dispose();
   }
 

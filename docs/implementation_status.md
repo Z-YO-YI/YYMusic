@@ -1,5 +1,10 @@
 # 实施状态
 
+当前增量 Phase 7A：纯 Domain 偏移时间轴与根 LyricsController 已接入依赖图，按完整来源/队列身份单通道读真实歌词；位置不重读，隐藏/刷新/切歌撤销旧快照 Seek，根关闭排空读取与跳转。
+1127 Flutter（新增 44）、117 Node、112 旧 Golden、418 文件格式和严格分析通过；Android Debug/48 资产/六音频包完整许可/v2 签名预检成功，Schema/锁/平台/原始资产不变。
+分支 `codex/lyrics-synchronization-core`，[计划](phase_7a_lyrics_synchronization_plan.md)与[报告](phase_7a_lyrics_synchronization_report.md)；本批精确 GitHub 构建在 push/PR 后核对。前置 J2 `1d24bdc` 两组源码/Android/Windows已 SUCCESS，#63 保持 Draft 未合并。
+下一步原生独立播放器/歌词/队列接线；尚无歌词自动滚动或沉浸 UI，真实导入/扫描/后台与正式发行仍未完成。以下为历史记录。
+
 当前增量 Phase 6J2：正式设置页提供原生外观/关于，三端布局共用根主题和持久化状态，真实保存/读取失败重试；颜色草稿、选区与滚动跨布局保留，失效页面不接受旧操作。
 最终 1083 Flutter（新增 19 Widget/8 Golden）、116 Node、112 Golden、412 文件格式和严格分析通过；104 旧图不变，Schema/锁文件/平台不变，最终 Android Debug/包内许可/资产/v2 签名预检通过。
 本批分支 `codex/native-settings-surfaces`，[计划](phase_6j2_native_settings_plan.md)与[报告](phase_6j2_native_settings_report.md)。GitHub 精确新提交构建在 push/PR 后核对；前置 #62 两组 Android/Windows 已成功且回填。
