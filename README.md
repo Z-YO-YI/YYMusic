@@ -1,5 +1,7 @@
 # YYMusic
 
+当前增量：**Phase 7C1 原生歌词正文与跟随视口**。新增双语大字号正文、当前行精确居中、手动浏览后五秒恢复、原生焦点和过期回调保护；一万行按需构建，不新增媒体时钟。同步修复歌词的减少动态与只读语义。最终1188项Flutter（127张Golden）、119项Node、严格分析和Android Debug预检通过，详见[本批报告](docs/phase_7c1_lyrics_viewport_report.md)与[计划](docs/phase_7c1_lyrics_viewport_plan.md)。这是待接入的正文组件，正式 `/lyrics`、顶部/Dock、翻译入口与平台沉浸仍需后续增量。前置 7B1 两组 GitHub Android/Windows 均 SUCCESS，[精确回填](docs/phase_7b1_native_player_report.md)。
+
 当前增量：**Phase 7B1 原生独立播放页**。底栏曲目信息可打开 `/player`，Phone / Tablet / Windows 三套布局共用根播放器，接入真实播放、切歌、随机/循环、进度与音量；当前队列按钮复用已有队列浏览。1160 项 Flutter（含 120 张 Golden）、118 项 Node、严格分析及本地 Android Debug 预检通过。详见[本批报告](docs/phase_7b1_native_player_report.md)与[计划](docs/phase_7b1_native_player_plan.md)。前置 7A 两组 GitHub Android/Windows 均已 SUCCESS，[验收回填](docs/phase_7a_lyrics_synchronization_report.md)。本批精确云端状态见对应 Draft PR，不以前置构建代替。
 
 当前增量：**Phase 7A 共享歌词同步核心**。新增真实仓储读取、偏移时间轴、根播放位置同步、快照授权 Seek 与关闭排空；三端共用一个状态，未接入原生歌词页面。1127 项 Flutter、117 项 Node、112 张旧 Golden、严格分析和本地 Android Debug 预检通过，精确 GitHub 构建状态见对应 Draft PR。详见[本批报告](docs/phase_7a_lyrics_synchronization_report.md)与[计划](docs/phase_7a_lyrics_synchronization_plan.md)。前置 J2 两组 Android/Windows 已 SUCCESS，[验收回填](docs/phase_6j2_native_settings_report.md)。下方保留各历史阶段记录。

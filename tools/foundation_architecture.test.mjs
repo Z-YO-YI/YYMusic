@@ -4,6 +4,21 @@ import { read, sha, walk } from './design_audit.mjs';
 
 const sources = walk('lib').filter(path => path.endsWith('.dart'));
 
+test('lyrics viewport is lazy and uses only document projections and revocable callbacks', () => {
+  const viewport = read('lib/features/lyrics/common/lyrics_viewport.dart');
+  assert.match(viewport, /SliverChildBuilderDelegate/);
+  assert.match(viewport, /center: _centerSliver/);
+  assert.match(viewport, /ScrollCacheExtent\.pixels\(200\)/);
+  assert.match(viewport, /snapshotKey/);
+  assert.match(viewport, /_resumeTimer\?\.cancel\(\)/);
+  assert.match(viewport, /localToGlobal/);
+  assert(!/Timer\.periodic|PlaybackController\(|LyricsController\(|dart:io|\.requestFocus\(|Repository/.test(viewport));
+  const line = read('lib/design_system/yy_lyrics_line.dart');
+  assert.match(line, /scale: theme\.reduceMotion/);
+  assert.match(line, /onPressed == null && !loading/);
+  assert.match(line, /phoneLayout \?\?/);
+});
+
 test('independent native player composes three layouts around the root presenter', () => {
   const screen = read('lib/features/player/common/player_screen.dart');
   for (const target of ['phone/phone_player_layout', 'tablet/tablet_player_layout', 'windows/windows_player_layout']) {
