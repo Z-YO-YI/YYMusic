@@ -321,12 +321,22 @@ void main() {
           isNotNull,
         );
       }
-      final inside = tester.element(pickerButton('取消'));
-      FocusScope.of(inside).requestFocus();
+      // Do not assume a fixed Tab count leaves the same button focused.
+      // Space on Cancel should activate Cancel; explicitly park on the scope.
+      final scope = FocusScope.of(tester.element(pickerButton('取消')));
+      scope.requestScopeFocus();
+      await tester.pump();
+      expect(FocusManager.instance.primaryFocus, same(scope));
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await settleContent(tester);
+      expect(f.engine.calls.length, engineCalls);
+      expect(find.byType(PlaylistAddDialog), findsOneWidget);
+      pickerState(tester).inputFocus.requestFocus();
       await tester.pump();
       await tester.sendKeyEvent(LogicalKeyboardKey.space);
       await settleContent(tester);
       expect(f.engine.calls.length, engineCalls);
+      expect(find.byType(PlaylistAddDialog), findsOneWidget);
       await tester.sendKeyEvent(LogicalKeyboardKey.escape);
       await settleContent(tester);
       expect(find.byType(PlaylistAddDialog), findsNothing);

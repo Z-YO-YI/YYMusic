@@ -261,6 +261,42 @@ final class FakeCollectionRepository implements CollectionRepository {
     );
   }
 
+  @override
+  Future<void> createPlaylistWithEntry(
+    Playlist playlist,
+    PlaylistEntryDraft entry,
+  ) async {
+    playlistMutationCalls.add('create-with-entry');
+    await onPlaylistMutation?.call('create-with-entry', playlist.id);
+    final name = PlaylistName.normalize(playlist.name);
+    if (playlist.isSystem) throw _playlistForbidden('playlist-system-create');
+    if (_playlists.any((p) => p.id == playlist.id)) {
+      throw _playlistForbidden('playlist-id-exists');
+    }
+    if (_entries.values.expand((list) => list).any((e) => e.id == entry.id)) {
+      throw _playlistForbidden('playlist-entry-id-exists');
+    }
+    final parent = Playlist(
+      id: playlist.id,
+      name: name,
+      description: playlist.description,
+      createdAt: playlist.createdAt,
+      updatedAt: playlist.updatedAt,
+    );
+    final first = PlaylistEntry(
+      id: entry.id,
+      playlistId: parent.id,
+      track: entry.track,
+      position: 0,
+      addedAt: entry.addedAt,
+    );
+    // Publish only after both rows are assigned; no await between the changes.
+    _playlists = [..._playlists, parent];
+    _entries[parent.id] = [first];
+    _playlistChanges.add(List.unmodifiable(_playlists));
+    _contentChanges.add(null);
+  }
+
   DomainFailure _playlistForbidden(String operation) => DomainFailure(
     code: DomainFailureCode.forbidden,
     diagnosticId: 'collection-repository.$operation',

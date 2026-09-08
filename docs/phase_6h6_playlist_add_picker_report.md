@@ -75,7 +75,21 @@ Draft PR #50保持OPEN；本批回填其报告并明确Windows artifact与Debug 
 普通Android job仅构建验证、不上传APK；未手动dispatch、创建Release、合并或覆盖历史。
 没有将凭据、用户数据、日志或构建产物提交到仓库。
 
-下一批仍在Phase6：创建并添加的原子组合、播放全部/随机、系统歌单、大歌单完整浏览，
+### 后续回填：H6精确提交云端结果
+
+`b2845a3b23852deb01f41538f4d79cc18a7a2076` 的
+[push34215507725](https://github.com/Z-YO-YI/YYMusic/actions/runs/34215507725) 与
+[PR34215576065](https://github.com/Z-YO-YI/YYMusic/actions/runs/34215576065) 均整体success，
+源码checks、Android Debug和Windows native各三job成功；[Draft PR #51](https://github.com/Z-YO-YI/YYMusic/pull/51)
+保持OPEN、未合并。Linux637项通过并明确跳过81张Windows宿主Golden；Windows各自81张及真实窗口首帧/关闭1项通过。
+双端包内资产、许可及Android v2单签名通过；两类专用音频、Profile诊断和Release按设计skipped。
+
+push的Windows开发Debug artifact `10052026961`，67,326,377字节，到期 `2026-09-22T10:39:34Z`，
+API digest `sha256:6c82dc57c1dc9b78fe46e22065f3f2d45b417aadcb51fef800b38e1f30abaaf4`；
+本批没有下载，不将API摘要当成本地复算。PR artifact为0；普通Android job未上传APK，没有新Release。
+Windows bundle65份文件已由CI验证，但依赖Debug CRT，不是通用发行安装程序。
+
+H6结束时下一批仍在Phase6：创建并添加的原子组合、播放全部/随机、系统歌单、大歌单完整浏览，
 随后Local Music/Settings页面；再按主指令进入后续阶段。
 无新增真实设备音频、网页截图对照、导入/REST、Schema、依赖或平台发行接线。
 既有网页安全限制不绕过；本机Windows C++/Debug CRT限制未解决，本批不是上线完成。

@@ -1,6 +1,34 @@
 part of 'drift_collection_repository.dart';
 
 extension _PlaylistEntryCommands on DriftCollectionRepository {
+  Future<void> _createWithEntry(Playlist playlist, PlaylistEntryDraft entry) {
+    _requireReady();
+    final name = PlaylistName.normalize(playlist.name);
+    return _guard(
+      'create-playlist-with-entry',
+      () => _database.transaction(() async {
+        await _insertCustomPlaylist(playlist, name);
+        final collision = await (_database.select(
+          _database.playlistEntryRecords,
+        )..where((t) => t.entryId.equals(entry.id))).getSingleOrNull();
+        if (collision != null) throw _forbidden('playlist-entry-id-exists');
+        await _database
+            .into(_database.playlistEntryRecords)
+            .insert(
+              _mapper.playlistEntryToCompanion(
+                PlaylistEntry(
+                  id: entry.id,
+                  playlistId: playlist.id,
+                  track: entry.track,
+                  position: 0,
+                  addedAt: entry.addedAt,
+                ),
+              ),
+            );
+      }),
+    );
+  }
+
   Future<void> _appendEntry(String playlistId, PlaylistEntryDraft entry) {
     _requireReady();
     DomainValidation.identifier(playlistId, 'playlistId');

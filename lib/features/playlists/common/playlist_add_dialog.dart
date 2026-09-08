@@ -14,6 +14,7 @@ import '../../../design_system/yy_text_field.dart';
 import '../../../design_system/yy_theme.dart';
 import '../../../design_system/yy_tokens.dart';
 import '../../../domain/models/load_state.dart';
+import '../../../domain/models/playlist_name.dart';
 import '../../../domain/models/playlist_name_query.dart';
 import '../../../domain/models/track.dart';
 import 'playlist_add_controller.dart';
@@ -41,6 +42,8 @@ class PlaylistAddDialogState extends State<PlaylistAddDialog> {
   late final PlaylistAddController controller;
   final input = TextEditingController();
   final inputFocus = FocusNode(debugLabel: 'playlist filter');
+  final nameInput = TextEditingController();
+  final nameFocus = FocusNode(debugLabel: 'new playlist name');
   final scroll = ScrollController();
   bool _active = true, _closing = false;
   bool get _canInteract =>
@@ -94,19 +97,46 @@ class PlaylistAddDialogState extends State<PlaylistAddDialog> {
     });
   }
 
+  bool get _validName {
+    if (!nameInput.value.composing.isCollapsed) return false;
+    try {
+      PlaylistName.normalize(nameInput.text);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  void _createAndAdd(TextEditingValue draft) {
+    if (!_canInteract ||
+        !controller.canCreate ||
+        !_validName ||
+        nameInput.value != draft) {
+      return;
+    }
+    unawaited(controller.createAndAdd(draft.text));
+  }
+
   @override
   void dispose() {
     _active = false;
     unawaited(controller.close().catchError((Object _) {}));
     input.dispose();
     inputFocus.dispose();
+    nameInput.dispose();
+    nameFocus.dispose();
     scroll.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
-    listenable: Listenable.merge([controller, controller.writerChanges, input]),
+    listenable: Listenable.merge([
+      controller,
+      controller.writerChanges,
+      input,
+      nameInput,
+    ]),
     builder: (context, _) {
       final media = MediaQuery.of(context);
       if (media.size.isEmpty) return const SizedBox.shrink();
@@ -196,7 +226,12 @@ class PlaylistAddDialogState extends State<PlaylistAddDialog> {
     if (controller.addedTo case final name?) {
       return Semantics(
         liveRegion: true,
-        child: Text('已添加到“$name”。只保存歌曲引用，不复制音乐文件。', style: YYTypography.text()),
+        child: Text(
+          controller.created
+              ? '已新建“$name”并添加歌曲。只保存歌曲引用，不复制音乐文件。'
+              : '已添加到“$name”。只保存歌曲引用，不复制音乐文件。',
+          style: YYTypography.text(),
+        ),
       );
     }
     final availableHeight =
@@ -265,7 +300,7 @@ class PlaylistAddDialogState extends State<PlaylistAddDialog> {
             child: YYEmptyState(
               glyph: YYGlyph.playlist,
               message: controller.query.text.isEmpty
-                  ? '还没有自定义歌单。请先在音乐库创建歌单，再返回添加。'
+                  ? '还没有自定义歌单。可在下方新建并添加当前歌曲。'
                   : '没有匹配的歌单，请更换筛选词。',
             ),
           ),
@@ -358,6 +393,41 @@ class PlaylistAddDialogState extends State<PlaylistAddDialog> {
             label: '更多歌单',
             onPressed: _matchesInput ? controller.loadMore : null,
           ),
+        const SizedBox(height: 16),
+        _createForm(),
+      ],
+    );
+  }
+
+  Widget _createForm() {
+    final draft = nameInput.value;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        YYTextField(
+          key: const ValueKey('playlist-add-name'),
+          controller: nameInput,
+          focusNode: nameFocus,
+          label: '新歌单名称',
+          placeholder: '例如：夜间聆听',
+          enabled: !controller.busy,
+          onSubmitted: (_) => _createAndAdd(nameInput.value),
+        ),
+        const SizedBox(height: 8),
+        Text('1–512个字符，不含换行；创建歌单与添加歌曲一并保存。', style: YYTypography.caption),
+        const SizedBox(height: 10),
+        Align(
+          alignment: Alignment.centerRight,
+          child: YYButton(
+            label: '新建并添加',
+            glyph: YYGlyph.plus,
+            style: YYButtonStyle.primary,
+            onPressed: controller.canCreate && _validName
+                ? () => _createAndAdd(draft)
+                : null,
+          ),
+        ),
       ],
     );
   }

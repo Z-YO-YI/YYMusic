@@ -752,3 +752,19 @@ Phone BottomSheet与Tablet/Windows Dialog共用业务会话，模态覆盖Shell�
 重复TrackRef允许独立条目；只保存引用，不解析/下载/复制文件，也不创建第二播放或持久状态。
 接受后即使离页或关闭仍排空；失败安全化，离页后的错误由既有根entryFailure返回Library显示。
 本批仅已有歌单选择；新建并添加需要后续真正原子组合，不将两个独立成功/失败冒充原子操作。
+
+## ADR-063：新建并添加必须是一个原子根命令（2026-09-08）
+
+CollectionRepository.createPlaylistWithEntry(Playlist, PlaylistEntryDraft)在同一事务内创建自定义父歌单及首条引用。
+复用新建名称/系统身份/父ID碰撞保护，entry ID全局唯一，首位置0，元数据与addedAt按输入保留。
+只保存完整TrackRef，允许来源缺失；不复制或读取音乐文件，不更新旧父歌单或条目。
+任一插入/校验失败整体回滚；不是UI先create再append，也不自动重试不确定写入。
+
+根PlaylistController.createPlaylistWithTrack只生成一次父ID/entry ID与UTC时间，调用单个Repository合同；
+所有写入仍共用busy/错误/关闭排空，失败纳入既有entryFailure，离页可见且可清除。
+PlaylistAddController.createAndAdd复用已接受写入的登记/完成逻辑；不要求已有列表读取成功，
+因为创建不依赖列表内容，最终数据库事务负责名称/身份校验。没有生成第二个持久列表或播放实例。
+
+选择器保留独立名称草稿，显式“新建并添加”，不复用/自动提交名称筛选草稿。
+提交前同时确认活动路由、当前草稿、非IME合成与根可写状态；旧按钮不能提交修改后的新草稿。
+成功只显示真实提交反馈；旋转/零尺寸保留草稿，关闭后的已接受写入继续排空，不误关后来的弹层。
