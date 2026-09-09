@@ -41,3 +41,8 @@
 
 本批只完成Phase7D2页面接线，不是整个Phase7或可日常使用的发行版。Android实际系统栏/分屏/切后台、Windows多显示器/DPI与设备安装仍须单列验收；Fake和截图不代表实机系统行为或出声。
 后续按主指令分批推进Phase7真实封面/收藏及独立队列，Phase8真实本地导入/扫描/授权，Phase9来源，Phase10后台/系统媒体与Phase11发行/设备验收。默认新安装为空库；Windows开发Debug依赖Debug CRT，普通Android CI尚不上传APK artifact，不以测试数量换算虚假完成百分比。
+
+## 精确云端验收回填
+
+实现`dff7c3233b6be5731d2e8392fe83422787ef67c9`，[Draft PR #70](https://github.com/Z-YO-YI/YYMusic/pull/70)；[push34297862194](https://github.com/Z-YO-YI/YYMusic/actions/runs/34297862194)与[PR34297866163](https://github.com/Z-YO-YI/YYMusic/actions/runs/34297866163)均SUCCESS，head SHA一致。Linux1141通过/146张Windows宿主Golden预期跳过；Windows146Golden及2项真实Runner通过（restoration/minimize/detach均true），正式入口重建和65文件Debug包/完整许可核验通过；Android51原生坐标/3完整法律文本、48资产及v2单签名者通过。
+[本SHA Windows开发Debug包](https://github.com/Z-YO-YI/YYMusic/actions/runs/34297862194/artifacts/10084144339)：67,577,137 bytes，SHA256 `df10c43955937c7b1168f443f93116711865bb280ce96bbdb8ee92f737a67dd6`，到期UTC`2026-09-23T01:21:06Z`。依赖Debug CRT；普通Android无APK artifact，没有Release或手动媒体诊断。云端编译/Flutter布局及Windows原生通道证据不代替Android真机系统栏或多显示器/DPI验收。
