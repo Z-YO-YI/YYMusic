@@ -34,3 +34,8 @@ HTML renderQueue的上移/下移/移除/清空转成原生业务意图，浏览�
 ## 限制与下一步
 
 本批只是Phase7E1核心能力；后续接根编辑反馈、当前队列只读投影到独立管理界面、确认和键鼠/拖拽操作。不可播放项自动跳过及错误记录、真实封面/收藏等Phase7剩余能力继续分批验证。Phase8导入/扫描/授权、Phase9来源、Phase10后台/系统媒体、Phase11发行/设备验收未完成，新安装仍为空库。普通AndroidCI无APK artifact，Windows开发Debug依赖Debug CRT；不将Debug或接口完成宣称上线。
+
+## 精确云端验收回填
+
+实现`3d89cc85b183fd524972c42a6ed3f733e20e943f`，[Draft PR #71](https://github.com/Z-YO-YI/YYMusic/pull/71)；[push34300327819](https://github.com/Z-YO-YI/YYMusic/actions/runs/34300327819)及[PR34300332649](https://github.com/Z-YO-YI/YYMusic/actions/runs/34300332649)均SUCCESS，head SHA一致。Linux1179通过/146Windows宿主Golden预期跳过；Windows146Golden和2真实Runner（restoration/minimize/detach均true）通过，正式入口重建/65文件Debug包及完整许可通过；Android51原生坐标/3完整法律文本、48资产及v2单签名者通过。
+[本SHA Windows开发Debug包](https://github.com/Z-YO-YI/YYMusic/actions/runs/34300327819/artifacts/10085019844)：67,590,554 bytes，SHA256 `fdf1160ab45531d33a1997febca46dfbe5359dc53ba16bdc5f3fe1fe16dde466`，到期UTC`2026-09-23T01:58:26Z`。仍依赖Debug CRT；普通Android无APK artifact，没有Release/手动媒体诊断或设备安装验收，不代替E2新SHA验证。

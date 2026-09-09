@@ -1,5 +1,7 @@
 # YYMusic
 
+当前增量：**Phase 7E2 根队列编辑反馈**。在同一QueueController加入共享busy、每次提交结果、跨页面保留的安全失败、同快照显式重试和按失败身份知悉；其他成功操作不抹旧失败，旧确认不改新队列，关闭先等待反馈排空。1350项Flutter（146旧Golden未改）、126项Node、严格分析和Android Debug预检通过，见[计划](docs/phase_7e2_queue_edit_feedback_plan.md)与[报告](docs/phase_7e2_queue_edit_feedback_report.md)。本批是独立队列UI所需状态接口，尚未新增管理页面；前置E1两组GitHub Android/Windows已SUCCESS，[精确回填](docs/phase_7e1_queue_edit_intents_report.md)。以下“当前增量”均为历史记录。
+
 当前增量：**Phase 7E1 队列编辑核心**。新增绑定根快照的移除、清空和锚点排序；旧菜单/拖拽意图不能修改新队列，重复歌曲按独立条目处理，编辑共用既有串行持久化与关闭屏障。非当前项保存失败不冒充播放失败，停止后的失败不会擅自重播。详见[计划](docs/phase_7e1_queue_edit_intents_plan.md)及[报告](docs/phase_7e1_queue_edit_intents_report.md)。这是核心API，尚未新增独立队列管理UI；后续接编辑反馈及页面。前置全屏页面dff7c32的两组GitHub Android/Windows已SUCCESS，[精确回填](docs/phase_7d2_fullscreen_pages_report.md)。以下“当前增量”是历史记录。
 
 当前增量：**Phase 7D2 原生全屏页面与生命周期**。播放/歌词页已接入原始全屏图标；Windows支持F、Esc先退出全屏再返回，Android进入页面自动请求沉浸。路由覆盖、后台、零尺寸和关闭会撤销旧请求并恢复，切换全屏不重建播放器。1287项Flutter（146张Golden）、124项Node、严格分析及Android Debug包预检通过，详见[计划](docs/phase_7d2_fullscreen_pages_plan.md)与[报告](docs/phase_7d2_fullscreen_pages_report.md)。前置D1最大化恢复失败已在独立[PR #69](https://github.com/Z-YO-YI/YYMusic/pull/69)修复，精确提交e68fffa的两组Android/Windows均SUCCESS；本批页面的新提交云端验证另见对应Draft PR，不借用前置结果。Android真机系统栏和Windows多显示器/DPI仍待验收，尚非完整Phase7或日常可用发行版。下方各“当前增量”均为历史记录。

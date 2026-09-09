@@ -1,12 +1,17 @@
 # 实施状态
 
+当前增量 Phase 7E2：现有根QueueController新增submitEdit结果、共享editBusy、跨页面安全失败、同快照retryEdit和按失败身份知悉；重复提交返回busy，旧快照/离页取消，其他成功不抹旧失败。结果Future在通知前注册，监听者可重入提交/关闭，根释放引擎/存储前等待队列反馈结算。
+新增22项模型/反馈单元及3项真实SQLite测试、1项Node门禁；最终1350 Flutter（146旧Golden未改）、126 Node、454文件格式、严格分析、生成/迁移及Android Debug资产/许可/v2单签名者预检通过。两处旧关闭顺序门禁准确纳入queue.close，未放宽检查。
+分支`codex/queue-edit-feedback`，基线3d89cc8，Draft PR base=`codex/queue-edit-intents`，[计划](phase_7e2_queue_edit_feedback_plan.md)及ADR082先于共享API，[报告](phase_7e2_queue_edit_feedback_report.md)记录证据。本批未新增UI、Schema/依赖/原生能力；下一阶段接独立队列视图与管理操作。
+前置3d89cc8的push34300327819及PR34300332649均SUCCESS，#71回填，Windows146Golden、2真实Runner/65文件正式入口Debug包、Android资产/许可/签名通过。本批新SHA云端另验；新安装仍为空库，Phase7剩余与Phase8–11仍未完成。
+
+## 历史阶段记录
+
 当前增量 Phase 7E1：QueueEdit纯模型和根editQueue已接入既有QueueController/PlaybackController，绑定不可变根快照，按entry ID移除、锚点排序及清空；同时间/同值替换与当前项改变仍使旧确认失效。执行前、可能等待的停止后复核授权，已接受SQL排空，Facade通知内关闭安全。
 分支`codex/queue-edit-intents`，基线dff7c32，Draft PR base=`codex/fullscreen-page-lifecycle`；[计划](phase_7e1_queue_edit_intents_plan.md)与ADR081先于共享API，[报告](phase_7e1_queue_edit_intents_report.md)记录测试/构建边界。新增12模型、19核心、7真实SQLite回归与1项Node门禁；无UI、Golden、Schema/依赖/平台变化。
 最终1325 Flutter（146旧Golden未改）、125 Node、450文件格式、严格分析、生成/迁移及Android Debug资产/许可/v2单签名者预检通过。本批云端结果按新SHA独立核对。
 尚未接独立队列管理页及其忙态/失败反馈；当前项移除/清空沿用停止并选择相邻项但不自动播放的策略，停止后保存失败保留旧队列但不自动重播。Phase7其余页面能力及Phase8–11仍待后续，新安装仍为空库。
 前置dff7c32的push34297862194及PR34297866163均SUCCESS，#70回填；Windows146Golden、2真实Runner/正式入口重建和Android资产/许可/签名通过。本批新SHA云端另行核对，Android真机系统栏/多显示器DPI仍未验收。
-
-## 历史阶段记录
 
 当前增量 Phase 7D2：正式播放/歌词页接入唯一根全屏协调器，使用原始fullscreen/fullscreen-exit SVG及YYButton；Windows F/分层Esc、隐藏且保留状态的标题栏，Android进页自动沉浸请求均已接线。真实Navigator顶层含弹层、后台/零尺寸、原生中断和关闭撤销旧意图，不重建播放器或歌词状态。
 新增18项单元、16项Widget、8张Golden与1项Node检查；最终1287 Flutter（146 Golden，138旧图未改）、124 Node、445文件格式、严格分析、生成/迁移及Android Debug资产/许可/v2签名预检通过。

@@ -19,3 +19,20 @@ test('interactive queue edits use immutable complete identity and the existing r
   assert.match(facade, /canEdit: \(\) => !_disposed/);
   assert(!/saveQueue|QueueSnapshot _|List<QueueEntry> _/.test(facade));
 });
+
+test('queue feedback is root-retained, identity-bound and drained before engine or data disposal', () => {
+  const facade = read('lib/playback/queue_controller.dart');
+  assert.match(facade, /identical\(_editFailure, expected\)/);
+  assert.match(facade, /identical\(state, expected.edit.expected\)/);
+  assert.match(facade, /_editClose = _editWork/);
+  const feedback = read('lib/playback/queue_edit_feedback.dart');
+  assert.match(feedback, /_editWork = done.future.then<void>/);
+  assert.match(feedback, /retrying != null && identical\(_editFailure, retrying\)/);
+  assert.match(feedback, /_editBusy = false;[\s\S]*?done.complete\(result\)/);
+  assert(!/Repository|saveQueue|_engine|Timer/.test(feedback));
+  const graph = read('lib/app/dependency_graph.dart');
+  assert.match(graph, /queue.close,[\s\S]*?playback.close,[\s\S]*?_audioEngine.dispose,[\s\S]*?services.dispose/);
+  const model = read('lib/playback/queue_edit_result.dart');
+  assert.match(model, /diagnosticId: 'queue.edit-failed'/);
+  assert(!/Object\?? (error|exception)|error.toString|StackTrace/.test(model));
+});

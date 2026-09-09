@@ -218,6 +218,7 @@ final class DependencyGraph {
       playlistContents.close,
       systemPlaylists.close,
       lyricsController.close,
+      queue.close,
       playback.close,
       _audioEngine.dispose,
       _mediaSession.dispose,
