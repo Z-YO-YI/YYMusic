@@ -10,7 +10,23 @@ test('native fullscreen adapter serializes accepted work and revokes queued comm
   assert.match(dart, /_invoke\('detach'\)/);
   assert.match(dart, /on MissingPluginException/);
   assert(!/HWND|invokeMethod<Object\?>\(method,|SystemChrome|Timer\.periodic/.test(dart.replaceAll('HWND, paths or UI flags', 'restricted input')));
-  assert(!/NativeFullscreenGateway\(/.test(read('lib/app/yy_music_app.dart')));
+  assert.equal((read('lib/app/yy_music_app.dart').match(/NativeFullscreenGateway\(/g) ?? []).length, 1);
+});
+
+test('fullscreen page integration shares a native root and preserves the window frame subtree', () => {
+  const root = read('lib/app/yy_music_app.dart');
+  for (const pattern of [/FullscreenRouteObserver/, /didChangeAppLifecycleState/, /didChangeMetrics/, /LogicalKeyboardKey\.keyF/, /_fullscreen!\.close\(\)/]) assert.match(root, pattern);
+  const controller = read('lib/app/fullscreen_presenter.dart');
+  for (const pattern of [/version == _eventVersion/, /_executingTarget/, /_needsRestore/, /scheduleMicrotask/, /await _worker/]) assert.match(controller, pattern);
+  assert.match(read('lib/app/window_chrome.dart'), /visible: !widget\.hideChrome/);
+  for (const page of ['player', 'lyrics']) {
+    const file = read(`lib/features/${page}/common/${page}_screen.dart`);
+    assert.match(file, /FullscreenButton/);
+    assert(!/NativeFullscreenGateway|SystemChrome|MethodChannel/.test(file));
+  }
+  const button = read('lib/app/fullscreen_button.dart');
+  assert.match(button, /YYGlyph\.fullscreenExit/);
+  assert.match(button, /isCurrent\(\)/);
 });
 
 test('Windows fullscreen preserves exact native restoration state and rejects arbitrary targets', () => {

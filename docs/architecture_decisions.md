@@ -957,3 +957,9 @@ app 注入只读路由活动；结合 ModalRoute/TickerMode/正尺寸判定，�
 两端原生仅接受无参数白名单方法；Windows使用独立fullscreen通道，不争夺窗口控制通道处理器，保存原样式/扩展样式/WINDOWPLACEMENT且重复进入不覆盖。恢复失败保留快照供重试；窗口detach/最小化/显示配置变化优先恢复，不修改显示模式或他人HWND。
 Android借用Flutter已有AndroidX兼容Insets控制器，保存系统栏可见性/行为与旧API标志；不覆盖Flutter的Insets监听或修改全局设置。暂停、失焦、引擎解绑及销毁原生恢复，返回前台不擅自重新进入；后续根协调器负责当前路由/前台/正尺寸授权及UI切换，页面不拥有平台Gateway。
 本批仅平台能力与自动验收，不注入正式页面、隐藏标题栏或启用伪F键。图标/字体/Golden、媒体/Schema/依赖/权限保持不变。
+
+## ADR-080：根全屏协调器以原生快照和可撤销路由意图控制展示
+
+2026-09-09，Phase7D2。FullscreenPresenter由应用根拥有；Navigator顶层路由观察器提供实际页面身份和弹层覆盖，页面只借用展示状态/回调，不创建Gateway。仅有效前台、正视口和player/lyrics页面允许进入，切页/后台/关闭同步撤销目标，单worker使最终原生状态收敛；事件优先于较早命令响应，不让晚到成功覆盖系统恢复。
+Android进入独立页面自动请求沉浸；Windows使用显式按钮/F。player/lyrics间可延续原生会话，离开/被弹层覆盖恢复；生命周期或原生中断后不自动重新进入。Esc先撤销/退出全屏，再返回；Android系统返回直接遵循原路由，并由观察器恢复系统UI。
+隐藏Windows标题栏只折叠现有Chrome槽，不改变Navigator祖先结构；原生状态或恢复错误时保留可用出口，固定错误提示提供恢复重试。全屏关闭在业务图关闭前排空，意外Widget卸载也释放同一根通道。旧DependencyGraph.fullscreen保持可选注入，由根取得使用/关闭所有权，不另建第二份媒体或UI业务状态。

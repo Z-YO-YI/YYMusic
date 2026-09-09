@@ -42,3 +42,8 @@ Phase7真实封面/收藏及独立队列管理、Phase8本地导入/扫描/授�
 严格的原始位置/样式断言全部保留，没有容差放宽或跳过。独立本机Win32探针未复现该宿主的偏移，两种顺序均位置一致，因此只作为限定检查，不能代替修复提交在真实Flutter Runner上的验证。依据[微软窗口状态说明](https://learn.microsoft.com/en-us/windows/win32/winmsg/window-features)区分窗口显示状态与样式位；修正仍须按新SHA在GitHub执行。
 
 隔离修正的本地123项Node、437文件格式、严格分析零问题（7.7秒）和1245项Flutter（74秒，138旧Golden未改）通过。`pub get --offline --enforce-lockfile`已解析锁定依赖，但因本机未开启开发者模式/符号链接支持而退出1；不修改系统设置，已有配置足以运行`--no-pub`分析和完整测试。本机未运行Flutter Windows构建；云端必须重新执行真实Runner，不能把独立探针或Dart测试作为修复通过。
+
+### 修正提交精确验收
+
+`e68fffab81a7e787f31d6a24bc6136410d4bc3af`，[Draft PR #69](https://github.com/Z-YO-YI/YYMusic/pull/69)，[push34295775225](https://github.com/Z-YO-YI/YYMusic/actions/runs/34295775225)与[PR34295846524](https://github.com/Z-YO-YI/YYMusic/actions/runs/34295846524)均SUCCESS，head SHA一致。Linux1107通过/138Windows宿主Golden预期跳过；Windows138Golden及2项真实Runner用例通过，日志明确`restoration=true minimize=true detach=true`；正式入口重建、65文件Debug包/完整许可校验通过。Android51原生坐标/3完整法律文本、48资产与v2单签名者通过。初始ba68cdd的失败不改写为成功。
+[Windows开发Debug包](https://github.com/Z-YO-YI/YYMusic/actions/runs/34295775225/artifacts/10083430369)为67,564,745 bytes，SHA256 `575088a75e7a557f4fa557d091848448ac5f12d69bfe241c1428902454b20085`，到期UTC`2026-09-23T00:52:09Z`。仍依赖Debug CRT，不是通用发行包；普通Android无APK artifact，没有Release或手动音频诊断。这是D1原生能力证据，不替代D2页面生命周期与Android实机验收。

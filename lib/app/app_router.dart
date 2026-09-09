@@ -40,6 +40,7 @@ import 'app_view_state.dart';
 import 'catalog_detail_location.dart';
 import 'flutter_license_repository.dart';
 import 'foundation_screen.dart';
+import 'fullscreen_presenter.dart';
 import 'layout_class.dart';
 import 'playback_presenter.dart';
 import 'playlist_location.dart';
@@ -63,6 +64,8 @@ final class AppRouter implements AppNavigation {
     PlaylistAddSessions? playlistAdds,
     SystemPlaylistSessions? systemPlaylists,
     AppearanceSettingsController? appearanceSettings,
+    FullscreenPresenter? fullscreen,
+    NavigatorObserver? fullscreenObserver,
   }) {
     _showPlaylistPicker = (track, title) async {
       final navigator = _rootNavigator.currentState;
@@ -145,6 +148,7 @@ final class AppRouter implements AppNavigation {
             presenter: playbackPresenter,
             navigation: this,
             routeActive: _playerActivity,
+            fullscreen: fullscreen,
           )
         : route == AppRoute.lyrics &&
               lyricsController != null &&
@@ -156,6 +160,7 @@ final class AppRouter implements AppNavigation {
             playback: playbackPresenter,
             navigation: this,
             routeActive: _lyricsActivity,
+            fullscreen: fullscreen,
           )
         : FoundationScreen(
             route: route,
@@ -166,6 +171,7 @@ final class AppRouter implements AppNavigation {
           );
     _router = GoRouter(
       navigatorKey: _rootNavigator,
+      observers: [?fullscreenObserver],
       initialLocation: initialLocation,
       routes: [
         GoRoute(path: '/', redirect: (_, _) => AppRoute.home.path),
