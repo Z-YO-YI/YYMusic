@@ -26,6 +26,7 @@ bool FlutterWindow::OnCreate() {
   }
   RegisterPlugins(flutter_controller_->engine());
   InitializeWindowChannel();
+  InitializeFullscreenChannel();
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
 
   flutter_controller_->engine()->SetNextFrameCallback([&]() {
@@ -41,6 +42,8 @@ bool FlutterWindow::OnCreate() {
 }
 
 void FlutterWindow::OnDestroy() {
+  SetFullscreen(false);
+  fullscreen_channel_ = nullptr;
   window_channel_ = nullptr;
   if (flutter_controller_) {
     flutter_controller_ = nullptr;
@@ -61,6 +64,11 @@ FlutterWindow::MessageHandler(HWND hwnd, UINT const message,
   }
   if (message == WM_SIZE && custom_frame_ && window_channel_) {
     PublishWindowState();
+  }
+  if (fullscreen_ && !fullscreen_transition_ &&
+      ((message == WM_SIZE && wparam == SIZE_MINIMIZED) ||
+       message == WM_DISPLAYCHANGE)) {
+    SetFullscreen(false, message == WM_SIZE);
   }
   // Give Flutter, including plugins, an opportunity to handle window messages.
   if (flutter_controller_) {

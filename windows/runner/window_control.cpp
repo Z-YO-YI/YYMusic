@@ -25,6 +25,7 @@ void FlutterWindow::PublishWindowState() {
 
 bool FlutterWindow::SetCustomFrame(bool enabled) {
   if (enabled == custom_frame_) return true;
+  if (fullscreen_ && !SetFullscreen(false)) return false;
   const HWND window = GetHandle();
   const LONG_PTR previous_style = GetWindowLongPtr(window, GWL_STYLE);
   const LONG_PTR next_style =

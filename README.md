@@ -1,5 +1,7 @@
 # YYMusic
 
+当前增量：**Phase 7D1 原生全屏通道与恢复保护**。Windows 保存/恢复进入前的窗口位置、最大化和边框状态；Android 保存/恢复系统栏状态，并在失焦/后台/解绑时恢复。通道命令串行处理，关闭撤销未开始的操作并等待已接受操作完成。最终1245项Flutter（138张旧Golden不变）、123项Node、严格分析和Android Debug包预检通过，详见[计划](docs/phase_7d1_fullscreen_gateways_plan.md)与[报告](docs/phase_7d1_fullscreen_gateways_report.md)。本批仅完成平台能力，**尚未接入正式页面的全屏按钮、F或自动沉浸**；新Windows原生用例按本批GitHub提交单独验收。前置7C2两组Android/Windows已SUCCESS，[精确回填](docs/phase_7c2_native_lyrics_report.md)。以下“当前增量”是历史记录。
+
 当前增量：**Phase 7C2 原生独立歌词页**。正式 `/lyrics` 已接入手机、平板、Windows 三套布局，共用根歌词同步器和播放器；支持双语切换、同步行跳转、纯文本、读取/无歌词/空库/错误重试、真实播放 Dock 和独立返回。设计转代码流程复用了审计后的原始图标、字体和组件，不使用 WebView。详见[计划](docs/phase_7c2_native_lyrics_plan.md)与[验收报告](docs/phase_7c2_native_lyrics_report.md)。本批不是整个 Phase 7 完成；系统全屏/沉浸、独立队列管理、真实导入/扫描、后台媒体与发行仍待后续。以下各“当前增量”保留其历史阶段含义。
 
 当前增量：**Phase 7C1 原生歌词正文与跟随视口**。新增双语大字号正文、当前行精确居中、手动浏览后五秒恢复、原生焦点和过期回调保护；一万行按需构建，不新增媒体时钟。同步修复歌词的减少动态与只读语义。最终1188项Flutter（127张Golden）、119项Node、严格分析和Android Debug预检通过，详见[本批报告](docs/phase_7c1_lyrics_viewport_report.md)与[计划](docs/phase_7c1_lyrics_viewport_plan.md)。这是待接入的正文组件，正式 `/lyrics`、顶部/Dock、翻译入口与平台沉浸仍需后续增量。前置 7B1 两组 GitHub Android/Windows 均 SUCCESS，[精确回填](docs/phase_7b1_native_player_report.md)。

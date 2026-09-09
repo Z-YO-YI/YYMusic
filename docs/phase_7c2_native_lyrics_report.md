@@ -34,3 +34,10 @@ build_runner 14秒成功；drift make-migrations成功，生成/Schema/lock/原�
 这是Phase7的独立页面增量，不是整个Phase7完成。OS全屏/F、Android沉浸与恢复、真实封面读取/提色、收藏和独立队列管理尚未接；LRC解析导入、真实音乐扫描/授权、第三方来源、后台/系统媒体能力及Release/AAB/设备验收仍待后续Phase8–11。
 本轮没有Windows本机构建、Android安装/出声、性能Profile或人工读屏验收。Windows云端按新SHA独立核对；开发Debug包依赖Debug CRT，普通Android构建未上传APK artifact。未自动合并、发布Release或触发手动诊断。
 源码、测试与文档提交后push并创建Stacked Draft PR；云端运行链接与SHA在PR中记录，不借用前置C1成功。用户凭据、环境文件、构建包和临时日志不进入Git。
+
+## 精确GitHub验收回填
+
+实现提交`0a9e6d0cee9b01e3beef26bb011247dd455bbb61`，[Draft PR #67](https://github.com/Z-YO-YI/YYMusic/pull/67)。[Push 34291806866](https://github.com/Z-YO-YI/YYMusic/actions/runs/34291806866)与[PR 34291810669](https://github.com/Z-YO-YI/YYMusic/actions/runs/34291810669)均完成SUCCESS，head SHA一致。
+两组Linux1091通过/138Windows宿主截图预期跳过；Windows138Golden和1项真实窗口测试通过，65文件Debug包及六音频包/原生许可通过；Android51原生坐标/3完整法律文本/48资产/v2单签名者通过。
+[Windows开发Debug包](https://github.com/Z-YO-YI/YYMusic/actions/runs/34291806866/artifacts/10082007867)为67,528,393 bytes，SHA256 `75894a389d27407ecb1ebe1d37cc2965f050354ed98c1d532c30b65d3a7a30bc`，到期UTC`2026-09-22T23:57:04Z`。仅为依赖Debug CRT的开发包，不代表真实导入或发行版完成；Android无普通APK artifact，未发布Release。
+以上成功仅归本批C2，不替代后续原生全屏通道的新提交及实机验收。
