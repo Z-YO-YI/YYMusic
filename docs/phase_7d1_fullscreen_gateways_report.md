@@ -33,3 +33,12 @@
 
 下一增量接根生命周期协调器、歌词/播放页入口、Windows F与Esc先退出全屏及标题栏隐藏。Android实际系统栏动画、不同版本/分屏/切后台及Windows真实多显示器/DPI变化仍需设备验收；本批不声称真机安装、实机出声或完整端到端全屏已完成。
 Phase7真实封面/收藏及独立队列管理、Phase8本地导入/扫描/授权、Phase9来源、Phase10后台与系统媒体、Phase11 Release/AAB/Windows发行和设备验收仍待后续。默认新安装为空库，不以测试数或阶段号换算“日常可用”完成百分比。
+
+## D1 云端失败与独立恢复修正
+
+初始实现`ba68cddd595201d081c17f0df0fd5461bac31f3e`的[push34293640579](https://github.com/Z-YO-YI/YYMusic/actions/runs/34293640579)与[PR34293694640](https://github.com/Z-YO-YI/YYMusic/actions/runs/34293694640)均FAILURE：两组源码/Android成功；Windows138张Golden成功，实际Runner编译成功，旧窗口用例成功，但新增全屏用例在最大化退出的`Restored left, maximized=true`断言失败，期望-7、实际0。未执行后续正式入口打包/上传，不得称双平台通过。
+
+已暂停新增页面行为，在基线ba68cdd的隔离分支`codex/fullscreen-maximized-restore`修复。恢复最大化时先用保存的普通位置以SW_SHOWNOACTIVATE恢复非最大化状态，再应用原始最大化WINDOWPLACEMENT，促使系统依据已恢复边框重新计算最大化几何。最小化恢复不走中间显示步骤，继续保留原生恢复记录；所有步骤都必须成功才释放记录。
+严格的原始位置/样式断言全部保留，没有容差放宽或跳过。独立本机Win32探针未复现该宿主的偏移，两种顺序均位置一致，因此只作为限定检查，不能代替修复提交在真实Flutter Runner上的验证。依据[微软窗口状态说明](https://learn.microsoft.com/en-us/windows/win32/winmsg/window-features)区分窗口显示状态与样式位；修正仍须按新SHA在GitHub执行。
+
+隔离修正的本地123项Node、437文件格式、严格分析零问题（7.7秒）和1245项Flutter（74秒，138旧Golden未改）通过。`pub get --offline --enforce-lockfile`已解析锁定依赖，但因本机未开启开发者模式/符号链接支持而退出1；不修改系统设置，已有配置足以运行`--no-pub`分析和完整测试。本机未运行Flutter Windows构建；云端必须重新执行真实Runner，不能把独立探针或Dart测试作为修复通过。

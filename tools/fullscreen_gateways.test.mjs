@@ -20,6 +20,9 @@ test('Windows fullscreen preserves exact native restoration state and rejects ar
   assert.match(read('windows/runner/flutter_window.cpp'), /WM_DISPLAYCHANGE/);
   assert.match(read('windows/runner/window_control.cpp'), /fullscreen_ && !SetFullscreen\(false\)/);
   assert.match(read('integration_test/windows_window_gateway_test.dart'), /Restored \$key/);
+  assert.match(native, /normal\.showCmd = SW_SHOWNOACTIVATE/);
+  assert.match(native, /!preserve_minimized && placement\.showCmd == SW_SHOWMAXIMIZED/);
+  assert.match(native, /style && extended && prepared && position && frame/);
 });
 
 test('Android restores original system bars on lifecycle exit without consuming Flutter insets', () => {
