@@ -42,9 +42,15 @@ class WindowChrome extends StatelessWidget {
 
 /// Keeps native window controls reachable on modal and non-Shell routes too.
 class WindowFrame extends StatefulWidget {
-  const WindowFrame({super.key, required this.presenter, required this.child});
+  const WindowFrame({
+    super.key,
+    required this.presenter,
+    required this.child,
+    this.hideChrome = false,
+  });
   final WindowPresenter presenter;
   final Widget child;
+  final bool hideChrome;
   @override
   State<WindowFrame> createState() => _WindowFrameState();
 }
@@ -105,15 +111,19 @@ class _WindowFrameState extends State<WindowFrame> {
         verticalDirection: VerticalDirection.up,
         children: [
           Expanded(child: WindowFrameScope(child: child)),
-          Semantics(
-            container: true,
-            explicitChildNodes: true,
-            sortKey: const OrdinalSortKey(-1),
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.sizeOf(context).width < 1024 ? 12 : 16,
+          Visibility(
+            visible: !widget.hideChrome,
+            maintainState: true,
+            child: Semantics(
+              container: true,
+              explicitChildNodes: true,
+              sortKey: const OrdinalSortKey(-1),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.sizeOf(context).width < 1024 ? 12 : 16,
+                ),
+                child: WindowChrome(presenter: presenter),
               ),
-              child: WindowChrome(presenter: presenter),
             ),
           ),
         ],

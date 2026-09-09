@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../../app/app_routes.dart';
+import '../../../app/fullscreen_button.dart';
+import '../../../app/fullscreen_presenter.dart';
 import '../../../app/layout_class.dart';
 import '../../../app/playback_presenter.dart';
 import '../../../design_system/yy_artwork_placeholder.dart';
@@ -31,12 +33,14 @@ class LyricsScreen extends StatefulWidget {
     required this.playback,
     required this.navigation,
     this.routeActive,
+    this.fullscreen,
   });
   final YYPlatform platform;
   final LyricsController controller;
   final PlaybackPresenter playback;
   final AppNavigation navigation;
   final ValueListenable<bool>? routeActive;
+  final FullscreenPresenter? fullscreen;
 
   @override
   State<LyricsScreen> createState() => _LyricsScreenState();
@@ -299,6 +303,11 @@ class _LyricsScreenState extends State<LyricsScreen> {
             ),
           ],
           const SizedBox(width: 4),
+          FullscreenButton(
+            key: const ValueKey('lyrics-fullscreen'),
+            presenter: widget.fullscreen,
+            isCurrent: () => _canUse(generation),
+          ),
           YYButton(
             key: const ValueKey('lyrics-refresh'),
             label: '重新读取歌词',

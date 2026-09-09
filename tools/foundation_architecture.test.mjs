@@ -591,7 +591,8 @@ test('Inspector is controlled, opaque and scrollable without IO or queue algorit
 test('Windows frame is root-owned, current-HWND-only and closes after business shutdown', () => {
   const app = read('lib/app/yy_music_app.dart');
   assert.match(app, /if \(platform == YYPlatform.windows\)[\s\S]*?WindowPresenter\(/);
-  assert.match(app, /beforeClose: ref.read\(dependencyGraphProvider\).close/);
+  assert.match(app, /final graph = ref.read\(dependencyGraphProvider\)/);
+  assert.match(app, /beforeClose: \(\) async[\s\S]*?await _fullscreen!\.close\(\)[\s\S]*?finally[\s\S]*?await graph.close\(\)/);
   assert.match(app, /WindowFrame\(/);
   assert(!/WindowGateway|WindowPresenter/.test(read('lib/app/dependency_graph.dart')));
   const presenter = read('lib/app/window_presenter.dart');

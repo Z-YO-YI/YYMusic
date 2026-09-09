@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../../app/app_routes.dart';
+import '../../../app/fullscreen_button.dart';
+import '../../../app/fullscreen_presenter.dart';
 import '../../../app/layout_class.dart';
 import '../../../app/playback_presenter.dart';
 import '../../../design_system/yy_artwork_placeholder.dart';
@@ -27,11 +29,13 @@ class PlayerScreen extends StatefulWidget {
     required this.presenter,
     required this.navigation,
     this.routeActive,
+    this.fullscreen,
   });
   final YYPlatform platform;
   final PlaybackPresenter presenter;
   final AppNavigation navigation;
   final ValueListenable<bool>? routeActive;
+  final FullscreenPresenter? fullscreen;
 
   @override
   State<PlayerScreen> createState() => _PlayerScreenState();
@@ -320,6 +324,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       iconOnly: true,
                       style: YYButtonStyle.quiet,
                       onPressed: action(true, widget.navigation.openLyrics),
+                    ),
+                    FullscreenButton(
+                      key: const ValueKey('player-fullscreen'),
+                      presenter: widget.fullscreen,
+                      isCurrent: () => _canInteract(generation),
                     ),
                   ],
                 ),

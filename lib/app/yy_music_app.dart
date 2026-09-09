@@ -1,17 +1,23 @@
 import 'dart:async';
+import 'dart:ui' show FlutterView;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../design_system/yy_feedback.dart';
 import '../design_system/yy_theme.dart';
 import '../design_system/yy_tokens.dart';
+import '../platform/contracts/fullscreen_gateway.dart';
 import '../platform/contracts/window_gateway.dart';
+import '../platform/fullscreen/native_fullscreen_gateway.dart';
 import '../platform/windows/windows_window_gateway.dart';
 import 'app_router.dart';
 import 'app_routes.dart';
 import 'dependency_graph.dart';
+import 'fullscreen_presenter.dart';
+import 'fullscreen_route_observer.dart';
 import 'layout_class.dart';
 import 'window_chrome.dart';
 import 'window_presenter.dart';
@@ -22,18 +28,24 @@ class YYMusicApp extends ConsumerStatefulWidget {
     this.platform,
     this.initialLocation = '/home',
     this.windowGateway,
+    this.fullscreenGateway,
   });
   final YYPlatform? platform;
   final String initialLocation;
   final WindowGateway? windowGateway;
+  final FullscreenGateway? fullscreenGateway;
 
   @override
   ConsumerState<YYMusicApp> createState() => _YYMusicAppState();
 }
 
-class _YYMusicAppState extends ConsumerState<YYMusicApp> {
+class _YYMusicAppState extends ConsumerState<YYMusicApp>
+    with WidgetsBindingObserver {
   AppRouter? _router;
   WindowPresenter? _window;
+  FullscreenPresenter? _fullscreen;
+  FlutterView? _view;
+  bool _tickersEnabled = true;
 
   @override
   void initState() {
@@ -42,15 +54,36 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp> {
         widget.platform ??
         (kIsWeb ? null : YYPlatform.fromTarget(defaultTargetPlatform));
     if (platform != null) {
+      final graph = ref.read(dependencyGraphProvider);
+      _fullscreen = FullscreenPresenter(
+        widget.fullscreenGateway ??
+            graph.fullscreen ??
+            NativeFullscreenGateway(),
+        automatic: platform == YYPlatform.android,
+      );
+      WidgetsBinding.instance.addObserver(this);
+      _fullscreen!.setForeground(
+        WidgetsBinding.instance.lifecycleState == null ||
+            WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed,
+      );
+      unawaited(_fullscreen!.initialize());
       if (platform == YYPlatform.windows) {
         _window = WindowPresenter(
           widget.windowGateway ?? WindowsWindowGateway(),
-          beforeClose: ref.read(dependencyGraphProvider).close,
+          beforeClose: () async {
+            try {
+              await _fullscreen!.close();
+            } finally {
+              await graph.close();
+            }
+          },
         );
         unawaited(_window!.initialize());
       }
       _router = AppRouter(
         platform: platform,
+        fullscreen: _fullscreen,
+        fullscreenObserver: FullscreenRouteObserver(_fullscreen!),
         viewState: ref.read(dependencyGraphProvider).viewState,
         licenses: ref.read(dependencyGraphProvider).licenses,
         playbackPresenter: ref.read(dependencyGraphProvider).playbackPresenter,
@@ -76,11 +109,98 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _view = View.maybeOf(context);
+    _tickersEnabled = TickerMode.valuesOf(context).enabled;
+    didChangeMetrics();
+  }
+
+  @override
+  void didChangeMetrics() {
+    final size = _view?.physicalSize;
+    _fullscreen?.setVisible(_tickersEnabled && (size == null || !size.isEmpty));
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _fullscreen?.setForeground(state == AppLifecycleState.resumed);
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _fullscreen?.dispose();
     _window?.dispose();
     _router?.dispose();
     super.dispose();
   }
+
+  bool get _typing {
+    final focused = FocusManager.instance.primaryFocus?.context;
+    return focused?.widget is EditableText ||
+        focused?.findAncestorWidgetOfExactType<EditableText>() != null;
+  }
+
+  void _fullscreenFromKeyboard() {
+    if (_typing) return;
+    final fullscreen = _fullscreen;
+    if (fullscreen == null) return;
+    if (fullscreen.eligible) {
+      fullscreen.toggle();
+    } else if (fullscreen.canOpenPlayer) {
+      fullscreen.enterOnNextPlayer();
+      _router?.openPlayer();
+    }
+  }
+
+  void _escapeFromKeyboard() {
+    if ((widget.platform ?? YYPlatform.fromTarget(defaultTargetPlatform)) ==
+            YYPlatform.windows &&
+        (_fullscreen?.exitBeforeBack ?? false)) {
+      _fullscreen!.restore();
+    } else {
+      _router?.back();
+    }
+  }
+
+  Widget _nativeFrame(Widget child) => ListenableBuilder(
+    listenable: _fullscreen!,
+    builder: (context, _) => LayoutBuilder(
+      builder: (context, constraints) => Column(
+        children: [
+          if (_fullscreen!.errorMessage case final message?)
+            ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: constraints.maxHeight / 3),
+              child: SingleChildScrollView(
+                child: SafeArea(
+                  bottom: false,
+                  child: YYErrorBanner(
+                    title: '全屏操作未完成',
+                    message: message,
+                    actionLabel: _fullscreen!.available ? '恢复系统显示' : null,
+                    onAction: _fullscreen!.available && !_fullscreen!.busy
+                        ? _fullscreen!.restore
+                        : null,
+                  ),
+                ),
+              ),
+            )
+          else
+            const SizedBox.shrink(),
+          Expanded(
+            child: _window == null
+                ? child
+                : WindowFrame(
+                    presenter: _window!,
+                    hideChrome: _fullscreen!.hideChrome,
+                    child: child,
+                  ),
+          ),
+        ],
+      ),
+    ),
+  );
 
   void _toggleFromKeyboard() {
     final focused = FocusManager.instance.primaryFocus?.context;
@@ -140,6 +260,13 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp> {
                                 YYPlatform.fromTarget(defaultTargetPlatform)) ==
                             YYPlatform.windows)
                           const SingleActivator(
+                            LogicalKeyboardKey.keyF,
+                            includeRepeats: false,
+                          ): _fullscreenFromKeyboard,
+                        if ((widget.platform ??
+                                YYPlatform.fromTarget(defaultTargetPlatform)) ==
+                            YYPlatform.windows)
+                          const SingleActivator(
                             LogicalKeyboardKey.space,
                             includeRepeats: false,
                           ): _toggleFromKeyboard,
@@ -155,7 +282,7 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp> {
                           alt: true,
                         ): router.back,
                         const SingleActivator(LogicalKeyboardKey.escape):
-                            router.back,
+                            _escapeFromKeyboard,
                         const SingleActivator(
                           LogicalKeyboardKey.keyK,
                           control: true,
@@ -179,12 +306,7 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp> {
                       },
                       child: Focus(
                         autofocus: true,
-                        child: _window == null
-                            ? child ?? const SizedBox.shrink()
-                            : WindowFrame(
-                                presenter: _window!,
-                                child: child ?? const SizedBox.shrink(),
-                              ),
+                        child: _nativeFrame(child ?? const SizedBox.shrink()),
                       ),
                     ),
                   ),
