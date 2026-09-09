@@ -51,7 +51,7 @@ test('lyrics synchronization borrows one root player and repository without a se
   const graph = read('lib/app/dependency_graph.dart');
   assert.equal((graph.match(/lyricsController = LyricsController\(/g) ?? []).length, 1);
   assert.match(graph, /lyricsController\.dispose\(\);\s+playback\.dispose\(\)/);
-  assert.match(graph, /lyricsController\.close,\s+playback\.close/);
+  assert.match(graph, /lyricsController\.close,\s+queue\.close,\s+playback\.close/);
   const lyrics = read('lib/playback/lyrics_controller.dart');
   assert.match(lyrics, /_repository!\.getLyrics\(identity\.track\)/);
   assert.match(lyrics, /document\.track != identity\.track/);
@@ -82,7 +82,7 @@ test('Home has independent native layouts and bounded repository-only reads', ()
 test('Home uses root playback and confirms destructive history action', () => {
   const graph = read('lib/app/dependency_graph.dart');
   assert.match(graph, /home = HomeController\(/);
-  assert.match(graph, /home\.close,\s+appearanceSettings\.close,\s+search\.close,\s+libraryController\.close,\s+localMusic\.close,\s+catalogDetails\.close,\s+playlists\.close,\s+playlistAdds\.close,\s+playlistContents\.close,\s+systemPlaylists\.close,\s+lyricsController\.close,\s+playback\.close/);
+  assert.match(graph, /home\.close,\s+appearanceSettings\.close,\s+search\.close,\s+libraryController\.close,\s+localMusic\.close,\s+catalogDetails\.close,\s+playlists\.close,\s+playlistAdds\.close,\s+playlistContents\.close,\s+systemPlaylists\.close,\s+lyricsController\.close,\s+queue\.close,\s+playback\.close/);
   assert.match(read('lib/app/yy_music_app.dart'), /homeController: ref\.read\(dependencyGraphProvider\)\.home/);
   const sections = read('lib/features/home/common/home_sections.dart');
   assert.match(sections, /YYRadius\.hero/);
