@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:yymusic/platform/fullscreen/native_fullscreen_gateway.dart';
 import 'package:yymusic/platform/windows/windows_window_gateway.dart';
 
 /// Real HWND, no fake platform handler, audio, network, files or input injection.
@@ -72,6 +73,91 @@ void main() {
       };
       binding.reportData = metrics;
       debugPrint('YYMUSIC_WINDOWS_WINDOW ${jsonEncode(metrics)}');
+      await tester.pumpAndSettle();
+    },
+  );
+
+  testWidgets(
+    'Windows fullscreen restores real styles geometry and maximized state',
+    (tester) async {
+      expect(Platform.isWindows && kDebugMode, isTrue);
+      await tester.pumpWidget(const ColoredBox(color: Color(0xFFF5F5F2)));
+      final window = WindowsWindowGateway();
+      final fullscreen = NativeFullscreenGateway();
+      const channel = MethodChannel(NativeFullscreenGateway.channelName);
+      Future<Map<String, Object?>> state() async =>
+          (await channel.invokeMapMethod<String, Object?>('getState'))!;
+      try {
+        await window.initialize();
+        await window.restore();
+        expect((await fullscreen.initialize())?.enabled, isFalse);
+        await expectLater(
+          channel.invokeMethod<Object?>('enter', {'hwnd': 0}),
+          throwsA(isA<PlatformException>()),
+        );
+        for (final maximized in [false, true]) {
+          if (maximized) await window.toggleMaximize();
+          final before = await state();
+          final entered = fullscreen.states
+              .firstWhere((s) => s.enabled)
+              .timeout(const Duration(seconds: 5));
+          expect((await fullscreen.enter()).enabled, isTrue);
+          await entered;
+          final active = await state();
+          expect((active['style']! as int) & 0x00CF0000, 0);
+          for (final (side, monitor) in [
+            ('left', 'monitorLeft'),
+            ('top', 'monitorTop'),
+            ('right', 'monitorRight'),
+            ('bottom', 'monitorBottom'),
+          ]) {
+            expect(active[side], active[monitor]);
+          }
+          // A repeated enter must not replace the pre-fullscreen restoration data.
+          await fullscreen.enter();
+          expect((await fullscreen.restore()).enabled, isFalse);
+          final after = await state();
+          for (final key in [
+            'style',
+            'extendedStyle',
+            'left',
+            'top',
+            'right',
+            'bottom',
+          ]) {
+            expect(
+              after[key],
+              before[key],
+              reason: 'Restored $key, maximized=$maximized',
+            );
+          }
+          expect((await window.refresh()).maximized, maximized);
+        }
+        await window.restore();
+        await fullscreen.enter();
+        final minimized = fullscreen.states
+            .firstWhere((s) => !s.enabled)
+            .timeout(const Duration(seconds: 5));
+        await window.minimize();
+        await minimized;
+        expect((await window.refresh()).minimized, isTrue);
+        await window.restore();
+        await fullscreen.enter();
+        await fullscreen.close();
+        expect((await state())['enabled'], isFalse);
+        binding.reportData = {
+          ...?binding.reportData,
+          'fullscreenRestoration': true,
+          'fullscreenMinimizeRecovery': true,
+        };
+        debugPrint(
+          'YYMUSIC_WINDOWS_FULLSCREEN restoration=true minimize=true detach=true',
+        );
+      } finally {
+        await fullscreen.close();
+        await window.restore();
+        await window.dispose();
+      }
       await tester.pumpAndSettle();
     },
   );

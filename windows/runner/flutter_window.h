@@ -35,6 +35,16 @@ class FlutterWindow : public Win32Window {
   flutter::EncodableValue WindowState();
   void PublishWindowState();
   bool SetCustomFrame(bool enabled);
+  void InitializeFullscreenChannel();
+  flutter::EncodableValue FullscreenState();
+  bool SetFullscreen(bool enabled, bool preserve_minimized = false);
+  std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> fullscreen_channel_;
+  WINDOWPLACEMENT fullscreen_placement_{};
+  LONG_PTR fullscreen_style_ = 0;
+  LONG_PTR fullscreen_extended_style_ = 0;
+  bool fullscreen_ = false;
+  bool fullscreen_transition_ = false;
+  bool fullscreen_connected_ = false;
   std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> window_channel_;
   LONG_PTR original_window_style_ = 0;
   bool custom_frame_ = false;

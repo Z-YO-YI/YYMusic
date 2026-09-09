@@ -1,12 +1,18 @@
 # 实施状态
 
+当前增量 Phase 7D1：已实现受限的原生全屏协议与Dart串行适配器，Windows保存/恢复原始WINDOWPLACEMENT及样式，Android保存/恢复系统栏；原生生命周期可自行恢复，不依赖页面仍然存活。
+新增16项Dart通道回归、3项Node检查与1项真实Windows全屏集成用例；最终1245 Flutter（138旧Golden未改）、123 Node、437文件格式、严格分析、生成/迁移零漂移及Android Debug包/许可/v2签名预检通过。
+分支`codex/native-fullscreen-gateways`，[计划](phase_7d1_fullscreen_gateways_plan.md)、ADR079先于合同变更，[报告](phase_7d1_fullscreen_gateways_report.md)记录实现及验证边界。新Windows编译/原生测试等待本批精确GitHub CI，Android只验证了编译/打包，未运行真机沉浸恢复。
+正式页面尚未注入本批通道，没有启用F/全屏按钮或自动沉浸；下一增量接根生命周期与页面入口。Phase7完整队列、Phase8导入/扫描、Phase9来源和Phase10–11后台/发行仍未完成，默认新安装仍为空库。
+前置7C2实现`0a9e6d0`两组源码/Android/Windows已SUCCESS，#67与报告回填；不借其成功替代本批平台变更验收。
+
+## 历史阶段记录
+
 当前增量 Phase 7C2：正式 `/lyrics` 已从占位页替换为三套原生布局，复用唯一根歌词/播放状态与惰性正文。同步/纯文本/翻译开关、真实 Dock、读取/无歌词/空库/安全失败重试和返回关系已接线；元数据长按及 Windows L 入口不改变普通单击或 Ctrl+L。
 根跳转增加可撤销页面意图检查；处理重复打开尚未构建的 Navigator 页面、十轮来回/跨队列恢复、覆盖/零面积/卸载与晚到读取；不停止音频或新建媒体时钟。
 新增30项Widget、11张完整页面Golden和1项Node架构检查；最终验证与精确GitHub结果见[7C2报告](phase_7c2_native_lyrics_report.md)，分支`codex/native-lyrics-route`，计划及ADR-078先于实现。
 最终1229 Flutter（138 Golden）、120 Node、435文件格式与严格分析通过；Android Debug/48资产/完整许可/v2单签名者预检通过。本轮没有实机安装或出声验证。
 本批固定深色兜底，不含真实封面提色、OS全屏/Android沉浸、收藏或独立队列管理；Phase8–11仍待实施。前置`aad2d06`双组源码/Android/Windows全部SUCCESS，已回填#66，不借用其结果表示本批云端通过。
-
-## 历史阶段记录
 
 当前增量 Phase 7C1：原生歌词正文组件使用双向惰性 Sliver、真实根行号/位置与快照回调，按实际高度居中；一万行远跳和手动滚动一万像素后的恢复均验证。触摸/滚轮/焦点浏览暂停跟随，停止五秒或显式恢复后继续，时序间隙不跳回开头。
 新增 21 Widget、7 Golden 与 1 Node 门禁；减少动态禁用行缩放，纯文本有真实只读语义；仅 3 张受修正影响的旧歌词基线精确更新，其余 117 旧图不变。无 Schema/依赖/平台/原始资产变化。
