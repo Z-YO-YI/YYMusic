@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../domain/models/collection_models.dart';
+import '../domain/models/queue_edit.dart';
 import 'playback_controller.dart';
 import 'playback_state.dart';
 
@@ -12,11 +13,21 @@ final class QueueController extends ChangeNotifier {
 
   final PlaybackController _playback;
   bool _disposed = false;
+  bool _notifierDisposed = false;
+  int _notificationDepth = 0;
 
   bool get isAvailable => true;
   QueueSnapshot get state => _playback.state.queue;
   bool get shuffleEnabled => _playback.state.shuffleEnabled;
   RepeatMode get repeatMode => _playback.state.repeatMode;
+
+  /// For interactive edits: stale snapshots and disposed/pending views cancel.
+  Future<bool> edit(QueueEdit edit, {bool Function()? canEdit}) => _disposed
+      ? Future<bool>.value(false)
+      : _playback.editQueue(
+          edit,
+          canEdit: () => !_disposed && (canEdit?.call() ?? true),
+        );
 
   Future<void> replace(
     Iterable<QueueEntry> entries, {
@@ -36,14 +47,25 @@ final class QueueController extends ChangeNotifier {
   void setRepeatMode(RepeatMode value) => _playback.setRepeatMode(value);
 
   void _forwardChange() {
-    if (!_disposed) notifyListeners();
+    if (_disposed) return;
+    _notificationDepth++;
+    try {
+      notifyListeners();
+    } finally {
+      _notificationDepth--;
+      if (_disposed) dispose();
+    }
   }
 
   @override
   void dispose() {
-    if (_disposed) return;
-    _disposed = true;
-    _playback.removeListener(_forwardChange);
+    if (_notifierDisposed) return;
+    if (!_disposed) {
+      _disposed = true;
+      _playback.removeListener(_forwardChange);
+    }
+    if (_notificationDepth > 0) return;
+    _notifierDisposed = true;
     super.dispose();
   }
 }

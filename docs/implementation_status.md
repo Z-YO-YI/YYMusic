@@ -1,12 +1,18 @@
 # 实施状态
 
+当前增量 Phase 7E1：QueueEdit纯模型和根editQueue已接入既有QueueController/PlaybackController，绑定不可变根快照，按entry ID移除、锚点排序及清空；同时间/同值替换与当前项改变仍使旧确认失效。执行前、可能等待的停止后复核授权，已接受SQL排空，Facade通知内关闭安全。
+分支`codex/queue-edit-intents`，基线dff7c32，Draft PR base=`codex/fullscreen-page-lifecycle`；[计划](phase_7e1_queue_edit_intents_plan.md)与ADR081先于共享API，[报告](phase_7e1_queue_edit_intents_report.md)记录测试/构建边界。新增12模型、19核心、7真实SQLite回归与1项Node门禁；无UI、Golden、Schema/依赖/平台变化。
+最终1325 Flutter（146旧Golden未改）、125 Node、450文件格式、严格分析、生成/迁移及Android Debug资产/许可/v2单签名者预检通过。本批云端结果按新SHA独立核对。
+尚未接独立队列管理页及其忙态/失败反馈；当前项移除/清空沿用停止并选择相邻项但不自动播放的策略，停止后保存失败保留旧队列但不自动重播。Phase7其余页面能力及Phase8–11仍待后续，新安装仍为空库。
+前置dff7c32的push34297862194及PR34297866163均SUCCESS，#70回填；Windows146Golden、2真实Runner/正式入口重建和Android资产/许可/签名通过。本批新SHA云端另行核对，Android真机系统栏/多显示器DPI仍未验收。
+
+## 历史阶段记录
+
 当前增量 Phase 7D2：正式播放/歌词页接入唯一根全屏协调器，使用原始fullscreen/fullscreen-exit SVG及YYButton；Windows F/分层Esc、隐藏且保留状态的标题栏，Android进页自动沉浸请求均已接线。真实Navigator顶层含弹层、后台/零尺寸、原生中断和关闭撤销旧意图，不重建播放器或歌词状态。
 新增18项单元、16项Widget、8张Golden与1项Node检查；最终1287 Flutter（146 Golden，138旧图未改）、124 Node、445文件格式、严格分析、生成/迁移及Android Debug资产/许可/v2签名预检通过。
 分支`codex/fullscreen-page-lifecycle`，最终基线`e68fffab81a7e787f31d6a24bc6136410d4bc3af`，Stacked Draft PR base=`codex/fullscreen-maximized-restore`；[计划](phase_7d2_fullscreen_pages_plan.md)与ADR080先于共享改动，[报告](phase_7d2_fullscreen_pages_report.md)记录本批边界，新提交GitHub云端状态见对应PR。
 开发中发现前置D1 `ba68cdd`最大化退出几何失败，隔离修复后才接回页面分支。[PR #69](https://github.com/Z-YO-YI/YYMusic/pull/69)的e68fffa两组源码/Android/Windows已SUCCESS，2项真实Runner通过；初始#68失败不改写为成功，不以D1原生证据代替D2页面或Android实机验收。
 尚非完整Phase7：真实封面/收藏、独立队列管理仍待后续；Phase8导入/扫描/授权、Phase9来源及Phase10–11后台/系统媒体/发行未完成。默认新安装仍为空库，Debug不是日常可用发行版。
-
-## 历史阶段记录
 
 当前增量 Phase 7D1：已实现受限的原生全屏协议与Dart串行适配器，Windows保存/恢复原始WINDOWPLACEMENT及样式，Android保存/恢复系统栏；原生生命周期可自行恢复，不依赖页面仍然存活。
 新增16项Dart通道回归、3项Node检查与1项真实Windows全屏集成用例；最终1245 Flutter（138旧Golden未改）、123 Node、437文件格式、严格分析、生成/迁移零漂移及Android Debug包/许可/v2签名预检通过。

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 
 import '../domain/models/collection_models.dart';
 import '../domain/models/domain_failure.dart';
+import '../domain/models/queue_edit.dart';
 import '../domain/models/track.dart';
 import '../domain/repositories/collection_repository.dart';
 import '../domain/repositories/library_repository.dart';
@@ -16,6 +17,7 @@ import 'playback_source_resolver.dart';
 import 'playback_state.dart';
 
 part 'catalog_selection_playback.dart';
+part 'queue_editing.dart';
 
 typedef PlaybackRandomIndex = int Function(int upperBound);
 
@@ -259,6 +261,11 @@ final class PlaybackController extends ChangeNotifier {
     final entry = _previousEntry();
     if (entry != null) await _playEntryInternal(entry.id);
   });
+
+  /// Edits only the captured root snapshot; false means stale, revoked or no-op.
+  /// Accepted persistence drains even if its page leaves while SQL is running.
+  Future<bool> editQueue(QueueEdit edit, {bool Function()? canEdit}) =>
+      _editQueue(edit, canEdit: canEdit);
 
   Future<void> replaceQueue(
     Iterable<QueueEntry> entries, {

@@ -1,5 +1,10 @@
 # 原生基础验证矩阵
 
+Phase 7E1：[队列编辑报告](phase_7e1_queue_edit_intents_report.md)，新增38项Flutter（12纯模型/19核心/7实际SQLite）及1Node门禁。模型验证前/后锚点、null末尾、无变化不写、完整来源/重复条目、当前项相邻选择、非法目标与1003条完整队列；根验证单次保存、不重载音频、同值快照/当前项更新使旧意图失效、竞争命令、离页/Facade/根关闭撤销、停止后取消、已接受写入继续、失败安全重试、监听者重入关闭与排空。
+真实SQLite验证源引用/addedAt/当前位置、收藏历史不误改、DELETE后INSERT失败与最终状态UPDATE失败全回滚、1003条无tracks SELECT/截断、事务中离页仍提交、关闭等待实际DELETE后再释放引擎/数据库，并在成功和故障两种情况重开磁盘库复核。仅删除测试自建且校验路径的临时目录，无用户数据或媒体操作。
+无新页面、平台能力或Golden；146旧基线未改。本批完整格式/严格分析/Flutter/Node/Android预检结果与新SHA云端状态分别记录，不把核心命令当作正式队列管理UI或实机出声。以下为历史矩阵。
+最终1325 Flutter、125 Node、450文件格式与严格分析、生成/迁移零漂移及Android Debug包/许可/v2单签名者预检通过，新SHA Windows构建由GitHub另行验收。
+
 Phase 7D2：最终1287 Flutter（146 Windows宿主Golden）、124 Node、445文件格式与严格分析通过，Android Debug/48资产/完整许可/v2单签名者预检通过，[报告](phase_7d2_fullscreen_pages_report.md)。新增18单元、16Widget、8Golden和1Node；138张旧Golden不变，无Schema/锁/生成/原始资产漂移。
 根全屏状态覆盖单次握手、事件优先于晚到响应、手动/自动请求、切页/弹层/生命周期/零面积撤销、失败一次恢复/重试不循环、下一播放页单次意图及关闭排空。真实根Widget验证F/Esc不抢输入、RawDialogRoute覆盖、Android四尺寸/旋转/返回、130%窄窗按钮、保留同一Player State和音频加载次数，以及全屏释放先于音频/原生关闭。
 八张新Golden覆盖Windows播放器/歌词/窗口态/恢复错误、手机歌词/短横屏播放、平板横歌词/竖播放，逐张目视复核；纠正错误条布局的无意空白后仅刷新该新基线。Fake通道只证明Flutter页面状态和布局，不证明实际系统栏。
