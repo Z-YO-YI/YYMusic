@@ -73,10 +73,20 @@ bool FlutterWindow::SetFullscreen(bool enabled, bool preserve_minimized) {
     // Attempt every restoration step; keep the record if any step failed.
     const bool style = WriteStyle(window, GWL_STYLE, fullscreen_style_);
     const bool extended = WriteStyle(window, GWL_EXSTYLE, fullscreen_extended_style_);
+    // Restoring WS_MAXIMIZE alone can retain the borderless maximized geometry.
+    // Re-enter maximized state from the saved normal placement so Windows
+    // recalculates the restored non-client frame (including its hidden border).
+    bool prepared = true;
+    if (!preserve_minimized && placement.showCmd == SW_SHOWMAXIMIZED) {
+      auto normal = placement;
+      normal.showCmd = SW_SHOWNOACTIVATE;
+      normal.flags &= ~WPF_RESTORETOMAXIMIZED;
+      prepared = SetWindowPlacement(window, &normal) != FALSE;
+    }
     const bool position = SetWindowPlacement(window, &placement) != FALSE;
     const bool frame = SetWindowPos(window, nullptr, 0, 0, 0, 0,
         SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED) != FALSE;
-    success = style && extended && position && frame;
+    success = style && extended && prepared && position && frame;
     if (success) fullscreen_ = false;
   }
   fullscreen_transition_ = false;
