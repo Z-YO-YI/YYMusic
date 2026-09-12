@@ -2,6 +2,20 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { read, walk } from './design_audit.mjs';
 
+test('library queue menus capture root and source, reuse original glyphs and guarded root feedback', () => {
+  const menu = read('lib/features/library/common/library_track_menu.dart');
+  for (const token of ['YYContextMenu(', "id: 'next'", "id: 'queue'", 'YYGlyph.next', 'YYGlyph.listPlus', 'enabled: canInsert']) assert(menu.includes(token));
+  const screen = read('lib/features/library/common/library_screen.dart');
+  for (const token of ['_menuQueue = widget.queue?.state', '_queueEpoch++', 'ModalRoute.isCurrentOf', 'widget.queue?.removeListener(_queueChanged)', 'generation != _menuGeneration']) assert(screen.includes(token));
+  const actions = read('lib/features/library/common/library_queue_actions.dart');
+  for (const token of ['prepareInsertion(expected, track.ref', 'queue.submitEdit(', 'pagePermit() && sourcePermit!()', 'identical(noticeIdentity, _noticeIdentity)']) assert(actions.includes(token));
+  const controller = read('lib/features/library/common/library_controller.dart');
+  assert(controller.includes('page.items.any((item) => identical(item, track))'));
+  const feedback = read('lib/features/queue/common/queue_operation_feedback.dart');
+  for (const token of ['queue.canRetryEdit(failure)', 'queue.retryEdit(failure, canEdit: permit)', 'queue.dismissEditFailure(failure)', 'liveRegion: true']) assert(feedback.includes(token));
+  assert(!/QueueController\(|PlaybackController\(|Repository|WebView/.test(actions));
+});
+
 test('library uses three native virtualized layouts and no direct storage or plugin access', () => {
   for (const layout of ['phone/phone_library_layout', 'tablet/tablet_library_layout', 'windows/windows_library_layout']) {
     assert.match(read(`lib/features/library/${layout}.dart`), /CustomScrollView/);

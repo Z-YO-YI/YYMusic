@@ -32,6 +32,7 @@ final class LibrarySections {
     required this.menu,
     required this.canNavigateSystem,
     this.localPanel,
+    this.queueFeedback,
   });
   final LibraryController controller;
   final PlaybackPresenter playback;
@@ -39,6 +40,7 @@ final class LibrarySections {
   final ValueChanged<Track> menu;
   final bool Function() canNavigateSystem;
   final Widget? localPanel;
+  final Widget? queueFeedback;
 
   Widget header({required bool wide}) => Builder(
     builder: (context) {
@@ -207,6 +209,7 @@ final class LibrarySections {
               onAction: controller.retryFavorites,
             ),
           ],
+          ?queueFeedback,
           const SizedBox(height: 20),
         ],
       );
