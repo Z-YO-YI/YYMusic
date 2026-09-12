@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
@@ -19,6 +20,7 @@ import '../features/library/common/library_controller.dart';
 import '../features/library/common/library_screen.dart';
 import '../features/lyrics/common/lyrics_screen.dart';
 import '../features/player/common/player_screen.dart';
+import '../features/player/common/sleep_settings_panel.dart';
 import '../features/playlists/common/playlist_add_controller.dart';
 import '../features/playlists/common/playlist_add_dialog.dart';
 import '../features/playlists/common/playlist_content_controller.dart';
@@ -48,6 +50,8 @@ import 'layout_class.dart';
 import 'playback_presenter.dart';
 import 'playlist_location.dart';
 import 'system_playlist_location.dart';
+
+part 'sleep_settings_route.dart';
 
 final class AppRouter implements AppNavigation {
   AppRouter({
@@ -161,6 +165,8 @@ final class AppRouter implements AppNavigation {
             navigation: this,
             routeActive: _playerActivity,
             fullscreen: fullscreen,
+            onOpenSettings: () =>
+                _openSleepSettings(playbackPresenter, platform),
           )
         : route == AppRoute.lyrics &&
               lyricsController != null &&
@@ -453,12 +459,18 @@ final class AppRouter implements AppNavigation {
       _router.routerDelegate.currentConfiguration.lastOrNull?.matchedLocation;
 
   void _refreshRouteActivity() {
+    if (_sleepDialog != null && _activePath != _sleepOwnerPath) {
+      _dismissSleepSettings();
+    }
     _settingsActivity.value = _activePath == AppRoute.settings.path;
     _playerActivity.value = _activePath == AppRoute.player.path;
     _lyricsActivity.value = _activePath == AppRoute.lyrics.path;
   }
 
   final _rootNavigator = GlobalKey<NavigatorState>();
+  RawDialogRoute<void>? _sleepDialog;
+  String? _sleepOwnerPath;
+  bool _disposed = false;
   late final Future<void> Function(TrackRef, String) _showPlaylistPicker;
   bool _pickerShowing = false;
   bool _playerPushPending = false;
@@ -529,6 +541,10 @@ final class AppRouter implements AppNavigation {
   );
   @override
   void back() {
+    if (_sleepDialog?.isCurrent ?? false) {
+      _dismissSleepSettings();
+      return;
+    }
     if (_router.canPop()) {
       _router.pop();
     } else if (!AppRoute.mainRoutes.any(
@@ -590,6 +606,9 @@ final class AppRouter implements AppNavigation {
   }
 
   void dispose() {
+    _disposed = true;
+    _sleepDialog = null;
+    _sleepOwnerPath = null;
     _router.routerDelegate.removeListener(_refreshRouteActivity);
     _router.dispose();
     _settingsActivity.dispose();

@@ -35,12 +35,14 @@ class PlayerScreen extends StatefulWidget {
     this.routeActive,
     this.fullscreen,
     this.favorite,
+    this.onOpenSettings,
   });
   final YYPlatform platform;
   final PlaybackPresenter presenter;
   final AppNavigation navigation;
   final ValueListenable<bool>? routeActive;
   final FullscreenPresenter? fullscreen;
+  final VoidCallback? onOpenSettings;
 
   /// Borrows root collection state without owning its lifetime or storage.
   final PlaybackFavoriteController? favorite;
@@ -110,6 +112,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void didUpdateWidget(PlayerScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.onOpenSettings != widget.onOpenSettings) _invalidate();
     if (oldWidget.favorite != widget.favorite) {
       oldWidget.favorite?.removeListener(_onFavorite);
       widget.favorite?.addListener(_onFavorite);
@@ -368,6 +371,15 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       presenter: widget.fullscreen,
                       isCurrent: () => _canInteract(generation),
                     ),
+                    if (widget.onOpenSettings != null)
+                      YYButton(
+                        key: const ValueKey('player-page-settings'),
+                        label: '播放设置',
+                        glyph: YYGlyph.more,
+                        iconOnly: true,
+                        style: YYButtonStyle.quiet,
+                        onPressed: action(true, widget.onOpenSettings!),
+                      ),
                   ],
                 ),
                 const SizedBox(height: 8),
