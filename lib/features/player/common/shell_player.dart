@@ -127,7 +127,8 @@ class _PlayerControlsState extends State<_PlayerControls> {
     final size = MediaQuery.sizeOf(context);
     final visible =
         TickerMode.valuesOf(context).enabled &&
-        (ModalRoute.isCurrentOf(context) ?? true);
+        (ModalRoute.isCurrentOf(context) ?? true) &&
+        _focusAllowsFavorite(createDependency: true);
     if (_favoriteViewport != size || _favoriteVisible != visible) {
       _favoriteViewport = size;
       _favoriteVisible = visible;

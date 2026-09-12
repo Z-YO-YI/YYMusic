@@ -1,11 +1,26 @@
 part of 'shell_player.dart';
 
 extension _ShellFavoriteActions on _PlayerControlsState {
+  // Inline menus exclude their covered subtree without changing ModalRoute.
+  bool _focusAllowsFavorite({bool createDependency = false}) {
+    final node = Focus.maybeOf(
+      context,
+      scopeOk: true,
+      createDependency: createDependency,
+    );
+    return node == null ||
+        (node.descendantsAreFocusable &&
+            node.ancestors.every(
+              (ancestor) => ancestor.descendantsAreFocusable,
+            ));
+  }
+
   bool _canFavorite(int generation) {
     if (!mounted || !_favoriteVisible || generation != _favoriteGeneration) {
       return false;
     }
     if (!(ModalRoute.of(context)?.isCurrent ?? true)) return false;
+    if (!_focusAllowsFavorite()) return false;
     final box = context.findRenderObject();
     return box is RenderBox &&
         box.hasSize &&
