@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7H1A：[计划](phase_7h1a_sleep_deadline_plan.md)/ADR097/[报告](phase_7h1a_sleep_deadline_report.md)。已实现根截止定时核心（关闭/15/30/60分钟），23新测试含到期后completed错误推进的先失败复现，完整1769 Flutter/143 Node、188 Golden不变、519文件格式及严格分析通过，生成/Schema无漂移；Android Debug18.2秒及资产许可v2签名通过。无新UI，本曲结束与设置界面尚未接入；Phase7及真实导入/来源/后台/发行仍待完成。前置2fb29ec和7d5385e的四组云端运行现均SUCCESS；本批codex/sleep-deadline-core按新SHA另验，不以本地预检替代GitHub结果。以下为历史记录。
+
 当前检查点：[Phase7出口审计](phase_7_exit_audit.md)。五项核心出口有源码/自动化证据，但§18播放设置（设备/睡眠定时/播放偏好）仍缺失，侧栏队列摘要仍预留，设备QA也未被Fake/Golden覆盖；**不标记Phase7整体完成、不跳Phase8**。下一项按[7H计划](phase_7h_playback_settings_plan.md)先审查根完成事件与暂停串行化，再实现真实睡眠定时核心，之后接原生界面。此批仅文档，无新增应用功能/测试/基线。复验1746 Flutter/143 Node、516文件格式/严格分析、Android Debug21.5秒及资产许可签名通过，30本地证据链接可解析。基线7d5385e的双CI核验时仍运行；审计分支codex/phase7-exit-audit，Draft base codex/shell-metadata-navigation-guard，新SHA云端另验。以下为历史记录。
 
 当前Phase7G4：[计划](phase_7g4_metadata_guard_plan.md)/[报告](phase_7g4_metadata_guard_report.md)。先4项真实复现：手机/桌面的旧onOpen/onOpenLyrics在主导航切换后仍能打开页面。改用现有_navigationAction保护，两处onOpen和两处歌词入口不再直接转发。22新Widget（含真实点击/长按），67相关与完整1746 Flutter/143 Node通过，188旧Golden不变；516文件格式/严格分析/生成迁移、Android Debug19.2秒与资产许可签名通过。分支codex/shell-metadata-navigation-guard，Draft base codex/inspector-playback-navigation；前置3be2863双CI34712365647/34712380763 SUCCESS，本批新SHA独立核验。设置/队列摘要及Phase7出口、Phase8–11仍待完成，无新增设备安装/出声或本地Windows编译。

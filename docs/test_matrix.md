@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+Phase7H1A：23新增根定时测试覆盖默认关闭、三个UTC截止时长、一次性暂停且队列/进度不变、取消/重设旧回调、提前/晚到/时钟回拨、空库/已暂停、加载串行与取消、已接受pause后重设/关闭排空、到期前后completed竞争、通知重入、调度/暂停失败。到期后completed用例先失败（stop/load/play），修复后通过。完整1769 Flutter（102秒）/143 Node（36.4秒）、188 Golden未改；519文件格式、严格分析、生成/迁移和Android Debug资产许可v2签名通过。无新增设备出声、安装、Windows本地构建或UI验收，详见[报告](phase_7h1a_sleep_deadline_report.md)。
+
 Phase7出口审计：新增的是[证据矩阵](phase_7_exit_audit.md)与[7H后续计划](phase_7h_playback_settings_plan.md)，不是新功能或测试。当前基线完整1746 Flutter/143 Node再次通过，188旧Golden无修改，516文件格式/严格分析及Android Debug资产许可v2签名复验通过。30个本地证据链接核验存在；明确区分Flutter自动化、Windows云端原生Runner、Android真机/多屏/音频与发行。§18播放设置仍有缺口，Phase7不可整体打勾。
 
 Phase7G4：4项先失败复现手机/Windows旧封面及歌词回调切页后仍打开目标页；修复后22新Widget覆盖三布局×两入口×真实点击/长按与返回/另一独立页覆盖/实际系统菜单覆盖和关闭、旧许可撤销及新回调可用、根音频/队列不变。67相关及完整1746 Flutter（87秒）/143 Node（28.7秒）通过；188旧Golden不变，无降低阈值或视觉修改。516文件格式零改动、严格分析0问题、生成迁移及Android预检通过；无新实机安装/出声或UI-SQLite验收。
