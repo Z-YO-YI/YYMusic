@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7H2C2：[计划](phase_7h2c2_lyrics_sleep_plan.md)/ADR102/[报告](phase_7h2c2_lyrics_sleep_report.md)。歌词i-more入口复用唯一睡眠modal，两页显式owner阻止旧入口跨页借权；覆盖/恢复沿用歌词停用与seek撤销，关闭保留根睡眠意图。窄屏翻译第二行防元信息挤没，稳定header结构保留焦点。17新Widget+4新Golden，完整1880 Flutter/147 Node、533文件格式、严格分析、生成迁移与Android Debug34.3秒及资产许可签名通过；19旧图审核更新、179不变，共202。分支codex/lyrics-sleep-settings，Draft base codex/player-sleep-settings；前置61585ef双CI34721259771/34721287029已SUCCESS，本批新SHA另验。底栏/Inspector及Phase7其余设置和Phase8–11仍待，无新增设备安装/出声或发行验收。以下为历史记录。
+
 最新Phase7H2C1：[计划](phase_7h2c1_player_sleep_plan.md)/ADR101/[报告](phase_7h2c1_player_sleep_report.md)。正式播放页i-more入口接根唯一睡眠设置路由，支持五选项、重复打开拦截、旧动作撤销、精准离页移除、键盘/返回/焦点及实时主题尺寸。17新Widget+4新Golden，1859 Flutter/146 Node、531文件格式、严格分析、生成迁移与Android Debug17.1秒及资产许可签名通过。15旧标题栏Golden审核更新、179旧图不变，合计198。分支codex/player-sleep-settings，Draft base codex/native-sleep-settings；前置d039bb0双CI34719698577/34719716804已SUCCESS。本批新SHA云端另验；歌词/底栏/Inspector与其他播放设置尚未完成，无新增设备安装或发行验收。以下为历史记录。
 
 最新Phase7H2B：[计划](phase_7h2b_native_sleep_plan.md)/ADR100/[报告](phase_7h2b_native_sleep_report.md)。新增纯受控YYOptionCard与借根动作的SleepSettingsPanel，复用YYDialog/YYBottomSheet、主题字体、原始关闭图标；真实五选项、状态失败、单/双列、短窗滚动、Tab/Enter/Esc、焦点恢复及路由覆盖/恢复/隐藏/零面积/旧许可保护。19新Widget、6新Golden逐张审核，25相关及完整1838 Flutter/145 Node、528文件格式/严格分析、生成迁移通过；188旧Golden未改。Android Debug16.3秒及资产许可签名通过，与H2A APK相同，因生产入口仍待H2C。分支codex/native-sleep-settings，Draft base codex/sleep-settings-projection；前置1998157双CI34718048011/34718070381 SUCCESS，本批新SHA云端另验。

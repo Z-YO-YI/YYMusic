@@ -1,20 +1,24 @@
 part of 'app_router.dart';
 
 extension _SleepSettingsRoute on AppRouter {
-  void _openSleepSettings(PlaybackPresenter presenter, YYPlatform platform) {
+  void _openSleepSettings(
+    PlaybackPresenter presenter,
+    YYPlatform platform, {
+    required AppRoute owner,
+  }) {
     final navigator = _rootNavigator.currentState;
     if (_disposed ||
         _sleepDialog != null ||
         navigator == null ||
-        _activePath != AppRoute.player.path) {
+        _activePath != owner.path) {
       return;
     }
-    final owner = _activePath;
+    final ownerPath = owner.path;
     late final RawDialogRoute<void> dialog;
     bool permitted() =>
         !_disposed &&
         identical(_sleepDialog, dialog) &&
-        _activePath == owner &&
+        _activePath == ownerPath &&
         dialog.isCurrent;
     dialog = RawDialogRoute<void>(
       settings: const RouteSettings(name: 'playback-sleep-settings'),
@@ -39,7 +43,7 @@ extension _SleepSettingsRoute on AppRouter {
       ),
     );
     _sleepDialog = dialog;
-    _sleepOwnerPath = owner;
+    _sleepOwnerPath = ownerPath;
     unawaited(
       navigator.push<void>(dialog).whenComplete(() {
         if (identical(_sleepDialog, dialog)) {

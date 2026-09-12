@@ -165,8 +165,11 @@ final class AppRouter implements AppNavigation {
             navigation: this,
             routeActive: _playerActivity,
             fullscreen: fullscreen,
-            onOpenSettings: () =>
-                _openSleepSettings(playbackPresenter, platform),
+            onOpenSettings: () => _openSleepSettings(
+              playbackPresenter,
+              platform,
+              owner: AppRoute.player,
+            ),
           )
         : route == AppRoute.lyrics &&
               lyricsController != null &&
@@ -180,6 +183,11 @@ final class AppRouter implements AppNavigation {
             navigation: this,
             routeActive: _lyricsActivity,
             fullscreen: fullscreen,
+            onOpenSettings: () => _openSleepSettings(
+              playbackPresenter,
+              platform,
+              owner: AppRoute.lyrics,
+            ),
           )
         : FoundationScreen(
             route: route,

@@ -1,5 +1,7 @@
 # YYMusic
 
+最新增量：**Phase 7H2C2 歌词页睡眠设置入口**。歌词页与播放页共用真实设置，旧入口按各自页面撤销；窄屏翻译控制换行保留曲目信息。17新Widget+4新Golden、完整1880 Flutter/147 Node、严格分析及Android Debug预检通过，见[报告](docs/phase_7h2c2_lyrics_sleep_report.md)。底栏/Inspector入口及其他播放设置仍待后续，未达到Phase7整体完成或上线条件。以下为历史记录。
+
 最新增量：**Phase 7H2C1 正式播放页睡眠设置入口**。手机/平板/Windows播放页可通过原“更多”图标打开真实五选项设置；关闭不取消定时，支持键盘、路由离页撤销及主题尺寸变化。17新Widget+4新Golden，完整1859 Flutter/146 Node、严格分析与Android Debug预检通过，见[报告](docs/phase_7h2c1_player_sleep_report.md)。歌词/底栏/Inspector入口仍待后续增量，Phase7整体及真实导入/后台/发行未完成。以下为历史记录。
 
 最新增量：**Phase 7H2B 共享原生睡眠设置面板**。复用已审计弹层/主题，支持五个真实睡眠选项、状态/失败反馈、键盘与关闭焦点恢复、旧操作撤销；手机/平板/Windows六种视觉样本已逐张审核。19新Widget+6新Golden、完整1838 Flutter/145 Node及严格分析通过，见[报告](docs/phase_7h2b_native_sleep_report.md)。**共享面板尚未接生产页面入口**，本批APK与前置相同；H2C继续宿主和入口绑定，不声称用户已能打开设置或应用已上线。

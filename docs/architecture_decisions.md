@@ -1084,3 +1084,9 @@ Phase7H2B，2026-09-13。SleepSettingsPanel只持有临时错误/关闭许可及
 Phase7H2C1，2026-09-13。AppRouter借唯一PlaybackPresenter插入一个RawDialogRoute，记录拥有者路径，PlayerScreen只接可选打开闭包并使用原有可撤销页面动作。主题/字号来自根WidgetsApp builder，不复制或冻结主题。面板许可要求router未关闭、实例匹配、拥有者路径匹配且modal当前；重复打开被记录实例拒绝。
 
 主动关闭或拥有者路径变化先清除实例许可，再帧后对仍活动且Navigator仍挂载的准确route调用removeRoute；不盲pop，避免导航竞争误关新页面。router销毁只撤销许可，由Navigator正常销毁子route。返回先关闭当前设置；遮罩与系统回退通过route future清理。面板外层消费未被控件处理的Space，避免触发根播放快捷键；Esc由原生modal焦点处理。生产入口先播放页，其他页按后续增量共用该宿主协议。
+
+## ADR-102：歌词与播放页设置入口显式绑定拥有者
+
+Phase7H2C2，2026-09-13。复用ADR101唯一modal，打开函数增加必填AppRoute owner，播放页/歌词页各传自身，当前路径不匹配即拒绝。LyricsScreen只借可选闭包并走既有_canUse代数/可见性/路由保护，didUpdateWidget闭包更换撤销旧动作。面板继续使用根应用主题，不复制歌词局部氛围主题；遮罩期间歌词原有活动门禁暂停自动滚动/seek，关闭后重新激活，旧seek不能恢复权限。两个页面共享根睡眠意图，页面切换只关闭设置不取消定时。
+
+视觉审核发现390px全屏手机的翻译/全屏/刷新/设置挤压曲目信息；不足500px将翻译按钮移至标题栏第二行，不删功能或缩小触控目标。始终保持Column→headerRow的结构，覆盖期间原歌词控制器清空数据、恢复加载时不因翻译行增减重建入口焦点；新增360px全屏元信息宽度/实际翻译操作和390px键盘恢复验收。
