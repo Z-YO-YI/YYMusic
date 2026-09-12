@@ -1,5 +1,7 @@
 # YYMusic
 
+当前增量：**Phase 7F1 当前曲目收藏核心**。新增共用根收藏投影与真实Repository写入，按当前队列/完整来源身份授权，支持安全失败、显式重试和关闭排空；空库不发起多余查询，位置更新不重读，不乐观伪造收藏。最终1621 Flutter、135 Node、178旧Golden、严格分析和Android Debug预检通过，见[计划](docs/phase_7f1_current_favorite_plan.md)与[报告](docs/phase_7f1_current_favorite_report.md)。本批不改UI，三端收藏按钮下一批接线；前置#79双平台云端成功，本批新SHA另验。仍在Phase7，真实导入/扫描与Phase8–11未完成，新安装仍为空库。以下“当前增量”为历史记录。
+
 当前增量：**Phase 7E5E 系统歌单队列菜单**。我喜欢/最近播放的Android手机、平板和Windows菜单支持下一首/添加队列；保留重复和失效引用，不改收藏/历史或中断播放，清除历史仍单独确认。最终1590 Flutter、133 Node、178 Golden和严格分析通过，Android Debug预检成功。见[总进度与本批报告](docs/phase_7e5e_system_queue_report.md)及[计划](docs/phase_7e5e_system_queue_plan.md)。前置#78双平台云端成功，本批新提交独立验收；仍在Phase7，Phase8真实导入/扫描是日常可用的关键缺口，Phase9–11尚待完成，新安装仍为空库。以下“当前增量”均是历史记录。
 
 当前增量：**Phase 7E5D 自建歌单队列菜单**。三端自建歌单条目支持下一首/添加队列，准确识别重复、失效和未解析引用，不改变原歌单或中断当前播放；旧窗口/菜单/路由回调失效，修复卸载后旧关闭回调。1544 Flutter、132 Node、173 Golden与严格分析通过，见[计划](docs/phase_7e5d_playlist_queue_plan.md)和[报告](docs/phase_7e5d_playlist_queue_report.md)。前置#77两组双平台云端通过，本批新SHA另验。系统歌单入口及Phase7其余、Phase8–11继续开发，新安装仍为空库。
