@@ -88,6 +88,7 @@ class AdaptiveRoot extends StatelessWidget {
               ),
               onOpenFullscreen: onOpenFullscreen,
               onOpenLyrics: navigation.openLyrics,
+              onOpenSettings: onOpenSettings,
             );
       return switch (layout) {
         YYLayoutClass.windowsExpanded ||
