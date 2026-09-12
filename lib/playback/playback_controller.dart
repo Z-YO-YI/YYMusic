@@ -13,11 +13,13 @@ import '../platform/contracts/media_session_gateway.dart';
 import 'audio_engine.dart';
 import 'audio_engine_state.dart';
 import 'playback_history_recorder.dart';
+import 'playback_sleep_timer_state.dart';
 import 'playback_source_resolver.dart';
 import 'playback_state.dart';
 
 part 'catalog_selection_playback.dart';
 part 'queue_editing.dart';
+part 'sleep_deadline_actions.dart';
 
 typedef PlaybackRandomIndex = int Function(int upperBound);
 
@@ -31,11 +33,13 @@ final class PlaybackController extends ChangeNotifier {
     DateTime Function()? clock,
     PlaybackRandomIndex? randomIndex,
     String Function()? historyIdFactory,
+    PlaybackSleepTimerScheduler? sleepScheduler,
   }) : _libraryRepository = library,
        _collectionRepository = collection,
        _resolver = sourceResolver,
        _mediaSession = mediaSession ?? const UnavailableMediaSessionGateway(),
        _clock = clock ?? _utcNow,
+       _sleepScheduler = sleepScheduler ?? Timer.new,
        _randomIndex = randomIndex ?? Random().nextInt,
        history = PlaybackHistoryRecorder(
          collection: collection,
@@ -56,6 +60,10 @@ final class PlaybackController extends ChangeNotifier {
   final PlaybackSourceResolver? _resolver;
   final MediaSessionGateway _mediaSession;
   final DateTime Function() _clock;
+  final PlaybackSleepTimerScheduler _sleepScheduler;
+  Timer? _sleepWake;
+  int _sleepGeneration = 0;
+  PlaybackSleepTimerState _sleepState = const PlaybackSleepTimerState.off();
   final PlaybackRandomIndex _randomIndex;
   final PlaybackHistoryRecorder history;
   late final StreamSubscription<AudioEngineState> _subscription;
@@ -79,6 +87,11 @@ final class PlaybackController extends ChangeNotifier {
   Future<void>? _closeFuture;
 
   PlaybackState get state => _state;
+  PlaybackSleepTimerState get sleepTimer => _sleepState;
+
+  /// Null cancels. A deadline is session-only and never starts playback.
+  void setSleepTimer(PlaybackSleepDuration? duration) =>
+      _setSleepTimer(duration);
   bool get isAvailable => _engine.isAvailable;
   bool get isMediaSessionAvailable => _mediaSession.isAvailable;
 
@@ -555,7 +568,9 @@ final class PlaybackController extends ChangeNotifier {
     }
     final completedEntryId = _loadedEntryId;
     final shouldAdvance =
-        value.phase == AudioEnginePhase.completed && !_completionHandled;
+        value.phase == AudioEnginePhase.completed &&
+        !_completionHandled &&
+        _sleepState.phase != PlaybackSleepPhase.pausing;
     if (value.phase == AudioEnginePhase.completed) _completionHandled = true;
     final phase = switch (value.phase) {
       AudioEnginePhase.idle => PlaybackPhase.idle,
@@ -908,6 +923,7 @@ final class PlaybackController extends ChangeNotifier {
   @override
   void dispose() {
     if (!_disposed) {
+      _cancelSleepTimer();
       _disposed = true;
       history.dispose();
       _closeFuture = _drain();

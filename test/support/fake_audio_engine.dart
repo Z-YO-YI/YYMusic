@@ -17,6 +17,7 @@ final class FakeAudioEngine implements AudioEngine {
   Object? disposeError;
   Future<void>? loadGate;
   Future<void>? pauseGate;
+  Object? pauseError;
   Future<void>? seekGate;
   Object? seekError;
   Duration position = Duration.zero;
@@ -59,6 +60,8 @@ final class FakeAudioEngine implements AudioEngine {
     calls.add('pause');
     final gate = pauseGate;
     if (gate != null) await gate;
+    final error = pauseError;
+    if (error != null) throw error;
     _emit(AudioEnginePhase.paused);
   }
 
