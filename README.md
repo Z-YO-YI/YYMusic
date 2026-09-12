@@ -1,5 +1,7 @@
 # YYMusic
 
+当前增量：**Phase 7E5A 添加/下一首根编辑**。末尾添加与下一首已具备快照权限、忙态、失败重试及关闭排空；修复随机模式的下一首优先序，后续末尾添加不打乱已指定的下一首，操作本身不启动或重载音频。1445 Flutter、129 Node、严格分析及原161张Golden通过，见[计划](docs/phase_7e5a_queue_insert_plan.md)与[报告](docs/phase_7e5a_queue_insert_report.md)。本批是核心能力，新增菜单入口将在E5B接线；Phase8导入/扫描和后续发行未完成，新安装仍为空库。以下“当前增量”均为历史记录。
+
 当前增量：**Phase 7E4 原生队列拖拽排序**。Android 手机/平板长按条目，Windows 使用原始拖动手柄；支持边缘滚动，保留上下移与连续键盘操作。重复歌曲按队列条目独立排序，当前播放不中断，刷新/离页/尺寸变化撤销旧拖放。完整 1413 Flutter、128 Node、161 Golden 与严格分析通过，见[计划](docs/phase_7e4_queue_drag_plan.md)与[报告](docs/phase_7e4_queue_drag_report.md)。真实导入/扫描尚属 Phase 8，Phase 7 添加/下一首等剩余入口及 Phase 8–11 仍需开发；新安装仍为空库，不是日常可用发行版。以下“当前增量”均为历史记录。
 
 当前增量：**Phase 7E3 独立原生队列页面**。音乐库、播放器及歌词的队列入口现在打开 `/queue`，复用唯一根队列，支持准确播放重复条目、上下移动、缺失项移除、当前项/清空确认、安全失败和显式重试。Android 手机/平板与 Windows 分别适配，使用既有 Figma 审计组件与原始图标。完整 1386 Flutter（新增 12 Golden）、127 Node 和严格分析通过，见[计划](docs/phase_7e3_native_queue_plan.md)与[报告](docs/phase_7e3_native_queue_report.md)。拖拽、更多添加入口及 Phase 7 剩余能力继续分批开发；新安装仍为空库，尚非日常可用发行版。以下“当前增量”为历史记录。

@@ -23,6 +23,8 @@
 
 ## 构建与 GitHub
 
+2026-09-12 后续核验：本批精确 `8d9b4da7c838a0f222014f66b029a69b22fbc9be` 的 [push34686488776](https://github.com/Z-YO-YI/YYMusic/actions/runs/34686488776) / [PR34686499064](https://github.com/Z-YO-YI/YYMusic/actions/runs/34686499064) 均 SUCCESS。[Draft PR #74](https://github.com/Z-YO-YI/YYMusic/pull/74) 未合并。PR 日志确认 Linux 1252 项通过/161 个 Windows Golden 按平台跳过，Windows 161 Golden、2 Runner、正式入口 Debug 重建与 65 文件包校验通过；Android 48 资产、许可/v2单签名者通过。手动原生音频诊断跳过，未进行 Release 或设备出声验收。
+
 本地 Android Debug **19.0 秒成功**，仅作预检；48 个原始资产、六包许可与完整原生法律材料一致；APK v2 签名通过、单签名者。232,169,202 bytes；SHA256 `4f3aca7e855a1c443128038f74e21b1442728a99ca90adb10168a7d3149288bb`。构建与签名工具仍输出 Java native-access 警告，未掩盖为无警告。没有本批本机 Windows 编译/真机安装/出声验收。
 
 前置 E3 精确 `32edb5b` 的 [push34684110805](https://github.com/Z-YO-YI/YYMusic/actions/runs/34684110805) / [PR34684113148](https://github.com/Z-YO-YI/YYMusic/actions/runs/34684113148) 均 SUCCESS，已经回填 [PR #73](https://github.com/Z-YO-YI/YYMusic/pull/73) 和 E3 报告。日志确认 Windows 158 Golden、2 Runner、65 文件正式入口 Debug 包；Android 48 资产、许可与签名通过。手动原生音频诊断未运行。
