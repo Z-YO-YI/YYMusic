@@ -1104,3 +1104,9 @@ GoRouter18本地源码核对：currentConfiguration.uri可能仍是push前的匹
 Phase7H2C4，2026-09-13。纯受控YYNowPlayingInspector增加可选onOpenSettings，原顶部more和快捷device都使用它；默认null保留组件预览禁用语义，不改视觉结构。AdaptiveRoot→ShellPlayer复用既有URI捕获与导航代数，不复制modal。两个按钮同帧竞争只接受首个，底栏与Inspector并发由同一AppRouter实例拒绝重复；隐藏/换布局后旧入口永久失效。
 
 窄栏/手机原设计未显示直接设置按钮，不增加未经审计的拥挤控件；真实元信息点击进入播放页再进入设置作为可达性契约，并在窄Windows、Android平板竖屏、手机130%字号验收。Inspector小高度内容沿用滚动，实际ensureVisible+点击验证快捷设置，不以离屏绘制当作可操作。
+
+## ADR-105：侧栏摘要先投影准确队列身份，不推测播放顺序
+
+Phase7H3A，2026-09-13。先提供PlaybackQueueSummary只读快照，再进行Inspector视觉绑定。由根PlaybackState的QueueSnapshot生成总数、当前QueueEntry和1起始序号；以entry ID而非TrackRef定位，重复曲目仍是不同条目。没有当前条目时保留null，不伪造第一首；序号仅指保存列表位置，随机/单曲重复时不声称下一首或剩余播放时长。
+
+PlaybackPresenter暴露该快照，沿用原根通知，缓存键为QueueSnapshot对象身份。位置/音量通知不重新遍历大型队列；替换/重排/当前条目变更自然撤销缓存。不可变快照不持有控制器、音频后端、订阅或异步库查询，也不向界面暴露来源凭据。H3A不改界面或导航；H3B再复用原设计组件绑定摘要和受保护队列入口。
