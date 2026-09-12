@@ -19,6 +19,8 @@ class YYNowPlayingInspector extends StatelessWidget {
     this.onSeekPreview,
     this.onSeekCommit,
     this.onSeekCancel,
+    this.onOpenFullscreen,
+    this.onOpenLyrics,
   });
   final YYNowPlayingViewData data;
   final String sourceLabel, statusLabel;
@@ -28,6 +30,7 @@ class YYNowPlayingInspector extends StatelessWidget {
   final VoidCallback? onTogglePlayback, onPrevious, onNext;
   final VoidCallback? onToggleShuffle, onCycleRepeat, onSeekCancel;
   final YYPlayerValueChanged? onSeekPreview, onSeekCommit;
+  final VoidCallback? onOpenFullscreen, onOpenLyrics;
 
   @override
   Widget build(BuildContext context) {
@@ -107,12 +110,12 @@ class YYNowPlayingInspector extends StatelessWidget {
                             ],
                           ),
                         ),
-                        const YYButton(
+                        YYButton(
                           label: '全屏播放',
                           glyph: YYGlyph.fullscreen,
                           iconOnly: true,
                           style: YYButtonStyle.quiet,
-                          onPressed: null,
+                          onPressed: onOpenFullscreen,
                         ),
                         const YYButton(
                           label: '播放设置',
@@ -216,10 +219,10 @@ class YYNowPlayingInspector extends StatelessWidget {
                         children: [shuffle, repeat],
                       ),
                     const SizedBox(height: 15),
-                    const YYButton(
+                    YYButton(
                       label: '全屏歌词',
                       glyph: YYGlyph.lyrics,
-                      onPressed: null,
+                      onPressed: onOpenLyrics,
                     ),
                     const SizedBox(height: 8),
                     const YYButton(

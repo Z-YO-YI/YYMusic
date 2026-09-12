@@ -19,6 +19,8 @@
 
 ## GitHub与后续
 
+后续核验：精确ea2f3a9d655c174c0be175c2e858e5ab686f5374的[push34711115530](https://github.com/Z-YO-YI/YYMusic/actions/runs/34711115530)和[PR34711133249](https://github.com/Z-YO-YI/YYMusic/actions/runs/34711133249)均SUCCESS，Draft #86未合并；下方提交前状态保留为历史。
+
 前置a5dc821的push34709946561/PR34709964739均SUCCESS，#85及报告回填。本批提交推送并创建Draft后按新SHA核验，不用前置CI代替本批Android/Windows云端成功，不自动合并或发布Release。
 
 主要文件：app_router.dart、adaptive_root.dart、shell_player.dart、导航许可part、新Widget/Node、旧禁用断言、65基线及阶段文档。原设计/资产/依赖/平台/Schema未改；无新增设备安装/出声、本地Windows编译或UI-SQLite测试，既有SQLite全量重跑。下一步Inspector剩余入口、Phase7出口；Phase8真实扫描导入及9–11来源/后台/发行仍未完成，非上线。
