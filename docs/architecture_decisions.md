@@ -1040,3 +1040,7 @@ Phase7F2C，2026-09-12。AdaptiveRoot给非手机底栏传入根收藏、路由L
 ## ADR-094：底栏队列入口借已有导航与交互许可
 
 Phase7G1，2026-09-13。ShellPlayer增加可选onOpenQueue，AdaptiveRoot仅委托现有AppNavigation.openSystemPlaylist(queue)，空队列可打开空态，不依赖音频可播放能力。既有收藏许可的页面/路由/尺寸/焦点排除检查提取为通用Shell交互许可；导航使用同一代数并在接受后立即撤销，根队列与播放控制器不改变。保留原手机/窄栏/Inspector布局和无回调预览行为，不引入第二个路由器或播放真值。
+
+## ADR-095：底栏全屏入口复用根原生会话意图
+
+Phase7G2，2026-09-13。原HTML入口既打开播放界面也请求全屏。AppRouter在构造上下文组合既有FullscreenPresenter.enterOnNextPlayer与openPlayer，把同一闭包传给五处AdaptiveRoot，再传ShellPlayer可选onOpenFullscreen；不扩张AppNavigation协议或创建额外播放器。Shell复用G1可撤销交互许可，接受后立即失效。实际进入/恢复/错误由根会话与路由观察器负责，不支持时只打开播放页而不声称原生全屏成功。手机/Inspector保持原布局。

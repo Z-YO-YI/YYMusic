@@ -21,6 +21,7 @@ class AdaptiveRoot extends StatelessWidget {
     this.playbackPresenter,
     this.playbackFavorite,
     this.routeChanges,
+    this.onOpenFullscreen,
   });
   final YYPlatform platform;
   final AppNavigation navigation;
@@ -29,6 +30,7 @@ class AdaptiveRoot extends StatelessWidget {
   final PlaybackPresenter? playbackPresenter;
   final PlaybackFavoriteController? playbackFavorite;
   final Listenable? routeChanges;
+  final VoidCallback? onOpenFullscreen;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -60,6 +62,7 @@ class AdaptiveRoot extends StatelessWidget {
               ),
               onOpen: navigation.openPlayer,
               onOpenLyrics: navigation.openLyrics,
+              onOpenFullscreen: onOpenFullscreen,
               onOpenQueue: () =>
                   navigation.openSystemPlaylist(SystemPlaylistType.queue),
               phone: layout == YYLayoutClass.androidPhone,

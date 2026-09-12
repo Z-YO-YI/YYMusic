@@ -46,8 +46,10 @@ extension _ShellFavoriteActions on _PlayerControlsState {
     };
   }
 
-  VoidCallback? _queueAction(int generation) {
-    final open = widget.onOpenQueue;
+  VoidCallback? _queueAction(int generation) =>
+      _navigationAction(generation, widget.onOpenQueue);
+
+  VoidCallback? _navigationAction(int generation, VoidCallback? open) {
     if (open == null) return null;
     return () {
       if (!_canUseShellAction(generation)) return;

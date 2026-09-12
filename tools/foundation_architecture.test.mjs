@@ -497,7 +497,7 @@ test('shared Shell presenter maps root playback and guards queued seek identity'
   assert.match(shell, /expectedEntryId: entry/);
   assert.match(shell, /onToggleFavorite: _favoriteAction\(favoriteGeneration\)/);
   assert.match(shell, /onOpenQueue: _queueAction\(favoriteGeneration\)/);
-  assert(!/onOpenFullscreen:/.test(shell));
+  assert.match(shell, /onOpenFullscreen: _navigationAction\(/);
   for (const path of [
     'lib/app/playback_presenter.dart',
     'lib/features/player/common/shell_player.dart',
