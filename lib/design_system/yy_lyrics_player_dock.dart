@@ -19,6 +19,7 @@ class YYLyricsPlayerDock extends StatelessWidget {
     required this.data,
     this.atmosphereColor = const Color(0xFF34454D),
     this.loading = false,
+    this.favoriteBusy = false,
     this.onPrevious,
     this.onTogglePlayback,
     this.onNext,
@@ -33,6 +34,9 @@ class YYLyricsPlayerDock extends StatelessWidget {
   final YYNowPlayingViewData data;
   final Color atmosphereColor;
   final bool loading;
+
+  /// Favorite persistence does not disable transport or return navigation.
+  final bool favoriteBusy;
   final VoidCallback? onPrevious;
   final VoidCallback? onTogglePlayback;
   final VoidCallback? onNext;
@@ -88,6 +92,7 @@ class YYLyricsPlayerDock extends StatelessWidget {
         );
         final actions = _LyricsDockActions(
           favorite: data.favorite,
+          favoriteBusy: favoriteBusy,
           hideFavorite: phone || !showFavorite,
           loading: loading,
           onToggleFavorite: onToggleFavorite,
@@ -327,6 +332,7 @@ class _LyricsDockCenter extends StatelessWidget {
 class _LyricsDockActions extends StatelessWidget {
   const _LyricsDockActions({
     required this.favorite,
+    required this.favoriteBusy,
     required this.hideFavorite,
     required this.loading,
     required this.onToggleFavorite,
@@ -334,6 +340,7 @@ class _LyricsDockActions extends StatelessWidget {
   });
 
   final bool favorite;
+  final bool favoriteBusy;
   final bool hideFavorite;
   final bool loading;
   final VoidCallback? onToggleFavorite;
@@ -351,7 +358,7 @@ class _LyricsDockActions extends StatelessWidget {
           visualSize: 38,
           glass: true,
           toggled: favorite,
-          loading: loading,
+          loading: favoriteBusy,
           onPressed: onToggleFavorite,
         ),
         const SizedBox(width: 7),

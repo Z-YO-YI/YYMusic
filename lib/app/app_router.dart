@@ -34,6 +34,7 @@ import '../features/settings/common/appearance_settings_controller.dart';
 import '../features/settings/common/licenses_screen.dart';
 import '../features/settings/common/settings_screen.dart';
 import '../playback/lyrics_controller.dart';
+import '../playback/playback_favorite_controller.dart';
 import '../playback/queue_controller.dart';
 import '../shared/foundation_button.dart';
 import 'adaptive_root.dart';
@@ -57,6 +58,7 @@ final class AppRouter implements AppNavigation {
     bool audioBackendSelected = false,
     PlaybackPresenter? playbackPresenter,
     LyricsController? lyricsController,
+    PlaybackFavoriteController? playbackFavorite,
     HomeController? homeController,
     CatalogSearchController? searchController,
     LibraryController? libraryController,
@@ -161,6 +163,7 @@ final class AppRouter implements AppNavigation {
             key: const ValueKey('screen-lyrics'),
             platform: platform,
             controller: lyricsController,
+            favorite: playbackFavorite,
             playback: playbackPresenter,
             navigation: this,
             routeActive: _lyricsActivity,

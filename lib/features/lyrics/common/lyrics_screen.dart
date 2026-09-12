@@ -19,10 +19,14 @@ import '../../../domain/models/load_state.dart';
 import '../../../domain/models/lyrics.dart';
 import '../../../domain/models/track.dart';
 import '../../../playback/lyrics_controller.dart';
+import '../../../playback/playback_favorite_controller.dart';
+import '../../player/common/playback_favorite_feedback.dart';
 import '../phone/phone_lyrics_layout.dart';
 import '../tablet/tablet_lyrics_layout.dart';
 import '../windows/windows_lyrics_layout.dart';
 import 'lyrics_viewport.dart';
+
+part 'lyrics_favorite_actions.dart';
 
 /// Independent route borrowing the unique root lyrics and playback controllers.
 class LyricsScreen extends StatefulWidget {
@@ -34,6 +38,7 @@ class LyricsScreen extends StatefulWidget {
     required this.navigation,
     this.routeActive,
     this.fullscreen,
+    this.favorite,
   });
   final YYPlatform platform;
   final LyricsController controller;
@@ -41,6 +46,9 @@ class LyricsScreen extends StatefulWidget {
   final AppNavigation navigation;
   final ValueListenable<bool>? routeActive;
   final FullscreenPresenter? fullscreen;
+
+  /// Borrows the root projection; the page never reads or writes storage.
+  final PlaybackFavoriteController? favorite;
 
   @override
   State<LyricsScreen> createState() => _LyricsScreenState();
@@ -62,6 +70,7 @@ class _LyricsScreenState extends State<LyricsScreen> {
     _identity = (widget.playback.entryId, widget.playback.trackRef);
     widget.controller.addListener(_lyricsChanged);
     widget.playback.addListener(_playbackChanged);
+    widget.favorite?.addListener(_lyricsChanged);
     widget.routeActive?.addListener(_routeChanged);
   }
 
@@ -140,11 +149,17 @@ class _LyricsScreenState extends State<LyricsScreen> {
       widget.routeActive?.addListener(_routeChanged);
       _invalidate();
     }
+    if (oldWidget.favorite != widget.favorite) {
+      oldWidget.favorite?.removeListener(_lyricsChanged);
+      widget.favorite?.addListener(_lyricsChanged);
+      _invalidate();
+    }
     _requestActivity();
   }
 
   bool _canUse(int generation) {
     if (!mounted || !_wantsActive || generation != _generation) return false;
+    if (!(ModalRoute.of(context)?.isCurrent ?? true)) return false;
     final box = context.findRenderObject();
     return box is RenderBox &&
         box.hasSize &&
@@ -157,6 +172,7 @@ class _LyricsScreenState extends State<LyricsScreen> {
     _invalidate();
     widget.controller.removeListener(_lyricsChanged);
     widget.playback.removeListener(_playbackChanged);
+    widget.favorite?.removeListener(_lyricsChanged);
     widget.routeActive?.removeListener(_routeChanged);
     widget.controller.setActive(false);
     super.dispose();
@@ -222,7 +238,11 @@ class _LyricsScreenState extends State<LyricsScreen> {
       final controller = widget.controller;
       final state = controller.state;
       final document = state.data;
-      final data = playback.data;
+      final favorite = widget.favorite;
+      final favoriteState = favorite?.state;
+      final data = playback.data.copyWith(
+        favorite: favoriteState?.isFavorite == true,
+      );
       final entry = playback.entryId;
       final layout = classifyLayout(
         platform: widget.platform,
@@ -363,7 +383,7 @@ class _LyricsScreenState extends State<LyricsScreen> {
       final error =
           playback.errorMessage ??
           (controller.seekFailure == null ? null : '歌词跳转未完成，请恢复播放后再次点击歌词。');
-      final content = error == null
+      final playbackContent = error == null
           ? body
           : Column(
               children: [
@@ -383,6 +403,22 @@ class _LyricsScreenState extends State<LyricsScreen> {
                 Expanded(flex: 3, child: body),
               ],
             );
+      final content =
+          favorite == null || (!favorite.busy && favorite.failure == null)
+          ? playbackContent
+          : Column(
+              children: [
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: PlaybackFavoriteFeedback(
+                      controller: favorite,
+                      permit: () => _canUse(generation),
+                    ),
+                  ),
+                ),
+                Expanded(flex: 3, child: playbackContent),
+              ],
+            );
       final view = _seekPreview == null
           ? data
           : data.copyWith(
@@ -394,7 +430,9 @@ class _LyricsScreenState extends State<LyricsScreen> {
       final dock = YYLyricsPlayerDock(
         data: view,
         atmosphereColor: _atmosphere,
-        showFavorite: false,
+        showFavorite: favoriteState?.isFavorite != null,
+        favoriteBusy: favorite?.busy ?? false,
+        onToggleFavorite: _favoriteAction(generation),
         loading: playback.busy,
         onPrevious: command(playback.canControl, playback.previous),
         onTogglePlayback: command(playback.canControl, playback.togglePlayback),

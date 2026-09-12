@@ -88,6 +88,9 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp>
         licenses: ref.read(dependencyGraphProvider).licenses,
         playbackPresenter: ref.read(dependencyGraphProvider).playbackPresenter,
         lyricsController: ref.read(dependencyGraphProvider).lyricsController,
+        playbackFavorite: ref.read(dependencyGraphProvider).collection == null
+            ? null
+            : ref.read(dependencyGraphProvider).playbackFavorite,
         homeController: ref.read(dependencyGraphProvider).home,
         searchController: ref.read(dependencyGraphProvider).search,
         libraryController: ref.read(dependencyGraphProvider).libraryController,

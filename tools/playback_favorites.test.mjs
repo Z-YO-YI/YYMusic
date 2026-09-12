@@ -2,6 +2,22 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { read } from './design_audit.mjs';
 
+test('lyrics favorite borrows root projection with captured page permission and separate busy', () => {
+  const screen = read('lib/features/lyrics/common/lyrics_screen.dart');
+  const actions = read('lib/features/lyrics/common/lyrics_favorite_actions.dart');
+  assert.match(screen, /widget.favorite\?\.addListener\(_lyricsChanged\)/);
+  assert.match(screen, /widget.favorite\?\.removeListener\(_lyricsChanged\)/);
+  assert.match(screen, /ModalRoute.of\(context\)\?\.isCurrent/);
+  assert.match(screen, /favoriteBusy: favorite\?\.busy \?\? false/);
+  assert.match(actions, /final expected = controller.state;/);
+  assert.match(actions, /final target = !expected.isFavorite!;/);
+  assert.match(actions, /canEdit: \(\) => _canUse\(generation\)/);
+  assert(!/Repository|AppDatabase|PlaybackController\(|watchFavorites\(/.test(actions));
+  const feedback = read('lib/features/player/common/playback_favorite_feedback.dart');
+  assert.match(feedback, /identical\(controller.failure, failure\)/);
+  assert.match(feedback, /controller.retry\(failure, canEdit: permit\)/);
+});
+
 test('current favorite root borrows playback and collection with explicit start and shutdown barrier', () => {
   const graph = read('lib/app/dependency_graph.dart');
   assert.match(graph, /playbackFavorite = PlaybackFavoriteController\(/);
