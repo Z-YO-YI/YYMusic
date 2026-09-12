@@ -1032,3 +1032,7 @@ Phase7F2A，2026-09-12。AppRouter仅借用可选PlaybackFavoriteController，�
 ## ADR-092：播放页收藏复用根投影与共享失败反馈
 
 Phase7F2B，2026-09-12。PlayerScreen借AppRouter注入的同一根收藏控制器，沿用F2A显式目标/投影/页面代数许可与失败身份。YYFullPlayerContent只增加受控showFavorite/favoriteBusy/onToggleFavorite，在原now-copy标题行复用心形原生按钮；默认不显示，保持无存储预览兼容。收藏保存与播放busy独立，错误反馈在三端可滚动controls区域复用PlaybackFavoriteFeedback，不在Domain传入BuildContext，也不改变音频/队列/历史。
+
+## ADR-093：底栏收藏许可随路由事件撤销，不只依赖组件卸载
+
+Phase7F2C，2026-09-12。AdaptiveRoot给非手机底栏传入根收藏、路由Listenable及选中页面/布局/尺寸身份。ShellPlayer的借用状态监听路由事件递增收藏代数，不能因切到另一主导航后组件仍mounted而接受旧操作；实时ModalRoute/活动/面积检查覆盖独立页面与原生弹层。订阅根收藏不触发I/O，所有底栏共享根流。收藏busy只禁用心形，受控反馈限制高度并滚动，不重复存储失败。未知值使用未知语义，原窄栏/手机/Inspector布局不加心形。
