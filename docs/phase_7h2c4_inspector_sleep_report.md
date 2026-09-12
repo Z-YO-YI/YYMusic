@@ -19,6 +19,8 @@
 
 ## GitHub与剩余范围
 
+2026-09-13后续纠正：本批push34725547000/PR34725576246的Windows Golden失败，分别为inspector_sleep_modal_windows（53887像素）与shell_sleep_modal_windows（52085像素），Android及源码检查成功。上文对背景差异仅归因阴影/动画的判断不完整：LyricsFixture创建FakeLibraryRepository时每首曲目分别读取DateTime.now，主机时钟精度决定时间是否相同，改变最近添加排序，进而改变首个同名行是否为当前曲目。后续codex/inspector-queue-summary固定一次导入批次时间并补独立回归；208原Golden不改基准严格通过，完整1937测试通过。旧运行仍为failure，不冒称旧SHA通过；修复由新提交云端复验。
+
 前置4784cba的[push34724213791](https://github.com/Z-YO-YI/YYMusic/actions/runs/34724213791)/[PR34724254216](https://github.com/Z-YO-YI/YYMusic/actions/runs/34724254216)均SUCCESS，已回填Draft #96。本阶段精确提交、Draft PR与新SHA云端状态记录于提交后的PR信息；不以父分支成功替代本批Windows/Android验证，不自动合并或发布Release。
 
 主要文件：adaptive_root.dart、yy_now_playing_inspector.dart、shell_player.dart、Widget/Golden/Node测试、27张新增/审核更新基准以及README/状态/矩阵/ADR/计划/报告。

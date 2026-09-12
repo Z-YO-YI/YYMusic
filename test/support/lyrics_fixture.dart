@@ -79,14 +79,21 @@ final class LyricsProbe implements LyricsRepository {
 }
 
 final class LyricsFixture {
-  LyricsFixture() {
+  LyricsFixture({DateTime Function()? clock}) {
+    // One import batch has one timestamp. Calling the wall clock per track
+    // makes recent ordering depend on the host clock's resolution, changing
+    // which same-title row is highlighted in production-page goldens.
+    final importedAt = (clock ?? DateTime.now)().toUtc();
     for (final track in lyricsTracks) {
       repository.documents[track.ref] = timedLyrics(track.ref);
     }
     graph = DependencyGraph(
       audioEngine: engine,
       playbackSourceResolver: FakePlaybackSourceResolver(),
-      library: FakeLibraryRepository(tracks: lyricsTracks),
+      library: FakeLibraryRepository(
+        tracks: lyricsTracks,
+        clock: () => importedAt,
+      ),
       lyrics: repository,
     );
   }
