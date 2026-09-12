@@ -1,11 +1,13 @@
 import 'package:flutter/foundation.dart';
 
 import '../design_system/yy_player_data.dart';
+import '../domain/models/collection_models.dart';
 import '../domain/models/domain_failure.dart';
 import '../domain/models/track.dart';
 import '../playback/playback_controller.dart';
 import '../playback/playback_sleep_timer_state.dart';
 import '../playback/playback_state.dart';
+import 'playback_queue_summary.dart';
 import 'playback_sleep_action.dart';
 
 part 'playback_sleep_projection.dart';
@@ -22,6 +24,17 @@ final class PlaybackPresenter extends ChangeNotifier {
   bool _disposed = false;
   bool _actionFailed = false;
   int _sleepRevision = 0;
+  QueueSnapshot? _summaryQueue;
+  PlaybackQueueSummary? _queueSummary;
+
+  PlaybackQueueSummary get queueSummary {
+    final queue = _playback.state.queue;
+    if (!identical(queue, _summaryQueue)) {
+      _queueSummary = PlaybackQueueSummary.fromQueue(queue);
+      _summaryQueue = queue;
+    }
+    return _queueSummary!;
+  }
 
   PlaybackSleepTimerState get sleepState => _playback.sleepTimer;
   bool get canSetSleepTimer =>
