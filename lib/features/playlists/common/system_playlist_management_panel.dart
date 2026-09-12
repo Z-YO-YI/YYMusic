@@ -5,6 +5,7 @@ import '../../../design_system/yy_button.dart';
 import '../../../design_system/yy_context_menu.dart';
 import '../../../design_system/yy_dialog.dart';
 import '../../../design_system/yy_icon.dart';
+import '../../../domain/models/collection_models.dart';
 import '../../../domain/models/system_playlist_content.dart';
 import 'system_playlist_controller.dart';
 
@@ -14,26 +15,32 @@ class SystemPlaylistManagementPanel extends StatelessWidget {
     super.key,
     required this.controller,
     required this.snapshot,
-    required this.favoriteIdentity,
+    required this.entry,
     required this.platform,
     required this.onDismiss,
     required this.onSelected,
+    this.canInsert = false,
   });
   final SystemPlaylistController controller;
   final SystemPlaylistContent snapshot;
-  final Object? favoriteIdentity;
+
+  /// Null is the separate clear-history confirmation, never a song action.
+  final SystemPlaylistEntry? entry;
+  final bool canInsert;
   final YYPlatform platform;
   final VoidCallback onDismiss;
   final ValueChanged<String> onSelected;
 
   @override
   Widget build(BuildContext context) {
-    final identity = favoriteIdentity;
-    if (identity != null) {
-      final entry = snapshot.entries.firstWhere((e) => e.identity == identity);
+    final entry = this.entry;
+    if (entry != null) {
+      final identity = entry.identity;
       return YYContextMenu(
         title: entry.track?.title ?? '未解析的歌曲',
-        meta: '已喜欢 · 取消不删除歌曲',
+        meta: snapshot.type == SystemPlaylistType.favorites
+            ? '已喜欢 · 取消不删除歌曲'
+            : '最近播放 · 添加队列不改变历史',
         items: [
           YYContextMenuItem(
             id: 'play',
@@ -42,12 +49,25 @@ class SystemPlaylistManagementPanel extends StatelessWidget {
             enabled: controller.canPlayEntry(snapshot, identity),
           ),
           YYContextMenuItem(
-            id: 'remove-favorite',
-            label: '取消喜欢',
-            glyph: YYGlyph.heart,
-            selected: true,
-            enabled: controller.canRemoveFavorite(snapshot, identity),
+            id: 'next',
+            label: '下一首播放',
+            glyph: YYGlyph.next,
+            enabled: canInsert,
           ),
+          YYContextMenuItem(
+            id: 'queue',
+            label: '添加到队列',
+            glyph: YYGlyph.listPlus,
+            enabled: canInsert,
+          ),
+          if (snapshot.type == SystemPlaylistType.favorites)
+            YYContextMenuItem(
+              id: 'remove-favorite',
+              label: '取消喜欢',
+              glyph: YYGlyph.heart,
+              selected: true,
+              enabled: controller.canRemoveFavorite(snapshot, identity),
+            ),
           const YYContextMenuItem(
             id: 'close',
             label: '关闭菜单',

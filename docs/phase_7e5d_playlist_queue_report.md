@@ -31,4 +31,6 @@ Figma转代码技能用于复用准确导出资产、原生菜单/按钮/反馈�
 
 ## 限制与下一步
 
+2026-09-12 后续核实：本批 head `a2a8b41a1e0a51e944c427a8538de21bf320fb1e` 的 [push34692055908](https://github.com/Z-YO-YI/YYMusic/actions/runs/34692055908) 与 [PR34692074679](https://github.com/Z-YO-YI/YYMusic/actions/runs/34692074679) 均 SUCCESS，Draft #78 未合并。PR 日志 Linux1371通过/173Windows Golden按平台跳过；Windows173Golden、2真实Runner、正式入口Debug重建及65文件包通过；Android48资产/六包许可/v2单签名者通过。PR构建使用合并检验提交 `b915ff8e539f0fc64bccfcf3eaba156403bd12a8`，APK SHA256 `ef775c1fbe00ab047f9a88be24a0f492a940c720c2dc511511d44e7e489f0bf2`，与本地工作树 APK 区分。媒体诊断、上传与 Release 步骤按策略跳过，不等同实机出声或发行。
+
 音乐库、专辑/艺人详情及自建歌单入队已接线；系统歌单等入口继续推进。Phase7其余能力与Phase8导入/扫描/授权、Phase9来源、Phase10后台媒体、Phase11签名/安装/发行仍未完成，新安装仍为空库。没有自动合并、默认分支变更、Release、手动音频诊断、付费操作或发布验收。

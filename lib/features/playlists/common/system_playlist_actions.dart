@@ -5,6 +5,25 @@ extension SystemPlaylistActions on SystemPlaylistController {
   bool _canManage(SystemPlaylistContent snapshot) =>
       _canBrowse && _watchReady && identical(content, snapshot);
 
+  /// Menu access uses the exact displayed entry, including unresolved references.
+  bool canOpenEntry(
+    SystemPlaylistContent snapshot,
+    SystemPlaylistEntry entry,
+  ) =>
+      type != SystemPlaylistType.queue &&
+      _canManage(snapshot) &&
+      snapshot.entries.any((item) => identical(item, entry));
+
+  /// Revocable source permission; queue IDs are allocated by the root, not here.
+  bool Function()? queueSourcePermit(
+    SystemPlaylistContent snapshot,
+    SystemPlaylistEntry entry,
+  ) {
+    if (!canOpenEntry(snapshot, entry)) return null;
+    final intent = _intent;
+    return () => intent == _intent && canOpenEntry(snapshot, entry);
+  }
+
   bool canRemoveFavorite(SystemPlaylistContent snapshot, Object identity) =>
       type == SystemPlaylistType.favorites &&
       _canManage(snapshot) &&

@@ -26,15 +26,17 @@ final class SystemPlaylistSections {
     required this.navigation,
     required this.playback,
     required this.canInteract,
-    required this.onFavoriteMenu,
+    required this.onEntryMenu,
     required this.onClearHistory,
     this.backFocus,
+    this.queueFeedback,
   });
   final SystemPlaylistController controller;
   final AppNavigation navigation;
   final PlaybackPresenter playback;
   final bool Function() canInteract;
-  final void Function(SystemPlaylistContent, Object) onFavoriteMenu;
+  final void Function(SystemPlaylistContent, SystemPlaylistEntry) onEntryMenu;
+  final Widget? queueFeedback;
   final ValueChanged<SystemPlaylistContent> onClearHistory;
   final FocusNode? backFocus;
 
@@ -151,6 +153,7 @@ final class SystemPlaylistSections {
                 const SizedBox(height: 12),
                 Text(controller.writeBusy ? '正在保存操作…' : '正在准备播放…'),
               ],
+              ?queueFeedback,
               if (controller.actionError case final message?) ...[
                 const SizedBox(height: 12),
                 YYErrorBanner(title: '播放未完成', message: message),
@@ -230,12 +233,9 @@ final class SystemPlaylistSections {
           final current = controller.type == SystemPlaylistType.queue
               ? playback.entryId == entry.entryId
               : track != null && playback.trackRef == track.ref;
-          final canMenu = controller.canRemoveFavorite(
-            snapshot,
-            entry.identity,
-          );
+          final canMenu = controller.canOpenEntry(snapshot, entry);
           void openMenu() {
-            if (canInteract()) onFavoriteMenu(snapshot, entry.identity);
+            if (canInteract()) onEntryMenu(snapshot, entry);
           }
 
           return GestureDetector(
@@ -252,7 +252,7 @@ final class SystemPlaylistSections {
                   : '${track.duration.inMinutes}:${(track.duration.inSeconds % 60).toString().padLeft(2, '0')}',
               artwork: YYArtworkKind.local,
               playing: current && playback.data.playing,
-              showMore: controller.type == SystemPlaylistType.favorites,
+              showMore: controller.type != SystemPlaylistType.queue,
               allowMoreWhenDisabled: canMenu,
               onMore: canMenu ? openMenu : null,
               onPressed: controller.canPlayEntry(snapshot, entry.identity)
