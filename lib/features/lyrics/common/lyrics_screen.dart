@@ -39,6 +39,7 @@ class LyricsScreen extends StatefulWidget {
     this.routeActive,
     this.fullscreen,
     this.favorite,
+    this.onOpenSettings,
   });
   final YYPlatform platform;
   final LyricsController controller;
@@ -46,6 +47,7 @@ class LyricsScreen extends StatefulWidget {
   final AppNavigation navigation;
   final ValueListenable<bool>? routeActive;
   final FullscreenPresenter? fullscreen;
+  final VoidCallback? onOpenSettings;
 
   /// Borrows the root projection; the page never reads or writes storage.
   final PlaybackFavoriteController? favorite;
@@ -132,6 +134,7 @@ class _LyricsScreenState extends State<LyricsScreen> {
   @override
   void didUpdateWidget(LyricsScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.onOpenSettings != widget.onOpenSettings) _invalidate();
     if (oldWidget.controller != widget.controller) {
       oldWidget.controller.removeListener(_lyricsChanged);
       oldWidget.controller.setActive(false);
@@ -259,7 +262,22 @@ class _LyricsScreenState extends State<LyricsScreen> {
       VoidCallback? command(bool enabled, Future<void> Function() callback) =>
           action(enabled, () => unawaited(callback()));
       final retryLyrics = action(_wantsActive, controller.refresh);
-      final header = Row(
+      final compactHeader = size.width < 500;
+      final translationButton = document?.translationLanguage == null
+          ? null
+          : YYButton(
+              key: const ValueKey('lyrics-translation'),
+              label: _translation ? '隐藏翻译' : '显示翻译',
+              style: YYButtonStyle.quiet,
+              onPressed: action(
+                true,
+                () => setState(() {
+                  _translation = !_translation;
+                  _invalidate();
+                }),
+              ),
+            );
+      final headerRow = Row(
         children: [
           YYButton(
             key: const ValueKey('route-back'),
@@ -307,20 +325,9 @@ class _LyricsScreenState extends State<LyricsScreen> {
               ),
             ),
           ),
-          if (document?.translationLanguage != null) ...[
+          if (!compactHeader && translationButton != null) ...[
             const SizedBox(width: 8),
-            YYButton(
-              key: const ValueKey('lyrics-translation'),
-              label: _translation ? '隐藏翻译' : '显示翻译',
-              style: YYButtonStyle.quiet,
-              onPressed: action(
-                true,
-                () => setState(() {
-                  _translation = !_translation;
-                  _invalidate();
-                }),
-              ),
-            ),
+            translationButton,
           ],
           const SizedBox(width: 4),
           FullscreenButton(
@@ -338,6 +345,23 @@ class _LyricsScreenState extends State<LyricsScreen> {
                 ? retryLyrics
                 : null,
           ),
+          if (widget.onOpenSettings != null)
+            YYButton(
+              key: const ValueKey('lyrics-page-settings'),
+              label: '播放设置',
+              glyph: YYGlyph.more,
+              iconOnly: true,
+              style: YYButtonStyle.quiet,
+              onPressed: action(true, widget.onOpenSettings!),
+            ),
+        ],
+      );
+      final header = Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          headerRow,
+          if (compactHeader && translationButton != null)
+            Align(alignment: Alignment.centerRight, child: translationButton),
         ],
       );
       final body = switch (state.phase) {
