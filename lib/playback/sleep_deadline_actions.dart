@@ -1,10 +1,10 @@
 part of 'playback_controller.dart';
 
 extension _SleepDeadlineActions on PlaybackController {
-  bool _setSleepAtCurrentEntryEnd() {
-    _checkNotDisposed();
+  bool get _canSleepAtCurrentEntryEnd {
     final entryId = _loadedEntryId;
-    if (!_engine.isAvailable ||
+    if (_disposed ||
+        !_engine.isAvailable ||
         _loadingSource ||
         entryId == null ||
         entryId != _state.queue.currentEntryId ||
@@ -17,6 +17,13 @@ extension _SleepDeadlineActions on PlaybackController {
         }.contains(_state.phase)) {
       return false;
     }
+    return true;
+  }
+
+  bool _setSleepAtCurrentEntryEnd() {
+    _checkNotDisposed();
+    if (!_canSleepAtCurrentEntryEnd) return false;
+    final entryId = _loadedEntryId!;
     _cancelSleepTimer();
     _sleepState = PlaybackSleepTimerState.atEntryEnd(entryId);
     _publish(_state);
@@ -63,7 +70,7 @@ extension _SleepDeadlineActions on PlaybackController {
     _cancelSleepTimer();
     if (duration != null) {
       final deadline = _clock().toUtc().add(duration.duration);
-      _sleepState = PlaybackSleepTimerState.armed(deadline);
+      _sleepState = PlaybackSleepTimerState.armed(deadline, duration: duration);
       _armSleepWake(_sleepGeneration, duration.duration);
     }
     _publish(_state);

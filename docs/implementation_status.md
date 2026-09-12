@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7H2A：[计划](phase_7h2a_sleep_projection_plan.md)/ADR099/[报告](phase_7h2a_sleep_projection_report.md)。本地导出弹层审计后先补真实分钟选中投影及旧动作保护，复用PlaybackPresenter；双快照+通知版本+根关闭判定，不创建UI Timer。20新Flutter/1新Node，67相关及完整1813 Flutter/144 Node、188 Golden不变、523文件格式/严格分析/生成迁移、Android Debug17.9秒及资产许可v2签名通过。无Widget或原生入口变更，H2B继续共享弹层；Phase7及Phase8–11未完成。分支codex/sleep-settings-projection，Draft base codex/sleep-current-entry；前置bac9405双CI34716728571/34716743445已SUCCESS，本批新SHA云端另验。
+
 最新Phase7H1B：[计划](phase_7h1b_current_entry_plan.md)/ADR098/[报告](phase_7h1b_current_entry_report.md)。本曲结束准确entry绑定与根完成事件前消费已实现；分钟与本曲模式互斥，重复歌曲按entry区分，暂停/seek/恢复保留，切歌/重载/停止/清空/错误撤销。24新增、47相关及完整1793 Flutter/143 Node通过，188 Golden不变；520文件格式/严格分析、生成迁移及Android Debug17.8秒、资产许可v2签名通过。分支codex/sleep-current-entry，Draft base codex/sleep-deadline-core；H1A云端在开发中核验仍运行，不借用本地通过。下一步H2原生睡眠设置界面；Phase7整体和Phase8–11仍未完成。
 
 最新Phase7H1A：[计划](phase_7h1a_sleep_deadline_plan.md)/ADR097/[报告](phase_7h1a_sleep_deadline_report.md)。已实现根截止定时核心（关闭/15/30/60分钟），23新测试含到期后completed错误推进的先失败复现，完整1769 Flutter/143 Node、188 Golden不变、519文件格式及严格分析通过，生成/Schema无漂移；Android Debug18.2秒及资产许可v2签名通过。无新UI，本曲结束与设置界面尚未接入；Phase7及真实导入/来源/后台/发行仍待完成。前置2fb29ec和7d5385e的四组云端运行现均SUCCESS；本批codex/sleep-deadline-core按新SHA另验，不以本地预检替代GitHub结果。以下为历史记录。

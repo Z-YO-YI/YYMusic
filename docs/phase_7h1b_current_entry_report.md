@@ -20,6 +20,8 @@ Android Debug **17.8秒**通过，48资产、完整音频许可及v2单签名者
 
 ## GitHub与下一步
 
+H2A期间精确回填：bac9405的[push34716728571](https://github.com/Z-YO-YI/YYMusic/actions/runs/34716728571)/[PR34716743445](https://github.com/Z-YO-YI/YYMusic/actions/runs/34716743445)均completed/SUCCESS，Draft #91保持未合并。
+
 H1A的[push34715635205](https://github.com/Z-YO-YI/YYMusic/actions/runs/34715635205)/[PR34715646633](https://github.com/Z-YO-YI/YYMusic/actions/runs/34715646633)在本批开发中核验仍运行，不能声称前置云端已通过。当前新SHA、Draft和Actions状态在提交后的PR交付信息精确记录；不自动合并、修改默认分支或发布Release。
 
 提交前再次核验：上述H1A两组运行均已completed/SUCCESS。这是938a896的前置云端结果，不代表本批新SHA通过。
