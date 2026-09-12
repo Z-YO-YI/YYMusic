@@ -1072,3 +1072,9 @@ Phase7H2A，2026-09-13。分钟armed投影记录原PlaybackSleepDuration，不�
 新增睡眠选项枚举及一次性动作工厂，捕获当前PlaybackState和PlaybackSleepTimerState对象身份；动作在调用外部页面许可前后均复查双快照与生命周期，许可重入或抛错按拒绝处理，消费先于根通知。返回accepted/rejected/failed明确结果，错误不泄露原始异常。允许关闭无可用引擎上的旧设置；开启分钟或本曲仍由根能力约束。播放快照任何变化都会撤销旧动作，界面必须从最新构建获取新动作；已接受动作不被后续页面变化倒放或撤销。
 
 补充：const off会在关闭/重复取消后保持对象身份，不能仅依靠双快照。根显式isClosed提供关闭判定，Presenter每次根通知递增sleepRevision并纳入动作校验；先失败复现off→off仍接受旧分钟动作，再补版本校验。此版本只撤销UI动作，不是新播放或计时状态。
+
+## ADR-100：共享睡眠面板借根动作，宿主管理弹层插入
+
+Phase7H2B，2026-09-13。SleepSettingsPanel只持有临时错误/关闭许可及构建代数，借现有PlaybackPresenter监听投影，每次构建重新取H2A动作。onClose由宿主移除，外部isCurrent许可与自身生命周期/面积/ModalRoute/TickerMode/Focus检查组合；不重建根或产生UI Timer。选择即时生效，完成只关闭；不显示伪秒级倒计时，活动分钟用原选项描述。
+
+视觉复用原生YYDialog/YYBottomSheet的焦点与滚动，新增纯受控YYOptionCard匹配本地导出双行卡片，复用主题/字体/圆角，不更改YYButton现有默认外观。手机/短Android窗口用sheet，其余dialog；正文宽不足500单列，否则双列。生产入口及Overlay生命周期绑定下一批完成，本批只交付有真实根联动的共享面板和独立视觉/交互证据。
