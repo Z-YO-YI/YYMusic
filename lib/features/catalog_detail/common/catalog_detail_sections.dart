@@ -31,6 +31,7 @@ final class CatalogDetailSections {
     required this.tab,
     required this.onTab,
     required this.menu,
+    this.queueFeedback,
   });
   final CatalogDetailController controller;
   final PlaybackPresenter playback;
@@ -38,6 +39,7 @@ final class CatalogDetailSections {
   final CatalogDetailTab tab;
   final ValueChanged<CatalogDetailTab> onTab;
   final ValueChanged<Track> menu;
+  final Widget? queueFeedback;
   bool get isArtist => controller.target is ArtistDetailTarget;
 
   Widget get toolbar => Padding(
@@ -160,6 +162,7 @@ final class CatalogDetailSections {
   Widget get sectionHeader => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
+      ?queueFeedback,
       if (controller.actionError case final error?) ...[
         YYErrorBanner(title: '操作未完成', message: error),
         const SizedBox(height: 16),

@@ -82,6 +82,8 @@ void main() {
       await tester.tap(row, buttons: kSecondaryMouseButton);
       await tester.pumpAndSettle();
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pumpAndSettle();
       expect(detailState(tester).controller.isFavorite(track.ref), isTrue);
@@ -234,6 +236,9 @@ void main() {
         const Size(390, 1000),
       ]) {
         tester.view.physicalSize = size;
+        await tester.pumpAndSettle();
+        // More native actions can exceed the short landscape viewport.
+        await tester.ensureVisible(find.text('关闭菜单'));
         await tester.pumpAndSettle();
         expect(find.text('关闭菜单').hitTestable(), findsOneWidget);
         expect(detailState(tester).controller, same(c));

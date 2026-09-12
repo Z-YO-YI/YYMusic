@@ -1,5 +1,7 @@
 # YYMusic
 
+当前增量：**Phase 7E5C 专辑/艺人队列菜单**。两类详情的Android手机/平板和Windows菜单已可下一首/添加队列，复用原始图标、唯一队列和E5B反馈；旧菜单在刷新/路由/尺寸/Tab变化后失效，旋转后的新菜单仍可用。1510 Flutter、131 Node、169 Golden与严格分析通过，见[计划](docs/phase_7e5c_catalog_queue_plan.md)和[报告](docs/phase_7e5c_catalog_queue_report.md)。前置#76双平台云端已通过，本批新提交独立验证；其他歌单入口与Phase8–11继续开发，新安装仍为空库。
+
 当前增量：**Phase 7E5B 音乐库队列菜单**。Android手机/平板长按或更多菜单、Windows右键/键盘已可“下一首播放”“添加到队列”；支持成功提示、忙态、失败跨页重试/知悉与查看队列，添加不会中断播放。沿用审计后的Figma菜单和原始next/list-plus图标。1476 Flutter、130 Node、166 Golden与严格分析通过，见[计划](docs/phase_7e5b_library_queue_plan.md)和[报告](docs/phase_7e5b_library_queue_report.md)。本批覆盖音乐库歌曲入口，其他详情/歌单入口继续接入；真实导入/扫描及Phase8–11未完成，新安装仍为空库。以下“当前增量”是历史记录。
 
 当前增量：**Phase 7E5A 添加/下一首根编辑**。末尾添加与下一首已具备快照权限、忙态、失败重试及关闭排空；修复随机模式的下一首优先序，后续末尾添加不打乱已指定的下一首，操作本身不启动或重载音频。1445 Flutter、129 Node、严格分析及原161张Golden通过，见[计划](docs/phase_7e5a_queue_insert_plan.md)与[报告](docs/phase_7e5a_queue_insert_report.md)。本批是核心能力，新增菜单入口将在E5B接线；Phase8导入/扫描和后续发行未完成，新安装仍为空库。以下“当前增量”均为历史记录。
