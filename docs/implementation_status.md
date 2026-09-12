@@ -1,5 +1,9 @@
 # 实施状态
 
+当前增量 Phase 7E5A：QueueEdit.addToEnd/playNext 复用唯一根授权、busy、同快照显式重试与关闭排空；拒绝重复 entry ID，保留重复完整 TrackRef/addedAt/current，空队列不自动选中/播放。成功持久化后扩展而不重排原随机序列，最近指定下一首优先，后续末尾添加保持该优先序；旧低层接口复用同一顺序策略。
+分支 `codex/queue-insert-intents`，基线 `8d9b4da`，Stacked Draft PR base=`codex/queue-drag-sorting`；[计划](phase_7e5a_queue_insert_plan.md)、ADR085 与[报告](phase_7e5a_queue_insert_report.md)先后记录。新增10模型、18核心、4实际SQLite测试与1Node；完整1445 Flutter/129 Node、473文件格式、严格分析、生成/迁移通过；161旧Golden与原始资产/Schema/依赖/平台未改。
+E4 `8d9b4da` 双组云端源码/Android/Windows SUCCESS，#74与报告回填；新SHA云端单独验证。本批尚未增加按钮，下一批E5B接“添加到队列/下一首播放”菜单及安全反馈。随机顺序沿用非持久化边界，物理队列/current跨启动恢复；Phase7其余与Phase8–11仍未完成，不是日常可用发行版。
+
 当前增量 Phase 7E4：独立队列页已支持 Android 手机/平板长按和 Windows 原始手柄鼠标拖动；原生惰性列表、落点间隙、边缘自动滚动及无障碍排序接入根 QueueEdit，不创建第二份队列。归一化索引映射原根锚点，组尾保留未加载内容；拖拽不改变当前项、不重载播放。旧视图/根/尺寸/路由/取消回调失效，Windows 连续键盘上下移焦点保留。
 分支 `codex/queue-drag-sorting`，基线 `32edb5b`，Stacked Draft PR base=`codex/native-queue-route`；[计划](phase_7e4_queue_drag_plan.md)、ADR084 与[报告](phase_7e4_queue_drag_report.md)记录范围。新增 8 单元、16 Widget、3 Golden、1 Node；2 既有真实 SQLite 页面测试升级为指针拖拽。完整 1413 Flutter / 128 Node、469 文件格式、严格分析、生成/迁移通过；10 张受影响旧 Golden 精确更新并逐张检查，148 张旧图及原始资产/Schema/依赖未改。
 E3 的精确 `32edb5b` 两组云端源码/Android/Windows 均 SUCCESS，#73 已回填。E4 云端按新提交单独核验，不能用 E3 代替。当前新增能力仅队列拖拽；添加/下一首入口及 Phase 7 其余能力、Phase 8–11 仍未完成，新安装仍为空库。没有本批真机安装/出声或签名发行验收。

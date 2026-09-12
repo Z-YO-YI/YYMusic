@@ -288,6 +288,7 @@ final class PlaybackController extends ChangeNotifier {
           _normalize(entries),
           currentEntryId: _state.queue.currentEntryId,
         ),
+        preserveShuffle: true,
       );
     }),
   );
@@ -304,6 +305,8 @@ final class PlaybackController extends ChangeNotifier {
           _normalize(entries),
           currentEntryId: _state.queue.currentEntryId,
         ),
+        preserveShuffle: true,
+        nextEntryId: entry.id,
       );
     }),
   );
@@ -596,6 +599,8 @@ final class PlaybackController extends ChangeNotifier {
     bool rebuildShuffle = true,
     _SelectionMode? selectionMode,
     bool Function()? canCommit,
+    bool preserveShuffle = false,
+    String? nextEntryId,
   }) async {
     if (canCommit?.call() == false) return false;
     if (!_retainsCurrentTrack(snapshot) &&
@@ -611,6 +616,8 @@ final class PlaybackController extends ChangeNotifier {
       snapshot,
       rebuildShuffle: rebuildShuffle,
       selectionMode: selectionMode,
+      preserveShuffle: preserveShuffle,
+      nextEntryId: nextEntryId,
     );
     return true;
   }
@@ -619,6 +626,8 @@ final class PlaybackController extends ChangeNotifier {
     QueueSnapshot queue, {
     bool rebuildShuffle = true,
     _SelectionMode? selectionMode,
+    bool preserveShuffle = false,
+    String? nextEntryId,
   }) {
     final currentTrack = _retainsCurrentTrack(queue)
         ? _state.currentTrack
@@ -641,7 +650,9 @@ final class PlaybackController extends ChangeNotifier {
       ),
     );
     if (selectionMode == null && _state.shuffleEnabled) {
-      if (rebuildShuffle) {
+      if (preserveShuffle) {
+        _extendShuffleOrder(queue, nextEntryId);
+      } else if (rebuildShuffle) {
         _rebuildShuffleOrder();
       } else if (currentId != null) {
         _syncShuffleCursor(currentId);
