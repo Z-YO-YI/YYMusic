@@ -24,16 +24,28 @@ enum PlaybackSleepPhase { off, armed, pausing, expired, failed }
 final class PlaybackSleepTimerState {
   const PlaybackSleepTimerState.off()
     : phase = PlaybackSleepPhase.off,
+      entryId = null,
       deadline = null;
   const PlaybackSleepTimerState.armed(this.deadline)
-    : phase = PlaybackSleepPhase.armed;
+    : phase = PlaybackSleepPhase.armed,
+      entryId = null;
   const PlaybackSleepTimerState.pausing(this.deadline)
-    : phase = PlaybackSleepPhase.pausing;
+    : phase = PlaybackSleepPhase.pausing,
+      entryId = null;
   const PlaybackSleepTimerState.expired(this.deadline)
-    : phase = PlaybackSleepPhase.expired;
+    : phase = PlaybackSleepPhase.expired,
+      entryId = null;
   const PlaybackSleepTimerState.failed(this.deadline)
-    : phase = PlaybackSleepPhase.failed;
+    : phase = PlaybackSleepPhase.failed,
+      entryId = null;
+  const PlaybackSleepTimerState.atEntryEnd(String id, {bool expired = false})
+    : phase = expired ? PlaybackSleepPhase.expired : PlaybackSleepPhase.armed,
+      entryId = id,
+      deadline = null;
 
   final PlaybackSleepPhase phase;
   final DateTime? deadline;
+
+  /// Exact queue entry, never the shared TrackRef of duplicate songs.
+  final String? entryId;
 }
