@@ -90,6 +90,8 @@ class YYDesktopPlayerBar extends StatelessWidget {
     required this.data,
     this.compact = false,
     this.loading = false,
+    this.favoriteKnown = true,
+    this.favoriteBusy = false,
     this.onOpen,
     this.onTogglePlayback,
     this.onPrevious,
@@ -112,6 +114,10 @@ class YYDesktopPlayerBar extends StatelessWidget {
   final YYNowPlayingViewData data;
   final bool compact;
   final bool loading;
+
+  /// Unknown collection state is not announced as an unfavorited track.
+  final bool favoriteKnown;
+  final bool favoriteBusy;
   final VoidCallback? onOpen;
   final VoidCallback? onTogglePlayback;
   final VoidCallback? onPrevious;
@@ -223,6 +229,8 @@ class YYDesktopPlayerBar extends StatelessWidget {
                     flex: 9,
                     child: _PlayerTools(
                       data: data,
+                      favoriteKnown: favoriteKnown,
+                      favoriteBusy: favoriteBusy,
                       width: width,
                       loading: loading,
                       onToggleFavorite: onToggleFavorite,
@@ -479,6 +487,8 @@ class _PlayerTools extends StatelessWidget {
     required this.data,
     required this.width,
     required this.loading,
+    required this.favoriteKnown,
+    required this.favoriteBusy,
     required this.onToggleFavorite,
     required this.onOpenFullscreen,
     required this.onOpenLyrics,
@@ -492,6 +502,8 @@ class _PlayerTools extends StatelessWidget {
   final YYNowPlayingViewData data;
   final double width;
   final bool loading;
+  final bool favoriteKnown;
+  final bool favoriteBusy;
   final VoidCallback? onToggleFavorite;
   final VoidCallback? onOpenFullscreen;
   final VoidCallback? onOpenLyrics;
@@ -522,9 +534,13 @@ class _PlayerTools extends StatelessWidget {
       _TransportButton(
         id: 'desktop-favorite',
         glyph: YYGlyph.heart,
-        label: data.favorite ? '取消收藏' : '收藏',
-        toggled: data.favorite,
-        loading: loading,
+        label: !favoriteKnown
+            ? '收藏状态未知'
+            : data.favorite
+            ? '取消收藏'
+            : '收藏',
+        toggled: favoriteKnown ? data.favorite : null,
+        loading: favoriteBusy,
         onPressed: onToggleFavorite,
       ),
       _TransportButton(

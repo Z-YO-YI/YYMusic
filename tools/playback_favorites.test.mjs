@@ -2,6 +2,18 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { read } from './design_audit.mjs';
 
+test('retained shell favorite revokes route events and exact scope changes', () => {
+  const shell = read('lib/features/player/common/shell_player.dart');
+  for (const token of ['widget.routeChanges?.addListener(_favoriteRouteChanged)', 'widget.routeChanges?.removeListener(_favoriteRouteChanged)', 'oldWidget.scopeIdentity != widget.scopeIdentity', 'favoriteBusy: favorite?.busy ?? false', 'PlaybackFavoriteFeedback(']) assert(shell.includes(token));
+  const actions = read('lib/features/player/common/shell_favorite_actions.dart');
+  assert.match(actions, /generation != _favoriteGeneration/);
+  assert.match(actions, /ModalRoute.of\(context\)\?\.isCurrent/);
+  assert.match(actions, /final target = !expected.isFavorite!/);
+  assert.match(actions, /canEdit: \(\) => _canFavorite\(generation\)/);
+  const router = read('lib/app/app_router.dart');
+  assert.equal((router.match(/routeChanges: _router.routerDelegate/g) ?? []).length, 5);
+});
+
 test('player favorite uses captured root intent and revocable page with shared feedback', () => {
   const screen = read('lib/features/player/common/player_screen.dart');
   const actions = read('lib/features/player/common/player_favorite_actions.dart');

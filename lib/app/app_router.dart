@@ -191,6 +191,8 @@ final class AppRouter implements AppNavigation {
               navigation: this,
               selected: selected,
               playbackPresenter: playbackPresenter,
+              playbackFavorite: playbackFavorite,
+              routeChanges: _router.routerDelegate,
               child: shell,
             );
             return playlistController == null
@@ -255,6 +257,8 @@ final class AppRouter implements AppNavigation {
                           navigation: this,
                           selected: AppRoute.library,
                           playbackPresenter: playbackPresenter,
+                          playbackFavorite: playbackFavorite,
+                          routeChanges: _router.routerDelegate,
                           child: child,
                         ),
                       )
@@ -301,6 +305,8 @@ final class AppRouter implements AppNavigation {
                         navigation: this,
                         selected: AppRoute.library,
                         playbackPresenter: playbackPresenter,
+                        playbackFavorite: playbackFavorite,
+                        routeChanges: _router.routerDelegate,
                         child: child,
                       ),
                     )
@@ -344,6 +350,8 @@ final class AppRouter implements AppNavigation {
                         navigation: this,
                         selected: AppRoute.library,
                         playbackPresenter: playbackPresenter,
+                        playbackFavorite: playbackFavorite,
+                        routeChanges: _router.routerDelegate,
                         child: child,
                       ),
                     )
@@ -380,6 +388,8 @@ final class AppRouter implements AppNavigation {
                       navigation: this,
                       selected: AppRoute.library,
                       playbackPresenter: playbackPresenter,
+                      playbackFavorite: playbackFavorite,
+                      routeChanges: _router.routerDelegate,
                       child: child,
                     ),
                   )

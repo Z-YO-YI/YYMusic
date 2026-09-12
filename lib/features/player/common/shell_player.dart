@@ -5,6 +5,10 @@ import 'package:flutter/widgets.dart';
 import '../../../app/playback_presenter.dart';
 import '../../../design_system/yy_feedback.dart';
 import '../../../design_system/yy_player_surface.dart';
+import '../../../playback/playback_favorite_controller.dart';
+import 'playback_favorite_feedback.dart';
+
+part 'shell_favorite_actions.dart';
 
 /// Shared presentation binding, not a second player or platform controller.
 class ShellPlayer extends StatelessWidget {
@@ -16,9 +20,15 @@ class ShellPlayer extends StatelessWidget {
     this.inspector = false,
     this.onOpen,
     this.onOpenLyrics,
+    this.favorite,
+    this.routeChanges,
+    this.scopeIdentity,
   });
 
   final PlaybackPresenter presenter;
+  final PlaybackFavoriteController? favorite;
+  final Listenable? routeChanges;
+  final Object? scopeIdentity;
   final bool phone;
   final bool compact;
   final bool inspector;
@@ -33,6 +43,9 @@ class ShellPlayer extends StatelessWidget {
         // Reset gesture state when a queue entry or platform layout changes.
         key: ValueKey((presenter.entryId, phone, compact, inspector)),
         presenter: presenter,
+        favorite: favorite,
+        routeChanges: routeChanges,
+        scopeIdentity: scopeIdentity,
         phone: phone,
         compact: compact,
         inspector: inspector,
@@ -68,8 +81,14 @@ class _PlayerControls extends StatefulWidget {
     required this.inspector,
     required this.onOpen,
     required this.onOpenLyrics,
+    required this.favorite,
+    required this.routeChanges,
+    required this.scopeIdentity,
   });
   final PlaybackPresenter presenter;
+  final PlaybackFavoriteController? favorite;
+  final Listenable? routeChanges;
+  final Object? scopeIdentity;
   final bool phone;
   final bool compact;
   final bool inspector;
@@ -82,10 +101,62 @@ class _PlayerControls extends StatefulWidget {
 class _PlayerControlsState extends State<_PlayerControls> {
   double? _seekPreview;
   double? _volumePreview;
+  int _favoriteGeneration = 0;
+  bool _favoriteVisible = true;
+  Size? _favoriteViewport;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.favorite?.addListener(_favoriteChanged);
+    widget.routeChanges?.addListener(_favoriteRouteChanged);
+  }
+
+  void _favoriteChanged() {
+    if (mounted) setState(() {});
+  }
+
+  void _favoriteRouteChanged() {
+    _favoriteGeneration++;
+    _favoriteChanged();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final size = MediaQuery.sizeOf(context);
+    final visible =
+        TickerMode.valuesOf(context).enabled &&
+        (ModalRoute.isCurrentOf(context) ?? true);
+    if (_favoriteViewport != size || _favoriteVisible != visible) {
+      _favoriteViewport = size;
+      _favoriteVisible = visible;
+      _favoriteGeneration++;
+    }
+  }
+
+  @override
+  void dispose() {
+    _favoriteGeneration++;
+    widget.favorite?.removeListener(_favoriteChanged);
+    widget.routeChanges?.removeListener(_favoriteRouteChanged);
+    super.dispose();
+  }
 
   @override
   void didUpdateWidget(_PlayerControls oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.favorite != widget.favorite) {
+      oldWidget.favorite?.removeListener(_favoriteChanged);
+      widget.favorite?.addListener(_favoriteChanged);
+      _favoriteGeneration++;
+    }
+    if (oldWidget.routeChanges != widget.routeChanges) {
+      oldWidget.routeChanges?.removeListener(_favoriteRouteChanged);
+      widget.routeChanges?.addListener(_favoriteRouteChanged);
+      _favoriteGeneration++;
+    }
+    if (oldWidget.scopeIdentity != widget.scopeIdentity) _favoriteGeneration++;
     // YYSlider cancels its gesture when disabled; discard our preview too.
     if (!widget.presenter.canSeek) _seekPreview = null;
     if (!widget.presenter.canChangeVolume) _volumePreview = null;
@@ -94,7 +165,11 @@ class _PlayerControlsState extends State<_PlayerControls> {
   @override
   Widget build(BuildContext context) {
     final presenter = widget.presenter;
-    final data = presenter.data;
+    final favorite = widget.favorite;
+    final favoriteGeneration = _favoriteGeneration;
+    final data = presenter.data.copyWith(
+      favorite: favorite?.state.isFavorite == true,
+    );
     final entry = presenter.entryId;
     final preview = _seekPreview;
     final view = data.copyWith(
@@ -154,8 +229,11 @@ class _PlayerControlsState extends State<_PlayerControls> {
         onNext: next,
       );
     }
-    return YYDesktopPlayerBar(
+    final bar = YYDesktopPlayerBar(
       data: view,
+      favoriteKnown: favorite == null || favorite.state.isFavorite != null,
+      favoriteBusy: favorite?.busy ?? false,
+      onToggleFavorite: _favoriteAction(favoriteGeneration),
       compact: widget.compact,
       loading: presenter.busy,
       onOpen: widget.onOpen,
@@ -178,6 +256,26 @@ class _PlayerControlsState extends State<_PlayerControls> {
             }
           : null,
       onVolumeCancel: () => setState(() => _volumePreview = null),
+    );
+    if (favorite == null || (!favorite.busy && favorite.failure == null)) {
+      return bar;
+    }
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.sizeOf(context).height * .2,
+          ),
+          child: SingleChildScrollView(
+            child: PlaybackFavoriteFeedback(
+              controller: favorite,
+              permit: () => _canFavorite(favoriteGeneration),
+            ),
+          ),
+        ),
+        bar,
+      ],
     );
   }
 }

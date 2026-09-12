@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../features/player/common/shell_player.dart';
+import '../playback/playback_favorite_controller.dart';
 import '../shells/android_phone_shell.dart';
 import '../shells/android_tablet_shell.dart';
 import '../shells/windows_shell.dart';
@@ -17,12 +18,16 @@ class AdaptiveRoot extends StatelessWidget {
     required this.selected,
     required this.child,
     this.playbackPresenter,
+    this.playbackFavorite,
+    this.routeChanges,
   });
   final YYPlatform platform;
   final AppNavigation navigation;
   final AppRoute selected;
   final Widget child;
   final PlaybackPresenter? playbackPresenter;
+  final PlaybackFavoriteController? playbackFavorite;
+  final Listenable? routeChanges;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -42,6 +47,16 @@ class AdaptiveRoot extends StatelessWidget {
           ? null
           : ShellPlayer(
               presenter: presenter,
+              favorite: layout == YYLayoutClass.androidPhone
+                  ? null
+                  : playbackFavorite,
+              routeChanges: routeChanges,
+              scopeIdentity: (
+                selected,
+                layout,
+                constraints.maxWidth,
+                constraints.maxHeight,
+              ),
               onOpen: navigation.openPlayer,
               onOpenLyrics: navigation.openLyrics,
               phone: layout == YYLayoutClass.androidPhone,

@@ -21,6 +21,8 @@ AppRouter给PlayerScreen注入同一根收藏；页面监听/解绑不拥有根�
 
 ## GitHub与限制
 
+2026-09-13后续核验：精确head `a4faf905af6c65f077fe230a664291c9c50c844f` 的[push34706094820](https://github.com/Z-YO-YI/YYMusic/actions/runs/34706094820)与[PR34706097249](https://github.com/Z-YO-YI/YYMusic/actions/runs/34706097249)均SUCCESS。F2B云端结果不能代替F2C新提交验收。
+
 前置F2A d29356c的push34704863898/PR34704867239均SUCCESS，源码与Android/Windows构建通过，报告和#81回填。F2B提交push后在新Draft PR回填精确SHA和CI运行；前置构建不能代替本批云端验收。不合并PR、不改默认分支、不发布Release、不提交构建产物/凭据/用户媒体。
 
 下一批底栏收藏接线；原播放页完整歌词依旧不添加，独立歌词/队列关系保持。Phase7整体与Phase8真实导入、Phase9来源、Phase10完整后台媒体、Phase11正式发布未完成，新安装仍空库；本批无本地Windows编译、真机安装/出声或发行验收。

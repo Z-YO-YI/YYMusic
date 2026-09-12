@@ -1,5 +1,7 @@
 # 实施状态
 
+当前Phase7F2C：[计划](phase_7f2c_shell_favorite_plan.md)/ADR093/[报告](phase_7f2c_shell_favorite_report.md)。五处AdaptiveRoot接根收藏与路由事件；底栏组件跨主导航存活时用事件代数/选中页面/布局尺寸撤销旧收藏，另有实时ModalRoute/活动/面积检查。独立busy、未知语义及有界滚动反馈，不新增I/O/真值；手机/窄栏/Inspector不加心形。14新Widget/3 Golden/1 Node，最终1671 Flutter/138 Node、188 Golden（17旧图心形状态精确更新、168旧图不变，20变更逐张查看）、511文件格式/严格分析/生成迁移及Android预检通过。分支codex/shell-current-favorite-ui，base codex/player-current-favorite-ui；前置a4faf90双CI34706094820/34706097249均SUCCESS，本批新SHA另验。下一步Shell剩余入口与内联遮罩许可/Phase7出口核查；Phase8–11未完成，非上线。以下为历史记录。
+
 当前Phase7F2B：[计划](phase_7f2b_player_favorite_plan.md)/ADR092/[报告](phase_7f2b_player_favorite_report.md)。独立播放页三端借同一根收藏，复用F2A反馈；已知值才展示、保存与播放busy独立、原投影/目标/页面代数许可，不新增真值。新增14 Widget/4 Golden/1 Node，完整1654 Flutter/137 Node、185 Golden（181旧图不变）、508文件格式/严格分析、生成零漂移及Android Debug资产许可v2签名通过。分支codex/player-current-favorite-ui，base codex/lyrics-current-favorite-ui；本批新SHA云端另验。前置d29356c双CI34704863898/34704867239已SUCCESS。下一批底栏收藏；Phase7整体/8–11未完成，新安装仍空库，非正式上线。以下为历史记录。
 
 当前Phase7F2A：[计划](phase_7f2a_lyrics_favorite_plan.md)/ADR091/[报告](phase_7f2a_lyrics_favorite_report.md)。AppRouter借根收藏，歌词Dock按已知状态显示，独立保存忙态不锁播放/返回；捕获原投影/目标/页面代数，过期操作和失败回调不重解释。手机遵守原CSS隐藏心形，无存储预览保持原样。新增12 Widget、3 Golden、1 Node；1636 Flutter/136 Node、181 Golden（178旧图不变）、505文件格式/严格分析和Android Debug资产许可v2签名通过。分支codex/lyrics-current-favorite-ui，base codex/current-track-favorite-core；新提交云端另验。前置4302cbb的push34703279070/PR34703282153均SUCCESS。下一批播放页/Shell收藏，Phase7整体及Phase8–11尚未完成，不是已上线。以下为历史记录。
