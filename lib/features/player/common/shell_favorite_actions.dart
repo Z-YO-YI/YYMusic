@@ -15,7 +15,7 @@ extension _ShellFavoriteActions on _PlayerControlsState {
             ));
   }
 
-  bool _canFavorite(int generation) {
+  bool _canUseShellAction(int generation) {
     if (!mounted || !_favoriteVisible || generation != _favoriteGeneration) {
       return false;
     }
@@ -35,14 +35,25 @@ extension _ShellFavoriteActions on _PlayerControlsState {
     if (!controller.canSet(expected)) return null;
     final target = !expected.isFavorite!;
     return () {
-      if (!_canFavorite(generation)) return;
+      if (!_canUseShellAction(generation)) return;
       unawaited(
         controller.setFavorite(
           expected,
           favorite: target,
-          canEdit: () => _canFavorite(generation),
+          canEdit: () => _canUseShellAction(generation),
         ),
       );
+    };
+  }
+
+  VoidCallback? _queueAction(int generation) {
+    final open = widget.onOpenQueue;
+    if (open == null) return null;
+    return () {
+      if (!_canUseShellAction(generation)) return;
+      // Revoke before navigation, including rapid calls before the next frame.
+      _favoriteRouteChanged();
+      open();
     };
   }
 }

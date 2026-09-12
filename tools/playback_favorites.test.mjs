@@ -18,7 +18,7 @@ test('retained shell favorite revokes route events and exact scope changes', () 
   assert.match(actions, /generation != _favoriteGeneration/);
   assert.match(actions, /ModalRoute.of\(context\)\?\.isCurrent/);
   assert.match(actions, /final target = !expected.isFavorite!/);
-  assert.match(actions, /canEdit: \(\) => _canFavorite\(generation\)/);
+  assert.match(actions, /canEdit: \(\) => _canUseShellAction\(generation\)/);
   const router = read('lib/app/app_router.dart');
   assert.equal((router.match(/routeChanges: _router.routerDelegate/g) ?? []).length, 5);
 });

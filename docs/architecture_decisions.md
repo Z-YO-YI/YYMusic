@@ -1036,3 +1036,7 @@ Phase7F2B，2026-09-12。PlayerScreen借AppRouter注入的同一根收藏控制�
 ## ADR-093：底栏收藏许可随路由事件撤销，不只依赖组件卸载
 
 Phase7F2C，2026-09-12。AdaptiveRoot给非手机底栏传入根收藏、路由Listenable及选中页面/布局/尺寸身份。ShellPlayer的借用状态监听路由事件递增收藏代数，不能因切到另一主导航后组件仍mounted而接受旧操作；实时ModalRoute/活动/面积检查覆盖独立页面与原生弹层。订阅根收藏不触发I/O，所有底栏共享根流。收藏busy只禁用心形，受控反馈限制高度并滚动，不重复存储失败。未知值使用未知语义，原窄栏/手机/Inspector布局不加心形。
+
+## ADR-094：底栏队列入口借已有导航与交互许可
+
+Phase7G1，2026-09-13。ShellPlayer增加可选onOpenQueue，AdaptiveRoot仅委托现有AppNavigation.openSystemPlaylist(queue)，空队列可打开空态，不依赖音频可播放能力。既有收藏许可的页面/路由/尺寸/焦点排除检查提取为通用Shell交互许可；导航使用同一代数并在接受后立即撤销，根队列与播放控制器不改变。保留原手机/窄栏/Inspector布局和无回调预览行为，不引入第二个路由器或播放真值。

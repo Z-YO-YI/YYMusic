@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 
+import '../domain/models/collection_models.dart';
 import '../features/player/common/shell_player.dart';
 import '../playback/playback_favorite_controller.dart';
 import '../shells/android_phone_shell.dart';
@@ -59,6 +60,8 @@ class AdaptiveRoot extends StatelessWidget {
               ),
               onOpen: navigation.openPlayer,
               onOpenLyrics: navigation.openLyrics,
+              onOpenQueue: () =>
+                  navigation.openSystemPlaylist(SystemPlaylistType.queue),
               phone: layout == YYLayoutClass.androidPhone,
               compact:
                   layout == YYLayoutClass.windowsNarrow ||
