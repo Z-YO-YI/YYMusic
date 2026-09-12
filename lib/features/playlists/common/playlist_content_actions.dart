@@ -23,6 +23,23 @@ extension PlaylistContentActions on PlaylistContentController {
   bool canManageEntry(String id) =>
       canOpenEntry(id) && !busy && (_writer?.isAvailable ?? false);
 
+  /// A soft reference may be queued even when its metadata is unavailable.
+  bool Function()? queueSourcePermit(
+    PlaylistContent expected,
+    PlaylistContentEntry entry,
+  ) {
+    bool available() =>
+        !_disposed &&
+        _active &&
+        isCurrent &&
+        !busy &&
+        identical(content, expected) &&
+        expected.entries.any((item) => identical(item, entry));
+    if (!available()) return null;
+    final intent = _intent;
+    return () => intent == _intent && available();
+  }
+
   bool get canPlayAll =>
       _canBrowse &&
       (_playback?.isAvailable ?? false) &&

@@ -2,6 +2,19 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { read } from './design_audit.mjs';
 
+test('custom playlist queue insertion captures exact window and entry, not metadata or playlist mutation', () => {
+  const actions = read('lib/features/playlists/common/playlist_content_actions.dart');
+  for (const token of ['queueSourcePermit(', 'identical(content, expected)', 'expected.entries.any((item) => identical(item, entry))', 'intent == _intent && available()']) assert(actions.includes(token));
+  const screen = read('lib/features/playlists/common/playlist_content_screen.dart');
+  for (const token of ['_queueEpoch++', '_captureMenu(request.id, request.snapshot)', 'widget.queue?.removeListener(_queueChanged)', 'request.sourcePermit?.call()']) assert(screen.includes(token));
+  assert.match(screen, /void dispose\(\)[\s\S]*?_menu = null;[\s\S]*?_returnFocus = null;/);
+  const insert = read('lib/features/playlists/common/playlist_queue_actions.dart');
+  for (const token of ['queue.prepareInsertion(', 'entry.entry.track', 'queue.submitEdit(', 'pagePermit() && sourcePermit!()', 'QueueOperationFeedback(', 'identical(noticeIdentity, _noticeIdentity)']) assert(insert.includes(token));
+  assert(!/QueueController\(|PlaybackController\(|Repository|removeEntry|moveEntry|replacePlaylistEntries|WebView/.test(insert));
+  const menu = read('lib/features/playlists/common/playlist_entry_menu.dart');
+  for (const token of ["id: 'next'", "id: 'queue'", 'YYGlyph.next', 'YYGlyph.listPlus', 'enabled: canInsert', '队列与歌单独立']) assert(menu.includes(token));
+});
+
 test('playlist content reads a single bounded joined snapshot without writes or N+1 lookups', () => {
   const query = read('lib/data/repositories/drift_playlist_content.dart');
   assert.equal((query.match(/\.customSelect\(/g) ?? []).length, 1);

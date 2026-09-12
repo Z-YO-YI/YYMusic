@@ -288,6 +288,7 @@ final class AppRouter implements AppNavigation {
                   ? PlaylistContentScreen(
                       playlistId: id,
                       sessions: playlistContents,
+                      queue: queueController,
                       platform: platform,
                       navigation: this,
                       playback: playbackPresenter,

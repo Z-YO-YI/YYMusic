@@ -27,6 +27,8 @@
 
 本批提交/push后，在Stacked Draft PR记录精确SHA和新push/PR Actions状态，不以前置成功或本地APK替代本批云端验收。主要变更文件已列于实际新增与修改，并包含测试/Golden/Node、README/状态/矩阵/计划/ADR/本报告与E5B证据回填。
 
+后续核验：提交`5ec9d63766640669e16d68a3a97387c5a1e6a603`已同步至[Draft PR #77](https://github.com/Z-YO-YI/YYMusic/pull/77)，base=`codex/library-queue-actions`。[push34690651343](https://github.com/Z-YO-YI/YYMusic/actions/runs/34690651343)和[PR34690666913](https://github.com/Z-YO-YI/YYMusic/actions/runs/34690666913)均SUCCESS。PR日志Linux1341通过/169Windows Golden按平台跳过；Windows169Golden、2真实Runner、正式入口Debug重建/65文件包；Android48资产、完整许可/v2单签名者通过。手动音频诊断、Release跳过，未把这些结果称为设备出声或正式上线。
+
 ## 已知限制与下一阶段
 
 本批覆盖专辑和艺人详情歌曲入口，音乐库已在E5B完成；自建/系统歌单等入口继续接线。Phase7其余能力及Phase8真实导入/扫描/授权、Phase9来源、Phase10后台媒体、Phase11签名/实机安装/发布仍未完成，新安装仍为空库。无Release、自动合并、默认分支变更、手动媒体诊断、付费操作或凭据/用户媒体/构建产物提交。
