@@ -242,6 +242,7 @@ final class AppRouter implements AppNavigation {
                     ? CatalogDetailScreen(
                         target: target,
                         sessions: catalogDetails,
+                        queue: queueController,
                         platform: platform,
                         navigation: this,
                         playback: playbackPresenter,

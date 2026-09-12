@@ -49,9 +49,21 @@ test('detail routes keep native state above app-provided chrome and scroll ident
   }
   const screen = read('lib/features/catalog_detail/common/catalog_detail_screen.dart');
   assert.match(screen, /controller = widget.sessions.open\(widget.target\)/);
-  assert.match(screen, /final active = TickerMode.valuesOf\(context\).enabled/);
+  assert.match(screen, /final active =[\s\S]*?TickerMode.valuesOf\(context\).enabled &&[\s\S]*?ModalRoute.isCurrentOf\(context\)[\s\S]*?!size.isEmpty/);
   assert.match(screen, /controller.setActive\(active\)/);
   assert.match(screen, /controller.close\(\)/);
+});
+
+test('detail queue menus borrow one root and revoke stale source, layout and notice identities', () => {
+  const screen = read('lib/features/catalog_detail/common/catalog_detail_screen.dart');
+  const actions = read('lib/features/catalog_detail/common/catalog_detail_queue_actions.dart');
+  const controller = read('lib/features/catalog_detail/common/catalog_detail_controller.dart');
+  const menu = read('lib/features/catalog_detail/common/catalog_detail_track_menu.dart');
+  for (const token of ['_queueEpoch++', '_menuGeneration++', 'generation != _menuGeneration', 'widget.queue?.removeListener(_queueChanged)', '_queueSize != size']) assert(screen.includes(token));
+  for (const token of ['tracks.items.any((item) => identical(item, track))', 'intent == _intent && available()']) assert(controller.includes(token));
+  for (const token of ['queue.prepareInsertion(expected, track.ref', 'queue.submitEdit(', 'pagePermit() && sourcePermit!()', 'QueueOperationFeedback(', 'identical(noticeIdentity, _noticeIdentity)']) assert(actions.includes(token));
+  for (const token of ["id: 'next'", "id: 'queue'", 'YYGlyph.next', 'YYGlyph.listPlus', 'enabled: canInsert']) assert(menu.includes(token));
+  assert(!/QueueController\(|Repository|PlaybackController\(|WebView/.test(actions));
 });
 
 test('detail actions borrow root playback and expose honest availability without dummy overflow', () => {

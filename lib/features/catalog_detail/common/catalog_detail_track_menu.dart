@@ -13,9 +13,11 @@ class CatalogDetailTrackMenu extends StatelessWidget {
     required this.track,
     required this.onDismiss,
     required this.onSelected,
+    this.canInsert = false,
   });
   final CatalogDetailController controller;
   final Track track;
+  final bool canInsert;
   final VoidCallback onDismiss;
   final ValueChanged<String> onSelected;
   @override
@@ -28,6 +30,18 @@ class CatalogDetailTrackMenu extends StatelessWidget {
         label: '播放歌曲',
         glyph: YYGlyph.play,
         enabled: controller.canPlay(track.ref),
+      ),
+      YYContextMenuItem(
+        id: 'next',
+        label: '下一首播放',
+        glyph: YYGlyph.next,
+        enabled: canInsert,
+      ),
+      YYContextMenuItem(
+        id: 'queue',
+        label: '添加到队列',
+        glyph: YYGlyph.listPlus,
+        enabled: canInsert,
       ),
       YYContextMenuItem(
         id: 'favorite',

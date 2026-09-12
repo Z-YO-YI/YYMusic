@@ -1,5 +1,9 @@
 # 实施状态
 
+当前增量Phase7E5C：专辑/艺人详情三端歌曲菜单已接下一首/添加队列，AppRouter注入同一根QueueController；准确Track/读取意图许可和页面代数防止旧动作，跨尺寸保留菜单但重新捕获许可；艺人Tab切换、刷新、隐藏/覆盖/零面积、关闭撤销旧回调。借E5B成功提示/busy/安全失败/显式重试与查看队列，不自动播放、不打断当前音频；歌单选择器返回和旧提示身份覆盖。
+分支`codex/catalog-queue-actions`，基线`4f50819`，Stacked Draft base=`codex/library-queue-actions`；[计划](phase_7e5c_catalog_queue_plan.md)、ADR087及[报告](phase_7e5c_catalog_queue_report.md)。新增8单元、19Widget、4真实SQLite和3Golden；完整1510 Flutter/131 Node、486文件格式、严格分析、生成/迁移通过；169Golden中仅3旧菜单图精确更新，其余163旧图不变。原资产/依赖/平台/Schema无变化。
+前置E5B精确4f50819的push34689627222与PR34689643919均SUCCESS，Android/Windows真实构建完成，#76及报告回填；本批新SHA云端另验。尚未完成其他歌单入口、Phase7其余与Phase8–11，无本批实机安装/音频出声或正式发行验收。
+
 当前增量 Phase7E5B：三端音乐库歌曲菜单已接入下一首/添加队列，根QueueController准备唯一entry ID及不可变编辑；菜单绑定准确Track对象/源读取意图/根快照。根变化、刷新、离页、零面积、尺寸、关闭菜单撤销旧回调；已接受写入排空，缺失文件可添加软引用但不会变可播放。成功页内提示、共享busy/安全失败、跨页显式重试/知悉与打开队列均接线；返回歌单选择器后恢复菜单权限，焦点不抢后台。
 分支`codex/library-queue-actions`，基线`f9590f2`，Stacked Draft PR base=`codex/queue-insert-intents`，[计划](phase_7e5b_library_queue_plan.md)、ADR086与[报告](phase_7e5b_library_queue_report.md)。新增3工厂/6源许可单元、15Widget、2真实SQLite菜单、5Golden和1Node；完整1476 Flutter/130 Node、481文件格式、严格分析、生成/迁移通过。166Golden通过，仅1旧菜单图精确更新、160旧图不变；原资产/Schema/依赖/平台无改动。
 E5A精确`f9590f2`两组源码/Android/Windows CI SUCCESS，#75已回填；本批新SHA云端另验。本批不是全站菜单完成，专辑/艺人详情、自建/系统歌单等歌曲入口后续复用，Phase7其余与Phase8–11仍待完成，无本批真机安装/出声/发行验收。

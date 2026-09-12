@@ -193,6 +193,23 @@ final class CatalogDetailController extends ChangeNotifier {
       !_disposed &&
       _active &&
       tracks.items.any((track) => track.ref == reference);
+
+  /// Captures the displayed object and read intent, including unavailable tracks.
+  bool Function()? queueSourcePermit(Track track) {
+    bool available() =>
+        !_disposed &&
+        _active &&
+        !_busy &&
+        _collection != null &&
+        summary.phase == LoadPhase.data &&
+        tracks.phase == LoadPhase.data &&
+        !tracks.loading &&
+        tracks.items.any((item) => identical(item, track));
+    if (!available()) return null;
+    final intent = _intent;
+    return () => intent == _intent && available();
+  }
+
   bool canFavorite(TrackRef reference) =>
       canOpenActions(reference) && !_busy && _favorites.ready;
   void prepareTrackActions() {

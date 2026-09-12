@@ -29,4 +29,6 @@ Figma转代码技能促使复用已审计原组件与精确导出图标；输入
 
 本批审查、提交、push后在Stacked Draft PR记录精确SHA和两组CI；Android/Windows由GitHub常规CI独立构建，不借E5A成功或本地APK表示E5B云端通过。主要文件：QueueController、LibraryController/Screen/Sections、新LibraryTrackMenu/library_queue_actions与QueueOperationFeedback、AppRouter根注入；单元/Widget/SQLite/Golden/Node及README/ADR/状态/矩阵/计划/报告。
 
+后续核验：提交`4f508195f9a1977a23f44895c8437e4778ef246b`已同步，Stacked [Draft PR #76](https://github.com/Z-YO-YI/YYMusic/pull/76)，base=`codex/queue-insert-intents`。精确[push34689627222](https://github.com/Z-YO-YI/YYMusic/actions/runs/34689627222)与[PR34689643919](https://github.com/Z-YO-YI/YYMusic/actions/runs/34689643919)均SUCCESS。PR日志Linux1310通过/166 Windows Golden按平台跳过；Windows166Golden、2真实Runner、正式入口Debug重建与65文件包通过；Android48资产/完整许可/v2单签名者通过。手动媒体诊断和Release跳过，不将窗口测试当作设备出声验收。
+
 未合并、改默认分支、发布Release、触发手动诊断或使用付费服务。本批仅音乐库歌曲菜单；专辑/艺人详情、自建/系统歌单等歌曲入口后续复用。Phase7其余能力、Phase8真实导入/扫描/授权、Phase9来源、Phase10后台/系统媒体和Phase11签名/安装/发行未完成。新安装仍为空库，Debug不是日常可用发行版。
