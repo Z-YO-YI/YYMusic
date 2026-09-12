@@ -1,5 +1,9 @@
 # 实施状态
 
+当前增量Phase7E5D：自建歌单的Phone/Tablet/Windows菜单接下一首/添加队列；许可捕获准确PlaylistContent窗口/条目及读取意图，根分配独立队列ID，保留重复与未解析/失效软引用，不改歌单顺序/内容或自动播放。跨尺寸重发菜单请求，刷新/换组/根替换/覆盖/零面积/关闭撤销旧回调；dispose清空旧菜单和返回焦点，修复旧关闭回调的setState-after-dispose。共享busy/安全失败/显式同ID重试与成功提示沿用E5B组件。
+分支`codex/playlist-queue-actions`，基线`5ec9d63`，Stacked Draft base=`codex/catalog-queue-actions`；[计划](phase_7e5d_playlist_queue_plan.md)、ADR088及[报告](phase_7e5d_playlist_queue_report.md)。新增9单元、17Widget、4真实SQLite、4Golden和1Node；完整1544 Flutter/132 Node、491文件格式、严格分析、生成/迁移通过；173Golden仅1旧菜单图更新、168旧图不变，五张变更逐张查看。原资产/依赖/平台/Schema零变化，Android Debug预检通过。
+前置#77精确5ec9d63的push34690651343/PR34690666913均SUCCESS，Linux1341/Windows169Golden及2Runner/65文件正式入口包、Android资产/许可/签名通过，已回填。新SHA云端另验；系统歌单等入口及Phase7其余、Phase8–11仍未完成，无本批实机安装/出声或正式发行。
+
 当前增量Phase7E5C：专辑/艺人详情三端歌曲菜单已接下一首/添加队列，AppRouter注入同一根QueueController；准确Track/读取意图许可和页面代数防止旧动作，跨尺寸保留菜单但重新捕获许可；艺人Tab切换、刷新、隐藏/覆盖/零面积、关闭撤销旧回调。借E5B成功提示/busy/安全失败/显式重试与查看队列，不自动播放、不打断当前音频；歌单选择器返回和旧提示身份覆盖。
 分支`codex/catalog-queue-actions`，基线`4f50819`，Stacked Draft base=`codex/library-queue-actions`；[计划](phase_7e5c_catalog_queue_plan.md)、ADR087及[报告](phase_7e5c_catalog_queue_report.md)。新增8单元、19Widget、4真实SQLite和3Golden；完整1510 Flutter/131 Node、486文件格式、严格分析、生成/迁移通过；169Golden中仅3旧菜单图精确更新，其余163旧图不变。原资产/依赖/平台/Schema无变化。
 前置E5B精确4f50819的push34689627222与PR34689643919均SUCCESS，Android/Windows真实构建完成，#76及报告回填；本批新SHA云端另验。尚未完成其他歌单入口、Phase7其余与Phase8–11，无本批实机安装/音频出声或正式发行验收。

@@ -13,9 +13,11 @@ class PlaylistEntryMenu extends StatelessWidget {
     required this.entry,
     required this.onDismiss,
     required this.onSelected,
+    this.canInsert = false,
   });
   final PlaylistContentController controller;
   final PlaylistContentEntry entry;
+  final bool canInsert;
   final VoidCallback onDismiss;
   final ValueChanged<String> onSelected;
   @override
@@ -23,13 +25,25 @@ class PlaylistEntryMenu extends StatelessWidget {
     final id = entry.entry.id;
     return YYContextMenu(
       title: PlaylistContentSections.entryTitle(entry),
-      meta: '第 ${entry.entry.position + 1} 条 · 只修改此歌单',
+      meta: '第 ${entry.entry.position + 1} 条 · 队列与歌单独立',
       items: [
         YYContextMenuItem(
           id: 'play',
           label: '播放歌曲',
           glyph: YYGlyph.play,
           enabled: controller.canPlayEntry(id),
+        ),
+        YYContextMenuItem(
+          id: 'next',
+          label: '下一首播放',
+          glyph: YYGlyph.next,
+          enabled: canInsert,
+        ),
+        YYContextMenuItem(
+          id: 'queue',
+          label: '添加到队列',
+          glyph: YYGlyph.listPlus,
+          enabled: canInsert,
         ),
         YYContextMenuItem(
           id: 'up',

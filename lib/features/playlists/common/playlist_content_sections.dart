@@ -25,12 +25,14 @@ final class PlaylistContentSections {
     required this.playback,
     required this.menu,
     required this.canInteract,
+    this.queueFeedback,
   });
   final PlaylistContentController controller;
   final AppNavigation navigation;
   final PlaybackPresenter playback;
   final ValueChanged<String> menu;
   final bool Function() canInteract;
+  final Widget? queueFeedback;
 
   Widget get toolbar => Padding(
     padding: const EdgeInsets.only(bottom: 16),
@@ -148,6 +150,7 @@ final class PlaylistContentSections {
             Text('歌单歌曲', style: YYTypography.sectionTitle),
             const SizedBox(height: 8),
             Text('按歌单顺序 · 长按或右键管理条目', style: YYTypography.caption),
+            ?queueFeedback,
             if (controller.content case final data?
                 when data.totalCount >
                         PlaylistContentController.maxVisibleCount ||

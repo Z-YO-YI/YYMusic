@@ -6,13 +6,19 @@ import '../../../app/app_routes.dart';
 import '../../../app/layout_class.dart';
 import '../../../app/playback_presenter.dart';
 import '../../../design_system/yy_theme.dart';
+import '../../../domain/models/collection_models.dart';
 import '../../../domain/models/playlist_content.dart';
+import '../../../playback/queue_controller.dart';
+import '../../../playback/queue_edit_result.dart';
+import '../../queue/common/queue_operation_feedback.dart';
 import '../phone/phone_playlist_content_layout.dart';
 import '../tablet/tablet_playlist_content_layout.dart';
 import '../windows/windows_playlist_content_layout.dart';
 import 'playlist_content_controller.dart';
 import 'playlist_content_sections.dart';
 import 'playlist_entry_menu.dart';
+
+part 'playlist_queue_actions.dart';
 
 class PlaylistContentScreen extends StatefulWidget {
   const PlaylistContentScreen({
@@ -23,21 +29,25 @@ class PlaylistContentScreen extends StatefulWidget {
     required this.navigation,
     required this.playback,
     required this.frame,
+    this.queue,
   });
   final String playlistId;
   final PlaylistContentSessions sessions;
   final YYPlatform platform;
   final AppNavigation navigation;
   final PlaybackPresenter playback;
+  final QueueController? queue;
   final Widget Function(Widget child) frame;
   @override
   State<PlaylistContentScreen> createState() => PlaylistContentScreenState();
 }
 
 final class _MenuRequest {
-  _MenuRequest(this.id, this.snapshot);
+  _MenuRequest(this.id, this.snapshot, this.queue, this.sourcePermit);
   final String id;
   final PlaylistContent snapshot;
+  final QueueSnapshot? queue;
+  final bool Function()? sourcePermit;
 }
 
 /// Route state remains above replaceable platform chrome and never owns storage.
@@ -50,6 +60,16 @@ class PlaylistContentScreenState extends State<PlaylistContentScreen> {
   _MenuRequest? _menu;
   FocusNode? _returnFocus;
   bool _active = true;
+  int _queueEpoch = 0;
+  Size? _queueSize;
+  PlaylistContent? _queueContent;
+  bool _queueCurrent = false;
+  String? _queueNotice;
+  Object? _noticeIdentity;
+  void _setQueueNotice(String? notice) => setState(() {
+    _queueNotice = notice;
+    _noticeIdentity = notice == null ? null : Object();
+  });
   int _shownOffset = 0;
   int? _scrollResetOffset;
   @override
@@ -57,6 +77,7 @@ class PlaylistContentScreenState extends State<PlaylistContentScreen> {
     super.initState();
     controller = widget.sessions.open(widget.playlistId);
     controller.addListener(_changed);
+    widget.queue?.addListener(_queueChanged);
     controller.start();
   }
 
@@ -64,22 +85,39 @@ class PlaylistContentScreenState extends State<PlaylistContentScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final size = MediaQuery.sizeOf(context);
+    final wasActive = _active;
     _active =
         size.width > 0 &&
         size.height > 0 &&
         TickerMode.valuesOf(context).enabled &&
         (ModalRoute.isCurrentOf(context) ?? true);
+    if (_queueSize != size || wasActive != _active) {
+      _queueEpoch++;
+      _queueNotice = null;
+      _noticeIdentity = null;
+      final request = _menu;
+      if (_active && wasActive && request != null) {
+        _menu = _captureMenu(request.id, request.snapshot);
+      }
+    }
+    _queueSize = size;
     controller.setActive(_active);
     _scheduleWindowScroll();
     if (!_active && _menu != null) {
-      final request = _menu;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && identical(_menu, request)) _dismiss(restoreFocus: false);
-      });
+      _menu = null;
+      _returnFocus = null;
     }
   }
 
   void _changed() {
+    if (!identical(_queueContent, controller.content) ||
+        _queueCurrent != controller.isCurrent) {
+      _queueEpoch++;
+      _queueContent = controller.content;
+      _queueCurrent = controller.isCurrent;
+      _queueNotice = null;
+      _noticeIdentity = null;
+    }
     final offset = controller.content?.page.offset ?? 0;
     if (controller.isCurrent && offset != _shownOffset) {
       _shownOffset = offset;
@@ -109,9 +147,13 @@ class PlaylistContentScreenState extends State<PlaylistContentScreen> {
   }
 
   void _openMenu(String id) {
-    if (!_active || !controller.canOpenEntry(id)) return;
+    if (!_queuePageLive ||
+        widget.queue?.editBusy == true ||
+        !controller.canOpenEntry(id)) {
+      return;
+    }
     _returnFocus = FocusManager.instance.primaryFocus;
-    setState(() => _menu = _MenuRequest(id, controller.content!));
+    setState(() => _menu = _captureMenu(id, controller.content!));
   }
 
   void _dismiss({bool restoreFocus = true}) {
@@ -121,7 +163,7 @@ class PlaylistContentScreenState extends State<PlaylistContentScreen> {
     _returnFocus = null;
     if (restoreFocus) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && _active && _menu == null && focus?.context != null) {
+        if (_queuePageLive && _menu == null && focus?.context != null) {
           focus!.requestFocus();
         }
       });
@@ -129,10 +171,14 @@ class PlaylistContentScreenState extends State<PlaylistContentScreen> {
   }
 
   void _select(_MenuRequest request, String action) {
-    if (!_active ||
+    if (!_queuePageLive ||
         !identical(_menu, request) ||
         !identical(controller.content, request.snapshot) ||
         !controller.isCurrent) {
+      return;
+    }
+    if (action == 'queue' || action == 'next') {
+      unawaited(_insertEntry(request, next: action == 'next'));
       return;
     }
     _dismiss();
@@ -150,6 +196,10 @@ class PlaylistContentScreenState extends State<PlaylistContentScreen> {
 
   @override
   void dispose() {
+    _queueEpoch++;
+    _menu = null;
+    _returnFocus = null;
+    widget.queue?.removeListener(_queueChanged);
     controller.removeListener(_changed);
     unawaited(controller.close().catchError((Object _) {}));
     scroll.dispose();
@@ -163,6 +213,7 @@ class PlaylistContentScreenState extends State<PlaylistContentScreen> {
       controller,
       controller.writerChanges,
       widget.playback,
+      widget.queue,
     ]),
     builder: (context, _) {
       final size = MediaQuery.sizeOf(context);
@@ -171,6 +222,7 @@ class PlaylistContentScreenState extends State<PlaylistContentScreen> {
         navigation: widget.navigation,
         playback: widget.playback,
         menu: _openMenu,
+        queueFeedback: _queueFeedback(),
         canInteract: () => mounted && _active && _menu == null,
       );
       final content = widget.platform == YYPlatform.windows
@@ -229,6 +281,12 @@ class PlaylistContentScreenState extends State<PlaylistContentScreen> {
                           child: PlaylistEntryMenu(
                             key: ValueKey(request),
                             controller: controller,
+                            canInsert:
+                                _active &&
+                                widget.queue != null &&
+                                !widget.queue!.editBusy &&
+                                identical(widget.queue!.state, request.queue) &&
+                                (request.sourcePermit?.call() ?? false),
                             entry: request.snapshot.entries.firstWhere(
                               (e) => e.entry.id == request.id,
                             ),
