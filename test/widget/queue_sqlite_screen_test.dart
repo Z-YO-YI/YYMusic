@@ -15,7 +15,8 @@ import '../support/fake_audio_engine.dart';
 import '../support/fake_playback_dependencies.dart';
 import '../support/playlist_content_harness.dart' show settleContent;
 import '../unit/system_playlist_repository_test.dart' show systemQueue;
-import 'queue_screen_test.dart' show queuePage, tile;
+import 'queue_drag_screen_test.dart' show startQueueDrag;
+import 'queue_screen_test.dart' show queuePage, queueRow, tile;
 
 void main() {
   setUpAll(loadDesignAssets);
@@ -59,8 +60,15 @@ void main() {
         expect(graph.queue.state.currentEntryId, 'q-1');
         final page = queuePage(tester).controller;
         expect(page.canEdit(page.read.content!), isTrue);
-        tile(tester, 'q-1').onMoveUp!();
+        final target =
+            tester.getTopLeft(queueRow('q-0')) + const Offset(24, -40);
+        final drag = await startQueueDrag(tester, 'q-1');
+        await drag.moveTo(target);
+        await tester.pump(const Duration(milliseconds: 300));
+        await drag.up();
+        await tester.pumpAndSettle();
         await settleContent(tester);
+        expect(graph.queue.editBusy, isFalse);
         expect(
           (await tester.runAsync(graph.collection!.loadQueue))!
               .entries

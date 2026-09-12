@@ -4,6 +4,7 @@ import '../../../domain/models/system_playlist_content.dart';
 import '../../../playback/queue_controller.dart';
 import '../../../playback/queue_edit_result.dart';
 import '../../playlists/common/system_playlist_controller.dart';
+import 'queue_drag_session.dart';
 
 /// Route-owned read binding, not a second queue or playback controller.
 final class QueuePageController {
@@ -24,6 +25,7 @@ final class QueuePageController {
   SystemPlaylistContent? _lastContent;
   bool _lastCurrent = false;
   QueueSnapshot get expected => _expected;
+  int get interactionRevision => _intent;
 
   void start() => read.start();
 
@@ -76,6 +78,28 @@ final class QueuePageController {
 
   bool canEdit(SystemPlaylistContent snapshot) =>
       _active && !queue.editBusy && !read.busy && matches(snapshot);
+
+  QueueDragSession? beginDrag(
+    SystemPlaylistContent snapshot,
+    int index,
+    bool Function() viewPermit,
+  ) {
+    if (!canEdit(snapshot) ||
+        !viewPermit() ||
+        index < 0 ||
+        index >= snapshot.entries.length) {
+      return null;
+    }
+    final originalPermit = permit();
+    return QueueDragSession(
+      expected: _expected,
+      content: snapshot,
+      sourceIndex: index,
+      // submitEdit owns the busy gate; its own busy notification must not revoke
+      // the permission it checks again just before the accepted database write.
+      permit: () => originalPermit() && viewPermit() && matches(snapshot),
+    );
+  }
 
   /// Captures an intent once; callers must never recreate it inside a callback.
   bool Function() permit() {

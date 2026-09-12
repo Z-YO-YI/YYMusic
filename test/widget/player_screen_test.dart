@@ -12,6 +12,7 @@ import 'package:yymusic/features/player/common/shell_player.dart';
 import 'package:yymusic/features/player/phone/phone_player_layout.dart';
 import 'package:yymusic/features/player/tablet/tablet_player_layout.dart';
 import 'package:yymusic/features/player/windows/windows_player_layout.dart';
+import 'package:yymusic/features/queue/common/queue_screen.dart';
 import 'package:yymusic/playback/audio_engine_state.dart';
 
 import '../support/close_graph.dart';
@@ -223,7 +224,7 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('player-page-queue')));
       await tester.pumpAndSettle();
       expect(find.byType(PlayerScreen), findsNothing);
-      expect(find.text('调整播放顺序或移除歌曲'), findsOneWidget);
+      expect(find.byType(QueueScreen), findsOneWidget);
       navigation.back();
       await tester.pumpAndSettle();
       expect(find.byType(PlayerScreen), findsOneWidget);

@@ -31,7 +31,16 @@ extension _QueueSections on QueueScreenState {
           ],
         ),
       ),
-      box(Text('调整播放顺序或移除歌曲', style: YYTypography.caption)),
+      box(
+        Text(
+          data != null && data.entries.length > 1
+              ? widget.platform == YYPlatform.windows
+                    ? '拖动手柄排序，也可使用上下移按钮'
+                    : '长按拖动，或用上下移调整顺序'
+              : '调整播放顺序或移除歌曲',
+          style: YYTypography.caption,
+        ),
+      ),
       box(
         Wrap(
           spacing: 12,
@@ -128,9 +137,21 @@ extension _QueueSections on QueueScreenState {
             style: YYTypography.caption,
           ),
         ),
-        SliverList.builder(
-          itemCount: data.entries.length,
+        QueueReorderSliver(
+          key: ValueKey((data, root, controller.interactionRevision)),
+          count: data.entries.length,
+          enabled: editable && _interactive,
+          platform: widget.platform,
           itemBuilder: (_, index) => _row(data, index, editable, permit),
+          begin: (index) =>
+              controller.beginDrag(data, index, () => _interactive && permit()),
+          onMove: (drag, edit) {
+            if (_interactive && drag.permit()) {
+              unawaited(
+                controller.submit(edit, () => _interactive && drag.permit()),
+              );
+            }
+          },
         ),
         box(
           Wrap(
@@ -170,6 +191,13 @@ extension _QueueSections on QueueScreenState {
     final entry = data.entries[index], track = data.entries[index].track;
     final root = controller.expected, id = entry.entryId!;
     final current = id == root.currentEntryId;
+    FocusNode focus(YYGlyph glyph) => _actionFocus.putIfAbsent((
+      id,
+      glyph,
+    ), () => FocusNode(debugLabel: 'queue ${glyph.assetName}'));
+    final upFocus = focus(YYGlyph.up),
+        downFocus = focus(YYGlyph.down),
+        removeFocus = focus(YYGlyph.close);
     final valid =
         editable &&
         entry.position < root.entries.length &&
@@ -186,6 +214,9 @@ extension _QueueSections on QueueScreenState {
       current: current,
       allowManagementWhenDisabled: valid,
       alwaysShowActions: widget.platform == YYPlatform.android,
+      moveUpFocusNode: upFocus,
+      moveDownFocusNode: downFocus,
+      removeFocusNode: removeFocus,
       onPressed: valid && controller.read.canPlayEntry(data, entry.identity)
           ? () {
               if (_interactive && permit()) {
@@ -201,6 +232,7 @@ extension _QueueSections on QueueScreenState {
                 beforeEntryId: root.entries[entry.position - 1].id,
               ),
               permit,
+              restoreFocus: upFocus,
             )
           : null,
       onMoveDown: valid && entry.position < root.entries.length - 1
@@ -213,6 +245,7 @@ extension _QueueSections on QueueScreenState {
                     : null,
               ),
               permit,
+              restoreFocus: downFocus,
             )
           : null,
       onRemove: valid

@@ -23,6 +23,8 @@ Figma 转代码技能促使复用已审计组件与原图标，而非重新画�
 
 ## GitHub 与剩余工作
 
+2026-09-12 后续核验：本批精确 SHA `32edb5be72e2c7999a92009046063f7c6aacf3be` 的 [push34684110805](https://github.com/Z-YO-YI/YYMusic/actions/runs/34684110805) 与 [PR34684113148](https://github.com/Z-YO-YI/YYMusic/actions/runs/34684113148) 均 SUCCESS。[Draft PR #73](https://github.com/Z-YO-YI/YYMusic/pull/73) 未合并。源码检查、Android 和 Windows 常规任务成功；PR 日志确认 Windows 158 Golden、2 个真实 Runner 测试、正式入口 Debug 重建及 65 文件包校验通过；Android 48 资产/完整原生许可、单签名者通过。手动原生音频诊断与 Release 步骤未运行，未据此宣称真机出声或发行验收。
+
 前置 E2 的 [push34302430226](https://github.com/Z-YO-YI/YYMusic/actions/runs/34302430226) / [PR34302434100](https://github.com/Z-YO-YI/YYMusic/actions/runs/34302434100) 均 SUCCESS，精确 SHA `9a05089` 已回填 [PR #72](https://github.com/Z-YO-YI/YYMusic/pull/72) 和 E2 报告。源码/Android/Windows 常规任务通过，Windows 146 Golden、2 Runner、65 文件正式入口 Debug 包；手动原生音频任务未运行。
 
 本批审查后提交并 push，在对应 Stacked Draft PR 记录精确新 SHA、测试结果和云端运行链接；新 SHA 的 Android/Windows 必须独立构建，不借用前置 CI 或本地 APK 作为交付。未合并、改默认分支、发布 Release、触发手动原生媒体诊断或操作付费服务。不提交凭据、用户媒体、环境/签名文件或构建产物。
