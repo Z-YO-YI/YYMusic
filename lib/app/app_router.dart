@@ -131,6 +131,7 @@ final class AppRouter implements AppNavigation {
         ? LibraryScreen(
             platform: platform,
             controller: libraryController,
+            queue: queueController,
             playback: playbackPresenter,
             navigation: this,
             viewState: viewState,

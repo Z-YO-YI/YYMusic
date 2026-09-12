@@ -411,6 +411,23 @@ final class LibraryController extends ChangeNotifier {
       !page.loading &&
       _visible(track);
   bool _valid(int intent) => !_disposed && _active && intent == _intent;
+
+  /// Unlike playback, saving a queue soft reference also permits missing files.
+  bool canQueueTrack(Track track) =>
+      !_disposed &&
+      _active &&
+      !_busy &&
+      collection != null &&
+      page.phase == LoadPhase.data &&
+      !page.loading &&
+      page.items.any((item) => identical(item, track));
+
+  bool Function()? queueSourcePermit(Track track) {
+    if (!canQueueTrack(track)) return null;
+    final intent = _intent;
+    return () => _valid(intent) && canQueueTrack(track);
+  }
+
   void setActive(bool value) {
     if (_disposed || value == _active) return;
     _active = value;

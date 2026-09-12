@@ -6,16 +6,21 @@ import '../../../app/app_routes.dart';
 import '../../../app/app_view_state.dart';
 import '../../../app/layout_class.dart';
 import '../../../app/playback_presenter.dart';
-import '../../../design_system/yy_context_menu.dart';
-import '../../../design_system/yy_icon.dart';
 import '../../../design_system/yy_theme.dart';
+import '../../../domain/models/collection_models.dart';
 import '../../../domain/models/track.dart';
+import '../../../playback/queue_controller.dart';
+import '../../../playback/queue_edit_result.dart';
 import '../../local_music/common/local_music_panel.dart';
+import '../../queue/common/queue_operation_feedback.dart';
 import '../phone/phone_library_layout.dart';
 import '../tablet/tablet_library_layout.dart';
 import '../windows/windows_library_layout.dart';
 import 'library_controller.dart';
 import 'library_sections.dart';
+import 'library_track_menu.dart';
+
+part 'library_queue_actions.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({
@@ -25,12 +30,14 @@ class LibraryScreen extends StatefulWidget {
     required this.playback,
     required this.navigation,
     required this.viewState,
+    this.queue,
   });
   final YYPlatform platform;
   final LibraryController controller;
   final PlaybackPresenter playback;
   final AppNavigation navigation;
   final AppViewState viewState;
+  final QueueController? queue;
   @override
   State<LibraryScreen> createState() => _LibraryScreenState();
 }
@@ -43,6 +50,17 @@ class _LibraryScreenState extends State<LibraryScreen> {
   FocusNode? _returnFocus;
   int _menuGeneration = 0;
   bool _pickerOpen = false;
+  QueueSnapshot? _menuQueue;
+  bool Function()? _menuSourcePermit;
+  int _queueEpoch = 0;
+  bool _queueActive = false;
+  Size? _queueSize;
+  String? _queueNotice;
+  Object? _noticeIdentity;
+  void _setQueueNotice(String? notice) => setState(() {
+    _queueNotice = notice;
+    _noticeIdentity = notice == null ? null : Object();
+  });
   @override
   void initState() {
     super.initState();
@@ -51,13 +69,31 @@ class _LibraryScreenState extends State<LibraryScreen> {
       initialScrollOffset: widget.viewState.scrollOffset(AppRoute.library),
     )..addListener(_save);
     widget.controller.addListener(_changed);
+    widget.queue?.addListener(_queueChanged);
     widget.controller.start();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final active = !_pickerOpen && TickerMode.valuesOf(context).enabled;
+    final size = MediaQuery.sizeOf(context);
+    final active =
+        !_pickerOpen &&
+        TickerMode.valuesOf(context).enabled &&
+        (ModalRoute.isCurrentOf(context) ?? true) &&
+        !size.isEmpty;
+    if (_queueSize != size || _queueActive != active) {
+      _queueEpoch++;
+      _queueNotice = null;
+      final generation = _menuGeneration;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && generation == _menuGeneration) {
+          _dismiss(restoreFocus: false);
+        }
+      });
+    }
+    _queueSize = size;
+    _queueActive = active;
     widget.controller.setActive(active);
     if (!active && _menuTrack != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -69,6 +105,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
   void _changed() {
     if (_revision == widget.controller.viewRevision) return;
     _revision = widget.controller.viewRevision;
+    _queueEpoch++;
+    _queueNotice = null;
+    _noticeIdentity = null;
     _dismiss(restoreFocus: false);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && _scroll.hasClients) _scroll.jumpTo(0);
@@ -78,8 +117,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
   void _save() =>
       widget.viewState.saveScrollOffset(AppRoute.library, _scroll.offset);
   void _openMenu(Track track) {
-    if (_pickerOpen) return;
+    if (_pickerOpen || !_queueActive || widget.queue?.editBusy == true) return;
     _menuGeneration++;
+    _menuQueue = widget.queue?.state;
+    _menuSourcePermit = widget.controller.queueSourcePermit(track);
     _returnFocus = FocusManager.instance.primaryFocus;
     setState(() => _menuTrack = track);
   }
@@ -87,44 +128,24 @@ class _LibraryScreenState extends State<LibraryScreen> {
   void _dismiss({bool restoreFocus = true}) {
     if (_menuTrack == null) return;
     _menuGeneration++;
+    _menuQueue = null;
+    _menuSourcePermit = null;
     setState(() => _menuTrack = null);
     final focus = _returnFocus;
     _returnFocus = null;
     if (restoreFocus) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && focus?.context != null) focus!.requestFocus();
+        if (_queuePageLive && _menuTrack == null && focus?.context != null) {
+          focus!.requestFocus();
+        }
       });
-    }
-  }
-
-  Future<void> _pickPlaylist(Track track) async {
-    if (!widget.controller.canAddToPlaylist(track) || _pickerOpen) return;
-    final focus = _returnFocus;
-    _dismiss(restoreFocus: false);
-    _pickerOpen = true;
-    widget.controller.setActive(false);
-    try {
-      await widget.navigation.addToPlaylist(track.ref, title: track.title);
-    } finally {
-      if (mounted) {
-        _pickerOpen = false;
-        final active = TickerMode.valuesOf(context).enabled;
-        widget.controller.setActive(active);
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted &&
-              !_pickerOpen &&
-              TickerMode.valuesOf(context).enabled &&
-              (ModalRoute.isCurrentOf(context) ?? true) &&
-              focus?.context != null) {
-            focus!.requestFocus();
-          }
-        });
-      }
     }
   }
 
   @override
   void dispose() {
+    _queueEpoch++;
+    widget.queue?.removeListener(_queueChanged);
     widget.controller.setActive(false);
     widget.controller.removeListener(_changed);
     _scroll.removeListener(_save);
@@ -136,7 +157,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
   Widget build(BuildContext context) => ColoredBox(
     color: YYTheme.of(context).colors.base,
     child: ListenableBuilder(
-      listenable: Listenable.merge([widget.controller, widget.playback]),
+      listenable: Listenable.merge([
+        widget.controller,
+        widget.playback,
+        widget.queue,
+      ]),
       builder: (context, _) {
         final size = MediaQuery.sizeOf(context);
         final sections = LibrarySections(
@@ -144,6 +169,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
           playback: widget.playback,
           navigation: widget.navigation,
           menu: _openMenu,
+          queueFeedback: _queueFeedback(),
           localPanel: widget.controller.localMusic == null
               ? null
               : LocalMusicPanel(
@@ -207,43 +233,30 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       child: Padding(
                         padding: const EdgeInsets.all(12),
                         child: SingleChildScrollView(
-                          child: YYContextMenu(
-                            title: track.title,
-                            meta:
-                                '${widget.controller.sourceLabel(track.sourceId)} · ${LibrarySections.availabilityLabel(track)}',
-                            items: [
-                              YYContextMenuItem(
-                                id: 'play',
-                                label: '播放歌曲',
-                                glyph: YYGlyph.play,
-                                enabled: widget.controller.canPlay(track),
-                              ),
-                              YYContextMenuItem(
-                                id: 'favorite',
-                                label: widget.controller.isFavorite(track)
-                                    ? '取消收藏'
-                                    : '收藏歌曲',
-                                glyph: YYGlyph.heart,
-                                enabled: widget.controller.canFavorite(track),
-                              ),
-                              YYContextMenuItem(
-                                id: 'playlist',
-                                label: '添加到歌单',
-                                glyph: YYGlyph.playlist,
-                                enabled: widget.controller.canAddToPlaylist(
-                                  track,
-                                ),
-                              ),
-                            ],
+                          child: LibraryTrackMenu(
+                            track: track,
+                            controller: widget.controller,
+                            canInsert:
+                                _queueActive &&
+                                widget.queue != null &&
+                                widget.queue!.editBusy == false &&
+                                identical(widget.queue!.state, _menuQueue) &&
+                                (_menuSourcePermit?.call() ?? false),
                             onDismiss: _dismiss,
                             onSelected: (id) {
-                              if (_pickerOpen ||
+                              if (!_queuePageLive ||
                                   generation != _menuGeneration ||
                                   !identical(_menuTrack, track)) {
                                 return;
                               }
                               if (id == 'playlist') {
                                 unawaited(_pickPlaylist(track));
+                                return;
+                              }
+                              if (id == 'queue' || id == 'next') {
+                                unawaited(
+                                  _insertTrack(track, next: id == 'next'),
+                                );
                                 return;
                               }
                               _dismiss();

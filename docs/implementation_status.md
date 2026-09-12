@@ -1,5 +1,9 @@
 # 实施状态
 
+当前增量 Phase7E5B：三端音乐库歌曲菜单已接入下一首/添加队列，根QueueController准备唯一entry ID及不可变编辑；菜单绑定准确Track对象/源读取意图/根快照。根变化、刷新、离页、零面积、尺寸、关闭菜单撤销旧回调；已接受写入排空，缺失文件可添加软引用但不会变可播放。成功页内提示、共享busy/安全失败、跨页显式重试/知悉与打开队列均接线；返回歌单选择器后恢复菜单权限，焦点不抢后台。
+分支`codex/library-queue-actions`，基线`f9590f2`，Stacked Draft PR base=`codex/queue-insert-intents`，[计划](phase_7e5b_library_queue_plan.md)、ADR086与[报告](phase_7e5b_library_queue_report.md)。新增3工厂/6源许可单元、15Widget、2真实SQLite菜单、5Golden和1Node；完整1476 Flutter/130 Node、481文件格式、严格分析、生成/迁移通过。166Golden通过，仅1旧菜单图精确更新、160旧图不变；原资产/Schema/依赖/平台无改动。
+E5A精确`f9590f2`两组源码/Android/Windows CI SUCCESS，#75已回填；本批新SHA云端另验。本批不是全站菜单完成，专辑/艺人详情、自建/系统歌单等歌曲入口后续复用，Phase7其余与Phase8–11仍待完成，无本批真机安装/出声/发行验收。
+
 当前增量 Phase 7E5A：QueueEdit.addToEnd/playNext 复用唯一根授权、busy、同快照显式重试与关闭排空；拒绝重复 entry ID，保留重复完整 TrackRef/addedAt/current，空队列不自动选中/播放。成功持久化后扩展而不重排原随机序列，最近指定下一首优先，后续末尾添加保持该优先序；旧低层接口复用同一顺序策略。
 分支 `codex/queue-insert-intents`，基线 `8d9b4da`，Stacked Draft PR base=`codex/queue-drag-sorting`；[计划](phase_7e5a_queue_insert_plan.md)、ADR085 与[报告](phase_7e5a_queue_insert_report.md)先后记录。新增10模型、18核心、4实际SQLite测试与1Node；完整1445 Flutter/129 Node、473文件格式、严格分析、生成/迁移通过；161旧Golden与原始资产/Schema/依赖/平台未改。
 E4 `8d9b4da` 双组云端源码/Android/Windows SUCCESS，#74与报告回填；新SHA云端单独验证。本批尚未增加按钮，下一批E5B接“添加到队列/下一首播放”菜单及安全反馈。随机顺序沿用非持久化边界，物理队列/current跨启动恢复；Phase7其余与Phase8–11仍未完成，不是日常可用发行版。

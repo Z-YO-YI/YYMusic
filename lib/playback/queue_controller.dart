@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import '../domain/models/collection_models.dart';
 import '../domain/models/domain_failure.dart';
 import '../domain/models/queue_edit.dart';
+import '../domain/models/track.dart';
 import 'playback_controller.dart';
 import 'playback_state.dart';
 import 'queue_edit_result.dart';
@@ -13,11 +14,14 @@ part 'queue_edit_feedback.dart';
 
 /// A queue command facade. The queue itself lives only in PlaybackState.
 final class QueueController extends ChangeNotifier {
-  QueueController(this._playback) {
+  QueueController(this._playback, {DateTime Function()? clock})
+    : _clock = clock ?? DateTime.now {
     _playback.addListener(_forwardChange);
   }
 
   final PlaybackController _playback;
+  final DateTime Function() _clock;
+  int _insertSequence = 0;
   bool _disposed = false;
   bool _notifierDisposed = false;
   int _notificationDepth = 0;
@@ -33,6 +37,25 @@ final class QueueController extends ChangeNotifier {
 
   bool get editBusy => _editBusy;
   QueueEditFailure? get editFailure => _editFailure;
+
+  /// Prepare once for one displayed root; retries retain this exact entry ID.
+  QueueEdit? prepareInsertion(
+    QueueSnapshot expected,
+    TrackRef track, {
+    required bool next,
+  }) {
+    if (_disposed || _editBusy || !identical(state, expected)) return null;
+    final now = _clock().toUtc();
+    final ids = expected.entries.map((entry) => entry.id).toSet();
+    String id;
+    do {
+      id = 'insert-${now.microsecondsSinceEpoch}-${_insertSequence++}';
+    } while (ids.contains(id));
+    final entry = QueueEntry(id: id, track: track, position: 0, addedAt: now);
+    return next
+        ? QueueEdit.playNext(expected, entry)
+        : QueueEdit.addToEnd(expected, entry);
+  }
 
   /// Shared UI submission; failures remain available after a page unsubscribes.
   Future<QueueEditResult> submitEdit(
