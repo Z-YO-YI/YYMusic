@@ -27,12 +27,14 @@ import '../features/playlists/common/playlist_controller.dart';
 import '../features/playlists/common/playlist_editor_host.dart';
 import '../features/playlists/common/system_playlist_controller.dart';
 import '../features/playlists/common/system_playlist_screen.dart';
+import '../features/queue/common/queue_screen.dart';
 import '../features/search/common/search_controller.dart';
 import '../features/search/common/search_screen.dart';
 import '../features/settings/common/appearance_settings_controller.dart';
 import '../features/settings/common/licenses_screen.dart';
 import '../features/settings/common/settings_screen.dart';
 import '../playback/lyrics_controller.dart';
+import '../playback/queue_controller.dart';
 import '../shared/foundation_button.dart';
 import 'adaptive_root.dart';
 import 'app_routes.dart';
@@ -63,6 +65,7 @@ final class AppRouter implements AppNavigation {
     PlaylistContentSessions? playlistContents,
     PlaylistAddSessions? playlistAdds,
     SystemPlaylistSessions? systemPlaylists,
+    QueueController? queueController,
     AppearanceSettingsController? appearanceSettings,
     FullscreenPresenter? fullscreen,
     NavigatorObserver? fullscreenObserver,
@@ -351,6 +354,38 @@ final class AppRouter implements AppNavigation {
           },
         ),
         GoRoute(
+          path: '/queue',
+          pageBuilder: (context, state) => NoTransitionPage<void>(
+            key: state.pageKey,
+            name: '/queue',
+            child:
+                systemPlaylists != null &&
+                    queueController != null &&
+                    playbackPresenter != null
+                ? QueueScreen(
+                    queue: queueController,
+                    sessions: systemPlaylists,
+                    platform: platform,
+                    navigation: this,
+                    frame: (child) => AdaptiveRoot(
+                      platform: platform,
+                      navigation: this,
+                      selected: AppRoute.library,
+                      playbackPresenter: playbackPresenter,
+                      child: child,
+                    ),
+                  )
+                : SafeArea(
+                    child: YYErrorBanner(
+                      title: '无法打开队列',
+                      message: '队列存储不可用，请返回后重试。',
+                      actionLabel: '返回',
+                      onAction: back,
+                    ),
+                  ),
+          ),
+        ),
+        GoRoute(
           path: '/settings/licenses',
           pageBuilder: (context, state) => NoTransitionPage<void>(
             key: state.pageKey,
@@ -400,6 +435,7 @@ final class AppRouter implements AppNavigation {
   bool _pickerShowing = false;
   bool _playerPushPending = false;
   bool _lyricsPushPending = false;
+  bool _queuePushPending = false;
   RouterConfig<Object> get config => _router;
 
   @override
@@ -433,17 +469,17 @@ final class AppRouter implements AppNavigation {
   }
 
   // Named independent pages are reused instead of cycling player/lyrics stacks.
-  bool _restoreRoute(AppRoute route) {
+  bool _restoreRoute(AppRoute route) => _restorePath(route.path);
+
+  bool _restorePath(String path) {
     // Configuration is updated before Navigator has built a just-pushed page.
-    if (_activePath == route.path) return true;
+    if (_activePath == path) return true;
     if (!_router.routerDelegate.currentConfiguration.matches.any(
-      (match) => match.matchedLocation == route.path,
+      (match) => match.matchedLocation == path,
     )) {
       return false;
     }
-    _rootNavigator.currentState?.popUntil(
-      (page) => page.settings.name == route.path,
-    );
+    _rootNavigator.currentState?.popUntil((page) => page.settings.name == path);
     return true;
   }
 
@@ -498,19 +534,30 @@ final class AppRouter implements AppNavigation {
 
   @override
   void openSystemPlaylist(SystemPlaylistType type) {
+    if (type == SystemPlaylistType.queue) {
+      if (_restorePath('/queue') || _queuePushPending) return;
+      _queuePushPending = true;
+    }
     final focus = FocusManager.instance.primaryFocus;
     unawaited(
-      _router.push<void>(systemPlaylistLocation(type).toString()).then((_) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          final context = focus?.context;
-          if (context != null &&
-              context.mounted &&
-              TickerMode.valuesOf(context).enabled &&
-              (ModalRoute.isCurrentOf(context) ?? true)) {
-            focus!.requestFocus();
-          }
-        });
-      }),
+      _router
+          .push<void>(
+            type == SystemPlaylistType.queue
+                ? '/queue'
+                : systemPlaylistLocation(type).toString(),
+          )
+          .then((_) {
+            if (type == SystemPlaylistType.queue) _queuePushPending = false;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              final context = focus?.context;
+              if (context != null &&
+                  context.mounted &&
+                  TickerMode.valuesOf(context).enabled &&
+                  (ModalRoute.isCurrentOf(context) ?? true)) {
+                focus!.requestFocus();
+              }
+            });
+          }),
     );
   }
 

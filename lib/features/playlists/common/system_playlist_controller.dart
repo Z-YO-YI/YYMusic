@@ -83,6 +83,11 @@ final class SystemPlaylistController extends ChangeNotifier {
     refresh();
   }
 
+  /// Rebinds a queue read after root publication without cancelling its play.
+  void refreshQueueProjection() {
+    if (type == SystemPlaylistType.queue) _requestRead();
+  }
+
   /// Re-subscribes before reading the same target window, including after error.
   void refresh() {
     if (_disposed) return;

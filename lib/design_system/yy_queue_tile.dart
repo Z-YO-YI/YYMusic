@@ -23,6 +23,8 @@ class YYQueueTile extends StatefulWidget {
     this.onMoveUp,
     this.onMoveDown,
     this.onRemove,
+    this.allowManagementWhenDisabled = false,
+    this.alwaysShowActions = false,
     this.current = false,
     this.loading = false,
     this.density = YYQueueTileDensity.standard,
@@ -37,6 +39,8 @@ class YYQueueTile extends StatefulWidget {
   final VoidCallback? onMoveUp;
   final VoidCallback? onMoveDown;
   final VoidCallback? onRemove;
+  final bool allowManagementWhenDisabled;
+  final bool alwaysShowActions;
   final bool current;
   final bool loading;
   final YYQueueTileDensity density;
@@ -90,7 +94,11 @@ class _YYQueueTileState extends State<YYQueueTile> {
         ? theme.accent.readableOn(selectedSurface)
         : colors.text;
     final actionsVisible =
-        phone || _hovered || _hasMainFocus || _focusedActions > 0;
+        widget.alwaysShowActions ||
+        phone ||
+        _hovered ||
+        _hasMainFocus ||
+        _focusedActions > 0;
     final artworkDimension = immersive
         ? YYQueueLyricsMetrics.queueImmersiveArtwork
         : YYQueueLyricsMetrics.queueArtwork;
@@ -201,15 +209,20 @@ class _YYQueueTileState extends State<YYQueueTile> {
         label: '${widget.title}：$label',
         danger: danger,
         loading: widget.loading,
-        onPressed: _enabled ? callback : null,
+        onPressed:
+            !widget.loading && (_enabled || widget.allowManagementWhenDisabled)
+            ? callback
+            : null,
       ),
     );
 
     return MouseRegion(
-      onEnter: _enabled ? (_) => setState(() => _hovered = true) : null,
+      onEnter: _enabled || widget.allowManagementWhenDisabled
+          ? (_) => setState(() => _hovered = true)
+          : null,
       onExit: (_) => setState(() => _hovered = false),
       child: Opacity(
-        opacity: _enabled ? 1 : .45,
+        opacity: _enabled || widget.allowManagementWhenDisabled ? 1 : .45,
         child: AnimatedScale(
           duration: theme.motion(YYMotion.press),
           curve: YYMotion.standard,

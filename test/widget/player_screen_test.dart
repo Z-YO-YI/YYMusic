@@ -223,7 +223,7 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('player-page-queue')));
       await tester.pumpAndSettle();
       expect(find.byType(PlayerScreen), findsNothing);
-      expect(find.textContaining('当前队列'), findsWidgets);
+      expect(find.text('调整播放顺序或移除歌曲'), findsOneWidget);
       navigation.back();
       await tester.pumpAndSettle();
       expect(find.byType(PlayerScreen), findsOneWidget);
