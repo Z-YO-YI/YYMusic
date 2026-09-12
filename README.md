@@ -1,5 +1,7 @@
 # YYMusic
 
+当前增量：**Phase 7E3 独立原生队列页面**。音乐库、播放器及歌词的队列入口现在打开 `/queue`，复用唯一根队列，支持准确播放重复条目、上下移动、缺失项移除、当前项/清空确认、安全失败和显式重试。Android 手机/平板与 Windows 分别适配，使用既有 Figma 审计组件与原始图标。完整 1386 Flutter（新增 12 Golden）、127 Node 和严格分析通过，见[计划](docs/phase_7e3_native_queue_plan.md)与[报告](docs/phase_7e3_native_queue_report.md)。拖拽、更多添加入口及 Phase 7 剩余能力继续分批开发；新安装仍为空库，尚非日常可用发行版。以下“当前增量”为历史记录。
+
 当前增量：**Phase 7E2 根队列编辑反馈**。在同一QueueController加入共享busy、每次提交结果、跨页面保留的安全失败、同快照显式重试和按失败身份知悉；其他成功操作不抹旧失败，旧确认不改新队列，关闭先等待反馈排空。1350项Flutter（146旧Golden未改）、126项Node、严格分析和Android Debug预检通过，见[计划](docs/phase_7e2_queue_edit_feedback_plan.md)与[报告](docs/phase_7e2_queue_edit_feedback_report.md)。本批是独立队列UI所需状态接口，尚未新增管理页面；前置E1两组GitHub Android/Windows已SUCCESS，[精确回填](docs/phase_7e1_queue_edit_intents_report.md)。以下“当前增量”均为历史记录。
 
 当前增量：**Phase 7E1 队列编辑核心**。新增绑定根快照的移除、清空和锚点排序；旧菜单/拖拽意图不能修改新队列，重复歌曲按独立条目处理，编辑共用既有串行持久化与关闭屏障。非当前项保存失败不冒充播放失败，停止后的失败不会擅自重播。详见[计划](docs/phase_7e1_queue_edit_intents_plan.md)及[报告](docs/phase_7e1_queue_edit_intents_report.md)。这是核心API，尚未新增独立队列管理UI；后续接编辑反馈及页面。前置全屏页面dff7c32的两组GitHub Android/Windows已SUCCESS，[精确回填](docs/phase_7d2_fullscreen_pages_report.md)。以下“当前增量”是历史记录。
@@ -73,6 +75,8 @@ Android进入播放/歌词页会请求系统栏沉浸，系统手势仍可临时
 手机纵向排列统计，平板横屏统计与目录分栏、竖屏横排统计，Windows采用横排统计。旋转与分屏保留同一目录页；离开/覆盖页面会停止监听并丢弃晚到结果，回到页面重新读取。Windows可用Tab和Enter刷新，操作不改变播放或队列。
 
 ## 系统歌单浏览与播放
+
+当前队列的新入口为独立 `/queue`；旧 `/system-playlist?type=queue` 链接保留只读兼容。队列按独立 entry ID 操作，缺失文件仍能排序/移除，不会删除原音乐文件。移除当前项或清空会先确认、停止播放，移除后不会自动播放相邻项。读取从 20 条扩展到每组最多 200 条，可浏览上一组/下一组；上下移动可跨组边界。Windows 操作在悬停/键盘焦点时出现，Android 手机和平板常显；Enter/Space 操作、Esc 先关闭确认再返回页面。失败后“重试队列操作”只作用于原快照，“知道了”仅清除当前失败提示。
 
 音乐库→歌单中的“喜欢的音乐”“最近播放”“当前队列”读取实际本机数据，不创建可删除的系统父歌单。收藏按时间倒序，最近读取已有的最多20首记录，队列按真实顺序保留重复项。点击收藏/最近曲目复用或追加到当前队列；点击队列则播放该条目而非同曲第一项。失效和未解析引用仍显示但不能播放。更多歌曲逐步扩展至200条，再用上一组/下一组继续；返回、旋转和分屏保留会话，离页或最小化取消尚未开始的播放，已开始音频不受影响。Windows支持Tab、Enter/Space及Esc返回并恢复入口焦点。
 

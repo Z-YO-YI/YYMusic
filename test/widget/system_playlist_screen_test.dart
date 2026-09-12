@@ -8,6 +8,7 @@ import 'package:yymusic/domain/models/collection_models.dart';
 import 'package:yymusic/features/library/common/library_controller.dart';
 import 'package:yymusic/features/library/common/library_screen.dart';
 import 'package:yymusic/features/playlists/common/system_playlist_screen.dart';
+import 'package:yymusic/features/queue/common/queue_screen.dart';
 
 import '../support/design_harness.dart';
 import '../support/playlist_content_harness.dart' show settleContent;
@@ -61,7 +62,11 @@ void main() {
         await tester.pumpAndSettle();
         await tester.tap(link);
         await settleContent(tester);
-        expect(systemState(tester).controller.type, type);
+        if (type == SystemPlaylistType.queue) {
+          expect(find.byType(QueueScreen), findsOneWidget);
+        } else {
+          expect(systemState(tester).controller.type, type);
+        }
         expect(f.graph.systemPlaylists.retainedSessionCount, 1);
         await tester.binding.handlePopRoute();
         await settleContent(tester);
@@ -143,7 +148,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await settleContent(tester);
-    expect(systemState(tester).controller.type, SystemPlaylistType.queue);
+    expect(find.byType(QueueScreen), findsOneWidget);
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await settleContent(tester);
     expect(find.byType(SystemPlaylistScreen), findsNothing);

@@ -1,5 +1,9 @@
 # 实施状态
 
+当前增量 Phase 7E3：已实现独立 `/queue` 与三端原生布局，复用根有界系统队列读取和 QueueController 编辑反馈。准确播放重复条目、上下移动/跨组锚点、不可用项移除、当前项/清空确认、忙态、安全失败、跨页重试/知悉及返回均接线；根快照/投影/离页/尺寸变化撤销旧回调，刷新投影不误取消已接受的播放。
+分支 `codex/native-queue-route`，基线 `9a05089`，Stacked Draft PR base=`codex/queue-edit-feedback`，[计划](phase_7e3_native_queue_plan.md)与 ADR083 先于实现。新增 7 单元、15 Widget、2 实际 SQLite 页面回归、12 Golden、1 Node；完整 1386 Flutter / 127 Node、464 文件格式、严格分析、生成/迁移通过。构建及新提交云端结果见[报告](phase_7e3_native_queue_report.md)。旧 146 Golden、原始资产、Schema/依赖未改。
+前置 E2 两组云端常规任务已 SUCCESS，#72 与报告回填；不以旧结果代替本批验收。本批上下移动已可用，拖拽及更多添加入口未完成；Phase 7 其余与 Phase 8–11 继续开发。新安装仍为空库，尚未做本批真机安装/出声或签名发行。
+
 当前增量 Phase 7E2：现有根QueueController新增submitEdit结果、共享editBusy、跨页面安全失败、同快照retryEdit和按失败身份知悉；重复提交返回busy，旧快照/离页取消，其他成功不抹旧失败。结果Future在通知前注册，监听者可重入提交/关闭，根释放引擎/存储前等待队列反馈结算。
 新增22项模型/反馈单元及3项真实SQLite测试、1项Node门禁；最终1350 Flutter（146旧Golden未改）、126 Node、454文件格式、严格分析、生成/迁移及Android Debug资产/许可/v2单签名者预检通过。两处旧关闭顺序门禁准确纳入queue.close，未放宽检查。
 分支`codex/queue-edit-feedback`，基线3d89cc8，Draft PR base=`codex/queue-edit-intents`，[计划](phase_7e2_queue_edit_feedback_plan.md)及ADR082先于共享API，[报告](phase_7e2_queue_edit_feedback_report.md)记录证据。本批未新增UI、Schema/依赖/原生能力；下一阶段接独立队列视图与管理操作。
