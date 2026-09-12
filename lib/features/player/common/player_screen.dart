@@ -17,9 +17,13 @@ import '../../../design_system/yy_theme.dart';
 import '../../../design_system/yy_tokens.dart';
 import '../../../domain/models/collection_models.dart';
 import '../../../domain/models/track.dart';
+import '../../../playback/playback_favorite_controller.dart';
 import '../phone/phone_player_layout.dart';
 import '../tablet/tablet_player_layout.dart';
 import '../windows/windows_player_layout.dart';
+import 'playback_favorite_feedback.dart';
+
+part 'player_favorite_actions.dart';
 
 /// Independent native route; owns only gesture previews and presentation state.
 class PlayerScreen extends StatefulWidget {
@@ -30,12 +34,16 @@ class PlayerScreen extends StatefulWidget {
     required this.navigation,
     this.routeActive,
     this.fullscreen,
+    this.favorite,
   });
   final YYPlatform platform;
   final PlaybackPresenter presenter;
   final AppNavigation navigation;
   final ValueListenable<bool>? routeActive;
   final FullscreenPresenter? fullscreen;
+
+  /// Borrows root collection state without owning its lifetime or storage.
+  final PlaybackFavoriteController? favorite;
 
   @override
   State<PlayerScreen> createState() => _PlayerScreenState();
@@ -54,6 +62,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
     super.initState();
     _identity = (widget.presenter.entryId, widget.presenter.trackRef);
     widget.presenter.addListener(_onPlayback);
+    widget.favorite?.addListener(_onFavorite);
     widget.routeActive?.addListener(_routeChanged);
   }
 
@@ -79,6 +88,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
     if (mounted) setState(_invalidate);
   }
 
+  void _onFavorite() {
+    if (mounted) setState(() {});
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -97,6 +110,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void didUpdateWidget(PlayerScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.favorite != widget.favorite) {
+      oldWidget.favorite?.removeListener(_onFavorite);
+      widget.favorite?.addListener(_onFavorite);
+      _invalidate();
+    }
     if (oldWidget.presenter != widget.presenter) {
       oldWidget.presenter.removeListener(_onPlayback);
       widget.presenter.addListener(_onPlayback);
@@ -118,6 +136,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
         generation != _generation) {
       return false;
     }
+    if (!(ModalRoute.of(context)?.isCurrent ?? true)) return false;
     final box = context.findRenderObject();
     return box is RenderBox &&
         box.hasSize &&
@@ -129,6 +148,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   void dispose() {
     _invalidate();
     widget.presenter.removeListener(_onPlayback);
+    widget.favorite?.removeListener(_onFavorite);
     widget.routeActive?.removeListener(_routeChanged);
     super.dispose();
   }
@@ -156,7 +176,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
       final presenter = widget.presenter;
       final generation = _generation;
       final entry = presenter.entryId;
-      final data = presenter.data;
+      final favorite = widget.favorite;
+      final data = presenter.data.copyWith(
+        favorite: favorite?.state.isFavorite == true,
+      );
       final theme = YYTheme.of(context);
       final compact = box.maxHeight < 500;
       final view = data.copyWith(
@@ -179,9 +202,12 @@ class _PlayerScreenState extends State<PlayerScreen> {
               if (_canInteract(generation)) callback();
             }
           : null;
-      final controls = YYFullPlayerContent(
+      final playerControls = YYFullPlayerContent(
         key: ValueKey(('player-content', entry, layout)),
         data: view,
+        showFavorite: favorite?.state.isFavorite != null,
+        favoriteBusy: favorite?.busy ?? false,
+        onToggleFavorite: _favoriteAction(generation),
         statusLabel: presenter.statusLabel,
         compact: compact,
         titleSize: compact
@@ -246,6 +272,18 @@ class _PlayerScreenState extends State<PlayerScreen> {
           }
         },
       );
+      final controls =
+          favorite == null || (!favorite.busy && favorite.failure == null)
+          ? playerControls
+          : Column(
+              children: [
+                PlaybackFavoriteFeedback(
+                  controller: favorite,
+                  permit: () => _canInteract(generation),
+                ),
+                playerControls,
+              ],
+            );
       Widget artwork(double dimension) => AnimatedScale(
         key: const ValueKey('player-page-artwork-scale'),
         scale: theme.reduceMotion || data.playing ? 1 : .94,

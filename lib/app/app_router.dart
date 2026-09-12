@@ -152,6 +152,7 @@ final class AppRouter implements AppNavigation {
             key: const ValueKey('screen-player'),
             platform: platform,
             presenter: playbackPresenter,
+            favorite: playbackFavorite,
             navigation: this,
             routeActive: _playerActivity,
             fullscreen: fullscreen,

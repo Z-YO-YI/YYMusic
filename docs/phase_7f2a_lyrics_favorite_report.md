@@ -26,6 +26,8 @@
 
 ## GitHub、限制与下一阶段
 
+2026-09-12后续核验：精确head `d29356cc0419bd878a0bc995f19c5057994c19fe` 的[push34704863898](https://github.com/Z-YO-YI/YYMusic/actions/runs/34704863898)与[PR34704867239](https://github.com/Z-YO-YI/YYMusic/actions/runs/34704867239)均SUCCESS；源码、Android及Windows构建通过，两个显式媒体诊断作业跳过。此为F2A结果，不替代F2B新提交验证。
+
 前置F1的push34703279070/PR34703282153均SUCCESS，精确head4302cbb，报告已回填。本批提交push与Draft PR后按新SHA独立核验双平台，不将本地APK或前置成功当作本批CI成功。未提交凭据、用户媒体或构建产物；不自动合并、不变默认分支、不发布Release。
 
 本批仅歌词页收藏。播放页/Shell收藏尚待接入；手机继续遵循原Dock隐藏规则。真实SQLite路径沿用本轮重跑的F1四项，无新增UI-SQLite联调用例；无本批本地Windows编译/真机安装/出声验收。Phase7整体及Phase8真实导入、Phase9来源、Phase10后台媒体、Phase11签名发布未完成，新安装仍为空库。下一批继续播放页/Shell接线及相应交互/Golden验证。

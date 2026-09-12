@@ -9,6 +9,9 @@ class YYFullPlayerContent extends StatelessWidget {
     this.titleSize = 30,
     this.compact = false,
     this.loading = false,
+    this.showFavorite = false,
+    this.favoriteBusy = false,
+    this.onToggleFavorite,
     this.errorMessage,
     this.onTogglePlayback,
     this.onPrevious,
@@ -28,6 +31,11 @@ class YYFullPlayerContent extends StatelessWidget {
   final double titleSize;
   final bool compact;
   final bool loading;
+
+  /// Unknown/unavailable collection state does not present a false value.
+  final bool showFavorite;
+  final bool favoriteBusy;
+  final VoidCallback? onToggleFavorite;
   final String? errorMessage;
   final VoidCallback? onTogglePlayback, onPrevious, onNext;
   final VoidCallback? onToggleShuffle, onCycleRepeat, onSeekCancel;
@@ -71,20 +79,37 @@ class YYFullPlayerContent extends StatelessWidget {
       onCycleRepeat,
       selected: data.repeat != YYRepeatState.off,
     );
+    final title = Text(
+      data.title,
+      maxLines: compact ? 1 : 3,
+      overflow: TextOverflow.ellipsis,
+      style: YYTypography.text(
+        size: titleSize,
+        weight: 780,
+        spacing: -1.0,
+        height: 1.12,
+      ),
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          data.title,
-          maxLines: compact ? 1 : 3,
-          overflow: TextOverflow.ellipsis,
-          style: YYTypography.text(
-            size: titleSize,
-            weight: 780,
-            spacing: -1.0,
-            height: 1.12,
-          ),
-        ),
+        if (showFavorite)
+          Row(
+            children: [
+              Expanded(child: title),
+              const SizedBox(width: 8),
+              _TransportButton(
+                id: 'page-favorite',
+                glyph: YYGlyph.heart,
+                label: data.favorite ? '取消收藏' : '收藏',
+                toggled: data.favorite,
+                loading: favoriteBusy,
+                onPressed: onToggleFavorite,
+              ),
+            ],
+          )
+        else
+          title,
         SizedBox(height: compact ? 6 : 9),
         Text(
           data.artist,
