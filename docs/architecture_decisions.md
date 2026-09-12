@@ -1064,3 +1064,11 @@ Phase7H1A，2026-09-13。PlaybackController增加只读睡眠投影与关闭/15/
 Phase7H1B，2026-09-13。新增同步bool设置接口，只在可用引擎、非加载中的当前已加载条目和ready/playing/buffering/paused阶段接受；拒绝不修改旧意图。睡眠投影的entryId表示本曲结束，与分钟deadline互斥；Timer仍归根，模式切换撤销旧回调。
 
 当前条目自然完成时同步消费armed为expired并阻止自动推进，无需在completed后补pause。按queue entry身份而不是歌曲身份，重复/随机不能绕过一次性消费。暂停/恢复/seek保留；停止、错误、队列当前项改变或重载撤销。已经消费后的取消/重设不恢复旧自动推进，显式用户play仍可重播。没有新的流订阅、Widget定时器、持久化或平台协议。
+
+## ADR-099：睡眠卡片投影复用根意图，UI动作绑定双快照
+
+Phase7H2A，2026-09-13。分钟armed投影记录原PlaybackSleepDuration，不能从动态剩余时间猜测选中项；非armed阶段不呈现活动分钟选中态。本曲可用性由根同一判定提供，UI不复制引擎加载/条目匹配逻辑。现有PlaybackPresenter借用根状态，不再创建一个业务控制器或Timer。
+
+新增睡眠选项枚举及一次性动作工厂，捕获当前PlaybackState和PlaybackSleepTimerState对象身份；动作在调用外部页面许可前后均复查双快照与生命周期，许可重入或抛错按拒绝处理，消费先于根通知。返回accepted/rejected/failed明确结果，错误不泄露原始异常。允许关闭无可用引擎上的旧设置；开启分钟或本曲仍由根能力约束。播放快照任何变化都会撤销旧动作，界面必须从最新构建获取新动作；已接受动作不被后续页面变化倒放或撤销。
+
+补充：const off会在关闭/重复取消后保持对象身份，不能仅依靠双快照。根显式isClosed提供关闭判定，Presenter每次根通知递增sleepRevision并纳入动作校验；先失败复现off→off仍接受旧分钟动作，再补版本校验。此版本只撤销UI动作，不是新播放或计时状态。

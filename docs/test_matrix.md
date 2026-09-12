@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+Phase7H2A：20新Flutter覆盖原始选中分钟、无源/加载/完成能力、双快照失效、常量off→off通知失效、一次性/许可重入和抛错、根/Presenter关闭、调度失败；67相关及完整1813 Flutter（101秒）通过。144 Node（18.9秒）通过：门禁从误匹配状态类型中的Timer改为禁止真实Timer标识符，同时纳入part源码并增加构造/periodic/new/类型声明的门禁回归。523文件格式、严格分析0问题（8.1秒）、生成/迁移、Android Debug17.9秒及资产许可签名通过；188旧Golden未改，无新UI或设备验收，详见[报告](phase_7h2a_sleep_projection_report.md)。
+
 Phase7H1B：新增24项（23本曲+1旧分钟回调互斥），47相关及完整1793 Flutter（102秒）/143 Node（35.1秒）通过。覆盖repeat三模式×shuffle开关、空库/加载/完成拒绝、暂停/seek/恢复、缓冲、重复歌曲切项、停止/清空/重载/失败、取消/分钟替换、一次性显式重播、完成通知重入及关闭。520文件格式零改动，严格分析0问题（修正一处测试大括号后8.4秒），188旧Golden无修改，生成迁移与Android Debug17.8秒及资产/许可/v2签名通过。无新设备或界面验收，详见[报告](phase_7h1b_current_entry_report.md)。
 
 Phase7H1A：23新增根定时测试覆盖默认关闭、三个UTC截止时长、一次性暂停且队列/进度不变、取消/重设旧回调、提前/晚到/时钟回拨、空库/已暂停、加载串行与取消、已接受pause后重设/关闭排空、到期前后completed竞争、通知重入、调度/暂停失败。到期后completed用例先失败（stop/load/play），修复后通过。完整1769 Flutter（102秒）/143 Node（36.4秒）、188 Golden未改；519文件格式、严格分析、生成/迁移和Android Debug资产许可v2签名通过。无新增设备出声、安装、Windows本地构建或UI验收，详见[报告](phase_7h1a_sleep_deadline_report.md)。

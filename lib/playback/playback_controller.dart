@@ -87,6 +87,7 @@ final class PlaybackController extends ChangeNotifier {
   Future<void>? _closeFuture;
 
   PlaybackState get state => _state;
+  bool get isClosed => _disposed;
   PlaybackSleepTimerState get sleepTimer => _sleepState;
 
   /// Null cancels. A deadline is session-only and never starts playback.
@@ -95,6 +96,7 @@ final class PlaybackController extends ChangeNotifier {
 
   /// False leaves the prior intent intact when no loaded current entry exists.
   bool setSleepAtCurrentEntryEnd() => _setSleepAtCurrentEntryEnd();
+  bool get canSleepAtCurrentEntryEnd => _canSleepAtCurrentEntryEnd;
   bool get isAvailable => _engine.isAvailable;
   bool get isMediaSessionAvailable => _mediaSession.isAvailable;
 

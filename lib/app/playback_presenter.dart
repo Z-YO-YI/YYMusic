@@ -4,7 +4,11 @@ import '../design_system/yy_player_data.dart';
 import '../domain/models/domain_failure.dart';
 import '../domain/models/track.dart';
 import '../playback/playback_controller.dart';
+import '../playback/playback_sleep_timer_state.dart';
 import '../playback/playback_state.dart';
+import 'playback_sleep_action.dart';
+
+part 'playback_sleep_projection.dart';
 
 /// Root-owned UI projection; the controller remains the only playback truth.
 final class PlaybackPresenter extends ChangeNotifier {
@@ -17,6 +21,19 @@ final class PlaybackPresenter extends ChangeNotifier {
   bool _pending = false;
   bool _disposed = false;
   bool _actionFailed = false;
+  int _sleepRevision = 0;
+
+  PlaybackSleepTimerState get sleepState => _playback.sleepTimer;
+  bool get canSetSleepTimer =>
+      !_disposed && !_playback.isClosed && _playback.isAvailable;
+  bool get canSleepAtCurrentEntryEnd =>
+      !_disposed && _playback.canSleepAtCurrentEntryEnd;
+  PlaybackSleepChoice? get selectedSleepChoice => _selectedSleepChoice;
+
+  PlaybackSleepAction? sleepAction(
+    PlaybackSleepChoice choice, {
+    required bool Function() isCurrent,
+  }) => _sleepAction(choice, isCurrent: isCurrent);
 
   String? get entryId => _playback.state.queue.currentEntryId;
   DomainFailure? get historyFailure => _playback.history.failure;
@@ -160,6 +177,7 @@ final class PlaybackPresenter extends ChangeNotifier {
 
   void _changed() {
     if (_disposed) return;
+    _sleepRevision++;
     if (_playback.state.phase == PlaybackPhase.playing) _actionFailed = false;
     notifyListeners();
   }

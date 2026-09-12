@@ -589,9 +589,26 @@ test('Inspector is controlled, opaque and scrollable without IO or queue algorit
   assert.match(inspectorBinding, /onOpenLyrics: navigation.openLyrics/);
   assert(!/favorite:|PlaybackController\(/.test(inspectorBinding));
   assert.equal(root.match(/inspector: inspector/g)?.length, 2);
-  const presenter = read('lib/app/playback_presenter.dart');
+  const presenter = read('lib/app/playback_presenter.dart') + read('lib/app/playback_sleep_projection.dart');
   assert.match(presenter, /queueCount => _playback.state.queue.entries.length/);
-  assert(!/localPath|contentUri|artworkUri|metadata\[|Timer/.test(presenter));
+  // The root's PlaybackSleepTimerState is a projection, not a UI-owned Timer.
+  assert(!/localPath|contentUri|artworkUri|metadata\[|\bTimer\b/.test(presenter));
+});
+
+test('sleep settings borrow root projection and require revocable one-shot actions', () => {
+  const projection = read('lib/app/playback_sleep_projection.dart');
+  assert.match(projection, /revision == _sleepRevision/);
+  assert.match(projection, /identical\(playback, _playback.state\)/);
+  assert.match(projection, /identical\(sleep, _playback.sleepTimer\)/);
+  assert.match(projection, /consumed = true;[\s\S]*?isCurrent\(\)/);
+  assert.match(projection, /!_playback.isClosed/);
+  assert(!/\bTimer\b|dart:io|Repository|PlaybackController\(/.test(projection));
+  // Keep the timer prohibition token-specific, including constructor tear-offs.
+  const timerToken = /\bTimer\b/;
+  for (const forbidden of ['Timer(', 'Timer.periodic(', 'Timer.new', 'Timer? wake']) {
+    assert(timerToken.test(forbidden));
+  }
+  assert(!timerToken.test('PlaybackSleepTimerState'));
 });
 
 test('Windows frame is root-owned, current-HWND-only and closes after business shutdown', () => {
