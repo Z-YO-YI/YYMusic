@@ -2,6 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { read } from './design_audit.mjs';
 
+test('phone and desktop metadata navigation uses the revocable shell scope', () => {
+  const shell = read('lib/features/player/common/shell_player.dart');
+  assert.equal((shell.match(/onOpen: _navigationAction\(favoriteGeneration, widget.onOpen\)/g) ?? []).length, 2);
+  assert.equal((shell.match(/_navigationAction\(favoriteGeneration, widget.onOpenLyrics\)/g) ?? []).length, 3);
+  assert(!/onOpen: widget.onOpen|onOpenLyrics: presenter.queueCount > 0 \? widget.onOpenLyrics/.test(shell));
+});
+
 test('inspector borrows root navigation and the same revocable route scope', () => {
   const root = read('lib/app/adaptive_root.dart');
   assert.match(root, /inspector: true,[\s\S]*routeChanges: routeChanges,[\s\S]*scopeIdentity:/);

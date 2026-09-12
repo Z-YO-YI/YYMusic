@@ -241,8 +241,10 @@ class _PlayerControlsState extends State<_PlayerControls> {
       return YYMiniPlayer(
         data: view,
         loading: presenter.busy,
-        onOpen: widget.onOpen,
-        onOpenLyrics: presenter.queueCount > 0 ? widget.onOpenLyrics : null,
+        onOpen: _navigationAction(favoriteGeneration, widget.onOpen),
+        onOpenLyrics: presenter.queueCount > 0
+            ? _navigationAction(favoriteGeneration, widget.onOpenLyrics)
+            : null,
         onTogglePlayback: toggle,
         onNext: next,
       );
@@ -259,8 +261,10 @@ class _PlayerControlsState extends State<_PlayerControls> {
       ),
       compact: widget.compact,
       loading: presenter.busy,
-      onOpen: widget.onOpen,
-      onOpenLyrics: presenter.queueCount > 0 ? widget.onOpenLyrics : null,
+      onOpen: _navigationAction(favoriteGeneration, widget.onOpen),
+      onOpenLyrics: presenter.queueCount > 0
+          ? _navigationAction(favoriteGeneration, widget.onOpenLyrics)
+          : null,
       onTogglePlayback: toggle,
       onNext: next,
       onPrevious: previous,
