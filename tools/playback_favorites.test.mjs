@@ -2,6 +2,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { read } from './design_audit.mjs';
 
+test('inline focus exclusion revokes shell favorite permission without a route change', () => {
+  const shell = read('lib/features/player/common/shell_player.dart');
+  const actions = read('lib/features/player/common/shell_favorite_actions.dart');
+  assert.match(shell, /_focusAllowsFavorite\(createDependency: true\)/);
+  assert(actions.includes('if (!_focusAllowsFavorite()) return false;'));
+  assert.match(actions, /node.descendantsAreFocusable/);
+  assert.match(actions, /node\.ancestors\.every\(\s*\(ancestor\) => ancestor\.descendantsAreFocusable,?\s*\)/);
+});
+
 test('retained shell favorite revokes route events and exact scope changes', () => {
   const shell = read('lib/features/player/common/shell_player.dart');
   for (const token of ['widget.routeChanges?.addListener(_favoriteRouteChanged)', 'widget.routeChanges?.removeListener(_favoriteRouteChanged)', 'oldWidget.scopeIdentity != widget.scopeIdentity', 'favoriteBusy: favorite?.busy ?? false', 'PlaybackFavoriteFeedback(']) assert(shell.includes(token));

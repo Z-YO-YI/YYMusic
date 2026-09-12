@@ -23,6 +23,8 @@ YYDesktopPlayerBar仅新增受控favoriteKnown/favoriteBusy，心形未知语义
 
 ## GitHub与限制
 
+2026-09-13后续核验：精确head `344ea0d41846689fb3f34187cf170df3d36a08e5` 的[push34707400406](https://github.com/Z-YO-YI/YYMusic/actions/runs/34707400406)和[PR34707403440](https://github.com/Z-YO-YI/YYMusic/actions/runs/34707403440)均SUCCESS。本阶段成功不代替后续遮罩修复新SHA验收。
+
 前置F2B精确a4faf90双CI34706094820/34706097249均SUCCESS，报告及#82回填。本批提交push/Draft后另按新SHA核验Android/Windows，不借前置结果。不自动合并、不改默认分支、不发布Release，不提交凭据/媒体/构建包。
 
 本批无本地Windows编译、真实设备安装/出声或新增UI-SQLite联调，既有SQLite在全量中重跑。下一步审查Shell队列/全屏/Inspector导航剩余入口、内联菜单遮罩与键盘焦点许可，完成Phase7整体出口核查；不声称所有遮罩或所有播放交互已全面验收。Phase8真实导入、Phase9来源、Phase10完整后台媒体、Phase11正式发行仍待完成，新安装仍空库。
