@@ -41,7 +41,7 @@ test('independent lyrics route borrows root state and revokes hidden page intent
   for (const target of ['phone/phone_lyrics_layout', 'tablet/tablet_lyrics_layout', 'windows/windows_lyrics_layout']) {
     assert.match(read(`lib/features/lyrics/${target}.dart`), /extends StatelessWidget/);
   }
-  for (const pattern of [/LyricsViewport\(/, /YYLyricsPlayerDock\(/, /isIntentCurrent:/, /addPostFrameCallback/, /setActive\(false\)/, /showFavorite: false/]) assert.match(screen, pattern);
+  for (const pattern of [/LyricsViewport\(/, /YYLyricsPlayerDock\(/, /isIntentCurrent:/, /addPostFrameCallback/, /setActive\(false\)/, /showFavorite: favoriteState\?\.isFavorite != null/]) assert.match(screen, pattern);
   assert(!/LyricsController\(|PlaybackController\(|QueueController\(|Timer\(|dart:io|Repository|Fixture/.test(screen));
   assert.match(read('lib/app/yy_music_app.dart'), /lyricsController: ref\.read\(dependencyGraphProvider\)\.lyricsController/);
   assert.match(read('lib/playback/lyrics_controller.dart'), /isIntentCurrent\?\.call\(\)/);
