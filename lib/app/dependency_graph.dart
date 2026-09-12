@@ -30,6 +30,7 @@ import '../platform/contracts/secure_credential_gateway.dart';
 import '../playback/audio_engine.dart';
 import '../playback/lyrics_controller.dart';
 import '../playback/playback_controller.dart';
+import '../playback/playback_favorite_controller.dart';
 import '../playback/playback_source_resolver.dart';
 import '../playback/queue_controller.dart';
 import 'app_data_services.dart';
@@ -93,6 +94,10 @@ final class DependencyGraph {
       mediaSession: _mediaSession,
     );
     queue = QueueController(playback);
+    playbackFavorite = PlaybackFavoriteController(
+      playback: playback,
+      repository: this.collection,
+    );
     lyricsController = LyricsController(
       playback: playback,
       repository: this.lyrics,
@@ -159,6 +164,7 @@ final class DependencyGraph {
   late final AppearanceSettingsController appearanceSettings;
   late final PlaybackController playback;
   late final QueueController queue;
+  late final PlaybackFavoriteController playbackFavorite;
   late final LyricsController lyricsController;
   late final PlaybackPresenter playbackPresenter;
   late final HomeController home;
@@ -176,6 +182,7 @@ final class DependencyGraph {
     await appearanceSettings.initialize();
     if (_closeFuture != null) return;
     await playback.initialize();
+    if (_closeFuture == null) playbackFavorite.start();
   }
 
   void dispose() {
@@ -187,6 +194,7 @@ final class DependencyGraph {
     final existing = _closeFuture;
     if (existing != null) return existing;
     queue.dispose();
+    playbackFavorite.dispose();
     home.dispose();
     search.dispose();
     libraryController.dispose();
@@ -219,6 +227,7 @@ final class DependencyGraph {
       systemPlaylists.close,
       lyricsController.close,
       queue.close,
+      playbackFavorite.close,
       playback.close,
       _audioEngine.dispose,
       _mediaSession.dispose,

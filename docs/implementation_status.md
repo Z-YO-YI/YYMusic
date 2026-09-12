@@ -1,5 +1,9 @@
 # 实施状态
 
+当前增量Phase7F1：根PlaybackFavoriteController/State/Actions借现有播放与CollectionRepository，跟随准确QueueSnapshot/current entry完整TrackRef；未知状态不默认false，空当前项不查询，首次选中条目再启动，位置变化不重读。显式目标/busy/页面许可前后复核，旧快照/失败不能重用；接受后切歌或关闭仍排空原引用写入，只有Repository流更新显示，无乐观翻转。
+分支`codex/current-track-favorite-core`，基线449b1ff，Stacked Draft base=`codex/system-playlist-queue-actions`；[计划](phase_7f1_current_favorite_plan.md)、ADR090与[报告](phase_7f1_current_favorite_report.md)。新增27单元/4真实SQLite/2Node；最终1621 Flutter/135 Node/501文件格式/严格分析、生成迁移与Android35.9秒Debug资产许可v2签名通过，178旧Golden及Schema/依赖/平台/原资产均未改。初次6旧回归因过早订阅失败，修复空库惰性启动后原查询数量/关闭断言保持并通过；两处Node顺序精确新增根屏障。
+前置#79的449b1ff双CI SUCCESS，Linux1412、Windows178Golden/2Runner/65文件Debug包与Android资产许可签名通过，已回填。当前批核心尚未接三端按钮，下一批7F2做播放区/歌词Dock收藏与页面许可/反馈；Phase7其余和Phase8–11仍待完成，新安装空库，无本批设备安装/出声或发行验收。以下为历史记录。
+
 当前增量Phase7E5E：我喜欢/最近播放三端菜单接下一首/添加队列及E5B共享反馈，准确窗口/条目/读取意图与根快照授权；失效/未解析引用可入队但不可播放，独立新队列ID不复用历史ID。刷新/换组/根替换/路由/尺寸/零面积/关闭后旧菜单和遮罩无效；正常尺寸重发请求，历史清除确认独立且旧确认不可复用。入队不改收藏/历史/当前音频，busy和接受后SQL排空、跨页显式同ID重试均覆盖。
 分支`codex/system-playlist-queue-actions`，基线`a2a8b41`，Stacked Draft base=`codex/playlist-queue-actions`；[计划](phase_7e5e_system_queue_plan.md)、ADR089、[总进度及报告](phase_7e5e_system_queue_report.md)。新增12单元/21Widget/8真实SQLite/5Golden和1Node，最终1590 Flutter、133 Node、178Golden、496文件格式、严格分析、生成/迁移及Android Debug资产/许可/v2签名通过。8旧图精确更新/165旧图不变，13变更逐张查看，保留SDK XML/Java警告。
 前置#78 head a2a8b41双CI SUCCESS，Linux1371/Windows173Golden和2Runner/65文件正式入口包、Android资产许可签名通过，报告和PR已回填；本批新SHA云端另验。仍在Phase7，播放区剩余入口/收藏接线及整体出口继续核查；Phase8导入/扫描/授权与Phase9–11未完成。没有本批设备安装/出声或正式发行，新安装仍为空库。以下为历史记录。

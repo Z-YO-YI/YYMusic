@@ -45,4 +45,6 @@ Figma转代码技能用于复用本地完整导出的精确next/list-plus/heart 
 
 ## 已知限制与下一阶段
 
+2026-09-12后续核实：head `449b1ffde107961ba31b75fc78587f1a5289e356` 的 [push34701388602](https://github.com/Z-YO-YI/YYMusic/actions/runs/34701388602) 和 [PR34701391525](https://github.com/Z-YO-YI/YYMusic/actions/runs/34701391525) 均SUCCESS，Draft #79未合并。PR日志Linux1412通过/178Windows Golden按平台跳过；Windows178Golden、2真实Runner、正式入口Debug重建/65文件包，Android48资产/许可/签名均通过。PR合并检验提交 `f18c90e2266e56b3fe1a65b798a4359cd68d0a8f`，APK SHA256 `27dcdaa248594dc80ea253b095a9a2cc042aa236a56b34d8842b1cbb0376f5f3`，与本地预检包区分。媒体诊断/Release等未执行，不计为实机出声或上线。
+
 主要歌曲列表入口的队列菜单已覆盖音乐库、专辑/艺人、自建歌单及收藏/最近播放。本批不是整个Phase7或上线完成；接下来核查播放区剩余入口和收藏接线，完成Phase7出口后进入Phase8真实本地音乐。Phase8–11缺口见上表；保持每批独立验证、Draft PR和GitHub精确提交同步，不自动合并或修改默认分支。
