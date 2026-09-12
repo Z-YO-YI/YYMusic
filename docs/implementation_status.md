@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7H2C3：[计划](phase_7h2c3_shell_sleep_plan.md)/ADR103/[报告](phase_7h2c3_shell_sleep_report.md)。宽底栏既有i-device绑定唯一根modal；全部5个生产frame捕获完整URI，使用GoRouter.state.uri核对push后的栈顶，同路径参数变化撤销旧弹层。22新Widget+3新Golden，完整1905 Flutter/148 Node、535文件格式/严格分析/生成迁移及Android Debug17.7秒与资产许可签名通过；23旧图各100像素图标启用变化审核更新，179不变，共205。分支codex/shell-sleep-settings，Draft base codex/lyrics-sleep-settings；前置81a93c4双CI34722713534/34722770925 SUCCESS，本批新SHA另验。未改手机/窄栏可见性，Inspector及其余设置后续；无新增设备安装/出声或发行验收。以下为历史记录。
+
 最新Phase7H2C2：[计划](phase_7h2c2_lyrics_sleep_plan.md)/ADR102/[报告](phase_7h2c2_lyrics_sleep_report.md)。歌词i-more入口复用唯一睡眠modal，两页显式owner阻止旧入口跨页借权；覆盖/恢复沿用歌词停用与seek撤销，关闭保留根睡眠意图。窄屏翻译第二行防元信息挤没，稳定header结构保留焦点。17新Widget+4新Golden，完整1880 Flutter/147 Node、533文件格式、严格分析、生成迁移与Android Debug34.3秒及资产许可签名通过；19旧图审核更新、179不变，共202。分支codex/lyrics-sleep-settings，Draft base codex/player-sleep-settings；前置61585ef双CI34721259771/34721287029已SUCCESS，本批新SHA另验。底栏/Inspector及Phase7其余设置和Phase8–11仍待，无新增设备安装/出声或发行验收。以下为历史记录。
 
 最新Phase7H2C1：[计划](phase_7h2c1_player_sleep_plan.md)/ADR101/[报告](phase_7h2c1_player_sleep_report.md)。正式播放页i-more入口接根唯一睡眠设置路由，支持五选项、重复打开拦截、旧动作撤销、精准离页移除、键盘/返回/焦点及实时主题尺寸。17新Widget+4新Golden，1859 Flutter/146 Node、531文件格式、严格分析、生成迁移与Android Debug17.1秒及资产许可签名通过。15旧标题栏Golden审核更新、179旧图不变，合计198。分支codex/player-sleep-settings，Draft base codex/native-sleep-settings；前置d039bb0双CI34719698577/34719716804已SUCCESS。本批新SHA云端另验；歌词/底栏/Inspector与其他播放设置尚未完成，无新增设备安装或发行验收。以下为历史记录。

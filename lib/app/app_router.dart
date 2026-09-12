@@ -213,6 +213,11 @@ final class AppRouter implements AppNavigation {
               playbackFavorite: playbackFavorite,
               routeChanges: _router.routerDelegate,
               onOpenFullscreen: openFullscreenPlayer,
+              onOpenSettings: _shellSleepAction(
+                playbackPresenter,
+                platform,
+                state.uri,
+              ),
               child: shell,
             );
             return playlistController == null
@@ -280,6 +285,11 @@ final class AppRouter implements AppNavigation {
                           playbackFavorite: playbackFavorite,
                           routeChanges: _router.routerDelegate,
                           onOpenFullscreen: openFullscreenPlayer,
+                          onOpenSettings: _shellSleepAction(
+                            playbackPresenter,
+                            platform,
+                            state.uri,
+                          ),
                           child: child,
                         ),
                       )
@@ -329,6 +339,11 @@ final class AppRouter implements AppNavigation {
                         playbackFavorite: playbackFavorite,
                         routeChanges: _router.routerDelegate,
                         onOpenFullscreen: openFullscreenPlayer,
+                        onOpenSettings: _shellSleepAction(
+                          playbackPresenter,
+                          platform,
+                          state.uri,
+                        ),
                         child: child,
                       ),
                     )
@@ -375,6 +390,11 @@ final class AppRouter implements AppNavigation {
                         playbackFavorite: playbackFavorite,
                         routeChanges: _router.routerDelegate,
                         onOpenFullscreen: openFullscreenPlayer,
+                        onOpenSettings: _shellSleepAction(
+                          playbackPresenter,
+                          platform,
+                          state.uri,
+                        ),
                         child: child,
                       ),
                     )
@@ -414,6 +434,11 @@ final class AppRouter implements AppNavigation {
                       playbackFavorite: playbackFavorite,
                       routeChanges: _router.routerDelegate,
                       onOpenFullscreen: openFullscreenPlayer,
+                      onOpenSettings: _shellSleepAction(
+                        playbackPresenter,
+                        platform,
+                        state.uri,
+                      ),
                       child: child,
                     ),
                   )
@@ -467,7 +492,9 @@ final class AppRouter implements AppNavigation {
       _router.routerDelegate.currentConfiguration.lastOrNull?.matchedLocation;
 
   void _refreshRouteActivity() {
-    if (_sleepDialog != null && _activePath != _sleepOwnerPath) {
+    if (_sleepDialog != null &&
+        (_activePath != _sleepOwnerPath ||
+            _activeLocation != _sleepOwnerLocation)) {
       _dismissSleepSettings();
     }
     _settingsActivity.value = _activePath == AppRoute.settings.path;
@@ -478,6 +505,8 @@ final class AppRouter implements AppNavigation {
   final _rootNavigator = GlobalKey<NavigatorState>();
   RawDialogRoute<void>? _sleepDialog;
   String? _sleepOwnerPath;
+  Uri? _sleepOwnerLocation;
+  Uri get _activeLocation => _router.state.uri;
   bool _disposed = false;
   late final Future<void> Function(TrackRef, String) _showPlaylistPicker;
   bool _pickerShowing = false;
@@ -617,6 +646,7 @@ final class AppRouter implements AppNavigation {
     _disposed = true;
     _sleepDialog = null;
     _sleepOwnerPath = null;
+    _sleepOwnerLocation = null;
     _router.routerDelegate.removeListener(_refreshRouteActivity);
     _router.dispose();
     _settingsActivity.dispose();

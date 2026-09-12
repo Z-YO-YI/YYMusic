@@ -1,5 +1,7 @@
 # YYMusic
 
+最新增量：**Phase 7H2C3 宽底栏睡眠设置绑定**。Windows/平板既有宽底栏设备图标可打开真实设置；全部主页面及详情工厂绑定完整URI，切换歌单参数撤销旧弹层。22新Widget+3新Golden、完整1905 Flutter/148 Node、严格分析和Android Debug预检通过，见[报告](docs/phase_7h2c3_shell_sleep_report.md)。手机/窄栏仍经播放页进入设置，Inspector后续接入，未达到整体上线条件。以下为历史记录。
+
 最新增量：**Phase 7H2C2 歌词页睡眠设置入口**。歌词页与播放页共用真实设置，旧入口按各自页面撤销；窄屏翻译控制换行保留曲目信息。17新Widget+4新Golden、完整1880 Flutter/147 Node、严格分析及Android Debug预检通过，见[报告](docs/phase_7h2c2_lyrics_sleep_report.md)。底栏/Inspector入口及其他播放设置仍待后续，未达到Phase7整体完成或上线条件。以下为历史记录。
 
 最新增量：**Phase 7H2C1 正式播放页睡眠设置入口**。手机/平板/Windows播放页可通过原“更多”图标打开真实五选项设置；关闭不取消定时，支持键盘、路由离页撤销及主题尺寸变化。17新Widget+4新Golden，完整1859 Flutter/146 Node、严格分析与Android Debug预检通过，见[报告](docs/phase_7h2c1_player_sleep_report.md)。歌词/底栏/Inspector入口仍待后续增量，Phase7整体及真实导入/后台/发行未完成。以下为历史记录。

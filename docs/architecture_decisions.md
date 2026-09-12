@@ -1090,3 +1090,11 @@ Phase7H2C1，2026-09-13。AppRouter借唯一PlaybackPresenter插入一个RawDial
 Phase7H2C2，2026-09-13。复用ADR101唯一modal，打开函数增加必填AppRoute owner，播放页/歌词页各传自身，当前路径不匹配即拒绝。LyricsScreen只借可选闭包并走既有_canUse代数/可见性/路由保护，didUpdateWidget闭包更换撤销旧动作。面板继续使用根应用主题，不复制歌词局部氛围主题；遮罩期间歌词原有活动门禁暂停自动滚动/seek，关闭后重新激活，旧seek不能恢复权限。两个页面共享根睡眠意图，页面切换只关闭设置不取消定时。
 
 视觉审核发现390px全屏手机的翻译/全屏/刷新/设置挤压曲目信息；不足500px将翻译按钮移至标题栏第二行，不删功能或缩小触控目标。始终保持Column→headerRow的结构，覆盖期间原歌词控制器清空数据、恢复加载时不因翻译行增减重建入口焦点；新增360px全屏元信息宽度/实际翻译操作和390px键盘恢复验收。
+
+## ADR-103：Shell睡眠入口捕获完整URI，仍借唯一modal
+
+Phase7H2C3，2026-09-13。详情页同路径可能对应不同歌单/来源，因此在原路径校验外添加完整Uri拥有者。主Shell与各详情frame以当次GoRouterState.uri生成闭包，调用时与根当前位置比较；路径或参数变更先撤销旧modal再精确移除。原player/lyrics的AppRoute包装保留，统一委托Uri宿主，不新增导航接口或平台真值。
+
+AdaptiveRoot只向底栏传递可选onOpenSettings，ShellPlayer通过既有_navigationAction一次性撤销机制绑定，回调替换同样增加代数。Inspector下一增量接入；本批不改变YYDesktopPlayerBar既有>=1200设置可见性或Phone mini布局。窄栏可先进入播放页使用设置，不能宣称直接按钮全布局就绪。
+
+GoRouter18本地源码核对：currentConfiguration.uri可能仍是push前的匹配配置，完整栈顶位置使用公开GoRouter.state.uri；复验player→lyrics push及同路径系统歌单参数切换。测试根关闭在测试体finally排空，不能把仍有Timer的图延后到绑定不变量检查之后销毁。

@@ -22,6 +22,7 @@ class ShellPlayer extends StatelessWidget {
     this.onOpenLyrics,
     this.onOpenQueue,
     this.onOpenFullscreen,
+    this.onOpenSettings,
     this.favorite,
     this.routeChanges,
     this.scopeIdentity,
@@ -38,6 +39,7 @@ class ShellPlayer extends StatelessWidget {
   final VoidCallback? onOpenLyrics;
   final VoidCallback? onOpenQueue;
   final VoidCallback? onOpenFullscreen;
+  final VoidCallback? onOpenSettings;
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
@@ -57,6 +59,7 @@ class ShellPlayer extends StatelessWidget {
         onOpenLyrics: onOpenLyrics,
         onOpenQueue: onOpenQueue,
         onOpenFullscreen: onOpenFullscreen,
+        onOpenSettings: onOpenSettings,
       );
       if (inspector) return controls;
       return Column(
@@ -89,6 +92,7 @@ class _PlayerControls extends StatefulWidget {
     required this.onOpenLyrics,
     required this.onOpenQueue,
     required this.onOpenFullscreen,
+    required this.onOpenSettings,
     required this.favorite,
     required this.routeChanges,
     required this.scopeIdentity,
@@ -104,6 +108,7 @@ class _PlayerControls extends StatefulWidget {
   final VoidCallback? onOpenLyrics;
   final VoidCallback? onOpenQueue;
   final VoidCallback? onOpenFullscreen;
+  final VoidCallback? onOpenSettings;
   @override
   State<_PlayerControls> createState() => _PlayerControlsState();
 }
@@ -168,6 +173,9 @@ class _PlayerControlsState extends State<_PlayerControls> {
       _favoriteGeneration++;
     }
     if (oldWidget.scopeIdentity != widget.scopeIdentity) _favoriteGeneration++;
+    if (oldWidget.onOpenSettings != widget.onOpenSettings) {
+      _favoriteGeneration++;
+    }
     // YYSlider cancels its gesture when disabled; discard our preview too.
     if (!widget.presenter.canSeek) _seekPreview = null;
     if (!widget.presenter.canChangeVolume) _volumePreview = null;
@@ -250,6 +258,10 @@ class _PlayerControlsState extends State<_PlayerControls> {
       );
     }
     final bar = YYDesktopPlayerBar(
+      onOpenSettings: _navigationAction(
+        favoriteGeneration,
+        widget.onOpenSettings,
+      ),
       data: view,
       favoriteKnown: favorite == null || favorite.state.isFavorite != null,
       favoriteBusy: favorite?.busy ?? false,
