@@ -20,6 +20,8 @@ shell_favorite_actions.dart新增只读焦点许可，检查最近Focus及全部
 
 ## GitHub与下一阶段
 
+后续核验：提交6f9552a6d37650ca90621a977113edec064c66f8的[push 34708712276](https://github.com/Z-YO-YI/YYMusic/actions/runs/34708712276)及[PR 34708730171](https://github.com/Z-YO-YI/YYMusic/actions/runs/34708730171)均SUCCESS；Draft #84未合并。以下提交前描述保留为历史。
+
 前置344ea0d的34707400406/34707403440均SUCCESS，报告和#83回填。本批提交push/Draft后按新SHA独立核验，禁止把前置或本地预检当作本批云端成功。不自动合并、不改默认分支、不发布Release，不提交凭据/媒体/构建包。
 
 下一步继续Shell队列/全屏/Inspector导航及Phase7整体出口。此修复验证实际被ExcludeFocus覆盖的系统菜单/历史确认，未声称所有自定义遮罩和全部播放操作均已审计。既有SQLite全量重跑，本批没有新增UI-SQLite、设备安装/出声或本地Windows编译。Phase8真实导入、Phase9来源、Phase10完整后台媒体、Phase11正式发行未完成，新安装仍空库。

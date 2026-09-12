@@ -20,6 +20,7 @@ class ShellPlayer extends StatelessWidget {
     this.inspector = false,
     this.onOpen,
     this.onOpenLyrics,
+    this.onOpenQueue,
     this.favorite,
     this.routeChanges,
     this.scopeIdentity,
@@ -34,6 +35,7 @@ class ShellPlayer extends StatelessWidget {
   final bool inspector;
   final VoidCallback? onOpen;
   final VoidCallback? onOpenLyrics;
+  final VoidCallback? onOpenQueue;
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
@@ -51,6 +53,7 @@ class ShellPlayer extends StatelessWidget {
         inspector: inspector,
         onOpen: onOpen,
         onOpenLyrics: onOpenLyrics,
+        onOpenQueue: onOpenQueue,
       );
       if (inspector) return controls;
       return Column(
@@ -81,6 +84,7 @@ class _PlayerControls extends StatefulWidget {
     required this.inspector,
     required this.onOpen,
     required this.onOpenLyrics,
+    required this.onOpenQueue,
     required this.favorite,
     required this.routeChanges,
     required this.scopeIdentity,
@@ -94,6 +98,7 @@ class _PlayerControls extends StatefulWidget {
   final bool inspector;
   final VoidCallback? onOpen;
   final VoidCallback? onOpenLyrics;
+  final VoidCallback? onOpenQueue;
   @override
   State<_PlayerControls> createState() => _PlayerControlsState();
 }
@@ -235,6 +240,7 @@ class _PlayerControlsState extends State<_PlayerControls> {
       favoriteKnown: favorite == null || favorite.state.isFavorite != null,
       favoriteBusy: favorite?.busy ?? false,
       onToggleFavorite: _favoriteAction(favoriteGeneration),
+      onOpenQueue: _queueAction(favoriteGeneration),
       compact: widget.compact,
       loading: presenter.busy,
       onOpen: widget.onOpen,
@@ -271,7 +277,7 @@ class _PlayerControlsState extends State<_PlayerControls> {
           child: SingleChildScrollView(
             child: PlaybackFavoriteFeedback(
               controller: favorite,
-              permit: () => _canFavorite(favoriteGeneration),
+              permit: () => _canUseShellAction(favoriteGeneration),
             ),
           ),
         ),

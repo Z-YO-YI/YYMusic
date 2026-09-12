@@ -1,5 +1,7 @@
 # 实施状态
 
+当前Phase7G1：[计划](phase_7g1_shell_queue_plan.md)/ADR094/[报告](phase_7g1_shell_queue_report.md)。AdaptiveRoot与ShellPlayer接既有队列导航，复用F3页面交互许可并在接受导航前撤销旧闭包。12新Widget覆盖两平台空/非空队列点击、返回/重复、内联遮罩及离页/尺寸/卸载；完整1691 Flutter/140 Node、188 Golden、513文件格式/严格分析/生成迁移、Android Debug38.5秒及资产许可签名通过。65旧图每张仅67队列图标像素改变，123旧图不变。分支codex/shell-queue-navigation，Draft base codex/shell-favorite-overlay-guard；前置6f9552a双CI34708712276/34708730171均SUCCESS，本批新SHA另验。下一步底栏全屏/Inspector剩余入口及Phase7出口，Phase8–11未完成，未新增实机出声/安装或本地Windows编译。以下为历史记录。
+
 当前Phase7F3：[计划](phase_7f3_overlay_guard_plan.md)/[报告](phase_7f3_overlay_guard_report.md)。真实复现Windows/平板内联菜单旧收藏回调仍写入，Shell许可现遵循祖先ExcludeFocus并在覆盖变化撤销旧代数；关闭后新按钮仍可用，不新设全局锁。8 Widget覆盖两平台×菜单/历史确认×覆盖/关闭，22相关和完整1679 Flutter/139 Node通过；188旧Golden不变、512文件格式/严格分析/生成迁移和Android Debug校验通过。分支codex/shell-favorite-overlay-guard，base codex/shell-current-favorite-ui；前置344ea0d双CI34707400406/34707403440均SUCCESS，新SHA独立验收。下一步Shell队列/全屏/Inspector剩余导航与Phase7出口；Phase8–11仍未完成。以下为历史记录。
 
 当前Phase7F2C：[计划](phase_7f2c_shell_favorite_plan.md)/ADR093/[报告](phase_7f2c_shell_favorite_report.md)。五处AdaptiveRoot接根收藏与路由事件；底栏组件跨主导航存活时用事件代数/选中页面/布局尺寸撤销旧收藏，另有实时ModalRoute/活动/面积检查。独立busy、未知语义及有界滚动反馈，不新增I/O/真值；手机/窄栏/Inspector不加心形。14新Widget/3 Golden/1 Node，最终1671 Flutter/138 Node、188 Golden（17旧图心形状态精确更新、168旧图不变，20变更逐张查看）、511文件格式/严格分析/生成迁移及Android预检通过。分支codex/shell-current-favorite-ui，base codex/player-current-favorite-ui；前置a4faf90双CI34706094820/34706097249均SUCCESS，本批新SHA另验。下一步Shell剩余入口与内联遮罩许可/Phase7出口核查；Phase8–11未完成，非上线。以下为历史记录。

@@ -70,7 +70,7 @@ void main() {
             find.byType(YYDesktopPlayerBar),
           );
           expect(bar.onToggleFavorite, isNull);
-          expect(bar.onOpenQueue, isNull);
+          expect(bar.onOpenQueue, isNotNull);
           expect(bar.onOpenFullscreen, isNull);
         }
         expect(fixture.engine.calls.length, before);
