@@ -1028,3 +1028,7 @@ Phase7E5A，2026-09-12。QueueEdit 增加携带新 QueueEntry 的末尾/下一�
 Phase7F2A，2026-09-12。AppRouter仅借用可选PlaybackFavoriteController，正式持久化图注入同一根，无存储预览不模拟收藏。LyricsScreen监听根但不拥有/关闭它；显示仅根据根流，未知不显示未收藏。Dock增加独立favoriteBusy，收藏等待不锁播放/返回；手机继续遵循原HTML隐藏心形。
 
 按钮闭包捕获收藏投影、目标值与页面代数，提交前复核当前ModalRoute、活动、面积及代数，根再次复核快照；尺寸/覆盖/离页/更换依赖永久撤销旧许可。共用受控反馈显示根busy/安全失败，重试和知悉绑定准确失败对象，读重试也要复核身份。失败跨页保留，已接受持久化由根排空，不制造页内成功真值或新增存储/播放器。
+
+## ADR-092：播放页收藏复用根投影与共享失败反馈
+
+Phase7F2B，2026-09-12。PlayerScreen借AppRouter注入的同一根收藏控制器，沿用F2A显式目标/投影/页面代数许可与失败身份。YYFullPlayerContent只增加受控showFavorite/favoriteBusy/onToggleFavorite，在原now-copy标题行复用心形原生按钮；默认不显示，保持无存储预览兼容。收藏保存与播放busy独立，错误反馈在三端可滚动controls区域复用PlaybackFavoriteFeedback，不在Domain传入BuildContext，也不改变音频/队列/历史。

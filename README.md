@@ -1,5 +1,7 @@
 # YYMusic
 
+当前增量：**Phase 7F2B 独立播放页收藏**。手机/平板/Windows原生播放页已接同一根收藏，支持独立busy、安全重试、切页撤销及与歌词页共享真值。1654 Flutter、137 Node、185 Golden、严格分析及Android Debug预检通过，详见[报告](docs/phase_7f2b_player_favorite_report.md)。底栏收藏接线和Phase7整体出口继续推进，真实导入、后台与发行仍未完成。以下为历史增量。
+
 当前增量：**Phase 7F2A 歌词页收藏**。平板/Windows歌词Dock已接同一根收藏状态与持久化，含独立忙态、安全读写失败及显式重试；手机按原设计隐藏Dock心形，无存储预览不模拟收藏。1636 Flutter、136 Node、181 Golden、严格分析和Android Debug预检通过，见[报告](docs/phase_7f2a_lyrics_favorite_report.md)。下一步接播放页/Shell收藏；真实导入与Phase8–11仍未完成，尚非日常可用发行版。以下增量为历史记录。
 
 当前增量：**Phase 7F1 当前曲目收藏核心**。新增共用根收藏投影与真实Repository写入，按当前队列/完整来源身份授权，支持安全失败、显式重试和关闭排空；空库不发起多余查询，位置更新不重读，不乐观伪造收藏。最终1621 Flutter、135 Node、178旧Golden、严格分析和Android Debug预检通过，见[计划](docs/phase_7f1_current_favorite_plan.md)与[报告](docs/phase_7f1_current_favorite_report.md)。本批不改UI，三端收藏按钮下一批接线；前置#79双平台云端成功，本批新SHA另验。仍在Phase7，真实导入/扫描与Phase8–11未完成，新安装仍为空库。以下“当前增量”为历史记录。
