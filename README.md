@@ -1,5 +1,7 @@
 # YYMusic
 
+当前检查点：**Phase 7 出口审计，尚未整体完成**。独立播放/歌词/队列、返回及Reduce Motion已有自动化证据，但真实播放设置仍缺失；详见[出口审计](docs/phase_7_exit_audit.md)和[下一批7H计划](docs/phase_7h_playback_settings_plan.md)。下一项先做真实睡眠定时核心，不把按钮跳到外观页或仅保存假开关当作完成。本轮仅整理证据与计划，无新增应用功能；复验1746 Flutter/143 Node、188 Golden、严格分析及Android Debug通过。真实导入及正式发行仍未完成。以下为历史增量。
+
 当前增量：**Phase 7G4 底栏封面／歌词回调保护**。修复手机和桌面切页后旧入口仍可打开页面的问题，三布局复用既有可撤销导航许可，正常点击／长按及返回不变。1746 Flutter、143 Node、188旧Golden、严格分析与Android Debug预检通过，见[报告](docs/phase_7g4_metadata_guard_report.md)。无视觉或基线修改；Phase7整体及Phase8–11尚未完成。以下为历史记录。
 
 当前增量：**Phase 7G3 正在播放侧栏入口**。Windows／平板侧栏可打开原生全屏播放与独立歌词页，支持返回、空态及隐藏/切页/遮罩后的旧回调保护，复用既有根会话和原设计组件。1724 Flutter、142 Node、188 Golden、严格分析及Android Debug预检通过，见[报告](docs/phase_7g3_inspector_navigation_report.md)。21张基线精确更新启用态，167张不变；剩余入口及Phase7整体/Phase8–11仍未完成，非正式上线。以下为历史记录。
