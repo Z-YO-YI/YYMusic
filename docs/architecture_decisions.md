@@ -1078,3 +1078,9 @@ Phase7H2A，2026-09-13。分钟armed投影记录原PlaybackSleepDuration，不�
 Phase7H2B，2026-09-13。SleepSettingsPanel只持有临时错误/关闭许可及构建代数，借现有PlaybackPresenter监听投影，每次构建重新取H2A动作。onClose由宿主移除，外部isCurrent许可与自身生命周期/面积/ModalRoute/TickerMode/Focus检查组合；不重建根或产生UI Timer。选择即时生效，完成只关闭；不显示伪秒级倒计时，活动分钟用原选项描述。
 
 视觉复用原生YYDialog/YYBottomSheet的焦点与滚动，新增纯受控YYOptionCard匹配本地导出双行卡片，复用主题/字体/圆角，不更改YYButton现有默认外观。手机/短Android窗口用sheet，其余dialog；正文宽不足500单列，否则双列。生产入口及Overlay生命周期绑定下一批完成，本批只交付有真实根联动的共享面板和独立视觉/交互证据。
+
+## ADR-101：播放设置modal归根路由拥有，按准确实例关闭
+
+Phase7H2C1，2026-09-13。AppRouter借唯一PlaybackPresenter插入一个RawDialogRoute，记录拥有者路径，PlayerScreen只接可选打开闭包并使用原有可撤销页面动作。主题/字号来自根WidgetsApp builder，不复制或冻结主题。面板许可要求router未关闭、实例匹配、拥有者路径匹配且modal当前；重复打开被记录实例拒绝。
+
+主动关闭或拥有者路径变化先清除实例许可，再帧后对仍活动且Navigator仍挂载的准确route调用removeRoute；不盲pop，避免导航竞争误关新页面。router销毁只撤销许可，由Navigator正常销毁子route。返回先关闭当前设置；遮罩与系统回退通过route future清理。面板外层消费未被控件处理的Space，避免触发根播放快捷键；Esc由原生modal焦点处理。生产入口先播放页，其他页按后续增量共用该宿主协议。
