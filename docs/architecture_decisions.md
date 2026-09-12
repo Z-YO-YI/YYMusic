@@ -1098,3 +1098,9 @@ Phase7H2C3，2026-09-13。详情页同路径可能对应不同歌单/来源，�
 AdaptiveRoot只向底栏传递可选onOpenSettings，ShellPlayer通过既有_navigationAction一次性撤销机制绑定，回调替换同样增加代数。Inspector下一增量接入；本批不改变YYDesktopPlayerBar既有>=1200设置可见性或Phone mini布局。窄栏可先进入播放页使用设置，不能宣称直接按钮全布局就绪。
 
 GoRouter18本地源码核对：currentConfiguration.uri可能仍是push前的匹配配置，完整栈顶位置使用公开GoRouter.state.uri；复验player→lyrics push及同路径系统歌单参数切换。测试根关闭在测试体finally排空，不能把仍有Timer的图延后到绑定不变量检查之后销毁。
+
+## ADR-104：Inspector两个设置按钮共用同一可撤销动作
+
+Phase7H2C4，2026-09-13。纯受控YYNowPlayingInspector增加可选onOpenSettings，原顶部more和快捷device都使用它；默认null保留组件预览禁用语义，不改视觉结构。AdaptiveRoot→ShellPlayer复用既有URI捕获与导航代数，不复制modal。两个按钮同帧竞争只接受首个，底栏与Inspector并发由同一AppRouter实例拒绝重复；隐藏/换布局后旧入口永久失效。
+
+窄栏/手机原设计未显示直接设置按钮，不增加未经审计的拥挤控件；真实元信息点击进入播放页再进入设置作为可达性契约，并在窄Windows、Android平板竖屏、手机130%字号验收。Inspector小高度内容沿用滚动，实际ensureVisible+点击验证快捷设置，不以离屏绘制当作可操作。
