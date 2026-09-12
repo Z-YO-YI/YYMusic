@@ -1044,3 +1044,7 @@ Phase7G1，2026-09-13。ShellPlayer增加可选onOpenQueue，AdaptiveRoot仅委�
 ## ADR-095：底栏全屏入口复用根原生会话意图
 
 Phase7G2，2026-09-13。原HTML入口既打开播放界面也请求全屏。AppRouter在构造上下文组合既有FullscreenPresenter.enterOnNextPlayer与openPlayer，把同一闭包传给五处AdaptiveRoot，再传ShellPlayer可选onOpenFullscreen；不扩张AppNavigation协议或创建额外播放器。Shell复用G1可撤销交互许可，接受后立即失效。实际进入/恢复/错误由根会话与路由观察器负责，不支持时只打开播放页而不声称原生全屏成功。手机/Inspector保持原布局。
+
+## ADR-096：侧栏入口借同一Shell导航许可，不拥有独立会话
+
+Phase7G3，2026-09-13。YYNowPlayingInspector只增加可选onOpenFullscreen/onOpenLyrics；AdaptiveRoot为侧栏Shell传同一全屏闭包、既有歌词导航及路由Listenable/布局尺寸身份。跨主导航保留或隐藏侧栏时旧许可撤销，实际按钮复用Shell通用导航方法。全屏播放复用G2原生会话，歌词遵循既有独立页面与平台沉浸策略；无当前队列时歌词禁用。展示组件不调用平台或存储，默认null保持独立预览兼容。

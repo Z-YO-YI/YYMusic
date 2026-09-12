@@ -73,7 +73,19 @@ class AdaptiveRoot extends StatelessWidget {
             );
       final inspector = presenter == null
           ? null
-          : ShellPlayer(presenter: presenter, inspector: true);
+          : ShellPlayer(
+              presenter: presenter,
+              inspector: true,
+              routeChanges: routeChanges,
+              scopeIdentity: (
+                selected,
+                layout,
+                constraints.maxWidth,
+                constraints.maxHeight,
+              ),
+              onOpenFullscreen: onOpenFullscreen,
+              onOpenLyrics: navigation.openLyrics,
+            );
       return switch (layout) {
         YYLayoutClass.windowsExpanded ||
         YYLayoutClass.windowsStandard ||

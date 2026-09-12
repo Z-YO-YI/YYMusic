@@ -583,7 +583,11 @@ test('Inspector is controlled, opaque and scrollable without IO or queue algorit
   assert.match(panel, /YYArtworkRole.player/);
   assert(!/BackdropFilter|Timer|Repository|PlaybackController|dart:io|\.network\(/.test(panel));
   const root = read('lib/app/adaptive_root.dart');
-  assert.match(root, /ShellPlayer\(presenter: presenter, inspector: true\)/);
+  assert.match(root, /ShellPlayer\(\s*presenter: presenter,\s*inspector: true,/);
+  const inspectorBinding = root.slice(root.indexOf('final inspector ='), root.indexOf('return switch (layout)'));
+  assert.match(inspectorBinding, /onOpenFullscreen: onOpenFullscreen/);
+  assert.match(inspectorBinding, /onOpenLyrics: navigation.openLyrics/);
+  assert(!/favorite:|PlaybackController\(/.test(inspectorBinding));
   assert.equal(root.match(/inspector: inspector/g)?.length, 2);
   const presenter = read('lib/app/playback_presenter.dart');
   assert.match(presenter, /queueCount => _playback.state.queue.entries.length/);

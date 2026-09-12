@@ -1,5 +1,7 @@
 # 实施状态
 
+当前Phase7G3：[计划](phase_7g3_inspector_navigation_plan.md)/ADR096/[报告](phase_7g3_inspector_navigation_report.md)。侧栏全屏/歌词按钮借根导航，绑定路由事件与页面/布局/尺寸身份，隐藏/遮罩/离页撤销旧回调，无新增播放或原生真值。20新Widget，45相关及完整1724 Flutter/142 Node、188 Golden、515文件格式/严格分析/生成迁移、Android Debug27.4秒及资产许可签名通过。21旧图精确审核更新、167不变；基线仍逐像素比较，合成取整差异单独量化。分支codex/inspector-playback-navigation，Draft base codex/shell-fullscreen-navigation；前置ea2f3a9双CI34711115530/34711133249 SUCCESS。本批云端按新SHA核验；设置/队列摘要与Phase7出口、Phase8–11仍待完成，无新增实机安装/出声或本地Windows构建。
+
 当前Phase7G2：[计划](phase_7g2_shell_fullscreen_plan.md)/ADR095/[报告](phase_7g2_shell_fullscreen_report.md)。五处AppRouter frame传同一全屏意图闭包，AdaptiveRoot/ShellPlayer接现有按钮；复用FullscreenPresenter.enterOnNextPlayer及G1导航许可，系统不支持时仅打开原生播放页。13新Widget、1新Node，完整1704 Flutter/141 Node、188 Golden、514文件格式/严格分析/生成迁移、Android Debug44.9秒及资产许可签名通过。65旧图只改全屏图标62像素，123不变。分支codex/shell-fullscreen-navigation，Draft base codex/shell-queue-navigation；前置a5dc821双CI34709946561/34709964739 SUCCESS。本批云端新SHA独立核验；后续Inspector剩余入口、Phase7出口和Phase8–11，未新增实机安装/出声或本地Windows构建。
 
 当前Phase7G1：[计划](phase_7g1_shell_queue_plan.md)/ADR094/[报告](phase_7g1_shell_queue_report.md)。AdaptiveRoot与ShellPlayer接既有队列导航，复用F3页面交互许可并在接受导航前撤销旧闭包。12新Widget覆盖两平台空/非空队列点击、返回/重复、内联遮罩及离页/尺寸/卸载；完整1691 Flutter/140 Node、188 Golden、513文件格式/严格分析/生成迁移、Android Debug38.5秒及资产许可签名通过。65旧图每张仅67队列图标像素改变，123旧图不变。分支codex/shell-queue-navigation，Draft base codex/shell-favorite-overlay-guard；前置6f9552a双CI34708712276/34708730171均SUCCESS，本批新SHA另验。下一步底栏全屏/Inspector剩余入口及Phase7出口，Phase8–11未完成，未新增实机出声/安装或本地Windows编译。以下为历史记录。

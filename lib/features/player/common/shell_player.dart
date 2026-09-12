@@ -214,6 +214,13 @@ class _PlayerControlsState extends State<_PlayerControls> {
     void seekCancel() => setState(() => _seekPreview = null);
     if (widget.inspector) {
       return YYNowPlayingInspector(
+        onOpenFullscreen: _navigationAction(
+          favoriteGeneration,
+          widget.onOpenFullscreen,
+        ),
+        onOpenLyrics: presenter.queueCount > 0
+            ? _navigationAction(favoriteGeneration, widget.onOpenLyrics)
+            : null,
         data: view,
         sourceLabel: presenter.sourceLabel,
         statusLabel: presenter.statusLabel,
