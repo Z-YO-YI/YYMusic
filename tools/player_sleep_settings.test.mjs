@@ -8,7 +8,7 @@ test('player settings use the original more glyph and root-owned exact modal rou
   assert.match(player, /onPressed: action\(true, widget.onOpenSettings!\)/);
   const router = read('lib/app/app_router.dart');
   assert.match(router, /onOpenSettings: \(\) => _openSleepSettings\(\s+playbackPresenter,\s+platform,\s+owner: AppRoute.player,/);
-  assert.match(router, /_sleepDialog != null && _activePath != _sleepOwnerPath/);
+  assert.match(router, /_sleepDialog != null &&\s+\(_activePath != _sleepOwnerPath \|\|\s+_activeLocation != _sleepOwnerLocation\)/);
   const modal = read('lib/app/sleep_settings_route.dart');
   for (const required of ['RawDialogRoute<void>', 'identical(_sleepDialog, dialog)',
     'dialog.isCurrent', '_activePath == ownerPath', 'addPostFrameCallback',
