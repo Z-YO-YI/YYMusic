@@ -334,6 +334,7 @@ final class AppRouter implements AppNavigation {
                       platform: platform,
                       navigation: this,
                       playback: playbackPresenter,
+                      queue: queueController,
                       frame: (child) => AdaptiveRoot(
                         platform: platform,
                         navigation: this,

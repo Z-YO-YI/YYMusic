@@ -1,5 +1,9 @@
 # 实施状态
 
+当前增量Phase7E5E：我喜欢/最近播放三端菜单接下一首/添加队列及E5B共享反馈，准确窗口/条目/读取意图与根快照授权；失效/未解析引用可入队但不可播放，独立新队列ID不复用历史ID。刷新/换组/根替换/路由/尺寸/零面积/关闭后旧菜单和遮罩无效；正常尺寸重发请求，历史清除确认独立且旧确认不可复用。入队不改收藏/历史/当前音频，busy和接受后SQL排空、跨页显式同ID重试均覆盖。
+分支`codex/system-playlist-queue-actions`，基线`a2a8b41`，Stacked Draft base=`codex/playlist-queue-actions`；[计划](phase_7e5e_system_queue_plan.md)、ADR089、[总进度及报告](phase_7e5e_system_queue_report.md)。新增12单元/21Widget/8真实SQLite/5Golden和1Node，最终1590 Flutter、133 Node、178Golden、496文件格式、严格分析、生成/迁移及Android Debug资产/许可/v2签名通过。8旧图精确更新/165旧图不变，13变更逐张查看，保留SDK XML/Java警告。
+前置#78 head a2a8b41双CI SUCCESS，Linux1371/Windows173Golden和2Runner/65文件正式入口包、Android资产许可签名通过，报告和PR已回填；本批新SHA云端另验。仍在Phase7，播放区剩余入口/收藏接线及整体出口继续核查；Phase8导入/扫描/授权与Phase9–11未完成。没有本批设备安装/出声或正式发行，新安装仍为空库。以下为历史记录。
+
 当前增量Phase7E5D：自建歌单的Phone/Tablet/Windows菜单接下一首/添加队列；许可捕获准确PlaylistContent窗口/条目及读取意图，根分配独立队列ID，保留重复与未解析/失效软引用，不改歌单顺序/内容或自动播放。跨尺寸重发菜单请求，刷新/换组/根替换/覆盖/零面积/关闭撤销旧回调；dispose清空旧菜单和返回焦点，修复旧关闭回调的setState-after-dispose。共享busy/安全失败/显式同ID重试与成功提示沿用E5B组件。
 分支`codex/playlist-queue-actions`，基线`5ec9d63`，Stacked Draft base=`codex/catalog-queue-actions`；[计划](phase_7e5d_playlist_queue_plan.md)、ADR088及[报告](phase_7e5d_playlist_queue_report.md)。新增9单元、17Widget、4真实SQLite、4Golden和1Node；完整1544 Flutter/132 Node、491文件格式、严格分析、生成/迁移通过；173Golden仅1旧菜单图更新、168旧图不变，五张变更逐张查看。原资产/依赖/平台/Schema零变化，Android Debug预检通过。
 前置#77精确5ec9d63的push34690651343/PR34690666913均SUCCESS，Linux1341/Windows169Golden及2Runner/65文件正式入口包、Android资产/许可/签名通过，已回填。新SHA云端另验；系统歌单等入口及Phase7其余、Phase8–11仍未完成，无本批实机安装/出声或正式发行。

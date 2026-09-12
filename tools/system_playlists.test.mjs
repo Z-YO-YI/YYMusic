@@ -2,6 +2,24 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { read } from './design_audit.mjs';
 
+test('system song insertion borrows root edits with exact source and independent history confirmation', () => {
+  const actions = read('lib/features/playlists/common/system_playlist_actions.dart');
+  assert.match(actions, /type != SystemPlaylistType.queue/);
+  assert.match(actions, /identical\(item, entry\)/);
+  assert.match(actions, /intent == _intent && canOpenEntry/);
+  const insertion = read('lib/features/playlists/common/system_queue_actions.dart');
+  for (const token of ['queue.prepareInsertion(', 'queue.submitEdit(', 'QueueOperationFeedback(', 'sourcePermit!()', 'epoch == _queueEpoch']) assert(insertion.includes(token));
+  assert.match(insertion, /request\?\.entry != null/);
+  assert(!/saveQueue\(|recordHistory\(|setFavorite\(|AppDatabase|QueueController\(|PlaybackController\(/.test(insertion));
+  const screen = read('lib/features/playlists/common/system_playlist_screen.dart');
+  assert.match(screen, /_request = _captureRequest\(request.snapshot, request.entry\)/);
+  assert.match(screen, /final identity = request.entry\?\.identity/);
+  assert.match(screen, /if \(identity == null\)/);
+  const panel = read('lib/features/playlists/common/system_playlist_management_panel.dart');
+  for (const glyph of ['next', 'listPlus', 'heart']) assert(panel.includes(`YYGlyph.${glyph}`));
+  assert.match(panel, /if \(snapshot.type == SystemPlaylistType.favorites\)/);
+});
+
 test('system playlist reads select enum-only sources and bind pages before artist fan-out', () => {
   const query = read('lib/data/repositories/drift_system_playlist_content.dart');
   assert.equal((query.match(/\.customSelect\(/g) ?? []).length, 1);
