@@ -52,6 +52,22 @@ void main() {
     expect(engine.calls, isEmpty);
   });
 
+  test('entry-end replacement revokes retained deadline callback', () async {
+    await start();
+    player.setSleepTimer(PlaybackSleepDuration.fifteen);
+    final old = clock.wakes.single;
+    expect(player.setSleepAtCurrentEntryEnd(), isTrue);
+    clock.now = clock.now.add(const Duration(hours: 1));
+    old.fire();
+    await _flush();
+    expect(old.isActive, isFalse);
+    expect(engine.calls, isEmpty);
+    expect(player.sleepTimer.entryId, 'graph-fixture-entry');
+    engine.complete();
+    await _flush();
+    expect(player.sleepTimer.phase, PlaybackSleepPhase.expired);
+  });
+
   for (final duration in PlaybackSleepDuration.values) {
     test('${duration.name} arms exact UTC deadline without autoplay', () {
       final before = player.state;

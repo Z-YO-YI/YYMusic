@@ -1,5 +1,7 @@
 # YYMusic
 
+最新增量：**Phase 7H1B 本曲结束睡眠核心**。绑定已加载的准确队列条目，完成事件先消费睡眠意图再决定自动下一首；重复/随机不绕过，暂停恢复保留，切歌/停止/错误撤销。新增24项测试，完整1793 Flutter/143 Node、188原Golden、严格分析及Android Debug预检通过，见[报告](docs/phase_7h1b_current_entry_report.md)。分钟定时与本曲结束核心均已具备，**原生设置界面仍待H2接入**，不代表应用整体可日常使用或已上线。以下为历史增量。
+
 最新增量：**Phase 7H1A 睡眠截止核心**。唯一根播放器支持关闭及15/30/60分钟，到期串行暂停、撤销旧回调及自动下一首竞争，关闭排空；本曲结束与原生设置入口尚未接入。23项新增回归、完整1769 Flutter/143 Node、188原Golden、严格分析及Android Debug预检通过，详见[报告](docs/phase_7h1a_sleep_deadline_report.md)。Phase7尚未整体完成，新安装真实导入与正式发行仍待后续。以下检查点为历史记录。
 
 当前检查点：**Phase 7 出口审计，尚未整体完成**。独立播放/歌词/队列、返回及Reduce Motion已有自动化证据，但真实播放设置仍缺失；详见[出口审计](docs/phase_7_exit_audit.md)和[下一批7H计划](docs/phase_7h_playback_settings_plan.md)。下一项先做真实睡眠定时核心，不把按钮跳到外观页或仅保存假开关当作完成。本轮仅整理证据与计划，无新增应用功能；复验1746 Flutter/143 Node、188 Golden、严格分析及Android Debug通过。真实导入及正式发行仍未完成。以下为历史增量。

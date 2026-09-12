@@ -1,6 +1,55 @@
 part of 'playback_controller.dart';
 
 extension _SleepDeadlineActions on PlaybackController {
+  bool _setSleepAtCurrentEntryEnd() {
+    _checkNotDisposed();
+    final entryId = _loadedEntryId;
+    if (!_engine.isAvailable ||
+        _loadingSource ||
+        entryId == null ||
+        entryId != _state.queue.currentEntryId ||
+        _state.currentTrack == null ||
+        !const {
+          PlaybackPhase.ready,
+          PlaybackPhase.playing,
+          PlaybackPhase.buffering,
+          PlaybackPhase.paused,
+        }.contains(_state.phase)) {
+      return false;
+    }
+    _cancelSleepTimer();
+    _sleepState = PlaybackSleepTimerState.atEntryEnd(entryId);
+    _publish(_state);
+    return true;
+  }
+
+  bool _consumeEntrySleep(String? completedEntryId) {
+    final target = _sleepState.entryId;
+    if (_sleepState.phase != PlaybackSleepPhase.armed ||
+        target == null ||
+        target != completedEntryId ||
+        target != _state.queue.currentEntryId ||
+        _loadingSource) {
+      return false;
+    }
+    // Consume before notifying listeners or constructing automatic advance.
+    _sleepState = PlaybackSleepTimerState.atEntryEnd(target, expired: true);
+    return true;
+  }
+
+  void _reconcileEntrySleep(PlaybackState value) {
+    final target = _sleepState.entryId;
+    if (target != null &&
+        _sleepState.phase == PlaybackSleepPhase.armed &&
+        (target != value.queue.currentEntryId ||
+            value.currentTrack == null ||
+            value.phase == PlaybackPhase.idle ||
+            value.phase == PlaybackPhase.loading ||
+            value.phase == PlaybackPhase.error)) {
+      _cancelSleepTimer();
+    }
+  }
+
   void _cancelSleepTimer() {
     _sleepGeneration++;
     _sleepWake?.cancel();

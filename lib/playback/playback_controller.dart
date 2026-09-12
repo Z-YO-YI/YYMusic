@@ -92,6 +92,9 @@ final class PlaybackController extends ChangeNotifier {
   /// Null cancels. A deadline is session-only and never starts playback.
   void setSleepTimer(PlaybackSleepDuration? duration) =>
       _setSleepTimer(duration);
+
+  /// False leaves the prior intent intact when no loaded current entry exists.
+  bool setSleepAtCurrentEntryEnd() => _setSleepAtCurrentEntryEnd();
   bool get isAvailable => _engine.isAvailable;
   bool get isMediaSessionAvailable => _mediaSession.isAvailable;
 
@@ -567,9 +570,14 @@ final class PlaybackController extends ChangeNotifier {
       history.observe(value);
     }
     final completedEntryId = _loadedEntryId;
+    final sleepConsumed =
+        value.phase == AudioEnginePhase.completed &&
+        !_completionHandled &&
+        _consumeEntrySleep(completedEntryId);
     final shouldAdvance =
         value.phase == AudioEnginePhase.completed &&
         !_completionHandled &&
+        !sleepConsumed &&
         _sleepState.phase != PlaybackSleepPhase.pausing;
     if (value.phase == AudioEnginePhase.completed) _completionHandled = true;
     final phase = switch (value.phase) {
@@ -779,6 +787,7 @@ final class PlaybackController extends ChangeNotifier {
 
   void _publish(PlaybackState value) {
     if (_disposed) return;
+    _reconcileEntrySleep(value);
     _state = value;
     _notificationDepth++;
     try {
