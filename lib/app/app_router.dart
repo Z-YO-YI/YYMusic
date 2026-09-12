@@ -72,6 +72,11 @@ final class AppRouter implements AppNavigation {
     FullscreenPresenter? fullscreen,
     NavigatorObserver? fullscreenObserver,
   }) {
+    void openFullscreenPlayer() {
+      fullscreen?.enterOnNextPlayer();
+      openPlayer();
+    }
+
     _showPlaylistPicker = (track, title) async {
       final navigator = _rootNavigator.currentState;
       if (navigator == null || _pickerShowing) return;
@@ -193,6 +198,7 @@ final class AppRouter implements AppNavigation {
               playbackPresenter: playbackPresenter,
               playbackFavorite: playbackFavorite,
               routeChanges: _router.routerDelegate,
+              onOpenFullscreen: openFullscreenPlayer,
               child: shell,
             );
             return playlistController == null
@@ -259,6 +265,7 @@ final class AppRouter implements AppNavigation {
                           playbackPresenter: playbackPresenter,
                           playbackFavorite: playbackFavorite,
                           routeChanges: _router.routerDelegate,
+                          onOpenFullscreen: openFullscreenPlayer,
                           child: child,
                         ),
                       )
@@ -307,6 +314,7 @@ final class AppRouter implements AppNavigation {
                         playbackPresenter: playbackPresenter,
                         playbackFavorite: playbackFavorite,
                         routeChanges: _router.routerDelegate,
+                        onOpenFullscreen: openFullscreenPlayer,
                         child: child,
                       ),
                     )
@@ -352,6 +360,7 @@ final class AppRouter implements AppNavigation {
                         playbackPresenter: playbackPresenter,
                         playbackFavorite: playbackFavorite,
                         routeChanges: _router.routerDelegate,
+                        onOpenFullscreen: openFullscreenPlayer,
                         child: child,
                       ),
                     )
@@ -390,6 +399,7 @@ final class AppRouter implements AppNavigation {
                       playbackPresenter: playbackPresenter,
                       playbackFavorite: playbackFavorite,
                       routeChanges: _router.routerDelegate,
+                      onOpenFullscreen: openFullscreenPlayer,
                       child: child,
                     ),
                   )

@@ -19,6 +19,8 @@ AdaptiveRoot传入既有AppNavigation.openSystemPlaylist(queue)，ShellPlayer新
 
 ## GitHub与剩余边界
 
+后续核验：精确a5dc821a2fc03c538a0287a9fc8d571c0df49222的[push34709946561](https://github.com/Z-YO-YI/YYMusic/actions/runs/34709946561)和[PR34709964739](https://github.com/Z-YO-YI/YYMusic/actions/runs/34709964739)均SUCCESS；Draft #85未合并。下方提交前状态保留为历史。
+
 前置6f9552a的push34708712276/PR34708730171均SUCCESS，回填#84及报告。本批提交推送/Draft后按新SHA核验Android/Windows云端结果，不用前置CI或本地Debug冒充本批云端成功，不合并或发布Release。
 
 主要文件：adaptive_root.dart、shell_player.dart、shell_favorite_actions.dart、新导航Widget/Node、旧未接线断言、65 Golden和阶段文档。原设计/资产/依赖/平台/Schema未修改；既有SQLite测试全量重跑，无新增UI-SQLite或设备安装/出声，本地未编译Windows。下一步全屏/Inspector剩余入口和Phase7出口；真实导入/扫描、来源、后台媒体及正式发行仍待Phase8–11，不是已上线。

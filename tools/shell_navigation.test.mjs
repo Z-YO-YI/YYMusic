@@ -9,3 +9,12 @@ test('shell queue delegates to existing navigation with revocable scope', () => 
   assert.match(actions, /_queueAction\(int generation\)[\s\S]*if \(!_canUseShellAction\(generation\)\) return;[\s\S]*_favoriteRouteChanged\(\);\s*open\(\);/);
   assert(!/QueueController\(|PlaybackController\(/.test(actions));
 });
+
+test('shell fullscreen requests the existing native session through all five frames', () => {
+  const router = read('lib/app/app_router.dart');
+  assert.equal((router.match(/onOpenFullscreen: openFullscreenPlayer/g) ?? []).length, 5);
+  assert.match(router, /void openFullscreenPlayer\(\) \{\s*fullscreen\?\.enterOnNextPlayer\(\);\s*openPlayer\(\);/);
+  const shell = read('lib/features/player/common/shell_player.dart');
+  assert.match(shell, /onOpenFullscreen: _navigationAction\(\s*favoriteGeneration,\s*widget.onOpenFullscreen,/);
+  assert(!/FullscreenPresenter\(|NativeFullscreenGateway\(/.test(shell));
+});

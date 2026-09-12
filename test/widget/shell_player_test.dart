@@ -71,7 +71,7 @@ void main() {
           );
           expect(bar.onToggleFavorite, isNull);
           expect(bar.onOpenQueue, isNotNull);
-          expect(bar.onOpenFullscreen, isNull);
+          expect(bar.onOpenFullscreen, isNotNull);
         }
         expect(fixture.engine.calls.length, before);
         expect(tester.takeException(), isNull);

@@ -21,6 +21,7 @@ class ShellPlayer extends StatelessWidget {
     this.onOpen,
     this.onOpenLyrics,
     this.onOpenQueue,
+    this.onOpenFullscreen,
     this.favorite,
     this.routeChanges,
     this.scopeIdentity,
@@ -36,6 +37,7 @@ class ShellPlayer extends StatelessWidget {
   final VoidCallback? onOpen;
   final VoidCallback? onOpenLyrics;
   final VoidCallback? onOpenQueue;
+  final VoidCallback? onOpenFullscreen;
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
@@ -54,6 +56,7 @@ class ShellPlayer extends StatelessWidget {
         onOpen: onOpen,
         onOpenLyrics: onOpenLyrics,
         onOpenQueue: onOpenQueue,
+        onOpenFullscreen: onOpenFullscreen,
       );
       if (inspector) return controls;
       return Column(
@@ -85,6 +88,7 @@ class _PlayerControls extends StatefulWidget {
     required this.onOpen,
     required this.onOpenLyrics,
     required this.onOpenQueue,
+    required this.onOpenFullscreen,
     required this.favorite,
     required this.routeChanges,
     required this.scopeIdentity,
@@ -99,6 +103,7 @@ class _PlayerControls extends StatefulWidget {
   final VoidCallback? onOpen;
   final VoidCallback? onOpenLyrics;
   final VoidCallback? onOpenQueue;
+  final VoidCallback? onOpenFullscreen;
   @override
   State<_PlayerControls> createState() => _PlayerControlsState();
 }
@@ -241,6 +246,10 @@ class _PlayerControlsState extends State<_PlayerControls> {
       favoriteBusy: favorite?.busy ?? false,
       onToggleFavorite: _favoriteAction(favoriteGeneration),
       onOpenQueue: _queueAction(favoriteGeneration),
+      onOpenFullscreen: _navigationAction(
+        favoriteGeneration,
+        widget.onOpenFullscreen,
+      ),
       compact: widget.compact,
       loading: presenter.busy,
       onOpen: widget.onOpen,
