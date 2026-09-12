@@ -20,6 +20,8 @@ YYNowPlayingInspector增加可选onOpenFullscreen/onOpenLyrics，现有按钮接
 
 ## GitHub与后续
 
+后续核验：精确3be2863b5e65557a3ef4832582d052209c463ff7的[push34712365647](https://github.com/Z-YO-YI/YYMusic/actions/runs/34712365647)与[PR34712380763](https://github.com/Z-YO-YI/YYMusic/actions/runs/34712380763)均SUCCESS，Draft #87未合并；下方提交前状态保留为历史。
+
 前置ea2f3a9的push34711115530/PR34711133249均SUCCESS，报告与#86已回填。本批提交push/Draft后按新SHA核验，不将前置或本地Debug当成本批云端通过；不自动合并、改默认分支或发布Release。
 
 主要文件：adaptive_root.dart、shell_player.dart、yy_now_playing_inspector.dart、20项新Widget/Node及21基线与文档。原设计/资产/依赖/平台/Schema未改；既有SQLite全量重跑，无新增设备安装/出声、本地Windows编译或UI-SQLite验收。下一步剩余设置/队列摘要入口与Phase7出口，Phase8–11真实导入、来源、后台媒体与正式发行仍未完成。

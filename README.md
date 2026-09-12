@@ -1,5 +1,7 @@
 # YYMusic
 
+当前增量：**Phase 7G4 底栏封面／歌词回调保护**。修复手机和桌面切页后旧入口仍可打开页面的问题，三布局复用既有可撤销导航许可，正常点击／长按及返回不变。1746 Flutter、143 Node、188旧Golden、严格分析与Android Debug预检通过，见[报告](docs/phase_7g4_metadata_guard_report.md)。无视觉或基线修改；Phase7整体及Phase8–11尚未完成。以下为历史记录。
+
 当前增量：**Phase 7G3 正在播放侧栏入口**。Windows／平板侧栏可打开原生全屏播放与独立歌词页，支持返回、空态及隐藏/切页/遮罩后的旧回调保护，复用既有根会话和原设计组件。1724 Flutter、142 Node、188 Golden、严格分析及Android Debug预检通过，见[报告](docs/phase_7g3_inspector_navigation_report.md)。21张基线精确更新启用态，167张不变；剩余入口及Phase7整体/Phase8–11仍未完成，非正式上线。以下为历史记录。
 
 当前增量：**Phase 7G2 底栏原生全屏入口**。Windows／平板现有“全屏播放”按钮打开独立播放页并请求根原生全屏会话，支持返回恢复、不支持时回退和安全失败反馈。1704 Flutter、141 Node、188 Golden、严格分析及Android Debug预检通过，见[报告](docs/phase_7g2_shell_fullscreen_report.md)。复用本地Figma原图标，65张基线仅更新按钮启用态。Inspector剩余入口与Phase7整体/Phase8–11仍未完成，尚未正式上线。以下为历史记录。
