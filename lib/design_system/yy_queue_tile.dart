@@ -29,6 +29,9 @@ class YYQueueTile extends StatefulWidget {
     this.loading = false,
     this.density = YYQueueTileDensity.standard,
     this.focusNode,
+    this.moveUpFocusNode,
+    this.moveDownFocusNode,
+    this.removeFocusNode,
   });
 
   final String title;
@@ -45,6 +48,7 @@ class YYQueueTile extends StatefulWidget {
   final bool loading;
   final YYQueueTileDensity density;
   final FocusNode? focusNode;
+  final FocusNode? moveUpFocusNode, moveDownFocusNode, removeFocusNode;
 
   @override
   State<YYQueueTile> createState() => _YYQueueTileState();
@@ -205,6 +209,11 @@ class _YYQueueTileState extends State<YYQueueTile> {
     }) => Focus(
       onFocusChange: _actionFocusChanged,
       child: _QueueMiniAction(
+        focusNode: switch (glyph) {
+          YYGlyph.up => widget.moveUpFocusNode,
+          YYGlyph.down => widget.moveDownFocusNode,
+          _ => widget.removeFocusNode,
+        },
         glyph: glyph,
         label: '${widget.title}：$label',
         danger: danger,
@@ -300,6 +309,7 @@ class _YYQueueTileState extends State<YYQueueTile> {
 
 class _QueueMiniAction extends StatelessWidget {
   const _QueueMiniAction({
+    this.focusNode,
     required this.glyph,
     required this.label,
     required this.onPressed,
@@ -308,6 +318,7 @@ class _QueueMiniAction extends StatelessWidget {
   });
 
   final YYGlyph glyph;
+  final FocusNode? focusNode;
   final String label;
   final VoidCallback? onPressed;
   final bool loading;
@@ -315,6 +326,7 @@ class _QueueMiniAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => YYControlAction(
+    focusNode: focusNode,
     label: label,
     onActivate: onPressed,
     loading: loading,

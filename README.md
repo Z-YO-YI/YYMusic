@@ -1,5 +1,7 @@
 # YYMusic
 
+当前增量：**Phase 7E4 原生队列拖拽排序**。Android 手机/平板长按条目，Windows 使用原始拖动手柄；支持边缘滚动，保留上下移与连续键盘操作。重复歌曲按队列条目独立排序，当前播放不中断，刷新/离页/尺寸变化撤销旧拖放。完整 1413 Flutter、128 Node、161 Golden 与严格分析通过，见[计划](docs/phase_7e4_queue_drag_plan.md)与[报告](docs/phase_7e4_queue_drag_report.md)。真实导入/扫描尚属 Phase 8，Phase 7 添加/下一首等剩余入口及 Phase 8–11 仍需开发；新安装仍为空库，不是日常可用发行版。以下“当前增量”均为历史记录。
+
 当前增量：**Phase 7E3 独立原生队列页面**。音乐库、播放器及歌词的队列入口现在打开 `/queue`，复用唯一根队列，支持准确播放重复条目、上下移动、缺失项移除、当前项/清空确认、安全失败和显式重试。Android 手机/平板与 Windows 分别适配，使用既有 Figma 审计组件与原始图标。完整 1386 Flutter（新增 12 Golden）、127 Node 和严格分析通过，见[计划](docs/phase_7e3_native_queue_plan.md)与[报告](docs/phase_7e3_native_queue_report.md)。拖拽、更多添加入口及 Phase 7 剩余能力继续分批开发；新安装仍为空库，尚非日常可用发行版。以下“当前增量”为历史记录。
 
 当前增量：**Phase 7E2 根队列编辑反馈**。在同一QueueController加入共享busy、每次提交结果、跨页面保留的安全失败、同快照显式重试和按失败身份知悉；其他成功操作不抹旧失败，旧确认不改新队列，关闭先等待反馈排空。1350项Flutter（146旧Golden未改）、126项Node、严格分析和Android Debug预检通过，见[计划](docs/phase_7e2_queue_edit_feedback_plan.md)与[报告](docs/phase_7e2_queue_edit_feedback_report.md)。本批是独立队列UI所需状态接口，尚未新增管理页面；前置E1两组GitHub Android/Windows已SUCCESS，[精确回填](docs/phase_7e1_queue_edit_intents_report.md)。以下“当前增量”均为历史记录。

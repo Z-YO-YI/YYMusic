@@ -23,6 +23,7 @@ import '../phone/phone_queue_layout.dart';
 import '../tablet/tablet_queue_layout.dart';
 import '../windows/windows_queue_layout.dart';
 import 'queue_page_controller.dart';
+import 'queue_reorder_sliver.dart';
 
 part 'queue_sections.dart';
 
@@ -55,6 +56,10 @@ class QueueScreenState extends State<QueueScreen> {
   late final QueuePageController controller;
   final scroll = ScrollController();
   final _backFocus = FocusNode(debugLabel: 'queue back');
+  final _pageFocus = FocusNode(debugLabel: 'queue route');
+  final _actionFocus = <(String, YYGlyph), FocusNode>{};
+  FocusNode? _pendingFocus;
+  SystemPlaylistContent? _focusContent;
   _QueueConfirmation? _confirmation;
   bool _active = true;
   Size? _size;
@@ -86,6 +91,7 @@ class QueueScreenState extends State<QueueScreen> {
         TickerMode.valuesOf(context).enabled &&
         (ModalRoute.isCurrentOf(context) ?? true);
     if (_size != size || !active) {
+      _pendingFocus = null;
       controller.invalidate();
       controller.read.setActive(false);
       _confirmation = null;
@@ -100,6 +106,39 @@ class QueueScreenState extends State<QueueScreen> {
     final confirmation = _confirmation;
     if (confirmation != null && !confirmation.permit()) _dismiss();
     final read = controller.read, data = controller.read.content;
+    if (read.isCurrent &&
+        !widget.queue.editBusy &&
+        (_pendingFocus != null || !identical(_focusContent, data))) {
+      _focusContent = data;
+      final focus = _pendingFocus;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        if (focus != null && identical(_pendingFocus, focus)) {
+          _pendingFocus = null;
+          final primary = FocusManager.instance.primaryFocus;
+          if (_interactive &&
+              (identical(primary, focus) ||
+                  identical(primary, _pageFocus) ||
+                  primary is FocusScopeNode)) {
+            (focus.context != null && focus.canRequestFocus
+                    ? focus
+                    : _backFocus)
+                .requestFocus();
+          }
+        }
+        final visible =
+            controller.read.content?.entries
+                .map((entry) => entry.entryId)
+                .toSet() ??
+            {};
+        final obsolete = _actionFocus.keys
+            .where((key) => !visible.contains(key.$1))
+            .toList();
+        for (final key in obsolete) {
+          _actionFocus.remove(key)!.dispose();
+        }
+      });
+    }
     if (read.isCurrent && data != null && data.page.offset != _offset) {
       _offset = data.page.offset;
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -117,7 +156,12 @@ class QueueScreenState extends State<QueueScreen> {
     });
   }
 
-  void _edit(QueueEdit edit, bool Function() permit, {bool? confirmClear}) {
+  void _edit(
+    QueueEdit edit,
+    bool Function() permit, {
+    bool? confirmClear,
+    FocusNode? restoreFocus,
+  }) {
     if (!_interactive || !permit() || widget.queue.editBusy) return;
     if (confirmClear != null) {
       controller.invalidate();
@@ -130,6 +174,7 @@ class QueueScreenState extends State<QueueScreen> {
         ),
       );
     } else {
+      if (restoreFocus?.hasFocus ?? false) _pendingFocus = restoreFocus;
       unawaited(controller.submit(edit, () => _interactive && permit()));
     }
   }
@@ -202,6 +247,7 @@ class QueueScreenState extends State<QueueScreen> {
           if (!didPop) _dismiss();
         },
         child: Focus(
+          focusNode: _pageFocus,
           autofocus: true,
           onKeyEvent: (_, event) {
             if (event is KeyDownEvent &&
@@ -271,6 +317,10 @@ class QueueScreenState extends State<QueueScreen> {
     unawaited(controller.close().catchError((Object _) {}));
     scroll.dispose();
     _backFocus.dispose();
+    _pageFocus.dispose();
+    for (final focus in _actionFocus.values) {
+      focus.dispose();
+    }
     super.dispose();
   }
 }

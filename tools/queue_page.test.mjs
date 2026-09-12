@@ -4,6 +4,21 @@ import test from 'node:test';
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 
+test('queue drag uses native normalized indices, bounded root anchors and revocable view ownership', () => {
+  const sliver = read('lib/features/queue/common/queue_reorder_sliver.dart');
+  for (const token of ['SliverReorderableList(', 'onReorderItem: _reorder', 'ReorderableDragStartListener(', 'ReorderableDelayedDragStartListener(', 'YYGlyph.drag', 'YYSurface(', 'cancelReorder()', 'onPointerCancel:', 'if (!mounted || _cancelling || !widget.enabled) return']) assert(sliver.includes(token));
+  assert.doesNotMatch(sliver, /package:flutter\/material.dart|debugPrint\(/);
+  const drag = read('lib/features/queue/common/queue_drag_session.dart');
+  for (const token of ['sourceIndex == targetIndex', 'content.page.offset + targetIndex', 'targetIndex > sourceIndex ? 1 : 0', 'expected.entries[anchorIndex].id', 'QueueEdit.move(']) assert(drag.includes(token));
+  const sections = read('lib/features/queue/common/queue_sections.dart');
+  assert(sections.includes('ValueKey((data, root, controller.interactionRevision))'));
+  assert(sections.includes('() => _interactive && drag.permit()'));
+  const binding = read('lib/features/queue/common/queue_page_controller.dart');
+  assert(binding.includes('permit: () => originalPermit() && viewPermit() && matches(snapshot)'));
+  const screen = read('lib/features/queue/common/queue_screen.dart');
+  for (const token of ['_pendingFocus = null', '_actionFocus.remove(key)!.dispose()', 'FocusManager.instance.primaryFocus', 'focus.context != null && focus.canRequestFocus']) assert(screen.includes(token));
+});
+
 test('independent queue route borrows root state, bounded projection and original native components', () => {
   const router = read('lib/app/app_router.dart');
   assert.match(router, /path: '\/queue'/);

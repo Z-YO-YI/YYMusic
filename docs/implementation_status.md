@@ -1,5 +1,11 @@
 # 实施状态
 
+当前增量 Phase 7E4：独立队列页已支持 Android 手机/平板长按和 Windows 原始手柄鼠标拖动；原生惰性列表、落点间隙、边缘自动滚动及无障碍排序接入根 QueueEdit，不创建第二份队列。归一化索引映射原根锚点，组尾保留未加载内容；拖拽不改变当前项、不重载播放。旧视图/根/尺寸/路由/取消回调失效，Windows 连续键盘上下移焦点保留。
+分支 `codex/queue-drag-sorting`，基线 `32edb5b`，Stacked Draft PR base=`codex/native-queue-route`；[计划](phase_7e4_queue_drag_plan.md)、ADR084 与[报告](phase_7e4_queue_drag_report.md)记录范围。新增 8 单元、16 Widget、3 Golden、1 Node；2 既有真实 SQLite 页面测试升级为指针拖拽。完整 1413 Flutter / 128 Node、469 文件格式、严格分析、生成/迁移通过；10 张受影响旧 Golden 精确更新并逐张检查，148 张旧图及原始资产/Schema/依赖未改。
+E3 的精确 `32edb5b` 两组云端源码/Android/Windows 均 SUCCESS，#73 已回填。E4 云端按新提交单独核验，不能用 E3 代替。当前新增能力仅队列拖拽；添加/下一首入口及 Phase 7 其余能力、Phase 8–11 仍未完成，新安装仍为空库。没有本批真机安装/出声或签名发行验收。
+
+## 之前的阶段记录
+
 当前增量 Phase 7E3：已实现独立 `/queue` 与三端原生布局，复用根有界系统队列读取和 QueueController 编辑反馈。准确播放重复条目、上下移动/跨组锚点、不可用项移除、当前项/清空确认、忙态、安全失败、跨页重试/知悉及返回均接线；根快照/投影/离页/尺寸变化撤销旧回调，刷新投影不误取消已接受的播放。
 分支 `codex/native-queue-route`，基线 `9a05089`，Stacked Draft PR base=`codex/queue-edit-feedback`，[计划](phase_7e3_native_queue_plan.md)与 ADR083 先于实现。新增 7 单元、15 Widget、2 实际 SQLite 页面回归、12 Golden、1 Node；完整 1386 Flutter / 127 Node、464 文件格式、严格分析、生成/迁移通过。构建及新提交云端结果见[报告](phase_7e3_native_queue_report.md)。旧 146 Golden、原始资产、Schema/依赖未改。
 前置 E2 两组云端常规任务已 SUCCESS，#72 与报告回填；不以旧结果代替本批验收。本批上下移动已可用，拖拽及更多添加入口未完成；Phase 7 其余与 Phase 8–11 继续开发。新安装仍为空库，尚未做本批真机安装/出声或签名发行。
