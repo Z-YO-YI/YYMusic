@@ -19,7 +19,7 @@ enum PlaybackSleepDuration {
 
 enum PlaybackSleepPhase { off, armed, pausing, expired, failed }
 
-/// Session-only intent; it is not another playback or persisted queue state.
+/// Live root intent; persisted minute snapshots are separate from queue state.
 @immutable
 final class PlaybackSleepTimerState {
   const PlaybackSleepTimerState.off()

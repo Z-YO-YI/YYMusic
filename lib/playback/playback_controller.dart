@@ -105,7 +105,7 @@ final class PlaybackController extends ChangeNotifier {
     return remaining.isNegative ? Duration.zero : remaining;
   }
 
-  /// Null cancels. A deadline is session-only and never starts playback.
+  /// Null cancels. Never starts playback; persistence observes accepted intent.
   void setSleepTimer(PlaybackSleepDuration? duration) =>
       _setSleepTimer(duration);
 

@@ -1149,6 +1149,10 @@ H4B1。SleepTimerSnapshot位于domain，只有原durationMinutes（15/30/60）�
 
 H4B2。DriftSleepTimerRepository借用AppDatabase、只访问playbackSleepTimer键，单语句upsert/delete原子操作，不改schema。read/save/clear在调用时挂到同一Future尾链；内部尾链吸收失败以继续排队，但原Future仍抛安全DomainFailure。解析错误用私有标记映射schemaMismatch，其他异常统一databaseCorrupted，禁止把坏记录当missing或自动覆盖未知版本。dispose在依赖回调前已有尾链登记，拒绝后续操作并等待接受工作，不关闭数据库。本批真实适配器独立验证，尚不注册生产数据范围或根恢复。
 
+## ADR-113：启动读写协调与根业务截止分离
+
+H4B3b。SleepPersistenceController构造即捕获许可并观察意图；单worker负责读取与最新快照写入，根独占业务Timer/暂停。普通播放通知不写设置，off取消通过独立许可失效识别。过期/坏版本由协调层清理，I/O失败保留记录并反馈。关闭先冻结观察和排空写入，再由数据范围关闭数据库，不持久化根退出产生的off。分钟恢复和本曲结束会话意图区别明确。
+
 ## ADR-112：根恢复使用一次性睡眠generation许可
 
 H4B3a。captureSleepRestore只能从off捕获一次性许可；晚到存储结果若用户已新设/取消、根关闭或已接受另一恢复，一律superseded。恢复直接使用快照原UTC deadline和原选项，不经setSleepTimer重新加分钟，不调用play。结果区分过期、不可用和失败，读取/清理/反馈由下一批协调器承担。依赖及通知重入后复核generation，过时调度返回的Timer立即取消，不覆盖新的有效Timer。本批只提供根API和测试，尚未接应用启动。

@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7H4B3b：[计划](phase_7h4b3b_persistence_plan.md)/ADR113/[报告](phase_7h4b3b_persistence_report.md)。分钟定时存储、启动恢复、关闭排空和Presenter/面板反馈已生产绑定，SQLite三次重开验证原截止/取消保留；无自动播放。22协调器+4Graph+6Widget+3新Golden，完整2097 Flutter/158 Node、217截图（214原图不变）、563格式/严格分析/生成迁移及Android Debug49.8秒通过。分支codex/sleep-persistence-coordinator，base codex/sleep-restore-root；父154df75双CI34734305847/34734318067 SUCCESS，新SHA另验。分钟恢复完成，本曲结束仅会话；[H4C平滑暂停](phase_7h4c_sleep_fade_plan.md)及其余Phase7–11仍待验收。以下为历史记录。
+
 最新Phase7H4B3a：[计划](phase_7h4b3a_root_restore_plan.md)/ADR112/[报告](phase_7h4b3a_root_restore_report.md)。captureSleepRestore提供一次性调用和非消费isCurrent检查，按原deadline/选项恢复；晚到结果不能覆盖用户取消/新设。修复调度器返回旧Timer及唤醒时钟重入覆盖新意图。24新单测+1Node，完整2062 Flutter/157 Node、214旧Golden不变、556格式/严格分析/生成迁移及Android Debug51.6秒通过。分支codex/sleep-restore-root，base codex/sleep-timer-storage；父ff55750双CI34733155015/34733165114 SUCCESS，新SHA另验。尚未启动绑定，B3b继续存储协调；Phase7整体及Phase8–11未完成。以下为历史记录。
 
 最新Phase7H4B2：[计划](phase_7h4b2_storage_plan.md)/ADR111/[报告](phase_7h4b2_storage_report.md)。DriftSleepTimerRepository只访问playbackSleepTimer，按调用顺序串行read/save/clear，错误不回显原文，dispose排空且不关闭借用数据库。真实SQLite重开/清理持久化已验证；尚未注册AppDataServices或根恢复，session-only提示不变。20新单测+1新Node，完整2038 Flutter/156 Node、214原Golden不变、553格式/严格分析/生成迁移及Android Debug17.9秒通过。分支codex/sleep-timer-storage，base codex/sleep-restore-snapshot；父push34732285509 SUCCESS，PR34732312781核验时进行中，新SHA另验。下一批B3，Phase7整体及Phase8–11未完成。以下为历史记录。
