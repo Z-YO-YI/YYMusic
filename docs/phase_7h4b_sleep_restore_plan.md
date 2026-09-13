@@ -1,5 +1,7 @@
 # Phase 7H4B：未过期睡眠定时恢复（待实施）
 
+B2真实存储适配器已完成，见[报告](phase_7h4b2_storage_report.md)。仍未接入应用。B3须先定义根恢复许可：读取前捕获用户意图版本，加载期间新设/取消优先；仅恢复未来deadline且保留原duration，不调用会重设deadline的setSleepTimer，不自动播放；业务到期/显式取消清理，关闭冻结后只排空已接受写入，不能把进程关闭的临时off写成用户取消。先验证根API和竞态，再注册AppDataServices与启动/关闭协调、显示保存失败并替换session-only文案。
+
 B1快照/版本编码/Repository契约已完成，见[报告](phase_7h4b1_snapshot_report.md)。真实存储、根竞态协调和启动绑定尚未实现。B2基于已有AppSettingRecords实现专用单键、串行read/save/clear、错误封装及dispose排空；B3再接恢复，不能提前删除session-only提示。
 
 来源：开发总指令§26与ADR107。H4A2b完成显示接入，不代表持久化已存在。

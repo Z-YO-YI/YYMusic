@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7H4B2：[计划](phase_7h4b2_storage_plan.md)/ADR111/[报告](phase_7h4b2_storage_report.md)。DriftSleepTimerRepository只访问playbackSleepTimer，按调用顺序串行read/save/clear，错误不回显原文，dispose排空且不关闭借用数据库。真实SQLite重开/清理持久化已验证；尚未注册AppDataServices或根恢复，session-only提示不变。20新单测+1新Node，完整2038 Flutter/156 Node、214原Golden不变、553格式/严格分析/生成迁移及Android Debug17.9秒通过。分支codex/sleep-timer-storage，base codex/sleep-restore-snapshot；父push34732285509 SUCCESS，PR34732312781核验时进行中，新SHA另验。下一批B3，Phase7整体及Phase8–11未完成。以下为历史记录。
+
 最新Phase7H4B1：[计划](phase_7h4b1_snapshot_plan.md)/ADR110/[报告](phase_7h4b1_snapshot_report.md)。领域快照仅原15/30/60分钟和UTC deadline；data编码严格校验版本/类型/规范UTC/长度，安全错误不回显记录；Repository定义按调用顺序串行及关闭排空，尚无适配器/启动绑定。29新单测，完整2018 Flutter/155 Node、214原Golden不变、551格式/严格分析和Android Debug41.4秒通过，APK与A2b字节一致。分支codex/sleep-restore-snapshot，base codex/sleep-countdown-panel；父CI34731476534/34731489397核验时仍进行中，本SHA另验。下一批B2真实存储；Phase7整体及Phase8–11仍未完成。以下为历史记录。
 
 最新Phase7H4A2b：[报告](phase_7h4a2b_countdown_panel_report.md)。正式共享面板绑定剩余时间子组件，播放页/歌词页/底栏/Inspector沿用唯一根弹层。6新Widget+3新Golden+1新Node；完整1989 Flutter/154 Node、214截图（12旧图审核更新、199旧图不变）、547格式/严格分析/生成迁移和Android Debug18.3秒通过。分支codex/sleep-countdown-panel，base codex/sleep-countdown-ui。父提交2b57143双CI34730407355/34730418800均SUCCESS；本提交云端另验。§26剩余时间显示已绑定，未到期恢复和平滑暂停尚未完成，下一批[H4B计划](phase_7h4b_sleep_restore_plan.md)。Phase7整体及Phase8–11未完成。以下为历史记录。
