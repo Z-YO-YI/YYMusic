@@ -50,7 +50,7 @@ test('independent lyrics route borrows root state and revokes hidden page intent
 test('lyrics synchronization borrows one root player and repository without a second clock', () => {
   const graph = read('lib/app/dependency_graph.dart');
   assert.equal((graph.match(/lyricsController = LyricsController\(/g) ?? []).length, 1);
-  assert.match(graph, /lyricsController\.dispose\(\);\s+playback\.dispose\(\)/);
+  assert.match(graph, /lyricsController\.dispose\(\);\s+sleepPersistence\.dispose\(\);\s+playback\.dispose\(\)/);
   assert.match(graph, /lyricsController\.close,\s+queue\.close,\s+playbackFavorite\.close,\s+playback\.close/);
   const lyrics = read('lib/playback/lyrics_controller.dart');
   assert.match(lyrics, /_repository!\.getLyrics\(identity\.track\)/);
@@ -486,7 +486,7 @@ test('only the just_audio native POC remains active in read-only dual-platform C
 
 test('shared Shell presenter maps root playback and guards queued seek identity', () => {
   const graph = read('lib/app/dependency_graph.dart');
-  assert.equal(graph.match(/PlaybackPresenter\(playback\)/g)?.length, 1);
+  assert.equal(graph.match(/PlaybackPresenter\(\s*playback,\s*sleepPersistence: sleepPersistence,\s*\)/g)?.length, 1);
   const presenter = read('lib/app/playback_presenter.dart');
   assert.match(presenter, /extends ChangeNotifier/);
   assert.match(presenter, /expectedEntryId: expectedEntryId/);

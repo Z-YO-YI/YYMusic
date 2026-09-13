@@ -7,6 +7,7 @@ import '../domain/models/track.dart';
 import '../playback/playback_controller.dart';
 import '../playback/playback_sleep_timer_state.dart';
 import '../playback/playback_state.dart';
+import '../playback/sleep_persistence_controller.dart';
 import 'playback_queue_summary.dart';
 import 'playback_sleep_action.dart';
 
@@ -14,12 +15,14 @@ part 'playback_sleep_projection.dart';
 
 /// Root-owned UI projection; the controller remains the only playback truth.
 final class PlaybackPresenter extends ChangeNotifier {
-  PlaybackPresenter(this._playback) {
+  PlaybackPresenter(this._playback, {this.sleepPersistence}) {
     _playback.addListener(_changed);
     _playback.history.addListener(_historyChanged);
+    sleepPersistence?.addListener(_historyChanged);
   }
 
   final PlaybackController _playback;
+  final SleepPersistenceController? sleepPersistence;
   bool _pending = false;
   bool _disposed = false;
   bool _actionFailed = false;
@@ -37,6 +40,31 @@ final class PlaybackPresenter extends ChangeNotifier {
   }
 
   PlaybackSleepTimerState get sleepState => _playback.sleepTimer;
+
+  String? get sleepPersistenceMessage {
+    final storage = sleepPersistence;
+    if (storage == null || !storage.persistent) return null;
+    final failure = storage.failure;
+    if (failure != null) {
+      return switch (failure.diagnosticId) {
+        'sleep-persistence.load' => '未能读取已保存定时，请重试；本次设置仍可使用。',
+        'sleep-persistence.restore' => '已保存的定时未能恢复，请重新设置。',
+        _ => '定时未能保存或清除，重启后可能使用旧设置。',
+      };
+    }
+    if (storage.loading) return '正在读取睡眠定时…';
+    if (storage.saving || storage.unsaved) return '正在保存睡眠定时…';
+    return '分钟定时保留原截止时间；本曲结束仅在本次启动有效。';
+  }
+
+  DomainFailure? get sleepPersistenceFailure => sleepPersistence?.failure;
+  bool get canRetrySleepPersistence =>
+      !_disposed &&
+      !_playback.isClosed &&
+      (sleepPersistence?.canRetry ?? false);
+  void retrySleepPersistence(DomainFailure expected) {
+    if (canRetrySleepPersistence) sleepPersistence?.retry(expected);
+  }
 
   /// Ceil positive fractions so a deadline is not displayed as elapsed early.
   /// A visible view may sample this without changing the business timer.
@@ -216,6 +244,7 @@ final class PlaybackPresenter extends ChangeNotifier {
     _disposed = true;
     _playback.removeListener(_changed);
     _playback.history.removeListener(_historyChanged);
+    sleepPersistence?.removeListener(_historyChanged);
     super.dispose();
   }
 }

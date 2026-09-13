@@ -101,6 +101,7 @@ class _SleepSettingsPanelState extends State<SleepSettingsPanel> {
       final generation = ++_generation;
       final presenter = widget.presenter;
       final sleep = presenter.sleepState;
+      final storageFailure = presenter.sleepPersistenceFailure;
       final colors = YYTheme.of(context).colors;
       final size = MediaQuery.sizeOf(context);
       if (size.isEmpty) return const SizedBox.shrink();
@@ -155,10 +156,28 @@ class _SleepSettingsPanelState extends State<SleepSettingsPanel> {
             },
           ),
           const SizedBox(height: 16),
-          Text(
-            '设置仅在本次启动有效；取消不会自动恢复播放。',
-            style: YYTypography.caption.copyWith(color: colors.tertiary),
+          Semantics(
+            liveRegion: true,
+            child: Text(
+              presenter.sleepPersistenceMessage ?? '设置仅在本次启动有效；取消不会自动恢复播放。',
+              key: const ValueKey('sleep-persistence-status'),
+              style: YYTypography.caption.copyWith(color: colors.tertiary),
+            ),
           ),
+          if (storageFailure != null && presenter.canRetrySleepPersistence)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: YYButton(
+                key: const ValueKey('sleep-storage-retry'),
+                label: '重试',
+                style: YYButtonStyle.quiet,
+                onPressed: () {
+                  if (_allowed(generation)) {
+                    presenter.retrySleepPersistence(storageFailure);
+                  }
+                },
+              ),
+            ),
         ],
       );
       final actions = [

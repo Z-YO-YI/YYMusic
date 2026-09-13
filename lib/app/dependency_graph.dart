@@ -14,6 +14,7 @@ import '../domain/repositories/local_library_repository.dart';
 import '../domain/repositories/lyrics_repository.dart';
 import '../domain/repositories/music_source_repository.dart';
 import '../domain/repositories/search_history_repository.dart';
+import '../domain/repositories/sleep_timer_repository.dart';
 import '../features/catalog_detail/common/catalog_detail_controller.dart';
 import '../features/home/common/home_controller.dart';
 import '../features/library/common/library_controller.dart';
@@ -33,6 +34,7 @@ import '../playback/playback_controller.dart';
 import '../playback/playback_favorite_controller.dart';
 import '../playback/playback_source_resolver.dart';
 import '../playback/queue_controller.dart';
+import '../playback/sleep_persistence_controller.dart';
 import 'app_data_services.dart';
 import 'app_view_state.dart';
 import 'flutter_license_repository.dart';
@@ -47,6 +49,7 @@ final class DependencyGraph {
     MediaSessionGateway? mediaSession,
     this.dataServices,
     AppearanceSettingsRepository? appearanceRepository,
+    SleepTimerRepository? sleepTimerRepository,
     LibraryRepository? library,
     LocalLibraryRepository? localLibrary,
     CatalogSearchRepository? catalogSearch,
@@ -62,6 +65,7 @@ final class DependencyGraph {
          dataServices == null ||
              (library == null &&
                  appearanceRepository == null &&
+                 sleepTimerRepository == null &&
                  localLibrary == null &&
                  catalogSearch == null &&
                  catalogBrowse == null &&
@@ -95,6 +99,10 @@ final class DependencyGraph {
       clock: playbackClock,
       mediaSession: _mediaSession,
     );
+    sleepPersistence = SleepPersistenceController(
+      playback: playback,
+      repository: dataServices?.sleepTimers ?? sleepTimerRepository,
+    );
     queue = QueueController(playback);
     playbackFavorite = PlaybackFavoriteController(
       playback: playback,
@@ -104,7 +112,10 @@ final class DependencyGraph {
       playback: playback,
       repository: this.lyrics,
     );
-    playbackPresenter = PlaybackPresenter(playback);
+    playbackPresenter = PlaybackPresenter(
+      playback,
+      sleepPersistence: sleepPersistence,
+    );
     home = HomeController(
       playback: playback,
       library: this.library,
@@ -165,6 +176,7 @@ final class DependencyGraph {
   final appearance = YYAppearanceController();
   late final AppearanceSettingsController appearanceSettings;
   late final PlaybackController playback;
+  late final SleepPersistenceController sleepPersistence;
   late final QueueController queue;
   late final PlaybackFavoriteController playbackFavorite;
   late final LyricsController lyricsController;
@@ -184,6 +196,8 @@ final class DependencyGraph {
     await appearanceSettings.initialize();
     if (_closeFuture != null) return;
     await playback.initialize();
+    if (_closeFuture != null) return;
+    await sleepPersistence.initialize();
     if (_closeFuture == null) playbackFavorite.start();
   }
 
@@ -208,6 +222,7 @@ final class DependencyGraph {
     systemPlaylists.dispose();
     playbackPresenter.dispose();
     lyricsController.dispose();
+    sleepPersistence.dispose();
     playback.dispose();
     appearanceSettings.dispose();
     appearance.dispose();
@@ -231,6 +246,7 @@ final class DependencyGraph {
       queue.close,
       playbackFavorite.close,
       playback.close,
+      sleepPersistence.close,
       _audioEngine.dispose,
       _mediaSession.dispose,
       if (dataServices case final services?)

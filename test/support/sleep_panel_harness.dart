@@ -3,8 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:yymusic/app/layout_class.dart';
 import 'package:yymusic/app/playback_presenter.dart';
 import 'package:yymusic/design_system/yy_theme.dart';
+import 'package:yymusic/domain/repositories/sleep_timer_repository.dart';
 import 'package:yymusic/features/player/common/sleep_settings_panel.dart';
 import 'package:yymusic/playback/playback_controller.dart';
+import 'package:yymusic/playback/sleep_persistence_controller.dart';
 
 import 'design_harness.dart';
 import 'fake_audio_engine.dart';
@@ -12,7 +14,11 @@ import 'fake_domain_repositories.dart';
 import 'fake_playback_dependencies.dart';
 
 final class SleepPanelFixture {
-  SleepPanelFixture({bool schedulerFails = false, DateTime Function()? clock}) {
+  SleepPanelFixture({
+    bool schedulerFails = false,
+    DateTime Function()? clock,
+    SleepTimerRepository? repository,
+  }) {
     playback = PlaybackController(
       engine,
       library: library,
@@ -22,13 +28,20 @@ final class SleepPanelFixture {
           ? (_, _) => throw StateError('private-scheduler-detail')
           : null,
     );
-    presenter = PlaybackPresenter(playback);
+    if (repository != null) {
+      persistence = SleepPersistenceController(
+        playback: playback,
+        repository: repository,
+      );
+    }
+    presenter = PlaybackPresenter(playback, sleepPersistence: persistence);
   }
   final engine = FakeAudioEngine();
   final library = FakeLibraryRepository(tracks: [playbackFixtureTrack]);
   final appearance = YYAppearanceController()..setReduceMotion(true);
   late final PlaybackController playback;
   late final PlaybackPresenter presenter;
+  SleepPersistenceController? persistence;
   bool current = true;
   int closes = 0;
 
@@ -40,6 +53,7 @@ final class SleepPanelFixture {
 
   Future<void> close() async {
     presenter.dispose();
+    await persistence?.close();
     await playback.close();
     await engine.dispose();
     await library.dispose();
