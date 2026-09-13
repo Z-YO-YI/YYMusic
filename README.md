@@ -1,5 +1,7 @@
 # YYMusic
 
+当前检查点：**Phase 7H4 播放能力审计**。发现总指令§26的剩余时间、未过期恢复、平滑暂停尚未完成；五选项可用不等于睡眠功能完整验收。设备/无缝/标准化的真实后端边界已记录，下一批先补剩余时间，见[审计](docs/phase_7h4_capability_audit.md)/[验证](docs/phase_7h4_capability_report.md)。本轮仅文档与审计检查，1954 Flutter/152 Node及Android Debug复验通过，APK与H3B相同；无新增应用功能，整体未上线。以下为历史记录。
+
 最新增量：**Phase 7H3B 侧栏队列摘要与入口**。Windows/平板侧栏显示真实队列总数、当前列表序号，可展开原生队列页；空态、重排同步、短窗口滚动、键盘与旧操作保护已验证。14新Widget+3新Golden，完整1954 Flutter/151 Node、严格分析及Android Debug预检通过，见[报告](docs/phase_7h3b_inspector_queue_report.md)。复用原设计组件，未复制模拟下一首列表；其他播放偏好、真实导入及发行尚未完成。以下为历史记录。
 
 最新增量：**Phase 7H3A 只读队列摘要接口**。准确保留当前队列条目和列表序号，缓存避免进度通知反复扫描；尚未绑定侧栏界面。另修复云端截图中测试曲目入库时间造成的排序不稳定，不修改截图基准。完整1937 Flutter/150 Node、208原Golden、严格分析和Android Debug预检通过，见[报告](docs/phase_7h3a_queue_summary_report.md)。父阶段Windows失败由新提交修复并另验，H3B继续界面接入，应用整体尚未上线。以下为历史记录。
