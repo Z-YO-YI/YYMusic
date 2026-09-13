@@ -44,6 +44,8 @@ final class JustAudioEngine implements AudioSequenceEngine {
   DomainFailure? _failure;
   List<AudioSequenceCursor>? _sequenceCursors;
   Object? _sequenceFault;
+  int? _trimmingIndex;
+  bool _trimMoved = false;
 
   @override
   bool get supportsSequences =>
@@ -149,6 +151,62 @@ final class JustAudioEngine implements AudioSequenceEngine {
         throw failure;
       }
     });
+  }
+
+  @override
+  Future<bool> retainSequenceThrough(AudioSequenceCursor expected) async {
+    var retained = false;
+    await _enqueue(() async {
+      final backend = _backend;
+      final cursors = _sequenceCursors;
+      if (backend is! JustAudioSequenceBackend ||
+          !_loaded ||
+          _loading ||
+          _failure != null ||
+          cursors == null ||
+          expected.index < 0 ||
+          expected.index >= cursors.length) {
+        return;
+      }
+      final current = cursors[expected.index];
+      if (!identical(current.sequenceIdentity, expected.sequenceIdentity) ||
+          current.entryId != expected.entryId ||
+          current.track != expected.track ||
+          backend.current.currentIndex != expected.index) {
+        return;
+      }
+      _trimmingIndex = expected.index;
+      _trimMoved = false;
+      try {
+        final applied = await backend.retainSequenceThrough(expected.index);
+        if (!applied ||
+            _trimMoved ||
+            _failure != null ||
+            backend.current.currentIndex != expected.index) {
+          throw StateError('Audio sequence changed during boundary edit');
+        }
+        _sequenceCursors = List.unmodifiable(cursors.take(expected.index + 1));
+        _trimmingIndex = null;
+        _acceptSnapshot(backend.current);
+        retained = true;
+      } catch (_) {
+        _trimmingIndex = null;
+        _sequenceCursors = null;
+        _loaded = false;
+        final failure = _commandFailure(
+          DomainFailureCode.playbackInterrupted,
+          'sequence-boundary',
+        );
+        _publishFailure(failure);
+        try {
+          await backend.stop();
+        } catch (_) {
+          // Preserve the safe boundary failure; native stopping is best effort.
+        }
+        throw failure;
+      }
+    });
+    return retained;
   }
 
   @override
@@ -265,6 +323,11 @@ final class JustAudioEngine implements AudioSequenceEngine {
 
   void _acceptSnapshot(JustAudioPlayerSnapshot snapshot) {
     if (_closing) return;
+    final trimming = _trimmingIndex;
+    if (trimming != null) {
+      if (snapshot.currentIndex != trimming) _trimMoved = true;
+      return;
+    }
     AudioSequenceCursor? cursor;
     final cursors = _sequenceCursors;
     if (cursors != null && !_loading && _failure == null) {

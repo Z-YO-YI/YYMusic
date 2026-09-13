@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+Phase7J4：8新引擎测试＋5新真实通道测试，覆盖当前时钟/身份保留、无reload/play/seek、旧批次和非当前条目拒绝、替换撤销、切曲及回切检测、异步/原生/stop失败、关闭排空、原生移除范围和尾部为空不调用。两份序列测试累计50项；见[报告](phase_7j4_continuation_boundary_report.md)。
+
 Phase7J3：8新真实插件通道测试覆盖旧索引/错误隔离、音量速率保留、单曲与序列互换、拒绝预检不替换、暂停失败锁定、关闭交错不创建新播放器、旧play Future失败隔离，以及主/回退释放失败被插件吞掉的事实。原12项继续保留，共20项。见[报告](phase_7j3_event_isolation_report.md)。
 
 Phase7J2：17项引擎/模型测试覆盖重复曲目、不可变批次、替换屏蔽旧身份、能力/头预检、失败恢复、无效索引安全停止及不误停更新序列、串行play与关闭；另1项真实just_audio通道经NativeBackend→JustAudioEngine检验索引到entry/批次映射。详见[报告](phase_7j2_sequence_engine_report.md)，226张Golden不变。

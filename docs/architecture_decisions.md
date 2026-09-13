@@ -1,5 +1,9 @@
 # YYMusic 架构决策记录
 
+## ADR-135：继续策略以受保护的序列尾部移除建立本曲边界
+
+Phase7J4。新增retainSequenceThrough(expectedCursor)，在共用引擎串行队列内复核批次identity、entry/TrackRef及当前索引；过期请求不调用原生。只移除当前索引之后的预载项，不seek/reload/play或修改应用持久化队列。原生使用removeAudioSourceRange，尾部为空不调用Windows拒绝的空范围。执行中暂缓身份投影并记录索引变化；发生切曲、错误或失败时丢弃序列身份、请求停止并返回固定安全failure，不宣称边界成功。该能力为本曲结束睡眠和关闭自动继续的根接入前置；尚未绑定根，成功通道返回不代替原生边界听感或释放验收。
+
 ## ADR-134：整批替换隔离原生播放器事件域
 
 Phase7J3。锁定插件的事件通道按播放器ID区分，但索引事件不带应用批次；不能在同一播放器上以新列表解释旧索引。NativeBackend在第二次及后续open/openSequence前撤销旧订阅generation、排空取消、请求pause并dispose旧AudioPlayer，再创建新AudioPlayer及独立通道。保留音量/速率，绝不自动play；同一序列内切歌不重建播放器。旧流、错误和play Future失败全部校验generation。可观察的准备/暂停失败阻止新播放器建立并锁定后续加载。插件stop会吞掉主释放及回退释放错误，dispose成功不能证明资源释放成功；该限制须保留且做设备验收，不虚构可检测性。关闭中不创建新播放器。此变更作用于单曲与序列替换，不据通道隔离声称无缝上线。

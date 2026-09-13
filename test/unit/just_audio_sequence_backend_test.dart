@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:yymusic/domain/models/domain_failure.dart';
 import 'package:yymusic/domain/models/track.dart';
 import 'package:yymusic/playback/audio_engine_state.dart';
 import 'package:yymusic/playback/audio_sequence.dart';
@@ -217,6 +218,93 @@ void main() {
     },
   );
 
+  test(
+    'native boundary removes only tail without replacing or pausing current',
+    () async {
+      await backend.openSequence([
+        local('/a.wav'),
+        local('/b.wav'),
+        local('/c.wav'),
+      ], initialIndex: 1);
+      await backend.play();
+      final id = probe.playerId;
+      final offset = probe.calls.length;
+      expect(await backend.retainSequenceThrough(1), isTrue);
+      expect(probe.removals.single['startIndex'], 2);
+      expect(probe.removals.single['endIndex'], 3);
+      expect(probe.playerId, id);
+      expect(probe.loads, hasLength(1));
+      expect(probe.calls.skip(offset), ['concatenatingRemoveRange']);
+      expect(backend.current.currentIndex, 1);
+      expect(backend.current.playing, isTrue);
+      expect(await backend.retainSequenceThrough(1), isTrue);
+      expect(probe.removals, hasLength(1));
+    },
+  );
+
+  test('stale native boundary is a no-op and closed backend rejects', () async {
+    await backend.openSequence([local('/a.wav'), local('/b.wav')]);
+    for (final index in [-1, 1, 2]) {
+      expect(await backend.retainSequenceThrough(index), isFalse);
+    }
+    expect(probe.removals, isEmpty);
+    await backend.dispose();
+    await expectLater(backend.retainSequenceThrough(0), throwsStateError);
+  });
+
+  test('native boundary failure is redacted', () async {
+    await backend.openSequence([local('/a.wav'), local('/b.wav')]);
+    probe.failRemove = true;
+    await expectLater(
+      backend.retainSequenceThrough(0),
+      throwsA(
+        isA<StateError>().having(
+          (e) => e.toString(),
+          'safe error',
+          'Bad state: Audio sequence boundary could not be applied',
+        ),
+      ),
+    );
+  });
+
+  for (final returnsToOriginal in [false, true]) {
+    test(
+      'native transition during boundary edit fails, returns=$returnsToOriginal',
+      () async {
+        final engine = JustAudioEngine(backend);
+        addTearDown(engine.dispose);
+        final states = <AudioEngineState>[];
+        engine.states.listen(states.add);
+        await engine.loadSequence(
+          AudioSequence([
+            AudioSequenceEntry(entryId: 'a', source: local('/a.wav')),
+            AudioSequenceEntry(entryId: 'b', source: local('/b.wav')),
+          ]),
+        );
+        probe.removeGate = Completer<void>();
+        final editing = engine.retainSequenceThrough(
+          states.last.sequenceCursor!,
+        );
+        final rejected = expectLater(editing, throwsA(isA<DomainFailure>()));
+        await probe.removing.future.timeout(const Duration(seconds: 3));
+        await probe.emit(1);
+        await Future<void>.delayed(Duration.zero);
+        if (returnsToOriginal) {
+          await probe.emit(0);
+          await Future<void>.delayed(Duration.zero);
+        }
+        probe.removeGate!.complete();
+        await rejected;
+        expect(states.last.phase, AudioEnginePhase.error);
+        expect(states.last.sequenceCursor, isNull);
+        expect(
+          states.last.failure!.diagnosticId,
+          'audio.just-audio.sequence-boundary',
+        );
+      },
+    );
+  }
+
   test('loads ordered sources once without issuing play', () async {
     await backend.openSequence([
       local(r'C:\Music\a tone.wav'),
@@ -377,6 +465,10 @@ final class _NativeChannelProbe {
   final playing = Completer<void>();
   final disposing = Completer<void>();
   final lifecycle = <String>[];
+  final removals = <Map<Object?, Object?>>[];
+  final removing = Completer<void>();
+  Completer<void>? removeGate;
+  bool failRemove = false;
 
   void register(String name, Future<Object?> Function(MethodCall) handler) {
     channels.add(name);
@@ -396,6 +488,17 @@ final class _NativeChannelProbe {
         register('com.ryanheise.just_audio.data.$playerId', (_) async => null);
         register('com.ryanheise.just_audio.methods.$playerId', (request) async {
           calls.add(request.method);
+          if (request.method == 'concatenatingRemoveRange') {
+            removals.add(Map<Object?, Object?>.from(request.arguments as Map));
+            if (!removing.isCompleted) removing.complete();
+            if (removeGate != null) await removeGate!.future;
+            if (failRemove) {
+              throw PlatformException(
+                code: 'fixture',
+                message: 'private-remove',
+              );
+            }
+          }
           if (request.method == 'play') {
             if (!playing.isCompleted) playing.complete();
             if (playGate != null) await playGate!.future;
