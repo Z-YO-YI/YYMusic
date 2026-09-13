@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7J7：[有效期报告](phase_7j7_source_expiry_report.md)/ADR138。可选UTC expiresAt仅存在瞬时PlayableSource，根有限重取及完整身份/许可复核，引擎执行时预检。12项新测试，全量2479 Flutter、161 Node、严格分析与Android Debug通过。分支codex/source-expiry-guards，基线5489b5c。网络Adapter、暂停后刷新及完整网络无缝尚未实现；以下为历史记录。
+
 最新Phase7J6：[有界提前加载报告](phase_7j6_lookahead_report.md)/ADR137。初始三项、当前位置后两项前瞻；异步解析不占根命令队列，提交追加复核身份/策略，关闭排空解析任务。新增9项测试，全量2467 Flutter与161 Node通过。分支codex/native-sequence-lookahead，基线6448b42。并非完整有界内存窗口或上线验收；以下为历史记录。
 
 最新Phase7J5：[播放根序列报告](phase_7j5_root_native_sequence_report.md)/ADR136。显式playNativeSequence已贯通唯一PlaybackController：顺序解析前缀、一次加载、原生切曲持久化、原子元数据/时钟及有界历史证据，策略/编辑截尾。27项根测试含真实SQLite及加载撤销后禁止play，加1项真实插件通道到根贯通。分支codex/root-native-sequence，base codex/sequence-continuation-boundary。生产UI未开放，无缝/连续窗口预载及原生验收不记完成；以下为历史阶段。

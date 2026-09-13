@@ -40,7 +40,9 @@ void main() {
   late PlaybackController root;
   late FakeMediaSessionGateway media;
   late GatedResolver resolver;
+  late DateTime now;
   setUp(() async {
+    now = DateTime.utc(2026, 9, 13);
     engine = NativeEngine();
     collection = FakeCollectionRepository();
     library = FakeLibraryRepository(tracks: tracks);
@@ -53,6 +55,7 @@ void main() {
       sourceResolver: resolver,
       mediaSession: media,
       randomIndex: (upper) => upper - 1,
+      clock: () => now,
     );
     await root.initialize();
     await root.replaceQueue([
@@ -83,6 +86,159 @@ void main() {
         addedAt: DateTime.utc(2026),
       ),
   ], currentEntryId: 'long0');
+
+  PlayableSource timed(Track track, DateTime deadline) =>
+      PlayableSource.networkStream(
+        track: track.ref,
+        uri: Uri.parse('https://fixture.invalid/audio?private=value'),
+        expiresAt: deadline,
+      );
+
+  test('expired result is refreshed once before current load', () async {
+    var calls = 0;
+    resolver.callback = (track) async =>
+        timed(track, calls++ == 0 ? now : now.add(const Duration(minutes: 5)));
+    await root.playEntry('q0');
+    expect(calls, 2);
+    expect(engine.inner.loadedSource!.isValidAt(now), isTrue);
+    expect(engine.calls, ['load', 'play']);
+  });
+
+  test(
+    'persistently expired result fails safely with bounded attempts',
+    () async {
+      var calls = 0;
+      resolver.callback = (track) async {
+        calls++;
+        return timed(track, now);
+      };
+      await expectLater(
+        root.playEntry('q0'),
+        throwsA(
+          isA<DomainFailure>().having(
+            (e) => e.code,
+            'code',
+            DomainFailureCode.streamUrlExpired,
+          ),
+        ),
+      );
+      expect(calls, 2);
+      expect(engine.calls, isEmpty);
+      expect(root.state.failure.toString(), isNot(contains('private')));
+    },
+  );
+
+  test(
+    'source expiring during queue write is re-resolved before load',
+    () async {
+      var calls = 0;
+      resolver.callback = (track) async {
+        calls++;
+        return timed(track, now.add(const Duration(seconds: 1)));
+      };
+      collection.beforeQueueWrite = (_) async {
+        now = now.add(const Duration(seconds: 2));
+      };
+      await root.playEntry('q1');
+      expect(calls, 2);
+      expect(engine.inner.loadedSource!.isValidAt(now), isTrue);
+    },
+  );
+
+  test(
+    'current expiry during native tail resolution refreshes loaded batch',
+    () async {
+      var currentCalls = 0;
+      resolver.callback = (track) async {
+        if (track.id == tracks[0].id) {
+          currentCalls++;
+          return timed(track, now.add(const Duration(seconds: 1)));
+        }
+        now = now.add(const Duration(seconds: 2));
+        return FakePlaybackSourceResolver().resolve(track);
+      };
+      await root.playNativeSequence('q0');
+      expect(currentCalls, 2);
+      expect(engine.sequence!.entries.first.source.isValidAt(now), isTrue);
+      expect(root.state.queue.currentEntryId, 'q0');
+    },
+  );
+
+  test(
+    'expiring future source is resolved again when actually requested',
+    () async {
+      var nextCalls = 0;
+      resolver.callback = (track) async {
+        if (track.id == tracks[1].id) {
+          nextCalls++;
+          return timed(track, now.add(const Duration(minutes: 10)));
+        }
+        return FakePlaybackSourceResolver().resolve(track);
+      };
+      await root.playNativeSequence('q0');
+      await flush();
+      expect(engine.sequence!.entries, hasLength(1));
+      expect(engine.calls, isNot(contains('append:1')));
+      final before = nextCalls;
+      engine.complete();
+      await flush();
+      expect(root.state.queue.currentEntryId, 'q1');
+      expect(nextCalls, before + 1);
+      expect(engine.inner.loadedSource!.track, tracks[1].ref);
+    },
+  );
+
+  test('refresh full track identity is checked before loading', () async {
+    var calls = 0;
+    resolver.callback = (track) async => calls++ == 0
+        ? timed(track, now)
+        : timed(tracks[1], now.add(const Duration(minutes: 1)));
+    await expectLater(
+      root.playEntry('q0'),
+      throwsA(
+        isA<DomainFailure>().having(
+          (e) => e.code,
+          'code',
+          DomainFailureCode.schemaMismatch,
+        ),
+      ),
+    );
+    expect(engine.calls, isEmpty);
+  });
+
+  test('close during refresh drains request without late load', () async {
+    final started = Completer<void>(), release = Completer<void>();
+    var calls = 0;
+    resolver.callback = (track) async {
+      if (calls++ == 0) return timed(track, now);
+      started.complete();
+      await release.future;
+      return timed(track, now.add(const Duration(minutes: 1)));
+    };
+    final playing = expectLater(
+      root.playEntry('q0'),
+      throwsA(isA<DomainFailure>()),
+    );
+    await started.future;
+    final closing = root.close();
+    release.complete();
+    await playing;
+    await closing;
+    expect(engine.calls, isEmpty);
+    expect(collection.queueWrites, isEmpty);
+  });
+
+  test('intent revoked during refresh cannot load or persist', () async {
+    var calls = 0, allowed = true;
+    resolver.callback = (track) async {
+      if (calls++ == 0) return timed(track, now);
+      allowed = false;
+      return timed(track, now.add(const Duration(minutes: 1)));
+    };
+    await root.playEntry('q1', canPlay: () => allowed);
+    expect(engine.calls, isEmpty);
+    expect(collection.queueWrites, isEmpty);
+  });
 
   test('long queue starts with three and appends only two ahead', () async {
     await longQueue();
@@ -700,10 +856,12 @@ final class NativeEngine implements AudioSequenceEngine {
 }
 
 final class GatedResolver implements PlaybackSourceResolver {
+  Future<PlayableSource> Function(Track)? callback;
   Completer<void>? gate;
   String? gateTrack;
   @override
   Future<PlayableSource> resolve(Track track) async {
+    if (callback != null) return callback!(track);
     if (track.id == gateTrack && gate != null) await gate!.future;
     return FakePlaybackSourceResolver().resolve(track);
   }

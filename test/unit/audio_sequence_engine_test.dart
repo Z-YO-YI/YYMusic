@@ -26,9 +26,11 @@ void main() {
   late _SequenceBackend backend;
   late JustAudioEngine engine;
   late List<AudioEngineState> states;
+  late DateTime now;
   setUp(() {
+    now = DateTime.utc(2026, 9, 13);
     backend = _SequenceBackend();
-    engine = JustAudioEngine(backend);
+    engine = JustAudioEngine(backend, clock: () => now);
     states = [];
     engine.states.listen(states.add);
   });
@@ -39,6 +41,92 @@ void main() {
         expectedTail: batch.cursors.last,
         entries: [AudioSequenceEntry(entryId: id, source: source)],
       );
+
+  PlayableSource timed(DateTime? deadline) => PlayableSource.networkStream(
+    track: track,
+    uri: Uri.parse('https://fixture.invalid/a?private=value'),
+    expiresAt: deadline,
+  );
+
+  test(
+    'expiry is UTC and exact deadline is invalid without leaking locator',
+    () {
+      final deadline = DateTime.parse('2026-09-13T07:00:00+07:00');
+      final value = timed(deadline);
+      expect(value.expiresAt!.isUtc, isTrue);
+      expect(
+        value.isValidAt(now.subtract(const Duration(microseconds: 1))),
+        isTrue,
+      );
+      expect(value.isValidAt(now), isFalse);
+      expect(value.toString(), isNot(contains('private')));
+      expect(timed(null).isValidAt(now), isTrue);
+      expect(source.expiresAt, isNull);
+    },
+  );
+
+  test(
+    'expired single and batch inputs preserve existing native state',
+    () async {
+      final batch = sequence();
+      await engine.loadSequence(batch);
+      await engine.play();
+      final before = states.length;
+      final expired = timed(now);
+      await expectLater(
+        engine.load(expired),
+        throwsA(
+          isA<DomainFailure>().having(
+            (e) => e.code,
+            'code',
+            DomainFailureCode.streamUrlExpired,
+          ),
+        ),
+      );
+      await expectLater(
+        engine.loadSequence(
+          AudioSequence([
+            AudioSequenceEntry(entryId: 'expired', source: expired),
+          ]),
+        ),
+        throwsA(isA<DomainFailure>()),
+      );
+      expect(backend.calls, ['sequence:0', 'play']);
+      expect(states.length, before);
+      expect(
+        states.last.sequenceCursor!.sequenceIdentity,
+        same(batch.identity),
+      );
+    },
+  );
+
+  test('expired append is rejected before changing batch mapping', () async {
+    final batch = sequence();
+    await engine.loadSequence(batch);
+    await expectLater(
+      engine.appendSequence(
+        AudioSequenceAppend(
+          expectedTail: batch.cursors.last,
+          entries: [AudioSequenceEntry(entryId: 'later', source: timed(now))],
+        ),
+      ),
+      throwsA(isA<DomainFailure>()),
+    );
+    expect(backend.calls, ['sequence:0']);
+    expect(await engine.appendSequence(append(batch)), isTrue);
+  });
+
+  test('queued load rechecks time when command actually executes', () async {
+    final gate = backend.gate = Completer<void>();
+    final loading = engine.loadSequence(sequence());
+    final queued = engine.load(timed(now.add(const Duration(seconds: 1))));
+    final expectation = expectLater(queued, throwsA(isA<DomainFailure>()));
+    now = now.add(const Duration(seconds: 2));
+    gate.complete();
+    await loading;
+    await expectation;
+    expect(backend.calls, ['sequence:0']);
+  });
 
   test('append maps early native index without reload or play', () async {
     final batch = sequence();

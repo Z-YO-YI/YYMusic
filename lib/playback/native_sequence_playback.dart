@@ -1,6 +1,32 @@
 part of 'playback_controller.dart';
 
 extension NativeSequencePlayback on PlaybackController {
+  Future<PlayableSource> _resolveFreshSource(
+    Track track, {
+    PlayableSource? previous,
+    bool Function()? canPlay,
+  }) async {
+    var source = previous ?? await _resolver!.resolve(track);
+    for (var attempt = 0; attempt < 2; attempt++) {
+      _checkNotDisposed();
+      if (canPlay?.call() == false) return source;
+      if (source.track != track.ref) {
+        throw DomainFailure(
+          code: DomainFailureCode.schemaMismatch,
+          diagnosticId: 'playback.source-track-mismatch',
+          sourceId: track.sourceId,
+        );
+      }
+      if (source.isValidAt(_clock())) return source;
+      if (attempt == 0) source = await _resolver!.resolve(track);
+    }
+    throw DomainFailure(
+      code: DomainFailureCode.streamUrlExpired,
+      diagnosticId: 'playback.source-expired',
+      sourceId: track.sourceId,
+    );
+  }
+
   /// Explicit integration entry point. The production UI does not enable
   /// gapless until policy, native lifecycle and acoustic acceptance are complete.
   Future<void> playNativeSequence(String entryId, {bool Function()? canPlay}) {
@@ -48,7 +74,7 @@ extension NativeSequencePlayback on PlaybackController {
         if (next == null || _availabilityFailure(next) != null) break;
         final resolved = await _resolver!.resolve(next);
         _checkNotDisposed();
-        if (resolved.track != next.ref) break;
+        if (resolved.track != next.ref || resolved.expiresAt != null) break;
         entries.add(AudioSequenceEntry(entryId: id, source: resolved));
         tracks.add(next);
       } catch (_) {
@@ -214,7 +240,7 @@ extension NativeSequencePlayback on PlaybackController {
         }
         final source = await _resolver!.resolve(track);
         if (!_canRefill(binding) || revision != _nativePolicyRevision) return;
-        if (source.track != entry.track) {
+        if (source.track != entry.track || source.expiresAt != null) {
           binding.refillBlocked = true;
           return;
         }
