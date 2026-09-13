@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import '../domain/models/collection_models.dart';
 import '../domain/models/domain_failure.dart';
 import '../domain/models/queue_edit.dart';
+import '../domain/models/sleep_timer_snapshot.dart';
 import '../domain/models/track.dart';
 import '../domain/repositories/collection_repository.dart';
 import '../domain/repositories/library_repository.dart';
@@ -13,6 +14,7 @@ import '../platform/contracts/media_session_gateway.dart';
 import 'audio_engine.dart';
 import 'audio_engine_state.dart';
 import 'playback_history_recorder.dart';
+import 'playback_sleep_restore.dart';
 import 'playback_sleep_timer_state.dart';
 import 'playback_source_resolver.dart';
 import 'playback_state.dart';
@@ -20,6 +22,7 @@ import 'playback_state.dart';
 part 'catalog_selection_playback.dart';
 part 'queue_editing.dart';
 part 'sleep_deadline_actions.dart';
+part 'sleep_restore_actions.dart';
 
 typedef PlaybackRandomIndex = int Function(int upperBound);
 
@@ -105,6 +108,9 @@ final class PlaybackController extends ChangeNotifier {
   /// Null cancels. A deadline is session-only and never starts playback.
   void setSleepTimer(PlaybackSleepDuration? duration) =>
       _setSleepTimer(duration);
+
+  /// Capture before loading storage. User sleep changes revoke late restores.
+  PlaybackSleepRestoreAction? captureSleepRestore() => _captureSleepRestore();
 
   /// False leaves the prior intent intact when no loaded current entry exists.
   bool setSleepAtCurrentEntryEnd() => _setSleepAtCurrentEntryEnd();
