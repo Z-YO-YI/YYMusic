@@ -22,6 +22,8 @@ class YYNowPlayingInspector extends StatelessWidget {
     this.onOpenFullscreen,
     this.onOpenLyrics,
     this.onOpenSettings,
+    this.onOpenQueue,
+    this.currentQueueOrdinal,
   });
   final YYNowPlayingViewData data;
   final String sourceLabel, statusLabel;
@@ -33,6 +35,8 @@ class YYNowPlayingInspector extends StatelessWidget {
   final YYPlayerValueChanged? onSeekPreview, onSeekCommit;
   final VoidCallback? onOpenFullscreen, onOpenLyrics;
   final VoidCallback? onOpenSettings;
+  final VoidCallback? onOpenQueue;
+  final int? currentQueueOrdinal;
 
   @override
   Widget build(BuildContext context) {
@@ -235,16 +239,31 @@ class YYNowPlayingInspector extends StatelessWidget {
                       onPressed: onOpenSettings,
                     ),
                     const SizedBox(height: 20),
-                    Text(
-                      '播放队列 · $queueCount 首',
-                      style: YYTypography.text(size: 11, weight: 660),
+                    Wrap(
+                      alignment: WrapAlignment.spaceBetween,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 8,
+                      children: [
+                        Text(
+                          '播放队列 · $queueCount 首',
+                          style: YYTypography.text(size: 11, weight: 660),
+                        ),
+                        YYButton(
+                          key: const ValueKey('inspector-open-queue'),
+                          label: '展开队列',
+                          style: YYButtonStyle.quiet,
+                          onPressed: onOpenQueue,
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 8),
                     if (queueCount == 0)
                       const YYEmptyState(message: '队列为空，从音乐库选择曲目后播放。')
                     else
                       Text(
-                        '队列详情正在开发，当前播放与底栏保持同步。',
+                        currentQueueOrdinal == null
+                            ? '尚未指定当前曲目'
+                            : '当前第 $currentQueueOrdinal 首 · 按列表顺序',
                         style: YYTypography.text(
                           size: 10,
                           height: 1.6,

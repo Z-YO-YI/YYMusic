@@ -1110,3 +1110,9 @@ Phase7H2C4，2026-09-13。纯受控YYNowPlayingInspector增加可选onOpenSettin
 Phase7H3A，2026-09-13。先提供PlaybackQueueSummary只读快照，再进行Inspector视觉绑定。由根PlaybackState的QueueSnapshot生成总数、当前QueueEntry和1起始序号；以entry ID而非TrackRef定位，重复曲目仍是不同条目。没有当前条目时保留null，不伪造第一首；序号仅指保存列表位置，随机/单曲重复时不声称下一首或剩余播放时长。
 
 PlaybackPresenter暴露该快照，沿用原根通知，缓存键为QueueSnapshot对象身份。位置/音量通知不重新遍历大型队列；替换/重排/当前条目变更自然撤销缓存。不可变快照不持有控制器、音频后端、订阅或异步库查询，也不向界面暴露来源凭据。H3A不改界面或导航；H3B再复用原设计组件绑定摘要和受保护队列入口。
+
+## ADR-106：侧栏显示列表摘要，队列操作仍留在独立队列页
+
+Phase7H3B，2026-09-13。复用HTML queue-section-heading/queue-open的展开入口，使用既有YYButton quiet及换行布局保持窄侧栏可操作。显示准确总数与当前1起始列表序号，空队列保留空态，无当前项明确说明。只读摘要不冒充HTML中的模拟下一首列表，随机播放也明确标为列表顺序；曲目元数据与管理仍由原生队列页承担。
+
+AdaptiveRoot把已有openSystemPlaylist(queue)传入Inspector ShellPlayer，使用既有_queueAction一次性许可，隐藏/覆盖/导航/卸载撤销旧回调。不创建新的路由、队列、播放器或读取会话；入口即使空队列也可访问空队列页，默认无回调的纯组件预览保持禁用。按130%字号验证短窗口滚动、宽Windows/平板及生命周期。
