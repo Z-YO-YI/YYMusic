@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7H5B2c：[根输出报告](phase_7h5b2c_root_output_report.md)/ADR122。双平台生产Gateway已由Bootstrap交根所有，非阻塞初始化、前台转换刷新、关闭排空与安全失败清理；修复观察器事件Timer残留。新增9项Flutter测试并增强既有启动测试；Presenter/界面入口下一阶段。父6345f49双平台云端成功。分支codex/root-audio-output，base codex/audio-output-observer。以下为历史记录。
+
 最新Phase7H5B2b：[输出协调报告](phase_7h5b2b_output_observer_report.md)/ADR121。独立AudioOutputController借用Gateway，串行合并读取、流修订隔离和安全关闭；13新单测，完整2230 Flutter/160 Node通过。父8f3b992云端源码/Android/Windows成功。根、Presenter、UI和前台刷新绑定仍待下一批，不把独立模块标为可见功能。分支codex/audio-output-observer，base codex/windows-default-audio-output。以下为历史记录。
 
 最新Phase7H5B2a：[Windows默认输出报告](phase_7h5b2a_windows_output_report.md)/ADR120。getState只读MMDevice活动eRender/eMultimedia默认端点、类型校验名称及资源释放；返回systemDefault而非playerRoute。新增1项CI原生读取测试和1项Node门禁；本机Windows环境限制保持，编译/原生结果待本SHA云端。Android仍unknown，无根/Presenter/UI绑定。分支codex/windows-default-audio-output，base codex/native-sound-settings。以下为历史记录。

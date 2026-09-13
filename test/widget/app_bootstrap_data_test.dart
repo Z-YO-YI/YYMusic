@@ -23,6 +23,7 @@ import 'package:yymusic/playback/audio_engine.dart';
 import '../support/close_graph.dart';
 import '../support/fake_appearance_settings_repository.dart';
 import '../support/fake_audio_engine.dart';
+import '../support/fake_audio_output_gateway.dart';
 import '../support/fake_catalog_browse_repository.dart';
 import '../support/fake_domain_repositories.dart';
 import '../support/fake_local_library_repository.dart';
@@ -160,6 +161,8 @@ void main() {
       final engine = FakeAudioEngine();
       final services = _FakeAppDataServices();
       var audioCalls = 0;
+      final output = FakeAudioOutputGateway();
+      var outputCalls = 0;
       await tester.pumpWidget(
         AppBootstrap(
           platform: platform,
@@ -168,6 +171,11 @@ void main() {
             expect(target, platform);
             audioCalls++;
             return engine;
+          },
+          audioOutputGatewayFactory: (target) {
+            expect(target, platform);
+            outputCalls++;
+            return output;
           },
         ),
       );
@@ -186,11 +194,14 @@ void main() {
         same(graph),
       );
       expect(audioCalls, 1);
+      expect(outputCalls, 1);
+      expect(output.calls, ['initialize']);
       await tester.pumpWidget(const SizedBox.shrink());
       await closeGraph(tester, graph);
       await tester.pumpAndSettle();
       expect(engine.disposalCount, 1);
       expect(services.disposeCount, 1);
+      expect(output.calls, ['initialize', 'close']);
     });
   }
 
@@ -242,16 +253,42 @@ void main() {
         ..stateStreamError = StateError('private-stream-marker')
         ..disposeError = StateError('private-dispose-marker');
       final services = _FakeAppDataServices();
+      final output = FakeAudioOutputGateway();
       await tester.pumpWidget(
         AppBootstrap(
           platform: YYPlatform.android,
           dataServicesFactory: (_) async => services,
           audioEngineFactory: (_) async => engine,
+          audioOutputGatewayFactory: (_) => output,
         ),
       );
       await tester.pumpAndSettle();
       expect(find.text('YYMusic 无法初始化应用'), findsOneWidget);
       expect(find.textContaining('private-'), findsNothing);
+      expect(engine.disposalCount, 1);
+      expect(services.disposeCount, 1);
+      expect(output.calls, ['close']);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'output factory failure releases audio and data without private details',
+    (tester) async {
+      final engine = FakeAudioEngine();
+      final services = _FakeAppDataServices();
+      await tester.pumpWidget(
+        AppBootstrap(
+          platform: YYPlatform.android,
+          dataServicesFactory: (_) async => services,
+          audioEngineFactory: (_) async => engine,
+          audioOutputGatewayFactory: (_) =>
+              throw StateError('private-output-marker'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('YYMusic 无法初始化应用'), findsOneWidget);
+      expect(find.textContaining('private-output-marker'), findsNothing);
       expect(engine.disposalCount, 1);
       expect(services.disposeCount, 1);
       expect(tester.takeException(), isNull);

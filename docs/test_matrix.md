@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+Phase7H5B2c：6根单测+2生命周期Widget+1启动失败测试，既有双平台resize/构造失败检查增加输出资源所有权断言。观察器微任务调度消除界面销毁Timer残留，closeGraph仍有明确超时并要求实际完成。最终结果与云端范围见[报告](phase_7h5b2c_root_output_report.md)，无新增设备路由/听感验收。
+
 Phase7H5B2b：新增13项输出观察协调测试；完整2230 Flutter、160 Node、576文件格式、严格分析及Android Debug/48资产/许可验证通过，见[报告](phase_7h5b2b_output_observer_report.md)。父8f3b992运行34741707056双平台成功；当前SHA单独等待CI，无新真机验收。
 
 Phase7H5B2a：既有Windows CI文件新增1项实际宿主只读输出测试（不启动设置、不播放、不打印设备标识），本机不能运行，等待新SHA云端验收；新增1项默认端点/只读属性/资源释放源码门禁。全量证据见[报告](phase_7h5b2a_windows_output_report.md)，不以无端点Runner替代真实路由听感。

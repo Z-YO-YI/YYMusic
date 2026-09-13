@@ -35,7 +35,7 @@ final class AudioOutputController extends ChangeNotifier {
 
   Future<void> _request() {
     _pending = true;
-    return _worker ??= Future<void>(_drainReads).whenComplete(() {
+    return _worker ??= Future<void>.microtask(_drainReads).whenComplete(() {
       _worker = null;
       // A request may arrive after the loop exits but before this continuation.
       if (_pending && !_closed) return _request();
@@ -94,7 +94,7 @@ final class AudioOutputController extends ChangeNotifier {
       _pending = false;
       _snapshot = const AudioOutputSnapshot.unavailable();
       // Register before invoking the borrowed subscription's cancellation hook.
-      _closing = Future<void>(() async {
+      _closing = Future<void>.microtask(() async {
         try {
           await _subscription?.cancel();
         } finally {
