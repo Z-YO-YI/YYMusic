@@ -1,5 +1,9 @@
 # YYMusic 架构决策记录
 
+## ADR-119：原生设置入口只接受固定目标，启动结果不推断路由变化
+
+H5B1。Android ACTION_SOUND_SETTINGS、Windows ms-settings:sound分别由Activity/Runner持有只读启动通道；非空参数拒绝，失焦或销毁不启动。不从连接列表猜路由，目前返回unknown。Dart读取失败撤回旧事实，关闭撤销排队启动并排空已接受调用；不能声称已启动的OS窗口被关闭操作撤回。本批无根/UI绑定和原生路由读取，Windows编译另由CI验证。见[报告与一手依据](phase_7h5b1_native_settings_report.md)。
+
 ## ADR-118：输出设备观察必须保留来源，设置启动不是切换成功
 
 H5A。平台契约区分unknown/systemDefault/playerRoute，未知不填设备名；系统默认不冒充当前播放器实际路由，已连接设备不构成路由证据。设置入口能力独立，opened仅为OS接受启动；返回后重新读取。设备标签限长且拒绝内部控制字符，异常及调试输出脱敏，无持久化。先提供诚实不可用Gateway，不暴露未实现的切换API；原生适配与唯一根投影后续独立验收。见[报告](phase_7h5a_audio_output_contract_report.md)。

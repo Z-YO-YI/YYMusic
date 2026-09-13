@@ -32,6 +32,8 @@ class FlutterWindow : public Win32Window {
   std::unique_ptr<flutter::FlutterViewController> flutter_controller_;
 
   void InitializeWindowChannel();
+  void InitializeAudioOutputChannel();
+  std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> audio_output_channel_;
   flutter::EncodableValue WindowState();
   void PublishWindowState();
   bool SetCustomFrame(bool enabled);
