@@ -76,6 +76,7 @@ abstract interface class JustAudioSequenceBackend
     int initialIndex = 0,
   });
   Future<bool> retainSequenceThrough(int expectedIndex);
+  Future<bool> pruneSequenceBefore(int expectedIndex);
   Future<bool> appendSequence(
     List<PlayableSource> sources, {
     required int expectedLength,
@@ -438,6 +439,53 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
           _player.playbackEvent.currentIndex == expectedIndex;
     } catch (_) {
       throw StateError('Audio sequence boundary could not be applied');
+    }
+  }
+
+  @override
+  Future<bool> pruneSequenceBefore(int expectedIndex) async {
+    if (_disposed || _replacementFailed) {
+      throw StateError('Audio backend cannot edit media');
+    }
+    if (expectedIndex <= 0 ||
+        expectedIndex >= _player.sequence.length ||
+        _player.playbackEvent.currentIndex != expectedIndex) {
+      return false;
+    }
+    final generation = _generation;
+    final rebased = Completer<void>();
+    var invalid = false;
+    var lastObserved = expectedIndex;
+    final subscription = snapshots.listen(
+      (value) {
+        final index = value.currentIndex;
+        if (index == null || index < 0 || index > lastObserved) invalid = true;
+        if (index != null) lastObserved = index;
+        if (index == 0 && !rebased.isCompleted) rebased.complete();
+      },
+      onDone: () {
+        if (!rebased.isCompleted) rebased.complete();
+      },
+    );
+    try {
+      await _player.removeAudioSourceRange(0, expectedIndex);
+      if (_player.playbackEvent.currentIndex != 0) {
+        await rebased.future.timeout(const Duration(seconds: 1));
+      }
+      if (_disposed ||
+          generation != _generation ||
+          invalid ||
+          _player.playbackEvent.currentIndex != 0) {
+        return false;
+      }
+      _sourceDeadlines = List.unmodifiable(
+        _sourceDeadlines.skip(expectedIndex),
+      );
+      return true;
+    } catch (_) {
+      throw StateError('Audio sequence prefix could not be removed');
+    } finally {
+      await subscription.cancel();
     }
   }
 

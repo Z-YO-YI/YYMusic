@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7J10：[原生前缀报告](phase_7j10_sequence_prefix_report.md)/ADR141。根与引擎窗口使用绝对逻辑cursor、原生索引可重排；根限制11项，8项已播前缀后清理。36项顺序播放测试覆盖多次清理、继续追加/截尾且不改应用队列。8新测试，全量2509 Flutter、161 Node、严格分析及Android Debug通过。分支codex/native-sequence-prefix，基线0ec28c2；原生内存字节/事件时序及循环无缝仍需验收。
+
 最新Phase7J9：[原生期限报告](phase_7j9_native_expiry_report.md)/ADR140。期限传至NativeBackend，跨准备/load/append/seek等待失效时停止并转换streamUrlExpired；10新通道测试，全量2501 Flutter、161 Node、严格分析和Android Debug通过。分支codex/native-source-expiry，基线c169efc。持续播放定时撤销、网络Adapter及声学/生命周期仍待验收；以下为历史阶段。
 
 最新Phase7J8：[过期恢复报告](phase_7j8_expired_resume_report.md)/ADR139。根保留已加载源期限用于play/replay/repeat-one/seek前刷新，保留位置、原生序列和历史周期；12新根测试，全量2491 Flutter/161 Node及Android Debug通过。分支codex/expired-source-resume，基线b1473ad。完整网络无缝和真机验收仍未完成；以下为历史阶段。

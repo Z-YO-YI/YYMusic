@@ -77,8 +77,8 @@ void main() {
     await media.dispose();
   });
 
-  Future<void> longQueue() => root.replaceQueue([
-    for (var i = 0; i < 6; i++)
+  Future<void> longQueue([int count = 6]) => root.replaceQueue([
+    for (var i = 0; i < count; i++)
       QueueEntry(
         id: 'long$i',
         track: tracks[0].ref,
@@ -435,6 +435,57 @@ void main() {
     expect(engine.calls, isEmpty);
     expect(collection.queueWrites, isEmpty);
   });
+
+  test(
+    'long native playback bounds window and preserves absolute entry identity',
+    () async {
+      await longQueue(36);
+      collection.queueWrites.clear();
+      await root.playNativeSequence('long0');
+      for (var i = 1; i < 36; i++) {
+        engine.tick(i, 100);
+        await flush();
+        expect(root.state.queue.currentEntryId, 'long$i');
+        expect(root.state.phase, PlaybackPhase.playing);
+        expect(
+          (engine.extendedCursors ?? engine.sequence!.cursors).length,
+          lessThanOrEqualTo(11),
+        );
+      }
+      expect(engine.calls.where((call) => call.startsWith('prune:')), [
+        'prune:8',
+        'prune:16',
+        'prune:24',
+        'prune:32',
+      ]);
+      expect(engine.calls.where((call) => call == 'play'), hasLength(1));
+      expect(collection.queueWrites.map((queue) => queue.currentEntryId), [
+        for (var i = 1; i < 36; i++) 'long$i',
+      ]);
+      expect(root.state.queue.entries, hasLength(36));
+      root.setContinueAfterTrack(false);
+      await flush();
+      expect(engine.calls.last, 'retain:35');
+    },
+  );
+
+  test(
+    'prefix failure preserves adopted entry and stops instead of guessing',
+    () async {
+      await longQueue(12);
+      await root.playNativeSequence('long0');
+      for (var i = 1; i < 8; i++) {
+        engine.tick(i, 10);
+        await flush();
+      }
+      engine.pruneFails = true;
+      engine.tick(8, 10);
+      await flush();
+      expect(root.state.queue.currentEntryId, 'long8');
+      expect(root.state.phase, PlaybackPhase.error);
+      expect(engine.calls.last, 'stop');
+    },
+  );
 
   test('long queue starts with three and appends only two ahead', () async {
     await longQueue();
@@ -942,6 +993,18 @@ Future<void> flush() async {
 }
 
 final class NativeEngine implements AudioSequenceEngine {
+  bool pruneFails = false;
+  @override
+  Future<bool> pruneSequenceBefore(AudioSequenceCursor expected) async {
+    calls.add('prune:${expected.index}');
+    if (pruneFails) throw StateError('private-prefix-failure');
+    final all = extendedCursors ?? sequence!.cursors;
+    extendedCursors = all
+        .where((cursor) => cursor.index >= expected.index)
+        .toList();
+    return true;
+  }
+
   final inner = FakeAudioEngine();
   final calls = <String>[];
   AudioSequence? sequence;
@@ -975,7 +1038,9 @@ final class NativeEngine implements AudioSequenceEngine {
       failure: state.failure,
       sequenceCursor:
           state.sequenceCursor ??
-          (extendedCursors ?? sequence?.cursors)?[index],
+          (extendedCursors ?? sequence?.cursors)
+              ?.where((cursor) => cursor.index == index)
+              .first,
     ),
   );
   @override

@@ -51,6 +51,71 @@ void main() {
     probe.uninstall();
   });
 
+  test(
+    'native prefix removal waits for raw rebase without reloading',
+    () async {
+      await backend.openSequence([
+        for (var i = 0; i < 11; i++) local('/$i.wav'),
+      ], initialIndex: 8);
+      await backend.play();
+      final id = probe.playerId;
+      final offset = probe.calls.length;
+      final pruning = backend.pruneSequenceBefore(8);
+      await probe.removing.future;
+      await Future<void>.delayed(Duration.zero);
+      await probe.emit(0);
+      expect(await pruning, isTrue);
+      expect(probe.removals.single['startIndex'], 0);
+      expect(probe.removals.single['endIndex'], 8);
+      expect(probe.calls.skip(offset), ['concatenatingRemoveRange']);
+      expect(probe.loads, hasLength(1));
+      expect(probe.playerId, id);
+      expect(backend.current.playing, isTrue);
+      expect(await backend.pruneSequenceBefore(8), isFalse);
+    },
+  );
+
+  test(
+    'native advance during prefix edit fails even after later zero event',
+    () async {
+      final engine = JustAudioEngine(backend);
+      addTearDown(engine.dispose);
+      final batch = AudioSequence([
+        for (var i = 0; i < 11; i++)
+          AudioSequenceEntry(entryId: 'e$i', source: local('/$i.wav')),
+      ]);
+      await engine.loadSequence(batch, initialIndex: 8);
+      final gate = probe.removeGate = Completer<void>();
+      final pruning = expectLater(
+        engine.pruneSequenceBefore(batch.cursors[8]),
+        throwsA(isA<DomainFailure>()),
+      );
+      await probe.removing.future;
+      await probe.emit(9);
+      await probe.emit(0);
+      gate.complete();
+      await pruning;
+      expect(backend.current.playing, isFalse);
+    },
+  );
+
+  test('missing raw prefix rebase times out with a safe error', () async {
+    await backend.openSequence([
+      local('/a.wav'),
+      local('/b.wav'),
+    ], initialIndex: 1);
+    await expectLater(
+      backend.pruneSequenceBefore(1),
+      throwsA(
+        isA<StateError>().having(
+          (error) => error.toString(),
+          'safe',
+          'Bad state: Audio sequence prefix could not be removed',
+        ),
+      ),
+    );
+  });
+
   test('expired preflight keeps prior native media usable', () async {
     await backend.openSequence([local('/old.wav')]);
     final id = probe.playerId;

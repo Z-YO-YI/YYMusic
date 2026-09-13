@@ -48,6 +48,7 @@ final class JustAudioEngine implements AudioSequenceEngine {
   Object? _sequenceFault;
   int? _trimmingIndex;
   bool _trimMoved = false;
+  bool _pruning = false;
 
   @override
   bool get supportsSequences =>
@@ -247,28 +248,30 @@ final class JustAudioEngine implements AudioSequenceEngine {
           _loading ||
           _failure != null ||
           cursors == null ||
-          expected.index < 0 ||
-          expected.index >= cursors.length) {
+          cursors.isEmpty ||
+          expected.index < cursors.first.index ||
+          expected.index > cursors.last.index) {
         return;
       }
-      final current = cursors[expected.index];
+      final nativeIndex = expected.index - cursors.first.index;
+      final current = cursors[nativeIndex];
       if (!identical(current.sequenceIdentity, expected.sequenceIdentity) ||
           current.entryId != expected.entryId ||
           current.track != expected.track ||
-          backend.current.currentIndex != expected.index) {
+          backend.current.currentIndex != nativeIndex) {
         return;
       }
-      _trimmingIndex = expected.index;
+      _trimmingIndex = nativeIndex;
       _trimMoved = false;
       try {
-        final applied = await backend.retainSequenceThrough(expected.index);
+        final applied = await backend.retainSequenceThrough(nativeIndex);
         if (!applied ||
             _trimMoved ||
             _failure != null ||
-            backend.current.currentIndex != expected.index) {
+            backend.current.currentIndex != nativeIndex) {
           throw StateError('Audio sequence changed during boundary edit');
         }
-        _sequenceCursors = List.unmodifiable(cursors.take(expected.index + 1));
+        _sequenceCursors = List.unmodifiable(cursors.take(nativeIndex + 1));
         _trimmingIndex = null;
         _acceptSnapshot(backend.current);
         retained = true;
@@ -300,6 +303,63 @@ final class JustAudioEngine implements AudioSequenceEngine {
         'source-expired',
       );
     }
+  }
+
+  @override
+  Future<bool> pruneSequenceBefore(AudioSequenceCursor expected) async {
+    var pruned = false;
+    await _enqueue(() async {
+      final backend = _backend, cursors = _sequenceCursors;
+      if (backend is! JustAudioSequenceBackend ||
+          !_loaded ||
+          _loading ||
+          _failure != null ||
+          cursors == null ||
+          cursors.isEmpty) {
+        return;
+      }
+      final index = expected.index - cursors.first.index;
+      if (index <= 0 ||
+          index >= cursors.length ||
+          backend.current.currentIndex != index) {
+        return;
+      }
+      final cursor = cursors[index];
+      if (!identical(cursor.sequenceIdentity, expected.sequenceIdentity) ||
+          cursor.entryId != expected.entryId ||
+          cursor.track != expected.track) {
+        return;
+      }
+      _pruning = true;
+      try {
+        if (!await backend.pruneSequenceBefore(index) ||
+            _failure != null ||
+            backend.current.currentIndex != 0) {
+          throw StateError('Sequence changed during prefix removal');
+        }
+        _sequenceCursors = List.unmodifiable(cursors.skip(index));
+        _pruning = false;
+        _acceptSnapshot(backend.current);
+        if (_failure != null) throw _failure!;
+        pruned = true;
+      } catch (_) {
+        _pruning = false;
+        _sequenceCursors = null;
+        _loaded = false;
+        final failure = _commandFailure(
+          DomainFailureCode.playbackInterrupted,
+          'sequence-prefix',
+        );
+        _publishFailure(failure);
+        try {
+          await backend.stop();
+        } catch (_) {
+          /* Keep safe failure. */
+        }
+        throw failure;
+      }
+    });
+    return pruned;
   }
 
   @override
@@ -418,6 +478,7 @@ final class JustAudioEngine implements AudioSequenceEngine {
 
   void _acceptSnapshot(JustAudioPlayerSnapshot snapshot) {
     if (_closing) return;
+    if (_pruning) return;
     final trimming = _trimmingIndex;
     if (trimming != null) {
       if (snapshot.currentIndex != trimming) _trimMoved = true;
