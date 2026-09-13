@@ -12,12 +12,12 @@ import 'fake_domain_repositories.dart';
 import 'fake_playback_dependencies.dart';
 
 final class SleepPanelFixture {
-  SleepPanelFixture({bool schedulerFails = false}) {
+  SleepPanelFixture({bool schedulerFails = false, DateTime Function()? clock}) {
     playback = PlaybackController(
       engine,
       library: library,
       sourceResolver: FakePlaybackSourceResolver(),
-      clock: () => DateTime.utc(2026, 9, 13),
+      clock: clock ?? () => DateTime.utc(2026, 9, 13),
       sleepScheduler: schedulerFails
           ? (_, _) => throw StateError('private-scheduler-detail')
           : null,

@@ -1130,3 +1130,7 @@ Phase7H4审计，2026-09-13。依赖声明具备某能力不等于YYMusic已接�
 Phase7H4A1，2026-09-13。先补根/Presenter只读接口，再H4A2可见刷新与UI。PlaybackController.sleepRemaining只在未关闭且armed分钟截止有效时返回deadline减注入UTC时钟，过期但业务回调未执行返回零；off、本曲结束、pausing/expired/failed均为null，由原状态文案说明，不能伪造流媒体本曲剩余秒数。
 
 读取不通知、不写状态、不取消/重设业务Timer、不触发暂停；原duration与选中项保持不变。时钟回拨可增加显示剩余量但不更改绝对deadline，不以原duration强行裁剪而掩盖墙钟变化。Presenter.sleepRemainingSeconds仅对正微秒向上取整，避免尚余小于1秒时提前显示结束；dispose后为null，不再读根时钟。展示刷新下一批使用此查询契约，不把本批接口称为界面已显示倒计时。
+
+## ADR-109：倒计时子组件只拥有可撤销的展示刷新
+
+Phase7H4A2a。SleepRemainingText借用Presenter，独立重建文本；唯一根仍拥有业务截止和暂停。宿主必须提供active/isCurrent可见许可，应用进入后台取消展示Timer；恢复重新读取绝对截止，不累计tick。revision阻止过时回调，监听业务状态及时取消或重新调度。剩余文本使用既有caption/secondary样式，非liveRegion，避免每秒自动播报。组件先独立验证，后续A2b接入原面板并审核截图，不混称完整显示验收。
