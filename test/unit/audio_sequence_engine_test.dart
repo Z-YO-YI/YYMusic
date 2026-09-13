@@ -34,6 +34,73 @@ void main() {
   });
   tearDown(() => engine.dispose());
 
+  AudioSequenceAppend append(AudioSequence batch, {String id = 'third'}) =>
+      AudioSequenceAppend(
+        expectedTail: batch.cursors.last,
+        entries: [AudioSequenceEntry(entryId: id, source: source)],
+      );
+
+  test('append maps early native index without reload or play', () async {
+    final batch = sequence();
+    await engine.loadSequence(batch);
+    backend.appendIndex = 2;
+    expect(await engine.appendSequence(append(batch)), isTrue);
+    expect(states.last.sequenceCursor!.entryId, 'third');
+    expect(states.last.sequenceCursor!.sequenceIdentity, same(batch.identity));
+    expect(backend.calls, ['sequence:0', 'append:1']);
+    expect(await engine.appendSequence(append(batch)), isFalse);
+    expect(backend.calls, ['sequence:0', 'append:1']);
+  });
+
+  test('foreign tail and duplicate entry cannot mutate native list', () async {
+    final batch = sequence();
+    await engine.loadSequence(batch);
+    expect(await engine.appendSequence(append(sequence())), isFalse);
+    await expectLater(
+      engine.appendSequence(append(batch, id: 'first')),
+      throwsArgumentError,
+    );
+    expect(backend.calls, ['sequence:0']);
+  });
+
+  test('failed append clears identity and stops with safe failure', () async {
+    final batch = sequence();
+    await engine.loadSequence(batch);
+    backend.appendFails = true;
+    await expectLater(
+      engine.appendSequence(append(batch)),
+      throwsA(isA<DomainFailure>()),
+    );
+    expect(states.last.sequenceCursor, isNull);
+    expect(states.last.phase, AudioEnginePhase.error);
+    expect(backend.calls.last, 'stop');
+  });
+
+  test(
+    'invalid index after append cannot be acknowledged as success',
+    () async {
+      final batch = sequence();
+      await engine.loadSequence(batch);
+      backend.appendIndex = 20;
+      await expectLater(
+        engine.appendSequence(append(batch)),
+        throwsA(isA<DomainFailure>()),
+      );
+      expect(states.last.phase, AudioEnginePhase.error);
+    },
+  );
+
+  test('completed sequence cannot be restarted through append', () async {
+    final batch = sequence();
+    await engine.loadSequence(batch);
+    backend.current = const JustAudioPlayerSnapshot(
+      currentIndex: 1,
+      processing: JustAudioProcessingPhase.completed,
+    );
+    expect(await engine.appendSequence(append(batch)), isFalse);
+    expect(backend.calls, ['sequence:0']);
+  });
+
   test(
     'immutable request preserves repeated tracks with distinct entry IDs',
     () {
@@ -541,6 +608,19 @@ final class _SequenceBackend extends _SingleBackend
   bool omitIndex = false;
   Completer<void>? trimGate;
   bool trimFails = false;
+  bool appendFails = false;
+  int? appendIndex;
+  @override
+  Future<bool> appendSequence(
+    List<PlayableSource> sources, {
+    required int expectedLength,
+  }) async {
+    calls.add('append:${sources.length}');
+    if (appendFails) throw StateError('private-append-detail');
+    if (appendIndex != null) emit(index: appendIndex, playing: true);
+    return true;
+  }
+
   @override
   Future<bool> retainSequenceThrough(int expectedIndex) async {
     calls.add('retain:$expectedIndex');

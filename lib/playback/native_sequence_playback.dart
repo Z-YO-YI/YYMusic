@@ -34,7 +34,7 @@ extension NativeSequencePlayback on PlaybackController {
     final start = order.indexOf(entryId);
     final entries = [AudioSequenceEntry(entryId: entryId, source: source)];
     final tracks = [track];
-    for (final id in order.skip(start + 1)) {
+    for (final id in order.skip(start + 1).take(2)) {
       if (!_continueAfterTrack ||
           _state.repeatMode == RepeatMode.one ||
           revision != _nativePolicyRevision ||
@@ -110,6 +110,8 @@ extension NativeSequencePlayback on PlaybackController {
       return true;
     }
     binding.highestObserved = index;
+    // Revoke completion work for the preceding index before storage can wait.
+    _sessionRevision++;
     binding.pending[index] = _NativePendingTransition(value);
     unawaited(
       _schedule(() async {
@@ -148,6 +150,7 @@ extension NativeSequencePlayback on PlaybackController {
               adoptedTrack: binding.tracks[index],
             );
           }
+          _ensureNativeLookahead(binding);
         } catch (_) {
           _rejectNativeSequence(binding);
         }
@@ -170,6 +173,94 @@ extension NativeSequencePlayback on PlaybackController {
         }
       }).catchError((Object _) {}),
     );
+  }
+
+  bool _canRefill(_NativeSequenceBinding binding) =>
+      !_disposed &&
+      identical(_nativeSequence, binding) &&
+      !binding.boundaryRequested &&
+      !binding.refillBlocked &&
+      _continueAfterTrack &&
+      _state.repeatMode != RepeatMode.one &&
+      _state.phase != PlaybackPhase.completed &&
+      _state.phase != PlaybackPhase.error &&
+      _sleepState.phase != PlaybackSleepPhase.pausing;
+
+  void _ensureNativeLookahead(_NativeSequenceBinding binding) {
+    if (!_canRefill(binding) ||
+        binding.refilling ||
+        binding.cursors.length - binding.highestObserved - 1 >= 2) {
+      return;
+    }
+    final order = _state.shuffleEnabled
+        ? List<String>.of(_shuffleOrder)
+        : _state.queue.entries.map((entry) => entry.id).toList();
+    final tail = binding.cursors.last;
+    final nextIndex = order.indexOf(tail.entryId) + 1;
+    if (nextIndex <= 0 || nextIndex >= order.length) return;
+    final entry = _entry(order[nextIndex]);
+    final revision = _nativePolicyRevision;
+    binding.refilling = true;
+    // Register synchronously; resolution must never occupy the command queue.
+    final done = Completer<void>();
+    _nativeRefillJobs.add(done.future);
+    unawaited(() async {
+      try {
+        final track = await _libraryRepository!.getTrack(entry.track);
+        if (!_canRefill(binding) || revision != _nativePolicyRevision) return;
+        if (track == null || _availabilityFailure(track) != null) {
+          binding.refillBlocked = true;
+          return;
+        }
+        final source = await _resolver!.resolve(track);
+        if (!_canRefill(binding) || revision != _nativePolicyRevision) return;
+        if (source.track != entry.track) {
+          binding.refillBlocked = true;
+          return;
+        }
+        await _schedule(() async {
+          if (!_canRefill(binding) ||
+              revision != _nativePolicyRevision ||
+              !identical(binding.cursors.last, tail) ||
+              _entry(entry.id).track != entry.track) {
+            return;
+          }
+          final request = AudioSequenceAppend(
+            expectedTail: tail,
+            entries: [AudioSequenceEntry(entryId: entry.id, source: source)],
+          );
+          final oldCursors = binding.cursors, oldTracks = binding.tracks;
+          binding.cursors = List.unmodifiable([
+            ...oldCursors,
+            ...request.cursors,
+          ]);
+          binding.tracks = List.unmodifiable([...oldTracks, track]);
+          try {
+            final accepted = await (_engine as AudioSequenceEngine)
+                .appendSequence(request);
+            if (!accepted && identical(_nativeSequence, binding)) {
+              if (binding.highestObserved >= oldCursors.length) {
+                _rejectNativeSequence(binding);
+              } else {
+                binding.cursors = oldCursors;
+                binding.tracks = oldTracks;
+                binding.refillBlocked = true;
+              }
+            }
+          } catch (_) {
+            _rejectNativeSequence(binding);
+          }
+        });
+      } catch (_) {
+        // Leave classification to normal advancement when the entry is due.
+        binding.refillBlocked = true;
+      } finally {
+        binding.refilling = false;
+        _nativeRefillJobs.remove(done.future);
+        done.complete();
+        _ensureNativeLookahead(binding);
+      }
+    }());
   }
 
   Future<void> _retainNativeCurrent(_NativeSequenceBinding binding) async {
@@ -212,12 +303,14 @@ extension NativeSequencePlayback on PlaybackController {
 
 final class _NativeSequenceBinding {
   _NativeSequenceBinding(this.cursors, this.tracks);
-  final List<AudioSequenceCursor> cursors;
-  final List<Track> tracks;
+  List<AudioSequenceCursor> cursors;
+  List<Track> tracks;
   Object get identity => cursors.first.sequenceIdentity;
   int currentIndex = 0;
   int highestObserved = 0;
   bool boundaryRequested = false;
+  bool refilling = false;
+  bool refillBlocked = false;
   final pending = <int, _NativePendingTransition>{};
 }
 

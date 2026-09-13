@@ -40,6 +40,34 @@ final class AudioSequence {
   ]);
 }
 
+/// Immutable, ephemeral extension of one exact loaded tail, not a new batch.
+final class AudioSequenceAppend {
+  factory AudioSequenceAppend({
+    required AudioSequenceCursor expectedTail,
+    required List<AudioSequenceEntry> entries,
+  }) {
+    final snapshot = List<AudioSequenceEntry>.unmodifiable(entries);
+    if (snapshot.isEmpty ||
+        snapshot.map((entry) => entry.entryId).toSet().length !=
+            snapshot.length) {
+      throw ArgumentError('Audio append needs nonempty, unique entries');
+    }
+    return AudioSequenceAppend._(expectedTail, snapshot);
+  }
+  AudioSequenceAppend._(this.expectedTail, this.entries);
+  final AudioSequenceCursor expectedTail;
+  final List<AudioSequenceEntry> entries;
+  List<AudioSequenceCursor> get cursors => List.unmodifiable([
+    for (var i = 0; i < entries.length; i++)
+      AudioSequenceCursor._(
+        sequenceIdentity: expectedTail.sequenceIdentity,
+        index: expectedTail.index + 1 + i,
+        entryId: entries[i].entryId,
+        track: entries[i].source.track,
+      ),
+  ]);
+}
+
 /// Ephemeral playback fact. It cannot prove the root's queue is still current;
 /// the root must compare the batch identity and its own queue/policy revision.
 final class AudioSequenceCursor {

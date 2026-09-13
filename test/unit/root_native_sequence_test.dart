@@ -74,6 +74,69 @@ void main() {
     await media.dispose();
   });
 
+  Future<void> longQueue() => root.replaceQueue([
+    for (var i = 0; i < 6; i++)
+      QueueEntry(
+        id: 'long$i',
+        track: tracks[0].ref,
+        position: i,
+        addedAt: DateTime.utc(2026),
+      ),
+  ], currentEntryId: 'long0');
+
+  test('long queue starts with three and appends only two ahead', () async {
+    await longQueue();
+    await root.playNativeSequence('long0');
+    expect(engine.calls.last, 'play');
+    expect(engine.sequence!.entries, hasLength(3));
+    expect(engine.extendedCursors, isNull);
+    for (var i = 1; i <= 4; i++) {
+      engine.tick(i, 50);
+      await flush();
+      expect(root.state.queue.currentEntryId, 'long$i');
+      expect(engine.extendedCursors!.length, (i + 3).clamp(0, 6));
+    }
+    expect(engine.calls.where((call) => call == 'append:1'), hasLength(3));
+    expect(engine.calls.where((call) => call == 'play'), hasLength(1));
+  });
+
+  test(
+    'slow refill does not block pause and policy revokes its commit',
+    () async {
+      await longQueue();
+      await root.playNativeSequence('long0');
+      resolver.gateTrack = tracks[0].id;
+      final gate = resolver.gate = Completer<void>();
+      engine.tick(1, 50);
+      await flush();
+      try {
+        await root.pause().timeout(const Duration(seconds: 2));
+        root.setContinueAfterTrack(false);
+      } finally {
+        gate.complete();
+      }
+      await flush();
+      expect(engine.calls, contains('pause'));
+      expect(engine.calls, isNot(contains('append:1')));
+    },
+  );
+
+  test('close drains outstanding refill without late append', () async {
+    await longQueue();
+    await root.playNativeSequence('long0');
+    resolver.gateTrack = tracks[0].id;
+    final gate = resolver.gate = Completer<void>();
+    engine.tick(1, 50);
+    await flush();
+    var closed = false;
+    final closing = root.close().then((_) => closed = true);
+    await flush();
+    expect(closed, isFalse);
+    gate.complete();
+    await closing;
+    expect(engine.calls, isNot(contains('append:1')));
+  });
+
   test(
     'pending completion preserves genuine progress evidence for history',
     () async {
@@ -533,6 +596,17 @@ final class NativeEngine implements AudioSequenceEngine {
   int index = 0;
   Completer<void>? loadGate;
   bool retainResult = true;
+  List<AudioSequenceCursor>? extendedCursors;
+  @override
+  Future<bool> appendSequence(AudioSequenceAppend request) async {
+    calls.add('append:${request.entries.length}');
+    extendedCursors = [
+      ...(extendedCursors ?? sequence!.cursors),
+      ...request.cursors,
+    ];
+    return true;
+  }
+
   @override
   bool get isAvailable => true;
   @override
@@ -547,13 +621,16 @@ final class NativeEngine implements AudioSequenceEngine {
       volume: state.volume,
       playbackRate: state.playbackRate,
       failure: state.failure,
-      sequenceCursor: state.sequenceCursor ?? sequence?.cursors[index],
+      sequenceCursor:
+          state.sequenceCursor ??
+          (extendedCursors ?? sequence?.cursors)?[index],
     ),
   );
   @override
   Future<void> loadSequence(AudioSequence value, {int initialIndex = 0}) async {
     calls.add('sequence:${value.entries.length}');
     sequence = value;
+    extendedCursors = null;
     index = initialIndex;
     if (loadGate != null) await loadGate!.future;
     await inner.load(value.entries[index].source);
@@ -571,6 +648,7 @@ final class NativeEngine implements AudioSequenceEngine {
   Future<void> load(PlayableSource value) async {
     calls.add('load');
     sequence = null;
+    extendedCursors = null;
     await inner.load(value);
   }
 
@@ -590,6 +668,7 @@ final class NativeEngine implements AudioSequenceEngine {
   Future<void> stop() async {
     calls.add('stop');
     sequence = null;
+    extendedCursors = null;
     await inner.stop();
   }
 

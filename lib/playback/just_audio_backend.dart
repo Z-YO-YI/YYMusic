@@ -65,6 +65,10 @@ abstract interface class JustAudioSequenceBackend
     int initialIndex = 0,
   });
   Future<bool> retainSequenceThrough(int expectedIndex);
+  Future<bool> appendSequence(
+    List<PlayableSource> sources, {
+    required int expectedLength,
+  });
 }
 
 /// The only class that talks to package:just_audio.
@@ -289,6 +293,52 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
       // Plugin failures can contain stream credentials or local paths.
       throw StateError('Audio sequence could not be loaded');
     }
+  }
+
+  @override
+  Future<bool> appendSequence(
+    List<PlayableSource> sources, {
+    required int expectedLength,
+  }) async {
+    if (_disposed || _replacementFailed) {
+      throw StateError('Audio backend cannot append media');
+    }
+    final snapshot = List<PlayableSource>.unmodifiable(sources);
+    if (snapshot.isEmpty) throw ArgumentError('Audio append must not be empty');
+    if (!supportsRequestHeaders &&
+        snapshot.any((source) => source.headers.isNotEmpty)) {
+      throw UnsupportedError('Request headers are unavailable');
+    }
+    if (expectedLength <= 0 ||
+        _player.sequence.length != expectedLength ||
+        _player.processingState == ProcessingState.completed) {
+      return false;
+    }
+    final generation = _generation;
+    try {
+      await _player.addAudioSources(
+        snapshot.map(_nativeSource).toList(growable: false),
+      );
+      return !_disposed && generation == _generation;
+    } catch (_) {
+      throw StateError('Audio sequence could not be extended');
+    }
+  }
+
+  AudioSource _nativeSource(PlayableSource source) {
+    final path = source.localPath;
+    final uri = path == null
+        ? source.uri!
+        : Uri.file(
+            path,
+            windows:
+                RegExp(r'^[A-Za-z]:[\\/]').hasMatch(path) ||
+                path.startsWith(r'\\'),
+          );
+    return AudioSource.uri(
+      uri,
+      headers: source.headers.isEmpty ? null : source.headers,
+    );
   }
 
   @override
