@@ -19,6 +19,7 @@ import 'playback_sleep_restore.dart';
 import 'playback_sleep_timer_state.dart';
 import 'playback_source_resolver.dart';
 import 'playback_state.dart';
+import 'queue_playback_failure.dart';
 import 'sleep_fade_runner.dart';
 
 part 'catalog_selection_playback.dart';
@@ -26,6 +27,7 @@ part 'queue_editing.dart';
 part 'sleep_deadline_actions.dart';
 part 'sleep_restore_actions.dart';
 part 'sleep_fade_actions.dart';
+part 'queue_advance.dart';
 
 typedef PlaybackRandomIndex = int Function(int upperBound);
 
@@ -112,6 +114,11 @@ final class PlaybackController extends ChangeNotifier {
   Future<void>? _closeFuture;
 
   PlaybackState get state => _state;
+  List<QueuePlaybackFailure> _queuePlaybackFailures = const [];
+
+  /// Most recent 20 skipped entries; survives successful advancement this session.
+  List<QueuePlaybackFailure> get queuePlaybackFailures =>
+      _queuePlaybackFailures;
   bool get isClosed => _disposed;
   bool get continueAfterTrack => _continueAfterTrack;
 
@@ -494,9 +501,11 @@ final class PlaybackController extends ChangeNotifier {
   Future<void> _playEntryInternal(
     String entryId, {
     bool Function()? canPlay,
+    void Function(DomainFailure)? onSkippableFailure,
   }) async {
     if (canPlay?.call() == false) return;
     _requireEngine();
+    var trackFailureBoundary = false;
     try {
       final entry = _entry(entryId);
       _interruptSleepFade();
@@ -516,11 +525,13 @@ final class PlaybackController extends ChangeNotifier {
       final track = await library.getTrack(entry.track);
       _checkNotDisposed();
       if (canPlay?.call() == false) return;
+      trackFailureBoundary = true;
       if (track == null) throw _queueTrackMissing(entry.track);
       final availabilityFailure = _availabilityFailure(track);
       if (availabilityFailure != null) throw availabilityFailure;
       final resolver = _resolver;
       if (resolver == null) {
+        trackFailureBoundary = false;
         throw DomainFailure(
           code: DomainFailureCode.playbackOpenFailed,
           diagnosticId: 'playback.source-resolver-unavailable',
@@ -537,6 +548,7 @@ final class PlaybackController extends ChangeNotifier {
           sourceId: track.sourceId,
         );
       }
+      trackFailureBoundary = false;
       if (canPlay != null) {
         _sessionRevision++;
         _completionHandled = true;
@@ -565,7 +577,9 @@ final class PlaybackController extends ChangeNotifier {
       _syncShuffleCursor(entryId);
       _loadingSource = true;
       history.end();
+      trackFailureBoundary = true;
       await _engine.load(source);
+      trackFailureBoundary = false;
       _loadingSource = false;
       _checkNotDisposed();
       _loadedEntryId = entryId;
@@ -579,6 +593,9 @@ final class PlaybackController extends ChangeNotifier {
       _loadingSource = false;
       history.end();
       final failure = _safeFailure(error, 'load-entry');
+      if (trackFailureBoundary && _isSkippableTrackFailure(failure)) {
+        onSkippableFailure?.call(failure);
+      }
       _publish(_state.copyWith(phase: PlaybackPhase.error, failure: failure));
       Error.throwWithStackTrace(failure, stack);
     }
@@ -602,8 +619,7 @@ final class PlaybackController extends ChangeNotifier {
       }
       return;
     }
-    final next = _nextEntry();
-    if (next != null) await _playEntryInternal(next.id, canPlay: canAdvance);
+    await _advanceCandidates(canAdvance);
   }
 
   QueueEntry? _nextEntry() {
