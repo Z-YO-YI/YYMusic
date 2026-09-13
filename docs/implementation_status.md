@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7H4A2b：[报告](phase_7h4a2b_countdown_panel_report.md)。正式共享面板绑定剩余时间子组件，播放页/歌词页/底栏/Inspector沿用唯一根弹层。6新Widget+3新Golden+1新Node；完整1989 Flutter/154 Node、214截图（12旧图审核更新、199旧图不变）、547格式/严格分析/生成迁移和Android Debug18.3秒通过。分支codex/sleep-countdown-panel，base codex/sleep-countdown-ui。父提交2b57143双CI34730407355/34730418800均SUCCESS；本提交云端另验。§26剩余时间显示已绑定，未到期恢复和平滑暂停尚未完成，下一批[H4B计划](phase_7h4b_sleep_restore_plan.md)。Phase7整体及Phase8–11未完成。以下为历史记录。
+
 最新Phase7H4A1：[计划](phase_7h4a1_remaining_projection_plan.md)/ADR108/[报告](phase_7h4a1_remaining_projection_report.md)。根sleepRemaining与Presenter.sleepRemainingSeconds只读投影，保留原截止/意图，无Timer/通知/音频副作用；18新单测覆盖取整/时钟跳变/延迟/关闭。完整1972 Flutter/153 Node、211原Golden不变、543格式/严格分析/生成迁移及Android Debug18.6秒通过。分支codex/sleep-remaining-projection，base codex/playback-capability-audit。前置push34728554610 SUCCESS、PR34728571947核验时进行中；新SHA另验。尚无界面倒计时，H4A2继续生命周期刷新和绑定；Phase7整体及Phase8–11未完成。以下为历史记录。
 
 当前Phase7H4：[能力审计](phase_7h4_capability_audit.md)/ADR107/[验证](phase_7h4_capability_report.md)。补回§26的剩余时间/未过期恢复/平滑暂停缺口；输出设备与标准化等不得从插件声明或空成功返回推断已接入。下一批[H4A](phase_7h4a_sleep_remaining_plan.md)，之后恢复/淡出及真实设备/偏好。本轮文档与1项Node检查，1954 Flutter/152 Node、211原Golden不变、542格式/严格分析及Android Debug17.5秒复验通过，APK与H3B相同；无应用/依赖/schema变化。分支codex/playback-capability-audit，base codex/inspector-queue-access，前置6d1bb50双CI34727705634/34727730305 SUCCESS，新SHA另验。Phase7整体及Phase8–11未完成。以下为历史记录。

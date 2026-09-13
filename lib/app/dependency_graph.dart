@@ -43,6 +43,7 @@ final class DependencyGraph {
   DependencyGraph({
     AudioEngine? audioEngine,
     PlaybackSourceResolver? playbackSourceResolver,
+    DateTime Function()? playbackClock,
     MediaSessionGateway? mediaSession,
     this.dataServices,
     AppearanceSettingsRepository? appearanceRepository,
@@ -91,6 +92,7 @@ final class DependencyGraph {
       library: this.library,
       collection: this.collection,
       sourceResolver: playbackSourceResolver,
+      clock: playbackClock,
       mediaSession: _mediaSession,
     );
     queue = QueueController(playback);

@@ -18,6 +18,7 @@ Future<LyricsFixture> mountFullscreenApp(
   YYPlatform platform = YYPlatform.windows,
   Size size = const Size(1440, 900),
   String route = '/player',
+  DateTime Function()? playbackClock,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -27,7 +28,7 @@ Future<LyricsFixture> mountFullscreenApp(
   addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
   late LyricsFixture fixture;
   await tester.runAsync(() async {
-    fixture = LyricsFixture();
+    fixture = LyricsFixture(playbackClock: playbackClock);
     fixture.graph.appearance.setReduceMotion(true);
     await fixture.initialize();
     await fixture.graph.playback.seek(const Duration(seconds: 15));

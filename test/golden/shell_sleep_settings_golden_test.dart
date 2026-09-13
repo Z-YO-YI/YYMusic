@@ -31,6 +31,7 @@ void main() {
       (tester) async {
         final f = await mountFullscreenApp(
           tester,
+          playbackClock: () => DateTime.utc(2026, 9, 13),
           fullscreen: FakeFullscreenGateway()..supported = false,
           window: FakeWindowGateway(),
           platform: platform,

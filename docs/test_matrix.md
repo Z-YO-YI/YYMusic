@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+Phase7H4A2b：6新面板Widget验证安卓/Windows每秒更新、旧选项动作保留、TickerMode/焦点隐藏恢复、关闭不改截止或音频；3新Golden验证流逝61秒后13:59且15分钟仍选中；1新源门禁。完整1989 Flutter（109秒）/154 Node（27.7秒）、214Golden通过，12旧图逐张审核更新、199旧图不变。547文件格式零修改，严格分析0问题（32.6秒），生成25秒/Drift通过且无生成差异。Android Debug18.3秒，48资产/许可/v2签名通过。见[报告](phase_7h4a2b_countdown_panel_report.md)。本地未新增Windows编译/实机安装出声验收。
+
 Phase7H4A1：18新剩余时间单测（off/三分钟选项/六微秒边界/时钟跳变/只读无副作用/重设取消/暂停/本曲结束/延迟到期/失败/关闭）；1972 Flutter（112秒）/153 Node（31.7秒）、211原Golden通过且不变。543格式零修改，严格分析零问题14.6秒，生成52秒/迁移及Android Debug18.6秒、资产许可签名通过。UI倒计时尚未绑定，见[报告](phase_7h4a1_remaining_projection_report.md)。
 
 Phase7H4审计检查点：1954 Flutter（96秒）/152 Node（17.1秒）通过，含1新文档要求/链接检查及211原Golden。542文件格式零修改，严格分析零问题14.9秒；Android Debug17.5秒及资产许可签名通过，APK与H3B一致。无应用/生成输入变化，生成迁移沿用H3B证据。§26剩余时间/恢复/淡出仍未实现，不能由已有睡眠选项测试代替，见[验证](phase_7h4_capability_report.md)。

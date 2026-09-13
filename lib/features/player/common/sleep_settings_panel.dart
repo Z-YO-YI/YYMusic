@@ -9,6 +9,7 @@ import '../../../design_system/yy_option_card.dart';
 import '../../../design_system/yy_theme.dart';
 import '../../../design_system/yy_tokens.dart';
 import '../../../playback/playback_sleep_timer_state.dart';
+import 'sleep_remaining_text.dart';
 
 /// Shared native surface; its host owns insertion, barrier and route lifetime.
 class SleepSettingsPanel extends StatefulWidget {
@@ -120,6 +121,11 @@ class _SleepSettingsPanelState extends State<SleepSettingsPanel> {
               key: const ValueKey('sleep-status'),
               style: YYTypography.caption.copyWith(color: colors.secondary),
             ),
+          ),
+          SleepRemainingText(
+            presenter: presenter,
+            active: _surfaceActive && !_closing,
+            isCurrent: () => _allowed(generation),
           ),
           if (_error != null) ...[
             const SizedBox(height: 8),
