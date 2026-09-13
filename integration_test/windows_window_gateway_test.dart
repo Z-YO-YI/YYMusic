@@ -7,12 +7,48 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:yymusic/platform/audio_output/native_audio_output_gateway.dart';
+import 'package:yymusic/platform/contracts/audio_output_gateway.dart';
 import 'package:yymusic/platform/fullscreen/native_fullscreen_gateway.dart';
 import 'package:yymusic/platform/windows/windows_window_gateway.dart';
 
-/// Real HWND, no fake platform handler, audio, network, files or input injection.
+/// Real HWND and read-only route protocol; no audio playback or settings launch.
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  testWidgets(
+    'Windows output protocol observes default or unknown without launching settings',
+    (tester) async {
+      expect(Platform.isWindows && kDebugMode, isTrue);
+      await tester.pumpWidget(const ColoredBox(color: Color(0xFFF5F5F2)));
+      const channel = MethodChannel(NativeAudioOutputGateway.channelName);
+      final native = await channel.invokeMapMethod<String, Object?>('getState');
+      expect(native, isNotNull);
+      expect(native!['observation'], isIn(['unknown', 'systemDefault']));
+      expect(native['canOpenSettings'], isTrue);
+      if (native['observation'] == 'systemDefault') {
+        // Do not write personal endpoint labels or identifiers to test reports.
+        expect(native['label'] is String, isTrue);
+      } else {
+        expect(native.containsKey('label'), isFalse);
+      }
+      await expectLater(
+        channel.invokeMethod<Object?>('getState', {'device': 'arbitrary'}),
+        throwsA(isA<PlatformException>()),
+      );
+      final gateway = NativeAudioOutputGateway();
+      try {
+        final state = await gateway.initialize();
+        expect(
+          state.route.observation,
+          isNot(AudioOutputObservation.playerRoute),
+        );
+        expect(state.canOpenSettings, isTrue);
+        await gateway.refresh();
+      } finally {
+        await gateway.close();
+      }
+    },
+  );
   testWidgets(
     'Windows runner reports real frame state and intercepts system close',
     (tester) async {

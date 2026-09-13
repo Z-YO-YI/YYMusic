@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+Phase7H5B2a：既有Windows CI文件新增1项实际宿主只读输出测试（不启动设置、不播放、不打印设备标识），本机不能运行，等待新SHA云端验收；新增1项默认端点/只读属性/资源释放源码门禁。全量证据见[报告](phase_7h5b2a_windows_output_report.md)，不以无端点Runner替代真实路由听感。
+
 Phase7H5B1：21项通道mock测试和1项双宿主固定目标/构建注册源文件门禁。Android宿主编译通过，Windows本地预检受symlink环境限制，不能记通过。全量及后续云端证据见[报告](phase_7h5b1_native_settings_report.md)，无新截图或实际设置启动验收。
 
 Phase7H5A：22项输出路由/来源/标签校验/隐私/能力/不可用Gateway单测；不是原生设备读取或设置启动测试。全量与构建证据见[报告](phase_7h5a_audio_output_contract_report.md)，无新截图基线。

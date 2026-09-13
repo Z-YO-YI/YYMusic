@@ -1,5 +1,7 @@
 # YYMusic
 
+最新增量：**Phase 7H5B2a Windows系统默认输出读取**。宿主只读查询活动多媒体默认端点及名称，失败退回未知，明确不冒充播放器实际路由；新增云端原生只读测试，见[报告](docs/phase_7h5b2a_windows_output_report.md)。Windows编译/原生测试待本SHA GitHub验收，Android仍未知，根/界面尚未绑定。以下为历史记录。
+
 最新增量：**Phase 7H5B1 原生声音设置通道**。Android/Windows宿主加入固定系统设置启动入口，Dart适配器覆盖关闭与失败降级，21项通道测试。见[报告](docs/phase_7h5b1_native_settings_report.md)。**尚无根/界面入口，实际输出路由仍未知**；Android原生编译通过，Windows本地缺symlink支持，编译待本SHA GitHub核验，不假称双平台验收完成。以下为历史记录。
 
 最新增量：**Phase 7H5A 输出设备事实契约**。新增未知/系统默认/播放器实际路由的明确区分、独立系统设置能力及安全不可用实现，22项单测，见[报告](docs/phase_7h5a_audio_output_contract_report.md)。**尚未接原生读取、设置启动或界面**，不会显示假设备或声称切换成功。H4C实际睡眠淡出已接通，设备听感和其余阶段继续验收。以下为历史记录。
