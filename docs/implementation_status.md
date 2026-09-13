@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7J8：[过期恢复报告](phase_7j8_expired_resume_report.md)/ADR139。根保留已加载源期限用于play/replay/repeat-one/seek前刷新，保留位置、原生序列和历史周期；12新根测试，全量2491 Flutter/161 Node及Android Debug通过。分支codex/expired-source-resume，基线b1473ad。完整网络无缝和真机验收仍未完成；以下为历史阶段。
+
 最新Phase7J7：[有效期报告](phase_7j7_source_expiry_report.md)/ADR138。可选UTC expiresAt仅存在瞬时PlayableSource，根有限重取及完整身份/许可复核，引擎执行时预检。12项新测试，全量2479 Flutter、161 Node、严格分析与Android Debug通过。分支codex/source-expiry-guards，基线5489b5c。网络Adapter、暂停后刷新及完整网络无缝尚未实现；以下为历史记录。
 
 最新Phase7J6：[有界提前加载报告](phase_7j6_lookahead_report.md)/ADR137。初始三项、当前位置后两项前瞻；异步解析不占根命令队列，提交追加复核身份/策略，关闭排空解析任务。新增9项测试，全量2467 Flutter与161 Node通过。分支codex/native-sequence-lookahead，基线6448b42。并非完整有界内存窗口或上线验收；以下为历史记录。

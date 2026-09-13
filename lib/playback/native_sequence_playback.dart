@@ -1,6 +1,92 @@
 part of 'playback_controller.dart';
 
 extension NativeSequencePlayback on PlaybackController {
+  Future<bool> _refreshLoadedSourceIfExpired(
+    Duration position, {
+    bool Function()? canPlay,
+  }) async {
+    final deadline = _loadedSourceExpiresAt;
+    final entryId = _loadedEntryId;
+    if (deadline == null ||
+        entryId == null ||
+        _clock().toUtc().isBefore(deadline)) {
+      return false;
+    }
+    final entry = _entry(entryId);
+    final wasNative = _nativeSequence != null;
+    _nativeSequence = null;
+    history.suspend();
+    try {
+      await _engine.pause();
+      _checkNotDisposed();
+      if (canPlay?.call() == false) return false;
+      final track = await _libraryRepository!.getTrack(entry.track);
+      _checkNotDisposed();
+      if (canPlay?.call() == false) return false;
+      if (track == null) throw _queueTrackMissing(entry.track);
+      if (track.ref != entry.track) {
+        throw DomainFailure(
+          code: DomainFailureCode.schemaMismatch,
+          diagnosticId: 'playback.refresh-track-mismatch',
+          sourceId: entry.track.sourceId,
+        );
+      }
+      final failure = _availabilityFailure(track);
+      if (failure != null) throw failure;
+      final source = await _resolveFreshSource(track, canPlay: canPlay);
+      if (canPlay?.call() == false) return false;
+      final plan = wasNative
+          ? await _resolveNativeSequence(entryId, track, source, canPlay)
+          : null;
+      _checkNotDisposed();
+      if (canPlay?.call() == false) return false;
+      final revision = _nativePolicyRevision;
+      _loadingSource = true;
+      if (plan == null) {
+        await _engine.load(source);
+      } else {
+        final binding = _NativeSequenceBinding(
+          plan.sequence.cursors,
+          plan.tracks,
+        );
+        _nativeSequence = binding;
+        await (_engine as AudioSequenceEngine).loadSequence(plan.sequence);
+        if (!identical(_nativeSequence, binding)) {
+          throw StateError('Refreshed sequence revoked');
+        }
+        if (binding.boundaryRequested || revision != _nativePolicyRevision) {
+          await _retainNativeCurrent(binding);
+        }
+      }
+      _checkNotDisposed();
+      if (canPlay?.call() == false) {
+        await _stopEngine();
+        return false;
+      }
+      _loadedEntryId = entryId;
+      _loadedSourceExpiresAt = source.expiresAt;
+      await _engine.seek(position);
+      _checkNotDisposed();
+      if (canPlay?.call() == false) {
+        await _stopEngine();
+        return false;
+      }
+      return true;
+    } catch (_) {
+      _nativeSequence = null;
+      _loadedEntryId = null;
+      _loadedSourceExpiresAt = null;
+      try {
+        await _engine.stop();
+      } catch (_) {
+        /* Keep the original failure. */
+      }
+      rethrow;
+    } finally {
+      _loadingSource = false;
+    }
+  }
+
   Future<PlayableSource> _resolveFreshSource(
     Track track, {
     PlayableSource? previous,
@@ -163,6 +249,8 @@ extension NativeSequencePlayback on PlaybackController {
           history.begin(cursor.track);
           history.activate();
           _loadedEntryId = entry.id;
+          // Future expiring sources are not preloaded (ADR-138).
+          _loadedSourceExpiresAt = null;
           _sessionRevision++;
           _completionHandled = false;
           _syncShuffleCursor(entry.id);

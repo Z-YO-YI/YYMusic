@@ -94,6 +94,202 @@ void main() {
         expiresAt: deadline,
       );
 
+  test(
+    'expired pause resume preserves position and one history cycle',
+    () async {
+      var calls = 0;
+      resolver.callback = (track) async {
+        calls++;
+        return timed(track, now.add(const Duration(seconds: 1)));
+      };
+      await root.playEntry('q0');
+      engine.tick(0, 200);
+      await waitHistory(root.history);
+      final before = (await collection.watchHistory().first).length;
+      expect(before, 1);
+      await root.pause();
+      now = now.add(const Duration(seconds: 2));
+      engine.calls.clear();
+      await root.play();
+      expect(calls, 2);
+      expect(engine.calls, ['pause', 'load', 'seek', 'play']);
+      expect(root.state.position, const Duration(milliseconds: 200));
+      expect(root.state.phase, PlaybackPhase.playing);
+      engine.tick(0, 300);
+      await waitHistory(root.history);
+      expect((await collection.watchHistory().first).length, before);
+      expect(collection.queueWrites, isEmpty);
+    },
+  );
+
+  test('unexpired pause resume never resolves or reloads', () async {
+    var calls = 0;
+    resolver.callback = (track) async {
+      calls++;
+      return timed(track, now.add(const Duration(minutes: 5)));
+    };
+    await root.playEntry('q0');
+    await root.pause();
+    engine.calls.clear();
+    await root.play();
+    expect(calls, 1);
+    expect(engine.calls, ['play']);
+  });
+
+  for (final playing in [false, true]) {
+    test('expired seek restores target and playing=$playing', () async {
+      resolver.callback = (track) async =>
+          timed(track, now.add(const Duration(seconds: 1)));
+      await root.playEntry('q0');
+      if (!playing) await root.pause();
+      now = now.add(const Duration(seconds: 2));
+      engine.calls.clear();
+      await root.seek(const Duration(seconds: 20));
+      expect(root.state.position, const Duration(seconds: 20));
+      expect(
+        root.state.phase,
+        playing ? PlaybackPhase.playing : PlaybackPhase.paused,
+      );
+      expect(engine.calls, ['pause', 'load', 'seek', if (playing) 'play']);
+    });
+  }
+
+  test('completed expired source replays from zero', () async {
+    resolver.callback = (track) async =>
+        timed(track, now.add(const Duration(seconds: 1)));
+    root.setContinueAfterTrack(false);
+    await root.playEntry('q0');
+    engine.tick(0, 1000);
+    engine.complete();
+    await flush();
+    now = now.add(const Duration(seconds: 2));
+    engine.calls.clear();
+    await root.play();
+    expect(root.state.position, Duration.zero);
+    expect(engine.calls, ['pause', 'load', 'seek', 'play']);
+  });
+
+  test('automatic repeat refresh retains its continuation permit', () async {
+    resolver.callback = (track) async =>
+        timed(track, now.add(const Duration(seconds: 1)));
+    root.setRepeatMode(RepeatMode.one);
+    await root.playEntry('q0');
+    now = now.add(const Duration(seconds: 2));
+    engine.calls.clear();
+    engine.complete();
+    await flush();
+    expect(root.state.queue.currentEntryId, 'q0');
+    expect(root.state.phase, PlaybackPhase.playing);
+    expect(engine.calls, ['pause', 'load', 'seek', 'play']);
+  });
+
+  test(
+    'native current refresh rebuilds batch and preserves position',
+    () async {
+      resolver.callback = (track) async => track.id == tracks[0].id
+          ? timed(track, now.add(const Duration(seconds: 1)))
+          : FakePlaybackSourceResolver().resolve(track);
+      await root.playNativeSequence('q0');
+      final old = engine.sequence!.identity;
+      engine.tick(0, 400);
+      await root.pause();
+      now = now.add(const Duration(seconds: 2));
+      engine.calls.clear();
+      await root.play();
+      expect(engine.calls, ['pause', 'sequence:3', 'seek', 'play']);
+      expect(engine.sequence!.identity, isNot(same(old)));
+      expect(root.state.position, const Duration(milliseconds: 400));
+      engine.tick(1, 50);
+      await flush();
+      expect(root.state.queue.currentEntryId, 'q1');
+    },
+  );
+
+  test('native adoption clears preceding expiring deadline', () async {
+    var calls = 0;
+    resolver.callback = (track) async {
+      calls++;
+      return track.id == tracks[0].id
+          ? timed(track, now.add(const Duration(seconds: 1)))
+          : FakePlaybackSourceResolver().resolve(track);
+    };
+    await root.playNativeSequence('q0');
+    engine.tick(1, 50);
+    await flush();
+    await root.pause();
+    now = now.add(const Duration(seconds: 2));
+    final before = calls;
+    engine.calls.clear();
+    await root.play();
+    expect(calls, before);
+    expect(engine.calls, ['play']);
+  });
+
+  test('failed position restoration cannot play newly loaded source', () async {
+    resolver.callback = (track) async =>
+        timed(track, now.add(const Duration(seconds: 1)));
+    await root.playEntry('q0');
+    await root.pause();
+    now = now.add(const Duration(seconds: 2));
+    engine.inner.seekError = StateError('private-seek');
+    engine.calls.clear();
+    await expectLater(root.play(), throwsA(isA<DomainFailure>()));
+    expect(engine.calls, ['pause', 'load', 'seek', 'stop']);
+    expect(root.state.phase, PlaybackPhase.error);
+  });
+
+  test('revoked seek during refresh does not load or play', () async {
+    resolver.callback = (track) async =>
+        timed(track, now.add(const Duration(seconds: 1)));
+    await root.playEntry('q0');
+    now = now.add(const Duration(seconds: 2));
+    var allowed = true;
+    resolver.callback = (track) async {
+      allowed = false;
+      return timed(track, now.add(const Duration(minutes: 1)));
+    };
+    engine.calls.clear();
+    await root.seek(const Duration(seconds: 20), canSeek: () => allowed);
+    expect(engine.calls, ['pause']);
+    expect(root.state.phase, PlaybackPhase.paused);
+  });
+
+  test('failed refresh stops without resuming stale media', () async {
+    resolver.callback = (track) async =>
+        timed(track, now.add(const Duration(seconds: 1)));
+    await root.playEntry('q0');
+    await root.pause();
+    now = now.add(const Duration(seconds: 2));
+    resolver.callback = (_) async => throw StateError('private-address');
+    engine.calls.clear();
+    await expectLater(root.play(), throwsA(isA<DomainFailure>()));
+    expect(engine.calls, ['pause', 'stop']);
+    expect(root.state.failure.toString(), isNot(contains('private-address')));
+    expect(root.state.queue.currentEntryId, 'q0');
+  });
+
+  test('close during resume resolution never reloads or plays', () async {
+    resolver.callback = (track) async =>
+        timed(track, now.add(const Duration(seconds: 1)));
+    await root.playEntry('q0');
+    await root.pause();
+    now = now.add(const Duration(seconds: 2));
+    final started = Completer<void>(), release = Completer<void>();
+    resolver.callback = (track) async {
+      started.complete();
+      await release.future;
+      return timed(track, now.add(const Duration(minutes: 1)));
+    };
+    engine.calls.clear();
+    final playing = expectLater(root.play(), throwsA(isA<DomainFailure>()));
+    await started.future;
+    final closing = root.close();
+    release.complete();
+    await playing;
+    await closing;
+    expect(engine.calls, ['pause', 'stop']);
+  });
+
   test('expired result is refreshed once before current load', () async {
     var calls = 0;
     resolver.callback = (track) async =>

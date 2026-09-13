@@ -111,6 +111,7 @@ final class PlaybackController extends ChangeNotifier {
   bool _completionHandled = true;
   bool _loadingSource = false;
   _NativeSequenceBinding? _nativeSequence;
+  DateTime? _loadedSourceExpiresAt;
   final _nativeRefillJobs = <Future<void>>{};
   int _nativePolicyRevision = 0;
   bool _disposed = false;
@@ -244,11 +245,7 @@ final class PlaybackController extends ChangeNotifier {
         _loadedEntryId == _state.queue.currentEntryId &&
         _state.phase != PlaybackPhase.error) {
       await _guarded('play', () async {
-        if (_state.phase == PlaybackPhase.completed) {
-          history.begin(_state.currentTrack!.ref);
-          await _engine.seek(Duration.zero);
-        }
-        await _startPlayback();
+        await _startPlayback(restart: _state.phase == PlaybackPhase.completed);
       });
       return;
     }
@@ -310,8 +307,19 @@ final class PlaybackController extends ChangeNotifier {
         _state.currentTrack != null &&
         (duration == null || target < duration);
     if (replay) history.begin(_state.currentTrack!.ref);
+    final resumeAfterRefresh = _state.phase == PlaybackPhase.playing;
     history.suspend();
-    await _guarded('seek', () => _engine.seek(target));
+    await _guarded('seek', () async {
+      final refreshed = await _refreshLoadedSourceIfExpired(
+        target,
+        canPlay: canSeek,
+      );
+      if (canSeek?.call() == false) return;
+      if (!refreshed) await _engine.seek(target);
+      if (refreshed && resumeAfterRefresh) {
+        await _startPlayback(canPlay: canSeek);
+      }
+    });
     history.activate();
   });
 
@@ -642,6 +650,7 @@ final class PlaybackController extends ChangeNotifier {
       _loadingSource = false;
       _checkNotDisposed();
       _loadedEntryId = entryId;
+      _loadedSourceExpiresAt = loadSource.expiresAt;
       history.begin(track.ref);
       final binding = _nativeSequence;
       if (binding != null &&
@@ -680,9 +689,7 @@ final class PlaybackController extends ChangeNotifier {
     }
     if (isAutomatic && _state.repeatMode == RepeatMode.one) {
       if (_state.currentTrack != null) {
-        history.begin(_state.currentTrack!.ref);
-        await _engine.seek(Duration.zero);
-        await _startPlayback(canPlay: canAdvance);
+        await _startPlayback(canPlay: canAdvance, restart: true);
       }
       return;
     }
@@ -759,6 +766,7 @@ final class PlaybackController extends ChangeNotifier {
     if (value.phase == AudioEnginePhase.idle && !_loadingSource) {
       history.end();
       _loadedEntryId = null;
+      _loadedSourceExpiresAt = null;
       _sessionRevision++;
       _completionHandled = true;
     }
@@ -916,13 +924,28 @@ final class PlaybackController extends ChangeNotifier {
         );
   }
 
-  Future<void> _startPlayback({bool Function()? canPlay}) async {
+  Future<void> _startPlayback({
+    bool Function()? canPlay,
+    bool restart = false,
+  }) async {
     _checkNotDisposed();
     if (canPlay?.call() == false) return;
     _interruptSleepFade();
     await _restoreFadeVolume();
     _checkNotDisposed();
     if (canPlay?.call() == false) return;
+    final refreshed = await _refreshLoadedSourceIfExpired(
+      restart ? Duration.zero : _state.position,
+      canPlay: canPlay,
+    );
+    _checkNotDisposed();
+    if (canPlay?.call() == false) return;
+    if (restart) {
+      history.begin(_state.currentTrack!.ref);
+      if (!refreshed) await _engine.seek(Duration.zero);
+      _checkNotDisposed();
+      if (canPlay?.call() == false) return;
+    }
     if (history.ended && _state.currentTrack != null) {
       history.begin(_state.currentTrack!.ref);
     }
@@ -930,10 +953,12 @@ final class PlaybackController extends ChangeNotifier {
     _sessionRevision++;
     _completionHandled = false;
     await _engine.play();
+    if (_nativeSequence case final binding?) _ensureNativeLookahead(binding);
   }
 
   Future<void> _stopEngine() async {
     _nativeSequence = null;
+    _loadedSourceExpiresAt = null;
     _interruptSleepFade();
     history.end();
     _sessionRevision++;
