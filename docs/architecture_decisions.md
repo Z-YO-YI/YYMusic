@@ -1,5 +1,9 @@
 # YYMusic 架构决策记录
 
+## ADR-123：系统设置启动由根控制器以实时页面许可守护
+
+H5C1。先登记单一launch Future以防通知/许可回调重入，等待读操作排空后再复核页面许可与能力；失效许可不调用原生宿主。opened保持OS接受启动语义，不改观察或立即推断路由；反馈由后续Presenter复核页面。根关闭等待已接受启动，但不能撤销已交给OS的副作用。未知路由不意味着系统设置不可用，两类事实独立。见[报告](phase_7h5c1_settings_action_report.md)。
+
 ## ADR-122：输出由生产根拥有，前台仅刷新，可选观察不阻塞启动
 
 H5B2c。Bootstrap平台工厂创建NativeAudioOutputGateway交Graph所有；构造失败逐项释放。Graph后台初始化唯一观察器，关闭同步撤销、异步排空后关闭Gateway，保持引擎/数据释放屏障。App既有生命周期监听只在非前台到resumed转换请求刷新，卸载不关闭借用根。独立观察器用微任务登记读/关闭，避免Widget卸载残留事件Timer；状态不持久化、不等同设备切换。见[报告](phase_7h5b2c_root_output_report.md)。

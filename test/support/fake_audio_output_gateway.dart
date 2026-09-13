@@ -6,6 +6,7 @@ final class FakeAudioOutputGateway implements AudioOutputGateway {
   final events = StreamController<AudioOutputSnapshot>.broadcast(sync: true);
   final calls = <String>[];
   Future<AudioOutputSnapshot> Function()? onRead;
+  Future<AudioOutputSettingsResult> Function()? onOpen;
   Object? closeError;
   @override
   Stream<AudioOutputSnapshot> get states => events.stream;
@@ -30,7 +31,7 @@ final class FakeAudioOutputGateway implements AudioOutputGateway {
   @override
   Future<AudioOutputSettingsResult> openSystemSettings() async {
     calls.add('open');
-    return AudioOutputSettingsResult.opened;
+    return await onOpen?.call() ?? AudioOutputSettingsResult.opened;
   }
 
   @override
