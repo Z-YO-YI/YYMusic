@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7H6B2a：[恢复保护报告](phase_7h6b2a_continuation_restore_report.md)/ADR127。一次性许可及独立显式意图计数，11项新测试保护用户选择、关闭与重入；没有接通生产持久化协调器。分支codex/continuation-restore-permit，base codex/continuation-preference-storage。以下为历史记录。
+
 最新Phase7H6B1：[继续偏好存储报告](phase_7h6b1_continuation_storage_report.md)/ADR126。专用Repository、version1布尔codec及借用数据库的Drift适配，21新测试；不改schema。启动恢复/保存协调器和设置开关待后续。分支codex/continuation-preference-storage，base codex/playback-auto-continue。以下为历史记录。
 
 最新Phase7H6A：[自动继续根报告](phase_7h6a_auto_continue_report.md)/ADR125。实现continueAfterTrack策略与完成revision撤销，覆盖慢解析/load/seek、循环/随机及睡眠优先；新增17测试，关机恢复后完整2286 Flutter/160 Node通过。UI和持久化下一阶段。分支codex/playback-auto-continue，base codex/audio-output-panel；父f47c5d7双平台云端成功。以下为历史记录。

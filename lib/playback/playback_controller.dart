@@ -13,6 +13,7 @@ import '../domain/repositories/library_repository.dart';
 import '../platform/contracts/media_session_gateway.dart';
 import 'audio_engine.dart';
 import 'audio_engine_state.dart';
+import 'playback_continuation_restore.dart';
 import 'playback_history_recorder.dart';
 import 'playback_sleep_restore.dart';
 import 'playback_sleep_timer_state.dart';
@@ -91,6 +92,8 @@ final class PlaybackController extends ChangeNotifier {
   double? _userVolume;
   bool _continueAfterTrack = true;
   int _continuationRevision = 0;
+  int _continuationIntentRevision = 0;
+  bool _continuationRestoreCaptured = false;
   Future<void> _operationTail = Future<void>.value();
   Future<void> _mediaSyncTail = Future<void>.value();
   Future<void>? _initialization;
@@ -115,10 +118,38 @@ final class PlaybackController extends ChangeNotifier {
   /// Applies to natural completion only, including automatic repeat-one.
   /// Changing this never starts/stops the current track or resumes an ended one.
   void setContinueAfterTrack(bool enabled) {
-    if (_disposed || enabled == _continueAfterTrack) return;
+    if (_disposed) return;
+    // An explicit choice of the current value must still defeat a late restore.
+    _continuationIntentRevision++;
+    if (enabled == _continueAfterTrack) return;
     _continueAfterTrack = enabled;
     _continuationRevision++;
     _publish(_state);
+  }
+
+  /// Issues one startup permit before storage I/O and any explicit choice.
+  PlaybackContinuationRestoreAction? captureContinuationRestore() {
+    if (_disposed ||
+        _continuationRestoreCaptured ||
+        _continuationIntentRevision != 0) {
+      return null;
+    }
+    _continuationRestoreCaptured = true;
+    final revision = _continuationIntentRevision;
+    var used = false;
+    bool current() =>
+        !_disposed && !used && revision == _continuationIntentRevision;
+    return PlaybackContinuationRestoreAction(
+      isCurrent: current,
+      apply: (enabled) {
+        if (!current()) return PlaybackContinuationRestoreResult.superseded;
+        used = true;
+        setContinueAfterTrack(enabled);
+        return !_disposed && _continuationIntentRevision == revision + 1
+            ? PlaybackContinuationRestoreResult.restored
+            : PlaybackContinuationRestoreResult.superseded;
+      },
+    );
   }
 
   PlaybackSleepTimerState get sleepTimer => _sleepState;
