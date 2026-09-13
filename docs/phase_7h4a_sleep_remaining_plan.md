@@ -1,5 +1,7 @@
 # Phase 7H4A：睡眠剩余时间（下一增量）
 
+H4A1进展：根只读剩余量及Presenter向上取整秒数已实现并验证，见[报告](phase_7h4a1_remaining_projection_report.md)。下一增量H4A2处理下述可见刷新/读屏/原面板绑定；显示验收仍未完成。
+
 来源：总指令§26及[H4能力审计](phase_7h4_capability_audit.md)。此文为计划，不是已经实现。
 
 1. 根PlaybackController沿用注入_clock，以deadline.difference(now.toUtc())投影剩余时间；过期夹零，off/entry-end/failed不伪造分钟倒计时。保留原duration选中项，不靠取整的剩余值反推15/30/60。
