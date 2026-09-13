@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:yymusic/domain/models/collection_models.dart';
 import 'package:yymusic/domain/models/domain_failure.dart';
 import 'package:yymusic/domain/models/track.dart';
 import 'package:yymusic/playback/audio_engine_state.dart';
@@ -9,6 +10,10 @@ import 'package:yymusic/playback/audio_sequence.dart';
 import 'package:yymusic/playback/just_audio_backend.dart';
 import 'package:yymusic/playback/just_audio_engine.dart';
 import 'package:yymusic/playback/playable_source.dart';
+import 'package:yymusic/playback/playback_controller.dart';
+
+import '../support/fake_domain_repositories.dart';
+import '../support/fake_playback_dependencies.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -304,6 +309,66 @@ void main() {
       },
     );
   }
+
+  test(
+    'native channel reaches root queue adoption and continuation tail control',
+    () async {
+      final media = Track(
+        id: track.trackId,
+        sourceId: track.sourceId,
+        sourceType: track.sourceType,
+        title: 'Native fixture',
+        artists: const ['Fixture'],
+        duration: const Duration(seconds: 10),
+        localPath: '/native-fixture.wav',
+      );
+      final library = FakeLibraryRepository(tracks: [media]);
+      final collection = FakeCollectionRepository();
+      final engine = JustAudioEngine(backend);
+      final root = PlaybackController(
+        engine,
+        library: library,
+        collection: collection,
+        sourceResolver: FakePlaybackSourceResolver(),
+      );
+      addTearDown(() async {
+        await root.close();
+        await engine.dispose();
+        await library.dispose();
+        await collection.dispose();
+      });
+      await root.initialize();
+      await root.replaceQueue([
+        for (var i = 0; i < 3; i++)
+          QueueEntry(
+            id: 'native-$i',
+            track: media.ref,
+            position: i,
+            addedAt: DateTime.utc(2026),
+          ),
+      ], currentEntryId: 'native-0');
+      await root.playNativeSequence('native-0');
+      final id = probe.playerId;
+      final moved = Completer<void>();
+      root.addListener(() {
+        if (root.state.queue.currentEntryId == 'native-1' &&
+            !moved.isCompleted) {
+          moved.complete();
+        }
+      });
+      await probe.emit(1);
+      await moved.future.timeout(const Duration(seconds: 3));
+      expect((await collection.loadQueue()).currentEntryId, 'native-1');
+      expect(root.state.currentTrack!.ref, media.ref);
+      root.setContinueAfterTrack(false);
+      await probe.removing.future.timeout(const Duration(seconds: 3));
+      expect(probe.removals.single['startIndex'], 2);
+      expect(probe.removals.single['endIndex'], 3);
+      expect(probe.loads, hasLength(1));
+      expect(probe.playerId, id);
+      expect(backend.current.playing, isTrue);
+    },
+  );
 
   test('loads ordered sources once without issuing play', () async {
     await backend.openSequence([

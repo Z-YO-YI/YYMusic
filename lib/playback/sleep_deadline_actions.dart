@@ -4,6 +4,7 @@ extension _SleepDeadlineActions on PlaybackController {
   bool get _canSleepAtCurrentEntryEnd {
     final entryId = _loadedEntryId;
     if (_disposed ||
+        (_nativeSequence?.pending.isNotEmpty ?? false) ||
         !_engine.isAvailable ||
         _loadingSource ||
         entryId == null ||
@@ -26,6 +27,8 @@ extension _SleepDeadlineActions on PlaybackController {
     final entryId = _loadedEntryId!;
     _cancelSleepTimer();
     _sleepState = PlaybackSleepTimerState.atEntryEnd(entryId);
+    _nativePolicyRevision++;
+    _requestNativeBoundary();
     _publish(_state);
     return true;
   }
