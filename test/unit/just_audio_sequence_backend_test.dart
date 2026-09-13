@@ -370,6 +370,28 @@ void main() {
     },
   );
 
+  test(
+    'append dispatches insertion without replacing player or playing',
+    () async {
+      await backend.openSequence([local('/a.wav'), local('/b.wav')]);
+      final id = probe.playerId;
+      expect(
+        await backend.appendSequence([local('/c.wav')], expectedLength: 2),
+        isTrue,
+      );
+      expect(probe.insertions.single['index'], 2);
+      expect(probe.insertions.single['children'] as List, hasLength(1));
+      expect(probe.loads, hasLength(1));
+      expect(probe.playerId, id);
+      expect(probe.calls, isNot(contains('play')));
+      expect(
+        await backend.appendSequence([local('/d.wav')], expectedLength: 2),
+        isFalse,
+      );
+      expect(probe.insertions, hasLength(1));
+    },
+  );
+
   test('loads ordered sources once without issuing play', () async {
     await backend.openSequence([
       local(r'C:\Music\a tone.wav'),
@@ -531,6 +553,7 @@ final class _NativeChannelProbe {
   final disposing = Completer<void>();
   final lifecycle = <String>[];
   final removals = <Map<Object?, Object?>>[];
+  final insertions = <Map<Object?, Object?>>[];
   final removing = Completer<void>();
   Completer<void>? removeGate;
   bool failRemove = false;
@@ -553,6 +576,11 @@ final class _NativeChannelProbe {
         register('com.ryanheise.just_audio.data.$playerId', (_) async => null);
         register('com.ryanheise.just_audio.methods.$playerId', (request) async {
           calls.add(request.method);
+          if (request.method == 'concatenatingInsertAll') {
+            insertions.add(
+              Map<Object?, Object?>.from(request.arguments as Map),
+            );
+          }
           if (request.method == 'concatenatingRemoveRange') {
             removals.add(Map<Object?, Object?>.from(request.arguments as Map));
             if (!removing.isCompleted) removing.complete();

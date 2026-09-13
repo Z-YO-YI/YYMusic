@@ -25,6 +25,7 @@ abstract interface class AudioSequenceEngine implements AudioEngine {
   /// Retains the current entry and everything before it. A stale cursor is a
   /// no-op (false); an in-flight transition/failure requires a fresh load.
   Future<bool> retainSequenceThrough(AudioSequenceCursor expected);
+  Future<bool> appendSequence(AudioSequenceAppend request);
 }
 
 /// Deliberately reports no backend, never simulates successful playback.

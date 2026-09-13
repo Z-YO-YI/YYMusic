@@ -154,6 +154,77 @@ final class JustAudioEngine implements AudioSequenceEngine {
   }
 
   @override
+  Future<bool> appendSequence(AudioSequenceAppend request) async {
+    var appended = false;
+    await _enqueue(() async {
+      final backend = _backend;
+      final cursors = _sequenceCursors;
+      final expected = request.expectedTail;
+      if (backend is! JustAudioSequenceBackend ||
+          !_loaded ||
+          _loading ||
+          _failure != null ||
+          cursors == null ||
+          cursors.isEmpty ||
+          backend.current.processing == JustAudioProcessingPhase.completed) {
+        return;
+      }
+      final tail = cursors.last;
+      if (!identical(tail.sequenceIdentity, expected.sequenceIdentity) ||
+          tail.index != expected.index ||
+          tail.entryId != expected.entryId ||
+          tail.track != expected.track) {
+        return;
+      }
+      final existing = cursors.map((cursor) => cursor.entryId).toSet();
+      if (request.entries.any((entry) => existing.contains(entry.entryId))) {
+        throw ArgumentError('Audio append contains an existing entry');
+      }
+      if (!backend.supportsRequestHeaders &&
+          request.entries.any((entry) => entry.source.headers.isNotEmpty)) {
+        throw _commandFailure(
+          DomainFailureCode.playbackOpenFailed,
+          'sequence-append',
+        );
+      }
+      _sequenceCursors = List.unmodifiable([...cursors, ...request.cursors]);
+      try {
+        final accepted = await backend.appendSequence(
+          request.entries.map((entry) => entry.source).toList(growable: false),
+          expectedLength: cursors.length,
+        );
+        if (_failure != null) throw _failure!;
+        if (!accepted) {
+          final index = backend.current.currentIndex;
+          if (index == null || index < 0 || index >= cursors.length) {
+            throw StateError('Rejected append already changed sequence');
+          }
+          _sequenceCursors = cursors;
+          return;
+        }
+        _acceptSnapshot(backend.current);
+        if (_failure != null) throw _failure!;
+        appended = true;
+      } catch (_) {
+        _sequenceCursors = null;
+        _loaded = false;
+        final failure = _commandFailure(
+          DomainFailureCode.playbackInterrupted,
+          'sequence-append',
+        );
+        _publishFailure(failure);
+        try {
+          await backend.stop();
+        } catch (_) {
+          /* Keep the safe failure. */
+        }
+        throw failure;
+      }
+    });
+    return appended;
+  }
+
+  @override
   Future<bool> retainSequenceThrough(AudioSequenceCursor expected) async {
     var retained = false;
     await _enqueue(() async {

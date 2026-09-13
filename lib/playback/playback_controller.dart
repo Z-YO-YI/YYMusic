@@ -111,6 +111,7 @@ final class PlaybackController extends ChangeNotifier {
   bool _completionHandled = true;
   bool _loadingSource = false;
   _NativeSequenceBinding? _nativeSequence;
+  final _nativeRefillJobs = <Future<void>>{};
   int _nativePolicyRevision = 0;
   bool _disposed = false;
   bool _notifierDisposed = false;
@@ -642,6 +643,7 @@ final class PlaybackController extends ChangeNotifier {
         return;
       }
       await _startPlayback(canPlay: canPlay);
+      if (_nativeSequence case final binding?) _ensureNativeLookahead(binding);
     } catch (error, stack) {
       _nativeSequence = null;
       _loadingSource = false;
@@ -1179,6 +1181,7 @@ final class PlaybackController extends ChangeNotifier {
     } finally {
       await _operationTail;
       try {
+        await Future.wait(_nativeRefillJobs.toList());
         await Future.wait(_sleepFadeJobs.toList());
         await _operationTail;
         final failure = _fadeRestoreFailure;
