@@ -113,4 +113,27 @@ void main() {
     await graph.initialize();
     expect(gateway.calls, ['close']);
   });
+
+  test('root close drains accepted settings launch before releasing native resources', () async {
+    final gate = Completer<AudioOutputSettingsResult>();
+    final gateway = FakeAudioOutputGateway()..onOpen = () => gate.future;
+    final engine = FakeAudioEngine();
+    final graph = DependencyGraph(
+      audioEngine: engine,
+      audioOutputGateway: gateway,
+    );
+    await graph.initialize();
+    await flush();
+    final launch = graph.audioOutput.openSystemSettings(isCurrent: () => true);
+    await flush();
+    final closing = graph.close();
+    await flush();
+    expect(gateway.calls, ['initialize', 'open']);
+    expect(engine.disposalCount, 0);
+    gate.complete(AudioOutputSettingsResult.opened);
+    expect(await launch, AudioOutputSettingsResult.opened);
+    await closing;
+    expect(gateway.calls, ['initialize', 'open', 'close']);
+    expect(engine.disposalCount, 1);
+  });
 }

@@ -13,11 +13,53 @@ final class AudioOutputController extends ChangeNotifier {
   AudioOutputSnapshot _snapshot = const AudioOutputSnapshot.unavailable();
   StreamSubscription<AudioOutputSnapshot>? _subscription;
   Future<void>? _worker, _initializing, _closing;
+  Future<AudioOutputSettingsResult>? _launching;
   bool _started = false, _pending = false, _closed = false;
   bool _notifierDisposed = false;
   int _eventRevision = 0, _notificationDepth = 0;
 
   AudioOutputSnapshot get snapshot => _snapshot;
+  bool get openingSettings => !_closed && _launching != null;
+
+  /// Requires a live page/user intent. Opened only means OS launch acceptance.
+  /// The caller must recheck its intent before displaying asynchronous feedback.
+  Future<AudioOutputSettingsResult> openSystemSettings({
+    required bool Function() isCurrent,
+  }) {
+    if (_closed || !_snapshot.canOpenSettings || _launching != null) {
+      return Future.value(AudioOutputSettingsResult.unavailable);
+    }
+    final work = _launching =
+        Future<AudioOutputSettingsResult>.microtask(() async {
+          // Recheck permission after our accepted reads, not before a native queue.
+          while (!_closed && _worker != null) {
+            await _worker;
+          }
+          if (_closed || !_snapshot.canOpenSettings) {
+            return AudioOutputSettingsResult.unavailable;
+          }
+          bool allowed;
+          try {
+            allowed = isCurrent();
+          } catch (_) {
+            allowed = false;
+          }
+          // A permission callback can synchronously revoke capability or close us.
+          if (!allowed || _closed || !_snapshot.canOpenSettings) {
+            return AudioOutputSettingsResult.unavailable;
+          }
+          try {
+            return await _gateway.openSystemSettings();
+          } catch (_) {
+            return AudioOutputSettingsResult.failed;
+          }
+        }).whenComplete(() {
+          _launching = null;
+          _notify();
+        });
+    _notify();
+    return work;
+  }
 
   Future<void> initialize() {
     if (_closed) return _closing ?? Future<void>.value();
@@ -78,6 +120,11 @@ final class AudioOutputController extends ChangeNotifier {
   void _publish(AudioOutputSnapshot value) {
     if (_closed || _snapshot == value) return;
     _snapshot = value;
+    _notify();
+  }
+
+  void _notify() {
+    if (_closed) return;
     _notificationDepth++;
     try {
       notifyListeners();
@@ -98,7 +145,11 @@ final class AudioOutputController extends ChangeNotifier {
         try {
           await _subscription?.cancel();
         } finally {
-          await _worker;
+          try {
+            await _worker;
+          } finally {
+            await _launching;
+          }
         }
       });
       unawaited(_closing!.catchError((Object _) {}));
@@ -108,7 +159,7 @@ final class AudioOutputController extends ChangeNotifier {
     super.dispose();
   }
 
-  /// Revokes future reads, detaches observations and drains an accepted read.
+  /// Revokes commands, detaches observations and drains accepted reads/launches.
   Future<void> close() {
     dispose();
     return _closing!;
