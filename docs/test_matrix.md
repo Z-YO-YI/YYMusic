@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+Phase7H6B2a：新增11项恢复许可单测，覆盖两种布尔、重复捕获/应用、默认值显式选择、改回原值、关闭、通知重入以及完成后不重播/无音频设备。生产启动存储绑定仍待后续；结果见[报告](phase_7h6b2a_continuation_restore_report.md)，220张Golden不变。
+
 Phase7H6B1：21项继续偏好codec/SQLite测试，含未知版本不删除、顺序读写、阻塞关闭屏障、错误后重试及真实文件重开；不以适配器测试代替应用启动恢复。结果见[报告](phase_7h6b1_continuation_storage_report.md)，220图未改。
 
 Phase7H6A：新增17项自动继续根回归，含3循环×随机模式、旧完成撤销、慢来源/原生命令、随机候选保留和睡眠优先。关机中断轮不计通过；恢复后全量2286 Flutter、160 Node、585文件格式/严格分析通过，220图未改，详见[报告](phase_7h6a_auto_continue_report.md)。
