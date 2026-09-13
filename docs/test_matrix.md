@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+Phase7J2：17项引擎/模型测试覆盖重复曲目、不可变批次、替换屏蔽旧身份、能力/头预检、失败恢复、无效索引安全停止及不误停更新序列、串行play与关闭；另1项真实just_audio通道经NativeBackend→JustAudioEngine检验索引到entry/批次映射。详见[报告](phase_7j2_sequence_engine_report.md)，226张Golden不变。
+
 Phase7J1：11项新增真实just_audio平台通道测试，覆盖有序三类源/初始索引、不主动play、索引单独变化、空序列/越界/整批头预检、输入快照、UNC/POSIX编码、单曲替换、原生失败脱敏与恢复、关闭后拒绝。通道仿真不等于原生无缝听感；226张Golden未变。见[报告](phase_7j1_native_sequence_report.md)。
 
 Phase7I2：7新Widget覆盖三平台实际反馈/确认无副作用、旧快照不能清新记录、离开队列后旧操作失效、移除项仍保留安全记录、568×320横屏滚动可操作；3新130%字体Golden逐张查看，223旧图不变。见[报告](phase_7i2_queue_feedback_report.md)。

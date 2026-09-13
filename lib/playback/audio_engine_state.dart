@@ -1,4 +1,5 @@
 import '../domain/models/domain_failure.dart';
+import 'audio_sequence.dart';
 
 enum AudioEnginePhase {
   idle,
@@ -21,6 +22,7 @@ final class AudioEngineState {
     this.volume = 1,
     this.playbackRate = 1,
     this.failure,
+    this.sequenceCursor,
   }) {
     if (position.isNegative) {
       throw ArgumentError.value(position, 'position', 'must not be negative');
@@ -53,4 +55,5 @@ final class AudioEngineState {
   final double volume;
   final double playbackRate;
   final DomainFailure? failure;
+  final AudioSequenceCursor? sequenceCursor;
 }

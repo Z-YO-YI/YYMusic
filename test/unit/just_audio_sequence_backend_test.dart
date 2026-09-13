@@ -1,7 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yymusic/domain/models/track.dart';
+import 'package:yymusic/playback/audio_engine_state.dart';
+import 'package:yymusic/playback/audio_sequence.dart';
 import 'package:yymusic/playback/just_audio_backend.dart';
+import 'package:yymusic/playback/just_audio_engine.dart';
 import 'package:yymusic/playback/playable_source.dart';
 
 void main() {
@@ -33,6 +36,41 @@ void main() {
     await backend.dispose();
     probe.uninstall();
   });
+
+  test(
+    'native channel index maps through production engine to batch and entry',
+    () async {
+      final engine = JustAudioEngine(backend);
+      addTearDown(engine.dispose);
+      final states = <AudioEngineState>[];
+      engine.states.listen(states.add);
+      final source = local('/same.wav');
+      final sequence = AudioSequence([
+        AudioSequenceEntry(entryId: 'occurrence-a', source: source),
+        AudioSequenceEntry(entryId: 'occurrence-b', source: source),
+      ]);
+      await engine.loadSequence(sequence);
+      expect(states.last.sequenceCursor!.entryId, 'occurrence-a');
+      final transitioned = engine.states
+          .firstWhere(
+            (state) => state.sequenceCursor?.entryId == 'occurrence-b',
+          )
+          .timeout(const Duration(seconds: 3));
+      await probe.emit(1);
+      final state = await transitioned;
+      expect(
+        identical(state.sequenceCursor!.sequenceIdentity, sequence.identity),
+        isTrue,
+      );
+      expect(state.sequenceCursor!.track, track);
+      expect(state.position, Duration.zero);
+      expect(state.failure, isNull);
+      expect(probe.loads, hasLength(1));
+      expect(probe.calls, isNot(contains('play')));
+      await engine.stop();
+      expect(states.last.sequenceCursor, isNull);
+    },
+  );
 
   test('loads ordered sources once without issuing play', () async {
     await backend.openSequence([

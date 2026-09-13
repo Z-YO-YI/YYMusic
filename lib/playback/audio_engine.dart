@@ -1,4 +1,5 @@
 import 'audio_engine_state.dart';
+import 'audio_sequence.dart';
 import 'playable_source.dart';
 
 /// Cross-platform audio boundary. Implementations must not leak plugin types.
@@ -13,6 +14,13 @@ abstract interface class AudioEngine {
   Future<void> setVolume(double value);
   Future<void> setPlaybackRate(double value);
   Future<void> dispose();
+}
+
+/// Optional native sequence capability. Queue and continuation policy stay in
+/// PlaybackController; loading never implicitly requests playback.
+abstract interface class AudioSequenceEngine implements AudioEngine {
+  bool get supportsSequences;
+  Future<void> loadSequence(AudioSequence sequence, {int initialIndex = 0});
 }
 
 /// Deliberately reports no backend, never simulates successful playback.
