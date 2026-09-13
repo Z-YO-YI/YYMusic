@@ -563,7 +563,7 @@ final class PlaybackController extends ChangeNotifier {
           sourceId: track.sourceId,
         );
       }
-      final source = await resolver.resolve(track);
+      final source = await _resolveFreshSource(track, canPlay: canPlay);
       _checkNotDisposed();
       if (canPlay?.call() == false) return;
       if (source.track != track.ref) {
@@ -595,6 +595,15 @@ final class PlaybackController extends ChangeNotifier {
       if (_loadedEntryId != null) await _stopEngine();
       _checkNotDisposed();
       if (canPlay?.call() == false) return;
+      // Queue persistence, tail resolution and stopping can outlive a URL.
+      trackFailureBoundary = true;
+      final loadSource = await _resolveFreshSource(
+        track,
+        previous: source,
+        canPlay: canPlay,
+      );
+      if (canPlay?.call() == false) return;
+      trackFailureBoundary = false;
       _publish(
         _state.copyWith(
           phase: PlaybackPhase.loading,
@@ -610,16 +619,18 @@ final class PlaybackController extends ChangeNotifier {
       history.end();
       trackFailureBoundary = true;
       if (nativePlan == null) {
-        await _engine.load(source);
+        await _engine.load(loadSource);
       } else {
+        final loadSequence = AudioSequence([
+          AudioSequenceEntry(entryId: entryId, source: loadSource),
+          ...nativePlan.sequence.entries.skip(1),
+        ]);
         final binding = _NativeSequenceBinding(
-          nativePlan.sequence.cursors,
+          loadSequence.cursors,
           nativePlan.tracks,
         );
         _nativeSequence = binding;
-        await (_engine as AudioSequenceEngine).loadSequence(
-          nativePlan.sequence,
-        );
+        await (_engine as AudioSequenceEngine).loadSequence(loadSequence);
         if (!identical(_nativeSequence, binding)) {
           throw DomainFailure(
             code: DomainFailureCode.playbackInterrupted,

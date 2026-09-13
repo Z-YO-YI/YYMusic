@@ -20,7 +20,8 @@ final class JustAudioEngine implements AudioSequenceEngine {
     ),
   );
 
-  JustAudioEngine(this._backend) {
+  JustAudioEngine(this._backend, {DateTime Function()? clock})
+    : _clock = clock ?? DateTime.now {
     _snapshotSubscription = _backend.snapshots.listen(
       _acceptSnapshot,
       onError: (Object _, StackTrace _) => _publishAsyncFailure(),
@@ -32,6 +33,7 @@ final class JustAudioEngine implements AudioSequenceEngine {
   }
 
   final JustAudioPlayerBackend _backend;
+  final DateTime Function() _clock;
   final _states = StreamController<AudioEngineState>.broadcast(sync: true);
   late final StreamSubscription<JustAudioPlayerSnapshot> _snapshotSubscription;
   late final StreamSubscription<void> _errorSubscription;
@@ -59,6 +61,7 @@ final class JustAudioEngine implements AudioSequenceEngine {
 
   @override
   Future<void> load(PlayableSource source) => _enqueue(() async {
+    _requireFreshSources([source]);
     _sequenceFault = null;
     _sequenceCursors = null;
     _failure = null;
@@ -104,6 +107,7 @@ final class JustAudioEngine implements AudioSequenceEngine {
       );
     }
     return _enqueue(() async {
+      _requireFreshSources(sequence.entries.map((entry) => entry.source));
       final backend = _backend;
       if (backend is! JustAudioSequenceBackend ||
           (!backend.supportsRequestHeaders &&
@@ -177,6 +181,7 @@ final class JustAudioEngine implements AudioSequenceEngine {
         return;
       }
       final existing = cursors.map((cursor) => cursor.entryId).toSet();
+      _requireFreshSources(request.entries.map((entry) => entry.source));
       if (request.entries.any((entry) => existing.contains(entry.entryId))) {
         throw ArgumentError('Audio append contains an existing entry');
       }
@@ -278,6 +283,16 @@ final class JustAudioEngine implements AudioSequenceEngine {
       }
     });
     return retained;
+  }
+
+  void _requireFreshSources(Iterable<PlayableSource> sources) {
+    final now = _clock();
+    if (sources.any((source) => !source.isValidAt(now))) {
+      throw _commandFailure(
+        DomainFailureCode.streamUrlExpired,
+        'source-expired',
+      );
+    }
   }
 
   @override

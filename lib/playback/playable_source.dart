@@ -50,6 +50,7 @@ final class PlayableSource {
     required TrackRef track,
     required Uri uri,
     Map<String, String> headers = const {},
+    DateTime? expiresAt,
   }) {
     if (uri.scheme != 'https' || !uri.hasAuthority || uri.userInfo.isNotEmpty) {
       throw ArgumentError.value(
@@ -64,6 +65,7 @@ final class PlayableSource {
       localPath: null,
       uri: uri,
       headers: _validatedHeaders(headers),
+      expiresAt: expiresAt?.toUtc(),
     );
   }
 
@@ -73,12 +75,20 @@ final class PlayableSource {
     required this.localPath,
     required this.uri,
     required this.headers,
+    this.expiresAt,
   });
 
   final TrackRef track;
   final PlayableSourceKind kind;
   final String? localPath;
   final Uri? uri;
+
+  /// Optional server-provided deadline. Absence is not a permanence guarantee.
+  /// This ephemeral value must not be persisted with the stable track/queue.
+  final DateTime? expiresAt;
+
+  bool isValidAt(DateTime now) =>
+      expiresAt == null || now.toUtc().isBefore(expiresAt!);
 
   /// Transient request headers, including runtime authorization when required.
   /// Callers must not persist or log this map.
