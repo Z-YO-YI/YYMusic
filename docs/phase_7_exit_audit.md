@@ -1,5 +1,9 @@
 # Phase 7 出口审计与剩余工作
 
+## Phase7J3替换事件隔离
+
+整批替换改用独立播放器ID和订阅generation，通道测试证实旧索引/错误及旧play失败不污染新批次，见[报告](phase_7j3_event_isolation_report.md)。但锁定插件吞没部分原生释放错误，成功dispose不能证明资源释放；原生生命周期验收仍缺。根队列/睡眠/继续策略尚未切换序列，无缝未启用。
+
 ## Phase7J2共用序列引擎
 
 序列能力已从插件边界接至JustAudioEngine，状态携带不含播放地址的批次/entry身份并保护异常索引。见[报告](phase_7j2_sequence_engine_report.md)。PlaybackController尚未使用该协议；自动继续/睡眠/队列修订和旧原生事件隔离、真实听感验证仍须完成，不能将本批算作用户可用无缝播放。

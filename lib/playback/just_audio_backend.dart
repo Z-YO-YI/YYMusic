@@ -56,8 +56,9 @@ abstract interface class JustAudioPlayerBackend {
 /// operations and must not share this instance with a second playback owner.
 abstract interface class JustAudioSequenceBackend
     implements JustAudioPlayerBackend {
-  /// Preloads an immutable snapshot without requesting playback. Existing playing
-  /// state is not changed: a caller replacing active media must pause first.
+  /// Preloads an immutable snapshot without requesting playback. Replacement
+  /// requests pause/disposal before loading on a new player; native release
+  /// errors hidden by the plugin cannot be acknowledged by this interface.
   /// Locators and headers are ephemeral and must not be persisted or logged.
   Future<void> openSequence(
     List<PlayableSource> sources, {
@@ -76,13 +77,20 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
     required bool supportsRequestHeaders,
   }) => NativeJustAudioPlayerBackend._(
     AudioPlayer(useProxyForRequestHeaders: useProxyForRequestHeaders),
+    useProxyForRequestHeaders,
     supportsRequestHeaders: supportsRequestHeaders,
   );
 
   NativeJustAudioPlayerBackend._(
-    this._player, {
+    this._player,
+    this._useProxyForRequestHeaders, {
     required this.supportsRequestHeaders,
   }) {
+    _attachPlayer();
+  }
+
+  void _attachPlayer() {
+    final generation = _generation;
     _watch(_player.playingStream);
     _watch(_player.processingStateStream);
     _watch(_player.positionStream);
@@ -94,16 +102,20 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
     _subscriptions.add(
       _player.errorStream.listen(
         (_) {
-          if (!_disposed) _errors.add(null);
+          if (!_disposed && generation == _generation) _errors.add(null);
         },
         onError: (Object _, StackTrace _) {
-          if (!_disposed) _errors.add(null);
+          if (!_disposed && generation == _generation) _errors.add(null);
         },
       ),
     );
   }
 
-  final AudioPlayer _player;
+  AudioPlayer _player;
+  final bool _useProxyForRequestHeaders;
+  int _generation = 0;
+  bool _hasSource = false;
+  bool _replacementFailed = false;
   @override
   final bool supportsRequestHeaders;
   final _snapshots = StreamController<JustAudioPlayerSnapshot>.broadcast(
@@ -132,10 +144,11 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
   Stream<JustAudioPlayerSnapshot> get snapshots => _snapshots.stream;
 
   void _watch<T>(Stream<T> stream) {
+    final generation = _generation;
     _subscriptions.add(
       stream.listen(
         (_) {
-          if (_disposed) return;
+          if (_disposed || generation != _generation) return;
           try {
             _snapshots.add(current);
           } catch (_) {
@@ -143,10 +156,46 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
           }
         },
         onError: (Object _, StackTrace _) {
-          if (!_disposed) _errors.add(null);
+          if (!_disposed && generation == _generation) _errors.add(null);
         },
       ),
     );
+  }
+
+  Future<void> _prepareLoad() async {
+    if (_disposed || _replacementFailed) {
+      throw StateError('Audio backend cannot load media');
+    }
+    if (!_hasSource) {
+      _hasSource = true;
+      return;
+    }
+    final volume = _player.volume;
+    final speed = _player.speed;
+    _generation++;
+    _replacementFailed = true;
+    try {
+      for (final subscription in _subscriptions) {
+        await subscription.cancel();
+      }
+      _subscriptions.clear();
+      // Unlike stop's platform release path, pause propagates native failure.
+      // This is a best-effort acknowledged pause, not proof of resource release.
+      await _player.pause();
+      await _player.dispose();
+      if (_disposed) throw StateError('Audio backend is disposed');
+      _player = AudioPlayer(
+        useProxyForRequestHeaders: _useProxyForRequestHeaders,
+      );
+      await _player.setVolume(volume);
+      await _player.setSpeed(speed);
+      if (_disposed) throw StateError('Audio backend is disposed');
+      _attachPlayer();
+      _replacementFailed = false;
+    } catch (_) {
+      // Observable preparation failure must not start a second player.
+      throw StateError('Audio player could not be replaced');
+    }
   }
 
   JustAudioProcessingPhase _processing(ProcessingState value) =>
@@ -169,6 +218,8 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
     final ephemeralHeaders = headers.isEmpty
         ? null
         : Map<String, String>.unmodifiable(headers);
+    await _prepareLoad();
+    if (_disposed) throw StateError('Audio backend is disposed');
     await _player.setAudioSource(
       AudioSource.uri(resource, headers: ephemeralHeaders),
       preload: true,
@@ -210,6 +261,8 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
             );
           })
           .toList(growable: false);
+      await _prepareLoad();
+      if (_disposed) throw StateError('Audio backend is disposed');
       await _player.setAudioSources(
         nativeSources,
         preload: true,
@@ -224,12 +277,16 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
 
   @override
   Future<void> play() async {
+    if (_disposed || _replacementFailed) {
+      throw StateError('Audio backend cannot play media');
+    }
+    final generation = _generation;
     final request = _player.play();
     unawaited(
       request.then<void>(
         (_) {},
         onError: (Object _, StackTrace _) {
-          if (!_disposed) _errors.add(null);
+          if (!_disposed && generation == _generation) _errors.add(null);
         },
       ),
     );
@@ -257,6 +314,7 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
   Future<void> dispose() async {
     if (_disposed) return;
     _disposed = true;
+    _generation++;
     for (final subscription in _subscriptions) {
       try {
         await subscription.cancel();
