@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7H6B1：[继续偏好存储报告](phase_7h6b1_continuation_storage_report.md)/ADR126。专用Repository、version1布尔codec及借用数据库的Drift适配，21新测试；不改schema。启动恢复/保存协调器和设置开关待后续。分支codex/continuation-preference-storage，base codex/playback-auto-continue。以下为历史记录。
+
 最新Phase7H6A：[自动继续根报告](phase_7h6a_auto_continue_report.md)/ADR125。实现continueAfterTrack策略与完成revision撤销，覆盖慢解析/load/seek、循环/随机及睡眠优先；新增17测试，关机恢复后完整2286 Flutter/160 Node通过。UI和持久化下一阶段。分支codex/playback-auto-continue，base codex/audio-output-panel；父f47c5d7双平台云端成功。以下为历史记录。
 
 最新Phase7H5C2：[输出面板报告](phase_7h5c2_output_panel_report.md)/ADR124。生产Presenter借用根观察器，播放/歌词/Inspector既有设置路由显示输出与系统设置入口；输出局部通知、页面许可及安全反馈。11新Widget+3新Golden，旧217图不变；父ab29b7f双平台云端成功。分支codex/audio-output-panel，base codex/output-settings-action。硬件验收和Phase7其他偏好及Phase8–11仍待完成。以下为历史记录。
