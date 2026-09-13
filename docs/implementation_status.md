@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7H4C2a：[根音量报告](phase_7h4c2a_volume_intent_report.md)/ADR115。3项先失败回归确认问题，修复为有效请求前锁定原确认值、成功后确认新值，两条引擎投影不再覆盖应用意图；23项新根单测通过。无淡出调度或UI变化，H4C2b继续逐步写入/撤销恢复；不标记平滑暂停已完成。分支codex/playback-volume-intent，base codex/sleep-fade-envelope。以下为历史记录。
+
 最新Phase7H4C1：[淡出契约/接入审计](phase_7h4c1_sleep_fade_contract.md)、ADR114。新增SleepFadeEnvelope及17项单测，纯计算不创建计时器或调用引擎；2秒线性振幅/50ms建议间隔。根引擎音量回报直写UI、整段串行等待阻塞用户操作的问题已识别，下一步H4C2隔离并验证；**实际平滑暂停尚未接通**。基线86f75b1，分支codex/sleep-fade-envelope。以下为历史记录。
 
 最新Phase7H4B3b：[计划](phase_7h4b3b_persistence_plan.md)/ADR113/[报告](phase_7h4b3b_persistence_report.md)。分钟定时存储、启动恢复、关闭排空和Presenter/面板反馈已生产绑定，SQLite三次重开验证原截止/取消保留；无自动播放。22协调器+4Graph+6Widget+3新Golden，完整2097 Flutter/158 Node、217截图（214原图不变）、563格式/严格分析/生成迁移及Android Debug49.8秒通过。分支codex/sleep-persistence-coordinator，base codex/sleep-restore-root；父154df75双CI34734305847/34734318067 SUCCESS，新SHA另验。分钟恢复完成，本曲结束仅会话；[H4C平滑暂停](phase_7h4c_sleep_fade_plan.md)及其余Phase7–11仍待验收。以下为历史记录。

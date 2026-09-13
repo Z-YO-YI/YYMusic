@@ -72,6 +72,9 @@ final class PlaybackController extends ChangeNotifier {
   late final StreamSubscription<AudioEngineState> _subscription;
 
   PlaybackState _state = PlaybackState();
+  // App volume intent is distinct from backend amplitude (e.g. a sleep fade).
+  // Before the first valid command, backend reports seed the initial value.
+  double? _userVolume;
   Future<void> _operationTail = Future<void>.value();
   Future<void> _mediaSyncTail = Future<void>.value();
   Future<void>? _initialization;
@@ -220,7 +223,15 @@ final class PlaybackController extends ChangeNotifier {
   Future<void> setVolume(double value) => _schedule(() async {
     _requireEngine();
     _validateVolume(value);
-    await _guarded('set-volume', () => _engine.setVolume(value));
+    // Shield the last confirmed intent before invoking a reentrant backend.
+    // On failure keep it; never present a rejected command as successful.
+    _userVolume ??= _state.volume;
+    await _guarded('set-volume', () async {
+      await _engine.setVolume(value);
+      if (_disposed) return;
+      _userVolume = value;
+      _publish(_state.copyWith(volume: value));
+    });
   });
 
   Future<void> setPlaybackRate(double value) => _schedule(() async {
@@ -565,7 +576,10 @@ final class PlaybackController extends ChangeNotifier {
         value.phase != AudioEnginePhase.error) {
       // Late media snapshots after stop cannot resurrect an unloaded session.
       _publish(
-        _state.copyWith(volume: value.volume, playbackRate: value.playbackRate),
+        _state.copyWith(
+          volume: _userVolume ?? value.volume,
+          playbackRate: value.playbackRate,
+        ),
       );
       return;
     }
@@ -616,7 +630,7 @@ final class PlaybackController extends ChangeNotifier {
         position: value.position,
         buffered: value.buffered,
         duration: value.duration,
-        volume: value.volume,
+        volume: _userVolume ?? value.volume,
         playbackRate: value.playbackRate,
         failure: value.failure,
       ),

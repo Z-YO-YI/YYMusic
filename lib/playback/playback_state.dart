@@ -116,6 +116,9 @@ final class PlaybackState {
   final Duration position;
   final Duration buffered;
   final Duration? duration;
+
+  /// Confirmed app volume intent, not a temporary backend attenuation or the
+  /// operating system's output volume. Seeded by the backend before first use.
   final double volume;
   final double playbackRate;
   final bool shuffleEnabled;
