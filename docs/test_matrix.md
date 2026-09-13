@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+Phase7H6A：新增17项自动继续根回归，含3循环×随机模式、旧完成撤销、慢来源/原生命令、随机候选保留和睡眠优先。关机中断轮不计通过；恢复后全量2286 Flutter、160 Node、585文件格式/严格分析通过，220图未改，详见[报告](phase_7h6a_auto_continue_report.md)。
+
 Phase7H5C2：11新输出面板Widget（含长标签窄/矮窗口可达性）、3张新130%字体Golden且逐张查看，旧217图不变；生产双平台Bootstrap检查Presenter借用根身份。真实原生设置启动/设备路由不在Widget模拟验收范围，详见[报告](phase_7h5c2_output_panel_report.md)。
 
 Phase7H5C1：新增15项系统设置操作测试和1项根退出等待启动测试；不实际打开系统设置、不伪造路由切换。未知路由与设置能力分别校验，忙碌/许可/关闭重入均覆盖；完整结果见[报告](phase_7h5c1_settings_action_report.md)。
