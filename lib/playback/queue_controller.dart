@@ -9,6 +9,7 @@ import '../domain/models/track.dart';
 import 'playback_controller.dart';
 import 'playback_state.dart';
 import 'queue_edit_result.dart';
+import 'queue_playback_failure.dart';
 
 part 'queue_edit_feedback.dart';
 
@@ -37,6 +38,13 @@ final class QueueController extends ChangeNotifier {
 
   bool get editBusy => _editBusy;
   QueueEditFailure? get editFailure => _editFailure;
+
+  List<QueuePlaybackFailure> get playbackFailures =>
+      _playback.queuePlaybackFailures;
+
+  void acknowledgePlaybackFailures(List<QueuePlaybackFailure> expected) {
+    if (!_disposed) _playback.acknowledgeQueuePlaybackFailures(expected);
+  }
 
   /// Prepare once for one displayed root; retries retain this exact entry ID.
   QueueEdit? prepareInsertion(
