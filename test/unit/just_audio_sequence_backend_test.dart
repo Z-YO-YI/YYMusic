@@ -19,6 +19,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late _NativeChannelProbe probe;
   late NativeJustAudioPlayerBackend backend;
+  late DateTime now;
   final track = TrackRef(
     trackId: 'sequence-fixture',
     sourceId: 'local-fixture',
@@ -26,23 +27,199 @@ void main() {
   );
   PlayableSource local(String path) =>
       PlayableSource.localFile(track: track, path: path);
-  PlayableSource network({Map<String, String> headers = const {}}) =>
-      PlayableSource.networkStream(
-        track: track,
-        uri: Uri.parse('https://example.invalid/fixture.mp3'),
-        headers: headers,
-      );
+  PlayableSource network({
+    Map<String, String> headers = const {},
+    DateTime? expiresAt,
+  }) => PlayableSource.networkStream(
+    track: track,
+    uri: Uri.parse('https://example.invalid/fixture.mp3'),
+    headers: headers,
+    expiresAt: expiresAt,
+  );
 
   setUp(() {
+    now = DateTime.utc(2026, 9, 13);
     probe = _NativeChannelProbe()..install();
     backend = NativeJustAudioPlayerBackend.create(
       useProxyForRequestHeaders: false,
       supportsRequestHeaders: false,
+      clock: () => now,
     );
   });
   tearDown(() async {
     await backend.dispose();
     probe.uninstall();
+  });
+
+  test('expired preflight keeps prior native media usable', () async {
+    await backend.openSequence([local('/old.wav')]);
+    final id = probe.playerId;
+    await expectLater(
+      backend.open(network().uri!, headers: const {}, expiresAt: now),
+      throwsA(isA<JustAudioSourceExpired>()),
+    );
+    await expectLater(
+      backend.openSequence([network(expiresAt: now)]),
+      throwsA(isA<JustAudioSourceExpired>()),
+    );
+    expect(probe.loads, hasLength(1));
+    expect(probe.playerId, id);
+    await backend.play();
+    expect(backend.current.playing, isTrue);
+  });
+
+  for (final sequence in [false, true]) {
+    test(
+      'expiry during old release rejects dispatch, sequence=$sequence',
+      () async {
+        await backend.openSequence([local('/old.wav')]);
+        final gate = probe.disposeGate = Completer<void>();
+        final source = network(expiresAt: now.add(const Duration(seconds: 1)));
+        final opening = sequence
+            ? backend.openSequence([source])
+            : backend.open(
+                source.uri!,
+                headers: source.headers,
+                expiresAt: source.expiresAt,
+              );
+        final checked = expectLater(
+          opening,
+          throwsA(isA<JustAudioSourceExpired>()),
+        );
+        await probe.disposing.future;
+        now = now.add(const Duration(seconds: 2));
+        gate.complete();
+        await checked;
+        expect(probe.loads, hasLength(1));
+        await expectLater(
+          backend.play(),
+          throwsA(isA<JustAudioSourceExpired>()),
+        );
+        await backend.openSequence([local('/recovered.wav')]);
+        await backend.play();
+        expect(probe.loads, hasLength(2));
+        expect(backend.current.playing, isTrue);
+      },
+    );
+
+    test(
+      'expiry during native load remains locked, sequence=$sequence',
+      () async {
+        final gate = probe.loadGate = Completer<void>();
+        final source = network(expiresAt: now.add(const Duration(seconds: 1)));
+        final opening = sequence
+            ? backend.openSequence([source])
+            : backend.open(
+                source.uri!,
+                headers: source.headers,
+                expiresAt: source.expiresAt,
+              );
+        final checked = expectLater(
+          opening,
+          throwsA(isA<JustAudioSourceExpired>()),
+        );
+        await probe.loading.future;
+        now = now.add(const Duration(seconds: 2));
+        gate.complete();
+        await checked;
+        expect(backend.current.playing, isFalse);
+        now = now.subtract(const Duration(minutes: 1));
+        await expectLater(
+          backend.play(),
+          throwsA(isA<JustAudioSourceExpired>()),
+        );
+        expect(probe.calls, isNot(contains('play')));
+      },
+    );
+  }
+
+  test('append acknowledgement after expiry cannot succeed', () async {
+    await backend.openSequence([local('/first.wav')]);
+    final gate = probe.insertGate = Completer<void>();
+    final appending = expectLater(
+      backend.appendSequence([
+        network(expiresAt: now.add(const Duration(seconds: 1))),
+      ], expectedLength: 1),
+      throwsA(isA<JustAudioSourceExpired>()),
+    );
+    await probe.inserting.future;
+    now = now.add(const Duration(seconds: 2));
+    gate.complete();
+    await appending;
+    await expectLater(backend.play(), throwsA(isA<JustAudioSourceExpired>()));
+  });
+
+  test('expired append preflight does not poison existing source', () async {
+    await backend.openSequence([local('/first.wav')]);
+    await expectLater(
+      backend.appendSequence([network(expiresAt: now)], expectedLength: 1),
+      throwsA(isA<JustAudioSourceExpired>()),
+    );
+    expect(probe.insertions, isEmpty);
+    await backend.play();
+    expect(backend.current.playing, isTrue);
+  });
+
+  test(
+    'seek acknowledgement after expiry cannot leave source playable',
+    () async {
+      await backend.openSequence([
+        network(expiresAt: now.add(const Duration(seconds: 1))),
+      ]);
+      final gate = probe.seekGate = Completer<void>();
+      final seeking = expectLater(
+        backend.seek(const Duration(seconds: 2)),
+        throwsA(isA<JustAudioSourceExpired>()),
+      );
+      await probe.seeking.future;
+      now = now.add(const Duration(seconds: 2));
+      gate.complete();
+      await seeking;
+      await expectLater(backend.play(), throwsA(isA<JustAudioSourceExpired>()));
+    },
+  );
+
+  test('native expiry maps to safe engine domain failure', () async {
+    final engine = JustAudioEngine(backend, clock: () => now);
+    addTearDown(engine.dispose);
+    final states = <AudioEngineState>[];
+    engine.states.listen(states.add);
+    final gate = probe.loadGate = Completer<void>();
+    final loading = expectLater(
+      engine.load(network(expiresAt: now.add(const Duration(seconds: 1)))),
+      throwsA(
+        isA<DomainFailure>().having(
+          (value) => value.code,
+          'code',
+          DomainFailureCode.streamUrlExpired,
+        ),
+      ),
+    );
+    await probe.loading.future;
+    now = now.add(const Duration(seconds: 2));
+    gate.complete();
+    await loading;
+    expect(states.last.failure!.code, DomainFailureCode.streamUrlExpired);
+    expect(states.last.failure.toString(), isNot(contains('example.invalid')));
+    expect(states.last.sequenceCursor, isNull);
+  });
+
+  test('native play rejects expired loaded source through engine', () async {
+    final engine = JustAudioEngine(backend, clock: () => now);
+    addTearDown(engine.dispose);
+    await engine.load(network(expiresAt: now.add(const Duration(seconds: 1))));
+    now = now.add(const Duration(seconds: 2));
+    await expectLater(
+      engine.play(),
+      throwsA(
+        isA<DomainFailure>().having(
+          (value) => value.code,
+          'code',
+          DomainFailureCode.streamUrlExpired,
+        ),
+      ),
+    );
+    expect(probe.calls, isNot(contains('play')));
   });
 
   test(
@@ -554,6 +731,12 @@ final class _NativeChannelProbe {
   final lifecycle = <String>[];
   final removals = <Map<Object?, Object?>>[];
   final insertions = <Map<Object?, Object?>>[];
+  final loading = Completer<void>();
+  final inserting = Completer<void>();
+  final seeking = Completer<void>();
+  Completer<void>? loadGate;
+  Completer<void>? insertGate;
+  Completer<void>? seekGate;
   final removing = Completer<void>();
   Completer<void>? removeGate;
   bool failRemove = false;
@@ -576,7 +759,13 @@ final class _NativeChannelProbe {
         register('com.ryanheise.just_audio.data.$playerId', (_) async => null);
         register('com.ryanheise.just_audio.methods.$playerId', (request) async {
           calls.add(request.method);
+          if (request.method == 'seek') {
+            if (!seeking.isCompleted) seeking.complete();
+            if (seekGate != null) await seekGate!.future;
+          }
           if (request.method == 'concatenatingInsertAll') {
+            if (!inserting.isCompleted) inserting.complete();
+            if (insertGate != null) await insertGate!.future;
             insertions.add(
               Map<Object?, Object?>.from(request.arguments as Map),
             );
@@ -608,6 +797,8 @@ final class _NativeChannelProbe {
           if (request.method == 'load') {
             final args = Map<Object?, Object?>.from(request.arguments as Map);
             loads.add(args);
+            if (!loading.isCompleted) loading.complete();
+            if (loadGate != null) await loadGate!.future;
             if (failLoad) {
               throw PlatformException(
                 code: 'fixture',

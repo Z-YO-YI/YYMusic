@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+Phase7J9：10新真实just_audio模拟平台通道测试覆盖过期预检保留旧源、单曲/序列在旧播放器释放和native load等待中到期、追加等待、seek等待、时钟回退不解锁、新load恢复、typed expiry经引擎映射及play入口阻止过期媒体。专项37项通过；全量2501 Flutter、161 Node，608格式零修改，226 Golden未变。见[报告](phase_7j9_native_expiry_report.md)，非原生设备听感证明。
+
 Phase7J8：12新根测试覆盖过期暂停恢复位置及同一历史周期、未过期无重载、播放/暂停状态seek、完成重播、自动单曲重复许可、原生批次重建与下一条目清期限、解析失败、seek失败、关闭排空及seek许可撤销。全量2491 Flutter、161 Node通过，608格式零修改、226 Golden未变。见[报告](phase_7j8_expired_resume_report.md)，并非真实原生声学验证。
 
 Phase7J7：12新测试（8根、4模型/引擎）覆盖UTC/精确到期、重取一次及仍失效、存储和尾部解析等待期间失效、完整TrackRef、关闭/意图撤销、带期限未来项不预载且实际推进重新解析、单曲/批次/追加预检不替换旧状态、串行排队后时间变化。全量2479 Flutter和161 Node通过，608格式零修改，226 Golden未变。见[报告](phase_7j7_source_expiry_report.md)。
