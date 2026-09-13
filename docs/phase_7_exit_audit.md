@@ -1,5 +1,9 @@
 # Phase 7 出口审计与剩余工作
 
+## Phase7J2共用序列引擎
+
+序列能力已从插件边界接至JustAudioEngine，状态携带不含播放地址的批次/entry身份并保护异常索引。见[报告](phase_7j2_sequence_engine_report.md)。PlaybackController尚未使用该协议；自动继续/睡眠/队列修订和旧原生事件隔离、真实听感验证仍须完成，不能将本批算作用户可用无缝播放。
+
 ## Phase7J1原生序列边界
 
 新增可选后端序列加载与索引快照，真实插件平台通道测试覆盖边界，见[报告](phase_7j1_native_sequence_report.md)。根仍单曲加载，无缝播放尚未启用；序列索引到队列身份、策略撤销及原生声学验证是下一步，不将本增量算作无缝验收。

@@ -1,5 +1,9 @@
 # YYMusic 架构决策记录
 
+## ADR-133：序列引擎状态携带瞬时批次与条目身份
+
+Phase7J2。可选AudioSequenceEngine接入既有JustAudioEngine串行命令/关闭队列，不建立第二播放根。AudioSequence复制有序输入，允许重复TrackRef但拒绝重复entryId；每批拥有独立不持久化identity。AudioEngineState的可选cursor只携带identity/index/entryId/TrackRef，不含PlayableSource、URI或headers。加载中、失败、单曲替换和stop清除cursor；成功后同一状态原子报告插件索引与身份。索引缺失/越界时不猜曲目，报告安全失败并要求重新load。支持能力不足在替换前拒绝。此协议不证明插件旧事件隔离或真实曲间无缝，生产根尚不使用序列，接入前仍须处理完整策略和原生验证。
+
 ## ADR-132：先验证原生序列边界，不提前启用应用无缝播放
 
 Phase7J1。增加可选 JustAudioSequenceBackend，仅原生适配器实现；既有 AudioEngine/PlaybackController 单曲协议不变。输入复用不可变、短生命周期 PlayableSource，复制序列后整批检查请求头能力，禁止部分加载。快照提供插件真实 currentIndex，不推断应用队列身份。适配器调用锁定版本 setAudioSources，不实现第二个队列控制器，不自动 play，不持久化 URI/请求头；失败输出固定安全错误。调用者须独占并串行操作同一后端。

@@ -3,12 +3,13 @@ import 'dart:async';
 import '../domain/models/domain_failure.dart';
 import 'audio_engine.dart';
 import 'audio_engine_state.dart';
+import 'audio_sequence.dart';
 import 'just_audio_backend.dart';
 import 'playable_source.dart';
 
 /// Selected in ADR-044 after native comparison and packaged notice verification.
 /// Plugin types remain confined to the backend; app release approval is separate.
-final class JustAudioEngine implements AudioEngine {
+final class JustAudioEngine implements AudioSequenceEngine {
   factory JustAudioEngine.create({
     required bool useProxyForRequestHeaders,
     required bool supportsRequestHeaders,
@@ -41,6 +42,12 @@ final class JustAudioEngine implements AudioEngine {
   bool _loading = false;
   bool _hasPlayed = false;
   DomainFailure? _failure;
+  List<AudioSequenceCursor>? _sequenceCursors;
+  Object? _sequenceFault;
+
+  @override
+  bool get supportsSequences =>
+      !_closing && _backend is JustAudioSequenceBackend;
 
   @override
   bool get isAvailable => !_closing;
@@ -50,6 +57,8 @@ final class JustAudioEngine implements AudioEngine {
 
   @override
   Future<void> load(PlayableSource source) => _enqueue(() async {
+    _sequenceFault = null;
+    _sequenceCursors = null;
     _failure = null;
     _loaded = true;
     _loading = true;
@@ -86,6 +95,63 @@ final class JustAudioEngine implements AudioEngine {
   });
 
   @override
+  Future<void> loadSequence(AudioSequence sequence, {int initialIndex = 0}) {
+    if (initialIndex < 0 || initialIndex >= sequence.entries.length) {
+      return Future.error(
+        ArgumentError('Invalid initial audio sequence index'),
+      );
+    }
+    return _enqueue(() async {
+      final backend = _backend;
+      if (backend is! JustAudioSequenceBackend ||
+          (!backend.supportsRequestHeaders &&
+              sequence.entries.any(
+                (entry) => entry.source.headers.isNotEmpty,
+              ))) {
+        throw _commandFailure(DomainFailureCode.playbackOpenFailed, 'sequence');
+      }
+      _sequenceCursors = null;
+      _sequenceFault = null;
+      _failure = null;
+      _loaded = true;
+      _loading = true;
+      _hasPlayed = false;
+      _publish(
+        AudioEngineState(
+          phase: AudioEnginePhase.loading,
+          volume: _volume(backend.current.volume),
+          playbackRate: _rate(backend.current.speed),
+        ),
+      );
+      try {
+        await backend.openSequence(
+          sequence.entries.map((entry) => entry.source).toList(growable: false),
+          initialIndex: initialIndex,
+        );
+        if (_failure != null) throw _failure!;
+        final cursors = sequence.cursors;
+        final index = backend.current.currentIndex;
+        if (index == null || index < 0 || index >= cursors.length) {
+          throw StateError('Missing audio sequence index');
+        }
+        _sequenceCursors = cursors;
+        _loading = false;
+        _acceptSnapshot(backend.current);
+      } catch (_) {
+        _sequenceCursors = null;
+        _loading = false;
+        _loaded = false;
+        final failure = _commandFailure(
+          DomainFailureCode.playbackOpenFailed,
+          'sequence',
+        );
+        _publishFailure(failure);
+        throw failure;
+      }
+    });
+  }
+
+  @override
   Future<void> play() => _command('play', () async {
     _requireLoaded();
     await _backend.play();
@@ -103,6 +169,8 @@ final class JustAudioEngine implements AudioEngine {
 
   @override
   Future<void> stop() => _command('stop', () async {
+    _sequenceFault = null;
+    _sequenceCursors = null;
     _loaded = false;
     _loading = false;
     _hasPlayed = false;
@@ -197,6 +265,36 @@ final class JustAudioEngine implements AudioEngine {
 
   void _acceptSnapshot(JustAudioPlayerSnapshot snapshot) {
     if (_closing) return;
+    AudioSequenceCursor? cursor;
+    final cursors = _sequenceCursors;
+    if (cursors != null && !_loading && _failure == null) {
+      final index = snapshot.currentIndex;
+      if (index == null || index < 0 || index >= cursors.length) {
+        _loaded = false;
+        _sequenceCursors = null;
+        final fault = _sequenceFault = Object();
+        // Stop unidentified media through the same serialized owner. A newer
+        // accepted load can supersede this fault; never stop that new media.
+        unawaited(
+          _enqueue(() async {
+            if (!identical(_sequenceFault, fault)) return;
+            try {
+              await _backend.stop();
+            } catch (_) {
+              // Keep the safe index failure, never expose a plugin exception.
+            }
+          }).catchError((Object _, StackTrace _) {}),
+        );
+        _publishFailure(
+          _commandFailure(
+            DomainFailureCode.playbackInterrupted,
+            'sequence-index',
+          ),
+        );
+        return;
+      }
+      cursor = cursors[index];
+    }
     if (snapshot.playing) _hasPlayed = true;
     final failure = _failure;
     final phase = failure != null ? AudioEnginePhase.error : _phase(snapshot);
@@ -211,6 +309,7 @@ final class JustAudioEngine implements AudioEngine {
         volume: _volume(snapshot.volume),
         playbackRate: _rate(snapshot.speed),
         failure: failure,
+        sequenceCursor: cursor,
       ),
     );
   }

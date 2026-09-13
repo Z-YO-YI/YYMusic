@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7J2：[序列引擎报告](phase_7j2_sequence_engine_report.md)/ADR133。JustAudioEngine实现可选AudioSequenceEngine，共用原有串行/关闭机制；同一状态携带不含URI/头的批次与entry身份。17新专项＋1真实插件跨层测试，根策略未切换、不宣称无缝已启用。分支codex/sequence-engine-identity，base codex/native-sequence-backend；以下为历史阶段。
+
 最新Phase7J1：[原生序列边界报告](phase_7j1_native_sequence_report.md)/ADR132。可选后端使用真实setAudioSources并投影插件索引，输入快照、整批预检、安全失败；11项通道测试，不增加依赖。生产根仍单曲，不启用无缝开关，标准化与原生验收待完成。分支codex/native-sequence-backend，base codex/queue-skip-feedback；以下为历史阶段。
 
 最新Phase7I2：[可见反馈报告](phase_7i2_queue_feedback_report.md)/ADR131。QueueScreen已接根失败列表，显示安全原因和当前精确匹配元数据，快照确认不影响队列/播放；7新Widget及3新Golden，原223图不变。分支codex/queue-skip-feedback，base codex/queue-skip-unplayable。整体目标尚未完成。
