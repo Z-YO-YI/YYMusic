@@ -58,6 +58,8 @@ extension _SleepDeadlineActions on PlaybackController {
   }
 
   void _cancelSleepTimer() {
+    _sleepFade?.cancel();
+    _sleepFade = null;
     _sleepGeneration++;
     _sleepWake?.cancel();
     _sleepWake = null;
@@ -128,9 +130,8 @@ extension _SleepDeadlineActions on PlaybackController {
         if (_state.phase == PlaybackPhase.playing ||
             _state.phase == PlaybackPhase.buffering) {
           _requireEngine();
-          history.suspend();
-          _sessionRevision++;
-          await _guarded('sleep-pause', _engine.pause);
+          _startSleepFade(generation, deadline);
+          return;
         }
         if (!_disposed && generation == _sleepGeneration) {
           _sleepState = PlaybackSleepTimerState.expired(deadline);

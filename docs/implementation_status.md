@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7H4C2b2：[生产根淡出报告](phase_7h4c2b2_root_fade_report.md)/ADR117。分钟到期已绑定SleepFadeRunner，临时振幅与用户音量隔离，用户中断/切曲前恢复、关闭清理通道排空，恢复失败可观察且不掩盖先前播放错误。17项新根测试，旧截止/恢复/持久化断言明确加入音量命令，无Golden改动。分支codex/root-sleep-fade，base codex/sleep-fade-runner。代码启用不等同实机听感或Phase7整体完成。以下为历史记录。
+
 最新Phase7H4C2b1：[执行器报告与根接线清单](phase_7h4c2b1_fade_runner_report.md)/ADR116。SleepFadeRunner独立实现可取消等待、单调渐降、一次暂停、在途排空及finally恢复，20项时序单测。生产根尚未绑定，下一批H4C2b2处理逐步串行与关闭恢复的防自等待。分支codex/sleep-fade-runner，base codex/playback-volume-intent。以下为历史记录。
 
 最新Phase7H4C2a：[根音量报告](phase_7h4c2a_volume_intent_report.md)/ADR115。3项先失败回归确认问题，修复为有效请求前锁定原确认值、成功后确认新值，两条引擎投影不再覆盖应用意图；23项新根单测通过。无淡出调度或UI变化，H4C2b继续逐步写入/撤销恢复；不标记平滑暂停已完成。分支codex/playback-volume-intent，base codex/sleep-fade-envelope。以下为历史记录。

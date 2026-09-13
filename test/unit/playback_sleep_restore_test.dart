@@ -33,6 +33,7 @@ void main() {
       engine,
       library: library,
       sourceResolver: FakePlaybackSourceResolver(),
+      sleepFadeElapsed: () => const Duration(seconds: 2),
       clock: () {
         final callback = onClock;
         onClock = null;
@@ -281,10 +282,10 @@ void main() {
         await Future<void>.delayed(Duration.zero);
       }
       expect(root.sleepTimer.phase, PlaybackSleepPhase.expired);
-      expect(engine.calls, ['pause']);
+      expect(engine.calls, ['volume:0.0', 'pause', 'volume:1.0']);
       wakes.single.fire();
       await Future<void>.delayed(Duration.zero);
-      expect(engine.calls, ['pause']);
+      expect(engine.calls, ['volume:0.0', 'pause', 'volume:1.0']);
     },
   );
   test(

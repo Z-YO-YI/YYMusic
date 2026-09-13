@@ -25,6 +25,10 @@ final class FakeAudioEngine implements AudioEngine {
   double volume = 1;
   double playbackRate = 1;
   int disposalCount = 0;
+  AudioEnginePhase _phase = AudioEnginePhase.idle;
+  Future<void>? volumeGate;
+  Object? volumeError;
+  void Function(double)? onVolume;
 
   @override
   bool get isAvailable => true;
@@ -90,8 +94,12 @@ final class FakeAudioEngine implements AudioEngine {
   @override
   Future<void> setVolume(double value) async {
     calls.add('volume:$value');
+    onVolume?.call(value);
+    await volumeGate;
+    final error = volumeError;
+    if (error != null) throw error;
     volume = value;
-    _emit(AudioEnginePhase.paused);
+    _emit(_phase);
   }
 
   @override
@@ -111,14 +119,17 @@ final class FakeAudioEngine implements AudioEngine {
 
   void complete() => _emit(AudioEnginePhase.completed);
 
-  void _emit(AudioEnginePhase phase) => events.add(
-    AudioEngineState(
-      phase: phase,
-      position: position,
-      buffered: buffered,
-      duration: duration,
-      volume: volume,
-      playbackRate: playbackRate,
-    ),
-  );
+  void _emit(AudioEnginePhase phase) {
+    _phase = phase;
+    events.add(
+      AudioEngineState(
+        phase: phase,
+        position: position,
+        buffered: buffered,
+        duration: duration,
+        volume: volume,
+        playbackRate: playbackRate,
+      ),
+    );
+  }
 }

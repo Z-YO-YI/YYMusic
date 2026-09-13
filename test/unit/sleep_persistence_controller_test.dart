@@ -38,6 +38,7 @@ void main() {
       engine,
       library: library,
       sourceResolver: FakePlaybackSourceResolver(),
+      sleepFadeElapsed: () => const Duration(seconds: 2),
       clock: () => now,
       sleepScheduler: (_, callback) {
         wakes.add(callback);
@@ -331,7 +332,7 @@ void main() {
     await flushSleepPersistence();
     expect(root.sleepTimer.phase, PlaybackSleepPhase.expired);
     expect(repo.stored, isNull);
-    expect(engine.calls, ['pause']);
+    expect(engine.calls, ['volume:0.0', 'pause', 'volume:1.0']);
   });
   for (final cancel in [false, true]) {
     test(

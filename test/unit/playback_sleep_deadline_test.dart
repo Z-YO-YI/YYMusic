@@ -26,6 +26,7 @@ void main() {
       sourceResolver: FakePlaybackSourceResolver(),
       clock: () => clock.now,
       sleepScheduler: clock.schedule,
+      sleepFadeElapsed: () => const Duration(seconds: 2),
     );
   });
   tearDown(() async {
@@ -90,7 +91,7 @@ void main() {
     await _flush();
     clock.wakes.single.fire();
     await _flush();
-    expect(engine.calls, ['pause']);
+    expect(engine.calls, ['volume:0.0', 'pause', 'volume:1.0']);
     expect(player.state.phase, PlaybackPhase.paused);
     expect(player.state.queue, same(queue));
     expect(player.state.position, position);
@@ -126,7 +127,7 @@ void main() {
     expect(clock.wakes, hasLength(2));
     expire();
     await _flush();
-    expect(engine.calls, ['pause']);
+    expect(engine.calls, ['volume:0.0', 'pause', 'volume:1.0']);
   });
 
   test('clock rollback waits for absolute deadline', () {
@@ -143,7 +144,7 @@ void main() {
     clock.now = clock.now.add(const Duration(hours: 2));
     clock.wakes.single.fire();
     await _flush();
-    expect(engine.calls, ['pause']);
+    expect(engine.calls, ['volume:0.0', 'pause', 'volume:1.0']);
     expect(clock.wakes, hasLength(1));
   });
 
@@ -179,7 +180,7 @@ void main() {
     gate.complete();
     await playing;
     await _flush();
-    expect(engine.calls, ['load', 'play', 'pause']);
+    expect(engine.calls, ['load', 'play', 'volume:0.0', 'pause', 'volume:1.0']);
   });
 
   test('cancel revokes queued sleep pause behind load', () async {
@@ -204,14 +205,14 @@ void main() {
     player.setSleepTimer(PlaybackSleepDuration.fifteen);
     expire();
     await _flush();
-    expect(engine.calls, ['pause']);
+    expect(engine.calls, ['volume:0.0', 'pause']);
     player.setSleepTimer(PlaybackSleepDuration.sixty);
     final replacement = player.sleepTimer;
     gate.complete();
     await _flush();
     expect(player.sleepTimer, same(replacement));
     expect(player.state.phase, PlaybackPhase.paused);
-    expect(engine.calls, ['pause']);
+    expect(engine.calls, ['volume:0.0', 'pause', 'volume:1.0']);
   });
 
   test('close cancels timer and drains accepted pause', () async {
@@ -229,7 +230,7 @@ void main() {
     gate.complete();
     await closing;
     expect(player.sleepTimer.phase, PlaybackSleepPhase.off);
-    expect(engine.calls, ['pause']);
+    expect(engine.calls, ['volume:0.0', 'pause', 'volume:1.0']);
     expect(() => player.setSleepTimer(null), throwsStateError);
   });
 
@@ -322,12 +323,16 @@ void main() {
     );
     clock.wakes.single.fire();
     await _flush();
-    expect(engine.calls, ['pause']);
+    expect(engine.calls, ['volume:0.0', 'pause', 'volume:1.0']);
   });
 }
 
 // Drain finite microtask chains without advancing the injected deadline clock.
-Future<void> _flush() => Future<void>.delayed(Duration.zero);
+Future<void> _flush() async {
+  for (var i = 0; i < 16; i++) {
+    await Future<void>.delayed(Duration.zero);
+  }
+}
 
 final class _Clock {
   DateTime now = DateTime.utc(2026, 9, 13);

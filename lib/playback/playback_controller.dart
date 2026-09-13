@@ -18,11 +18,13 @@ import 'playback_sleep_restore.dart';
 import 'playback_sleep_timer_state.dart';
 import 'playback_source_resolver.dart';
 import 'playback_state.dart';
+import 'sleep_fade_runner.dart';
 
 part 'catalog_selection_playback.dart';
 part 'queue_editing.dart';
 part 'sleep_deadline_actions.dart';
 part 'sleep_restore_actions.dart';
+part 'sleep_fade_actions.dart';
 
 typedef PlaybackRandomIndex = int Function(int upperBound);
 
@@ -37,12 +39,18 @@ final class PlaybackController extends ChangeNotifier {
     PlaybackRandomIndex? randomIndex,
     String Function()? historyIdFactory,
     PlaybackSleepTimerScheduler? sleepScheduler,
+    Duration Function()? sleepFadeElapsed,
+    PlaybackSleepTimerScheduler? sleepFadeScheduler,
   }) : _libraryRepository = library,
        _collectionRepository = collection,
        _resolver = sourceResolver,
        _mediaSession = mediaSession ?? const UnavailableMediaSessionGateway(),
        _clock = clock ?? _utcNow,
        _sleepScheduler = sleepScheduler ?? Timer.new,
+       _sleepFadeTiming = (
+         elapsed: sleepFadeElapsed,
+         scheduler: sleepFadeScheduler,
+       ),
        _randomIndex = randomIndex ?? Random().nextInt,
        history = PlaybackHistoryRecorder(
          collection: collection,
@@ -64,6 +72,12 @@ final class PlaybackController extends ChangeNotifier {
   final MediaSessionGateway _mediaSession;
   final DateTime Function() _clock;
   final PlaybackSleepTimerScheduler _sleepScheduler;
+  final ({Duration Function()? elapsed, PlaybackSleepTimerScheduler? scheduler})
+  _sleepFadeTiming;
+  SleepFadeRunner? _sleepFade;
+  final Set<Future<void>> _sleepFadeJobs = {};
+  bool _fadeVolumeDirty = false;
+  DomainFailure? _fadeRestoreFailure;
   Timer? _sleepWake;
   int _sleepGeneration = 0;
   PlaybackSleepTimerState _sleepState = const PlaybackSleepTimerState.off();
@@ -180,9 +194,14 @@ final class PlaybackController extends ChangeNotifier {
 
   Future<void> pause() => _schedule(() async {
     _requireEngine();
+    _interruptSleepFade();
     history.suspend();
     _sessionRevision++;
-    await _guarded('pause', _engine.pause);
+    try {
+      await _guarded('pause', _engine.pause);
+    } finally {
+      await _restoreFadeVolume();
+    }
   });
 
   Future<void> stop() => _schedule(() async {
@@ -205,6 +224,8 @@ final class PlaybackController extends ChangeNotifier {
     if (position.isNegative) {
       throw ArgumentError.value(position, 'position', 'must not be negative');
     }
+    _interruptSleepFade();
+    await _restoreFadeVolume();
     final duration = _state.duration;
     final target = duration != null && position > duration
         ? duration
@@ -223,6 +244,7 @@ final class PlaybackController extends ChangeNotifier {
   Future<void> setVolume(double value) => _schedule(() async {
     _requireEngine();
     _validateVolume(value);
+    _interruptSleepFade();
     // Shield the last confirmed intent before invoking a reentrant backend.
     // On failure keep it; never present a rejected command as successful.
     _userVolume ??= _state.volume;
@@ -230,6 +252,8 @@ final class PlaybackController extends ChangeNotifier {
       await _engine.setVolume(value);
       if (_disposed) return;
       _userVolume = value;
+      _fadeVolumeDirty = false;
+      _fadeRestoreFailure = null;
       _publish(_state.copyWith(volume: value));
     });
   });
@@ -300,6 +324,8 @@ final class PlaybackController extends ChangeNotifier {
 
   Future<void> skipPrevious() => _schedule(() async {
     _requireEngine();
+    _interruptSleepFade();
+    await _restoreFadeVolume();
     if (_state.position > const Duration(seconds: 3)) {
       _sessionRevision++;
       await _guarded('skip-previous-seek', () => _engine.seek(Duration.zero));
@@ -426,6 +452,8 @@ final class PlaybackController extends ChangeNotifier {
     _requireEngine();
     try {
       final entry = _entry(entryId);
+      _interruptSleepFade();
+      await _restoreFadeVolume();
       if (canPlay == null) {
         _sessionRevision++;
         _completionHandled = true;
@@ -511,6 +539,10 @@ final class PlaybackController extends ChangeNotifier {
 
   Future<void> _advanceInternal({required bool isAutomatic}) async {
     _requireEngine();
+    if (!isAutomatic) {
+      _interruptSleepFade();
+      await _restoreFadeVolume();
+    }
     if (isAutomatic && _state.repeatMode == RepeatMode.one) {
       if (_state.currentTrack != null) {
         history.begin(_state.currentTrack!.ref);
@@ -729,6 +761,9 @@ final class PlaybackController extends ChangeNotifier {
 
   Future<void> _startPlayback() async {
     _checkNotDisposed();
+    _interruptSleepFade();
+    await _restoreFadeVolume();
+    _checkNotDisposed();
     if (history.ended && _state.currentTrack != null) {
       history.begin(_state.currentTrack!.ref);
     }
@@ -739,10 +774,15 @@ final class PlaybackController extends ChangeNotifier {
   }
 
   Future<void> _stopEngine() async {
+    _interruptSleepFade();
     history.end();
     _sessionRevision++;
     _completionHandled = true;
-    await _engine.stop();
+    try {
+      await _engine.stop();
+    } finally {
+      await _restoreFadeVolume();
+    }
     _loadedEntryId = null;
   }
 
@@ -800,12 +840,15 @@ final class PlaybackController extends ChangeNotifier {
     }
   }
 
-  Future<void> _schedule(Future<void> Function() operation) {
+  Future<void> _schedule(
+    Future<void> Function() operation, {
+    bool allowClosed = false,
+  }) {
     final completer = Completer<void>();
     final previous = _operationTail;
     _operationTail = () async {
       await previous;
-      if (_disposed) {
+      if (_disposed && !allowClosed) {
         completer.completeError(StateError('PlaybackController is disposed'));
         return;
       }
@@ -988,8 +1031,15 @@ final class PlaybackController extends ChangeNotifier {
       await _subscription.cancel();
     } finally {
       await _operationTail;
-      await _mediaSyncTail;
-      await history.close();
+      try {
+        await Future.wait(_sleepFadeJobs.toList());
+        await _operationTail;
+        final failure = _fadeRestoreFailure;
+        if (failure != null) throw failure;
+      } finally {
+        await _mediaSyncTail;
+        await history.close();
+      }
     }
   }
 }
