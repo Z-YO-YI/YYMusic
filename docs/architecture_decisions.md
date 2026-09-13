@@ -1,5 +1,9 @@
 # YYMusic 架构决策记录
 
+## ADR-134：整批替换隔离原生播放器事件域
+
+Phase7J3。锁定插件的事件通道按播放器ID区分，但索引事件不带应用批次；不能在同一播放器上以新列表解释旧索引。NativeBackend在第二次及后续open/openSequence前撤销旧订阅generation、排空取消、请求pause并dispose旧AudioPlayer，再创建新AudioPlayer及独立通道。保留音量/速率，绝不自动play；同一序列内切歌不重建播放器。旧流、错误和play Future失败全部校验generation。可观察的准备/暂停失败阻止新播放器建立并锁定后续加载。插件stop会吞掉主释放及回退释放错误，dispose成功不能证明资源释放成功；该限制须保留且做设备验收，不虚构可检测性。关闭中不创建新播放器。此变更作用于单曲与序列替换，不据通道隔离声称无缝上线。
+
 ## ADR-133：序列引擎状态携带瞬时批次与条目身份
 
 Phase7J2。可选AudioSequenceEngine接入既有JustAudioEngine串行命令/关闭队列，不建立第二播放根。AudioSequence复制有序输入，允许重复TrackRef但拒绝重复entryId；每批拥有独立不持久化identity。AudioEngineState的可选cursor只携带identity/index/entryId/TrackRef，不含PlayableSource、URI或headers。加载中、失败、单曲替换和stop清除cursor；成功后同一状态原子报告插件索引与身份。索引缺失/越界时不猜曲目，报告安全失败并要求重新load。支持能力不足在替换前拒绝。此协议不证明插件旧事件隔离或真实曲间无缝，生产根尚不使用序列，接入前仍须处理完整策略和原生验证。

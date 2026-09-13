@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yymusic/domain/models/track.dart';
@@ -69,6 +71,149 @@ void main() {
       expect(probe.calls, isNot(contains('play')));
       await engine.stop();
       expect(states.last.sequenceCursor, isNull);
+    },
+  );
+
+  test(
+    'replacing a batch changes native ID and ignores old index/error events',
+    () async {
+      await backend.openSequence([local('/a.wav'), local('/b.wav')]);
+      final oldId = probe.playerId!;
+      await backend.openSequence([local('/new.wav'), local('/new2.wav')]);
+      final newId = probe.playerId!;
+      expect(newId, isNot(oldId));
+      expect(probe.lifecycle, ['init:$oldId', 'dispose:$oldId', 'init:$newId']);
+      final errors = <void>[];
+      final subscription = backend.errors.listen(errors.add);
+      addTearDown(subscription.cancel);
+      await probe.emit(1, id: oldId);
+      await probe.emitError(oldId);
+      expect(backend.current.currentIndex, 0);
+      expect(errors, isEmpty);
+      final changed = backend.snapshots
+          .firstWhere((state) => state.currentIndex == 1)
+          .timeout(const Duration(seconds: 3));
+      await probe.emit(1);
+      await changed;
+      expect(probe.playerId, newId);
+      expect(probe.loads, hasLength(2));
+    },
+  );
+
+  test('sequence replacement restores volume and speed without play', () async {
+    await backend.openSequence([local('/a.wav')]);
+    await backend.setVolume(0.35);
+    await backend.setSpeed(1.25);
+    await backend.openSequence([local('/b.wav')]);
+    expect(backend.current.volume, 0.35);
+    expect(backend.current.speed, 1.25);
+    expect(backend.current.playing, isFalse);
+    expect(probe.calls, isNot(contains('play')));
+  });
+
+  test(
+    'single-to-sequence and sequence-to-single also isolate native IDs',
+    () async {
+      await backend.open(Uri.file('/single.wav'), headers: const {});
+      final firstId = probe.playerId;
+      await backend.openSequence([local('/sequence.wav')]);
+      final secondId = probe.playerId;
+      await backend.open(Uri.file('/last.wav'), headers: const {});
+      expect({firstId, secondId, probe.playerId}, hasLength(3));
+      expect(probe.loads, hasLength(3));
+    },
+  );
+
+  test(
+    'unsupported replacement retains the native player and loaded media',
+    () async {
+      await backend.openSequence([local('/keep.wav')]);
+      final id = probe.playerId;
+      await expectLater(
+        backend.openSequence([
+          network(headers: {'X-Fixture': 'rejected'}),
+        ]),
+        throwsUnsupportedError,
+      );
+      expect(probe.playerId, id);
+      expect(probe.lifecycle, ['init:$id']);
+      expect(probe.loads, hasLength(1));
+    },
+  );
+
+  test(
+    'pause failure does not create a replacement or permit later playback',
+    () async {
+      await backend.openSequence([local('/old.wav')]);
+      await backend.play();
+      final id = probe.playerId;
+      probe.failPause = true;
+      await expectLater(
+        backend.openSequence([local('/new.wav')]),
+        throwsStateError,
+      );
+      expect(probe.playerId, id);
+      expect(probe.loads, hasLength(1));
+      await expectLater(
+        backend.openSequence([local('/retry.wav')]),
+        throwsStateError,
+      );
+      await expectLater(backend.play(), throwsStateError);
+      expect(probe.loads, hasLength(1));
+      probe.failPause = false;
+    },
+  );
+
+  test(
+    'close during old player release never creates the replacement',
+    () async {
+      await backend.openSequence([local('/old.wav')]);
+      final id = probe.playerId;
+      probe.disposeGate = Completer<void>();
+      final replacing = backend.openSequence([local('/new.wav')]);
+      final rejected = expectLater(replacing, throwsStateError);
+      await probe.disposing.future.timeout(const Duration(seconds: 3));
+      final closed = backend.dispose();
+      probe.disposeGate!.complete();
+      await rejected;
+      await closed;
+      expect(probe.playerId, id);
+      expect(probe.loads, hasLength(1));
+    },
+  );
+
+  test('late old play-request failure cannot poison a replacement', () async {
+    await backend.openSequence([local('/old.wav')]);
+    probe.playGate = Completer<void>();
+    await backend.play();
+    await probe.playing.future.timeout(const Duration(seconds: 3));
+    await backend.openSequence([local('/new.wav')]);
+    final errors = <void>[];
+    final subscription = backend.errors.listen(errors.add);
+    addTearDown(subscription.cancel);
+    probe.playGate!.completeError(
+      PlatformException(code: 'fixture', message: 'private-old-play'),
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(errors, isEmpty);
+    expect(backend.current.currentIndex, 0);
+    expect(backend.current.playing, isFalse);
+  });
+
+  test(
+    'pinned plugin hides release failure despite acknowledged pause',
+    () async {
+      await backend.openSequence([local('/old.wav')]);
+      await backend.play();
+      final oldId = probe.playerId;
+      probe.failDispose = true;
+      await backend.openSequence([local('/new.wav')]);
+      expect(probe.calls, contains('pause'));
+      expect(probe.calls, contains('dispose'));
+      expect(probe.playerId, isNot(oldId));
+      expect(backend.current.playing, isFalse);
+      // Successful public dispose does NOT prove successful native resource release.
+      probe.failDispose = false;
     },
   );
 
@@ -225,6 +370,13 @@ final class _NativeChannelProbe {
   final channels = <String>[];
   String? playerId;
   bool failLoad = false;
+  bool failDispose = false;
+  bool failPause = false;
+  Completer<void>? disposeGate;
+  Completer<void>? playGate;
+  final playing = Completer<void>();
+  final disposing = Completer<void>();
+  final lifecycle = <String>[];
 
   void register(String name, Future<Object?> Function(MethodCall) handler) {
     channels.add(name);
@@ -236,6 +388,7 @@ final class _NativeChannelProbe {
     register('com.ryanheise.just_audio.methods', (call) async {
       if (call.method == 'init') {
         playerId = (call.arguments as Map)['id'] as String;
+        lifecycle.add('init:$playerId');
         register(
           'com.ryanheise.just_audio.events.$playerId',
           (_) async => null,
@@ -243,6 +396,19 @@ final class _NativeChannelProbe {
         register('com.ryanheise.just_audio.data.$playerId', (_) async => null);
         register('com.ryanheise.just_audio.methods.$playerId', (request) async {
           calls.add(request.method);
+          if (request.method == 'play') {
+            if (!playing.isCompleted) playing.complete();
+            if (playGate != null) await playGate!.future;
+          }
+          if (request.method == 'pause' && failPause) {
+            throw PlatformException(code: 'fixture', message: 'private-pause');
+          }
+          if (request.method == 'dispose' && failDispose) {
+            throw PlatformException(
+              code: 'fixture',
+              message: 'private-fallback-release',
+            );
+          }
           if (request.method == 'load') {
             final args = Map<Object?, Object?>.from(request.arguments as Map);
             loads.add(args);
@@ -258,13 +424,22 @@ final class _NativeChannelProbe {
           return <String, Object?>{};
         });
       }
+      if (call.method == 'disposePlayer') {
+        final id = (call.arguments as Map)['id'] as String;
+        lifecycle.add('dispose:$id');
+        if (!disposing.isCompleted) disposing.complete();
+        if (disposeGate != null) await disposeGate!.future;
+        if (failDispose) {
+          throw PlatformException(code: 'fixture', message: 'private-release');
+        }
+      }
       return <String, Object?>{};
     });
   }
 
-  Future<void> emit(int index) async {
+  Future<void> emit(int index, {String? id}) async {
     await messenger.handlePlatformMessage(
-      'com.ryanheise.just_audio.events.$playerId',
+      'com.ryanheise.just_audio.events.${id ?? playerId}',
       const StandardMethodCodec().encodeSuccessEnvelope({
         'processingState': 3,
         'updateTime': DateTime.now().millisecondsSinceEpoch,
@@ -273,6 +448,17 @@ final class _NativeChannelProbe {
         'duration': 10000000,
         'currentIndex': index,
       }),
+      (_) {},
+    );
+  }
+
+  Future<void> emitError(String id) async {
+    await messenger.handlePlatformMessage(
+      'com.ryanheise.just_audio.events.$id',
+      const StandardMethodCodec().encodeErrorEnvelope(
+        code: 'fixture',
+        message: 'private-old-error',
+      ),
       (_) {},
     );
   }
