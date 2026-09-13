@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+Phase7H4B1：29新快照单测（三选项往返、七非法分钟、时钟边界/回拨/过期、15类非法记录、超长/损坏输入、安全错误、值相等）及1新Node层级门禁。完整2018 Flutter（113秒）/155 Node（最终15.7秒）通过，214旧Golden无变更；551格式零修改、严格分析0问题13.8秒、Android Debug41.4秒/48资产/许可/v2签名通过。初次Node正则误将DateTime now参数识别成DateTime.now调用，修正字面点号及调用边界后全量通过。生成/schema无输入变更，本批未重复codegen/Drift，沿用A2b验证。见[报告](phase_7h4b1_snapshot_report.md)。
+
 Phase7H4A2b：6新面板Widget验证安卓/Windows每秒更新、旧选项动作保留、TickerMode/焦点隐藏恢复、关闭不改截止或音频；3新Golden验证流逝61秒后13:59且15分钟仍选中；1新源门禁。完整1989 Flutter（109秒）/154 Node（27.7秒）、214Golden通过，12旧图逐张审核更新、199旧图不变。547文件格式零修改，严格分析0问题（32.6秒），生成25秒/Drift通过且无生成差异。Android Debug18.3秒，48资产/许可/v2签名通过。见[报告](phase_7h4a2b_countdown_panel_report.md)。本地未新增Windows编译/实机安装出声验收。
 
 Phase7H4A1：18新剩余时间单测（off/三分钟选项/六微秒边界/时钟跳变/只读无副作用/重设取消/暂停/本曲结束/延迟到期/失败/关闭）；1972 Flutter（112秒）/153 Node（31.7秒）、211原Golden通过且不变。543格式零修改，严格分析零问题14.6秒，生成52秒/迁移及Android Debug18.6秒、资产许可签名通过。UI倒计时尚未绑定，见[报告](phase_7h4a1_remaining_projection_report.md)。

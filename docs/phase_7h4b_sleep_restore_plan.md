@@ -1,5 +1,7 @@
 # Phase 7H4B：未过期睡眠定时恢复（待实施）
 
+B1快照/版本编码/Repository契约已完成，见[报告](phase_7h4b1_snapshot_report.md)。真实存储、根竞态协调和启动绑定尚未实现。B2基于已有AppSettingRecords实现专用单键、串行read/save/clear、错误封装及dispose排空；B3再接恢复，不能提前删除session-only提示。
+
 来源：开发总指令§26与ADR107。H4A2b完成显示接入，不代表持久化已存在。
 
 先审计现有设置Repository、存储版本/初始化/关闭顺序，定义分钟定时快照契约和失败语义，再实现根状态与持久化协调；UI不直接写文件或数据库。最小快照只含受支持的原duration与UTC绝对deadline、版本，不包含凭据/歌曲URL/用户隐私。本曲结束依赖会话条目身份，须先在ADR明确其恢复边界，不能将旧entryId误绑定到新队列。

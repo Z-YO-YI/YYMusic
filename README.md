@@ -1,5 +1,7 @@
 # YYMusic
 
+最新增量：**Phase 7H4B1 睡眠恢复快照契约**。新增原分钟选项/UTC截止的独立领域快照、严格版本编码和串行存储接口契约；29新单测，完整2018 Flutter/155 Node、严格分析和Android Debug预检通过，见[报告](docs/phase_7h4b1_snapshot_report.md)。**真实保存与启动恢复尚未接入**，当前界面仍明确本次启动有效；后续B2实现存储，B3接入根恢复。以下为历史记录。
+
 最新增量：**Phase 7H4A2b 正式睡眠倒计时**。手机、平板及Windows共用设置面板现已显示真实剩余分钟/秒；隐藏/关闭停止展示刷新，恢复按原截止校准，原15/30/60选中项不变。6新Widget、3新截图、1新辅助检查，完整1989 Flutter/154 Node、严格分析和Android Debug预检通过，见[报告](docs/phase_7h4a2b_countdown_panel_report.md)。未到期恢复、平滑暂停及整体上线仍未完成。以下为历史记录。
 
 最新增量：**Phase 7H4A2a 倒计时展示组件**。新增只读、可撤销的可见刷新，支持后台暂停刷新与恢复校准，不每秒自动播报；8项新Widget测试，完整1980 Flutter/153 Node、严格分析和Android Debug预检通过。见[报告](docs/phase_7h4a2a_countdown_report.md)。组件尚未接入正式设置面板，A2b继续绑定和截图验收；未到期恢复、平滑暂停及发行仍未完成。以下为历史记录。

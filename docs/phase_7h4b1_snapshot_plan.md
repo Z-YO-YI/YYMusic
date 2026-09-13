@@ -1,0 +1,9 @@
+# Phase 7H4B1：分钟定时恢复快照契约
+
+基线a4ca54e；先完成无存储副作用的领域快照、严格版本化编码和Repository契约。既有AppSettingRecords可容纳单键快照，无须先改schema；DriftAppearanceSettingsRepository的字段隔离和安全错误封装可复用，但睡眠写入需额外串行化，不能照搬并行_pending。根初始化先恢复队列，关闭先停止控制器再关闭数据；后续协调器必须纳入该顺序。
+
+B1只定义分钟定时：version=1、原15/30/60分钟、UTC绝对截止，不含entryId/播放状态/媒体URL。独立领域类型使用受验证的durationMinutes，避免domain依赖playback枚举。解码拒绝未知版本、额外字段、非法类型、非规范UTC或过大记录；不得使用损坏数据重置一个新定时。过期与格式错误区分，格式错误不隐式删除存储。
+
+原选项与剩余量独立，剩余量从显式传入的now计算，到期返回null；时钟回拨可增大剩余量但不改deadline。本曲结束没有墙钟截止且依赖会话条目，B1不将其写入分钟快照；后续须独立决定是否能安全恢复确切条目，不声称整个睡眠功能可恢复。
+
+Repository定义read/save/clear/dispose：调用顺序串行，clear不得被早先save覆盖；读取失败不能伪装missing；关闭拒绝新工作并等待已接受工作，借用数据库不擅自关闭。B2实现真实存储及乱序/失败验证，B3根恢复竞态与启动绑定；B1不修改session-only提示，不声明已持久化。

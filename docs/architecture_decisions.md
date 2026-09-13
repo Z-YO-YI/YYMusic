@@ -1138,3 +1138,9 @@ Phase7H4A2a。SleepRemainingText借用Presenter，独立重建文本；唯一根
 ### ADR-109实施补充：A2b正式面板绑定
 
 SleepSettingsPanel复用现有_surfaceActive/_closing和_allowed(generation)作为展示许可，新增文本在原状态文案之后。每秒更新仅发生在子组件，不重建父选项许可。DependencyGraph透传可选playbackClock给唯一根，默认仍由根使用真实UTC时钟；生产页面Golden显式注入固定时钟，防止截图随机器耗时变化。此注入也沿用根既有历史记录时钟语义，不增加独立业务计时源。
+
+## ADR-110：恢复快照与根状态分离，先验证严格分钟契约
+
+H4B1。SleepTimerSnapshot位于domain，只有原durationMinutes（15/30/60）与UTC deadline；编码在data，固定version=1，不携带播放器/队列/媒体标识。剩余量只根据调用者传入now计算，过期返回null，绝不把剩余量当新选项。非法记录抛无原文的FormatException，读取/清理决定留给未来Repository及协调器，不能静默用默认定时替换损坏数据。未知版本拒绝解释，后续清理需明确版本迁移策略。
+
+本曲结束没有绝对到期且绑定会话entryId，本阶段不纳入分钟快照，不暗示它已经支持跨启动恢复。Repository要求接受顺序串行、保存/清理原子且隔离专用键、关闭真实排空；root恢复必须优先于旧异步加载且不触发自动播放。当前只实现快照/编码/契约，真实存储与根绑定分后续阶段验证。
