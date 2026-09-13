@@ -372,6 +372,7 @@ final class _FakeJustAudioBackend implements JustAudioPlayerBackend {
   Future<void> open(
     Uri resource, {
     required Map<String, String> headers,
+    DateTime? expiresAt,
   }) async {
     calls.add('open');
     lastResource = resource;

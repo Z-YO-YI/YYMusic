@@ -7,6 +7,13 @@ import 'playable_source.dart';
 /// Project-owned processing phases exposed by the just_audio candidate seam.
 enum JustAudioProcessingPhase { idle, loading, buffering, ready, completed }
 
+/// Safe typed boundary error: never carries a locator, header or native message.
+final class JustAudioSourceExpired implements Exception {
+  const JustAudioSourceExpired();
+  @override
+  String toString() => 'Audio source expired';
+}
+
 /// Minimal immutable view of player facts used by [JustAudioEngine].
 final class JustAudioPlayerSnapshot {
   const JustAudioPlayerSnapshot({
@@ -41,7 +48,11 @@ abstract interface class JustAudioPlayerBackend {
   /// Raw plugin failures are discarded by the native wrapper.
   Stream<void> get errors;
 
-  Future<void> open(Uri resource, {required Map<String, String> headers});
+  Future<void> open(
+    Uri resource, {
+    required Map<String, String> headers,
+    DateTime? expiresAt,
+  });
   Future<void> play();
   Future<void> pause();
   Future<void> stop();
@@ -80,18 +91,53 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
   factory NativeJustAudioPlayerBackend.create({
     required bool useProxyForRequestHeaders,
     required bool supportsRequestHeaders,
+    DateTime Function()? clock,
   }) => NativeJustAudioPlayerBackend._(
     AudioPlayer(useProxyForRequestHeaders: useProxyForRequestHeaders),
     useProxyForRequestHeaders,
+    clock ?? DateTime.now,
     supportsRequestHeaders: supportsRequestHeaders,
   );
 
   NativeJustAudioPlayerBackend._(
     this._player,
-    this._useProxyForRequestHeaders, {
+    this._useProxyForRequestHeaders,
+    this._clock, {
     required this.supportsRequestHeaders,
   }) {
     _attachPlayer();
+  }
+
+  final DateTime Function() _clock;
+  List<DateTime?> _sourceDeadlines = const [];
+  bool _sourceExpired = false;
+
+  void _requireFresh(Iterable<DateTime?> deadlines) {
+    final now = _clock().toUtc();
+    if (deadlines.any((value) => value != null && !now.isBefore(value))) {
+      throw const JustAudioSourceExpired();
+    }
+  }
+
+  Future<T> _withFreshLoadedSource<T>(Future<T> Function() operation) async {
+    try {
+      if (_disposed) throw StateError('Audio backend is disposed');
+      if (_sourceExpired) throw const JustAudioSourceExpired();
+      _requireFresh(_sourceDeadlines);
+      // No await between the final check and dispatching the native operation.
+      final result = await operation();
+      if (_disposed) throw StateError('Audio backend is disposed');
+      _requireFresh(_sourceDeadlines);
+      return result;
+    } on JustAudioSourceExpired {
+      _sourceExpired = true;
+      try {
+        await _player.stop();
+      } catch (_) {
+        /* Preserve safe expiry. */
+      }
+      rethrow;
+    }
   }
 
   void _attachPlayer() {
@@ -231,6 +277,7 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
   Future<void> open(
     Uri resource, {
     required Map<String, String> headers,
+    DateTime? expiresAt,
   }) async {
     if (headers.isNotEmpty && !supportsRequestHeaders) {
       throw UnsupportedError('Request headers are unavailable');
@@ -238,12 +285,18 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
     final ephemeralHeaders = headers.isEmpty
         ? null
         : Map<String, String>.unmodifiable(headers);
+    final deadlines = [expiresAt?.toUtc()];
+    _requireFresh(deadlines);
     await _prepareLoad();
     if (_disposed) throw StateError('Audio backend is disposed');
-    await _player.setAudioSource(
-      AudioSource.uri(resource, headers: ephemeralHeaders),
-      preload: true,
-      initialPosition: Duration.zero,
+    _sourceDeadlines = List.unmodifiable(deadlines);
+    _sourceExpired = false;
+    await _withFreshLoadedSource(
+      () => _player.setAudioSource(
+        AudioSource.uri(resource, headers: ephemeralHeaders),
+        preload: true,
+        initialPosition: Duration.zero,
+      ),
     );
   }
 
@@ -263,6 +316,10 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
         snapshot.any((source) => source.headers.isNotEmpty)) {
       throw UnsupportedError('Request headers are unavailable');
     }
+    final deadlines = snapshot
+        .map((source) => source.expiresAt)
+        .toList(growable: false);
+    _requireFresh(deadlines);
     try {
       final nativeSources = snapshot
           .map((source) {
@@ -283,12 +340,18 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
           .toList(growable: false);
       await _prepareLoad();
       if (_disposed) throw StateError('Audio backend is disposed');
-      await _player.setAudioSources(
-        nativeSources,
-        preload: true,
-        initialIndex: initialIndex,
-        initialPosition: Duration.zero,
+      _sourceDeadlines = List.unmodifiable(deadlines);
+      _sourceExpired = false;
+      await _withFreshLoadedSource(
+        () => _player.setAudioSources(
+          nativeSources,
+          preload: true,
+          initialIndex: initialIndex,
+          initialPosition: Duration.zero,
+        ),
       );
+    } on JustAudioSourceExpired {
+      rethrow;
     } catch (_) {
       // Plugin failures can contain stream credentials or local paths.
       throw StateError('Audio sequence could not be loaded');
@@ -315,11 +378,21 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
       return false;
     }
     final generation = _generation;
+    final deadlines = [
+      ..._sourceDeadlines,
+      ...snapshot.map((source) => source.expiresAt),
+    ];
+    _requireFresh(deadlines);
     try {
-      await _player.addAudioSources(
-        snapshot.map(_nativeSource).toList(growable: false),
+      _sourceDeadlines = List.unmodifiable(deadlines);
+      await _withFreshLoadedSource(
+        () => _player.addAudioSources(
+          snapshot.map(_nativeSource).toList(growable: false),
+        ),
       );
       return !_disposed && generation == _generation;
+    } on JustAudioSourceExpired {
+      rethrow;
     } catch (_) {
       throw StateError('Audio sequence could not be extended');
     }
@@ -357,6 +430,9 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
       if (expectedIndex + 1 < length) {
         await _player.removeAudioSourceRange(expectedIndex + 1, length);
       }
+      _sourceDeadlines = List.unmodifiable(
+        _sourceDeadlines.take(expectedIndex + 1),
+      );
       return !_disposed &&
           revision == _rawIndexRevision &&
           _player.playbackEvent.currentIndex == expectedIndex;
@@ -370,19 +446,21 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
     if (_disposed || _replacementFailed) {
       throw StateError('Audio backend cannot play media');
     }
-    final generation = _generation;
-    final request = _player.play();
-    unawaited(
-      request.then<void>(
-        (_) {},
-        onError: (Object _, StackTrace _) {
-          if (!_disposed && generation == _generation) _errors.add(null);
-        },
-      ),
-    );
-    // just_audio's play Future completes on pause/stop/end. AudioEngine.play
-    // instead acknowledges the start request so its serialized queue can move.
-    await Future<void>.delayed(Duration.zero);
+    await _withFreshLoadedSource(() async {
+      final generation = _generation;
+      final request = _player.play();
+      unawaited(
+        request.then<void>(
+          (_) {},
+          onError: (Object _, StackTrace _) {
+            if (!_disposed && generation == _generation) _errors.add(null);
+          },
+        ),
+      );
+      // just_audio's play Future completes on pause/stop/end. AudioEngine.play
+      // instead acknowledges the start request so its serialized queue can move.
+      await Future<void>.delayed(Duration.zero);
+    });
   }
 
   @override
@@ -392,7 +470,8 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
   Future<void> stop() => _player.stop();
 
   @override
-  Future<void> seek(Duration position) => _player.seek(position);
+  Future<void> seek(Duration position) =>
+      _withFreshLoadedSource(() => _player.seek(position));
 
   @override
   Future<void> setVolume(double value) => _player.setVolume(value);

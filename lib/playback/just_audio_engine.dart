@@ -81,17 +81,20 @@ final class JustAudioEngine implements AudioSequenceEngine {
       }
       await _backend.open(
         _resource(source),
+        expiresAt: source.expiresAt,
         headers: source.kind == PlayableSourceKind.networkStream
             ? source.headers
             : const {},
       );
       _loading = false;
       _acceptSnapshot(_backend.current);
-    } catch (_) {
+    } catch (error) {
       _loading = false;
       _loaded = false;
       final failure = _commandFailure(
-        DomainFailureCode.playbackOpenFailed,
+        error is JustAudioSourceExpired
+            ? DomainFailureCode.streamUrlExpired
+            : DomainFailureCode.playbackOpenFailed,
         'open',
       );
       _publishFailure(failure);
@@ -143,12 +146,14 @@ final class JustAudioEngine implements AudioSequenceEngine {
         _sequenceCursors = cursors;
         _loading = false;
         _acceptSnapshot(backend.current);
-      } catch (_) {
+      } catch (error) {
         _sequenceCursors = null;
         _loading = false;
         _loaded = false;
         final failure = _commandFailure(
-          DomainFailureCode.playbackOpenFailed,
+          error is JustAudioSourceExpired
+              ? DomainFailureCode.streamUrlExpired
+              : DomainFailureCode.playbackOpenFailed,
           'sequence',
         );
         _publishFailure(failure);
@@ -210,11 +215,13 @@ final class JustAudioEngine implements AudioSequenceEngine {
         _acceptSnapshot(backend.current);
         if (_failure != null) throw _failure!;
         appended = true;
-      } catch (_) {
+      } catch (error) {
         _sequenceCursors = null;
         _loaded = false;
         final failure = _commandFailure(
-          DomainFailureCode.playbackInterrupted,
+          error is JustAudioSourceExpired
+              ? DomainFailureCode.streamUrlExpired
+              : DomainFailureCode.playbackInterrupted,
           'sequence-append',
         );
         _publishFailure(failure);
@@ -373,9 +380,11 @@ final class JustAudioEngine implements AudioSequenceEngine {
         _failure = null;
         try {
           await callback();
-        } catch (_) {
+        } catch (error) {
           final failure = _commandFailure(
-            DomainFailureCode.playbackInterrupted,
+            error is JustAudioSourceExpired
+                ? DomainFailureCode.streamUrlExpired
+                : DomainFailureCode.playbackInterrupted,
             operation,
           );
           _publishFailure(failure);
