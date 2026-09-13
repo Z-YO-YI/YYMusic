@@ -1,5 +1,7 @@
 # Phase 7H4A：睡眠剩余时间（下一增量）
 
+A2b进展：正式面板已绑定倒计时，原截止/选中项保留，隐藏恢复与跨平台截图已验证，见[报告](phase_7h4a2b_countdown_panel_report.md)。下述A2a/A1记录保留为历史；下一批转[未过期恢复](phase_7h4b_sleep_restore_plan.md)，不把剩余时间显示等同§26全部完成。
+
 A2a进展：独立展示组件及8项Widget验证完成，见[报告](phase_7h4a2a_countdown_report.md)。尚未绑定正式面板，A2b显示验收仍待完成。
 
 H4A1进展：根只读剩余量及Presenter向上取整秒数已实现并验证，见[报告](phase_7h4a1_remaining_projection_report.md)。下一增量H4A2处理下述可见刷新/读屏/原面板绑定；显示验收仍未完成。

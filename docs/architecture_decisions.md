@@ -1134,3 +1134,7 @@ Phase7H4A1，2026-09-13。先补根/Presenter只读接口，再H4A2可见刷新�
 ## ADR-109：倒计时子组件只拥有可撤销的展示刷新
 
 Phase7H4A2a。SleepRemainingText借用Presenter，独立重建文本；唯一根仍拥有业务截止和暂停。宿主必须提供active/isCurrent可见许可，应用进入后台取消展示Timer；恢复重新读取绝对截止，不累计tick。revision阻止过时回调，监听业务状态及时取消或重新调度。剩余文本使用既有caption/secondary样式，非liveRegion，避免每秒自动播报。组件先独立验证，后续A2b接入原面板并审核截图，不混称完整显示验收。
+
+### ADR-109实施补充：A2b正式面板绑定
+
+SleepSettingsPanel复用现有_surfaceActive/_closing和_allowed(generation)作为展示许可，新增文本在原状态文案之后。每秒更新仅发生在子组件，不重建父选项许可。DependencyGraph透传可选playbackClock给唯一根，默认仍由根使用真实UTC时钟；生产页面Golden显式注入固定时钟，防止截图随机器耗时变化。此注入也沿用根既有历史记录时钟语义，不增加独立业务计时源。
