@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../design_system/yy_feedback.dart';
 import '../design_system/yy_theme.dart';
 import '../design_system/yy_tokens.dart';
+import '../platform/audio_output/audio_output_controller.dart';
 import '../platform/contracts/fullscreen_gateway.dart';
 import '../platform/contracts/window_gateway.dart';
 import '../platform/fullscreen/native_fullscreen_gateway.dart';
@@ -46,6 +47,8 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp>
   FullscreenPresenter? _fullscreen;
   FlutterView? _view;
   bool _tickersEnabled = true;
+  AudioOutputController? _audioOutput;
+  bool _outputForeground = true;
 
   @override
   void initState() {
@@ -55,6 +58,10 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp>
         (kIsWeb ? null : YYPlatform.fromTarget(defaultTargetPlatform));
     if (platform != null) {
       final graph = ref.read(dependencyGraphProvider);
+      _audioOutput = graph.audioOutput;
+      _outputForeground =
+          WidgetsBinding.instance.lifecycleState == null ||
+          WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed;
       _fullscreen = FullscreenPresenter(
         widget.fullscreenGateway ??
             graph.fullscreen ??
@@ -129,11 +136,18 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     _fullscreen?.setForeground(state == AppLifecycleState.resumed);
+    final foreground = state == AppLifecycleState.resumed;
+    if (foreground && !_outputForeground) {
+      // Root owns this controller; the app widget only requests an observation.
+      unawaited(_audioOutput?.refresh().catchError((Object _) {}));
+    }
+    _outputForeground = foreground;
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _audioOutput = null;
     _fullscreen?.dispose();
     _window?.dispose();
     _router?.dispose();

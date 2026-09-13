@@ -25,6 +25,8 @@ import '../features/playlists/common/playlist_controller.dart';
 import '../features/playlists/common/system_playlist_controller.dart';
 import '../features/search/common/search_controller.dart';
 import '../features/settings/common/appearance_settings_controller.dart';
+import '../platform/audio_output/audio_output_controller.dart';
+import '../platform/contracts/audio_output_gateway.dart';
 import '../platform/contracts/fullscreen_gateway.dart';
 import '../platform/contracts/media_session_gateway.dart';
 import '../platform/contracts/secure_credential_gateway.dart';
@@ -47,6 +49,7 @@ final class DependencyGraph {
     PlaybackSourceResolver? playbackSourceResolver,
     DateTime Function()? playbackClock,
     MediaSessionGateway? mediaSession,
+    AudioOutputGateway? audioOutputGateway,
     this.dataServices,
     AppearanceSettingsRepository? appearanceRepository,
     SleepTimerRepository? sleepTimerRepository,
@@ -78,6 +81,8 @@ final class DependencyGraph {
        ),
        _audioEngine = audioEngine ?? UnavailableAudioEngine(),
        _mediaSession = mediaSession ?? const UnavailableMediaSessionGateway(),
+       _audioOutputGateway =
+           audioOutputGateway ?? const UnavailableAudioOutputGateway(),
        library = dataServices?.library ?? library,
        localLibrary = dataServices?.localLibrary ?? localLibrary,
        catalogSearch = dataServices?.catalogSearch ?? catalogSearch,
@@ -91,6 +96,7 @@ final class DependencyGraph {
       appearance: appearance,
       repository: dataServices?.appearanceSettings ?? appearanceRepository,
     );
+    audioOutput = AudioOutputController(_audioOutputGateway);
     playback = PlaybackController(
       _audioEngine,
       library: this.library,
@@ -160,6 +166,7 @@ final class DependencyGraph {
 
   final AudioEngine _audioEngine;
   final MediaSessionGateway _mediaSession;
+  final AudioOutputGateway _audioOutputGateway;
   final AppDataServices? dataServices;
   final LibraryRepository? library;
   final LocalLibraryRepository? localLibrary;
@@ -175,6 +182,7 @@ final class DependencyGraph {
   final viewState = AppViewState();
   final appearance = YYAppearanceController();
   late final AppearanceSettingsController appearanceSettings;
+  late final AudioOutputController audioOutput;
   late final PlaybackController playback;
   late final SleepPersistenceController sleepPersistence;
   late final QueueController queue;
@@ -198,7 +206,11 @@ final class DependencyGraph {
     await playback.initialize();
     if (_closeFuture != null) return;
     await sleepPersistence.initialize();
-    if (_closeFuture == null) playbackFavorite.start();
+    if (_closeFuture == null) {
+      playbackFavorite.start();
+      // Optional device metadata must not delay the first business frame.
+      unawaited(audioOutput.initialize());
+    }
   }
 
   void dispose() {
@@ -223,6 +235,7 @@ final class DependencyGraph {
     playbackPresenter.dispose();
     lyricsController.dispose();
     sleepPersistence.dispose();
+    audioOutput.dispose();
     playback.dispose();
     appearanceSettings.dispose();
     appearance.dispose();
@@ -247,6 +260,8 @@ final class DependencyGraph {
       playbackFavorite.close,
       playback.close,
       sleepPersistence.close,
+      audioOutput.close,
+      _audioOutputGateway.close,
       _audioEngine.dispose,
       _mediaSession.dispose,
       if (dataServices case final services?)

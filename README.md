@@ -1,5 +1,7 @@
 # YYMusic
 
+最新增量：**Phase 7H5B2c 输出观察已接生产根与前台刷新**。双平台启动创建一个原生输出通道，读取不阻塞首屏，返回前台刷新，关闭先排空观察器再释放通道；见[报告](docs/phase_7h5b2c_root_output_report.md)。输出Presenter/面板尚未接入，不等于已有设备切换界面。以下为历史记录。
+
 最新增量：**Phase 7H5B2b 输出观察协调层**。串行/合并刷新、迟到结果隔离、错误清空及关闭排空，13项新测试；见[报告](docs/phase_7h5b2b_output_observer_report.md)。父阶段双平台云端构建已通过；本批尚未接根/界面或自动前台刷新。以下为历史记录。
 
 最新增量：**Phase 7H5B2a Windows系统默认输出读取**。宿主只读查询活动多媒体默认端点及名称，失败退回未知，明确不冒充播放器实际路由；新增云端原生只读测试，见[报告](docs/phase_7h5b2a_windows_output_report.md)。Windows编译/原生测试待本SHA GitHub验收，Android仍未知，根/界面尚未绑定。以下为历史记录。

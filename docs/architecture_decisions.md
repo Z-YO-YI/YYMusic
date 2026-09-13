@@ -1,5 +1,9 @@
 # YYMusic 架构决策记录
 
+## ADR-122：输出由生产根拥有，前台仅刷新，可选观察不阻塞启动
+
+H5B2c。Bootstrap平台工厂创建NativeAudioOutputGateway交Graph所有；构造失败逐项释放。Graph后台初始化唯一观察器，关闭同步撤销、异步排空后关闭Gateway，保持引擎/数据释放屏障。App既有生命周期监听只在非前台到resumed转换请求刷新，卸载不关闭借用根。独立观察器用微任务登记读/关闭，避免Widget卸载残留事件Timer；状态不持久化、不等同设备切换。见[报告](phase_7h5b2c_root_output_report.md)。
+
 ## ADR-121：输出观察独立于播放状态，借用Gateway并排空关闭
 
 H5B2b。AudioOutputController仅协调瞬时观察，初始化/刷新串行，突发刷新合并后续读取，流修订保护迟到结果；错误不能继续确认旧路由。不复用PlaybackState.outputDevice推断系统默认与实际路由，不持久化名称、不打开系统设置、不改变音频引擎。关闭先撤销并排空，再由未来根所有者关闭Gateway。当前为独立可测模块，生产绑定和前台刷新下一阶段实现，见[报告](phase_7h5b2b_output_observer_report.md)。

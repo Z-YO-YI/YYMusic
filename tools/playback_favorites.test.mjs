@@ -55,7 +55,7 @@ test('lyrics favorite borrows root projection with captured page permission and 
 test('current favorite root borrows playback and collection with explicit start and shutdown barrier', () => {
   const graph = read('lib/app/dependency_graph.dart');
   assert.match(graph, /playbackFavorite = PlaybackFavoriteController\(/);
-  assert.match(graph, /await playback.initialize\(\);\s*if \(_closeFuture != null\) return;\s*await sleepPersistence.initialize\(\);\s*if \(_closeFuture == null\) playbackFavorite.start\(\)/);
+  assert.match(graph, /await playback.initialize\(\);\s*if \(_closeFuture != null\) return;\s*await sleepPersistence.initialize\(\);\s*if \(_closeFuture == null\) \{\s*playbackFavorite.start\(\)/);
   assert(graph.indexOf('playbackFavorite.dispose();') < graph.indexOf('playback.dispose();'));
   assert(graph.indexOf('playbackFavorite.close,') < graph.indexOf('services.dispose'));
   const controller = read('lib/playback/playback_favorite_controller.dart');

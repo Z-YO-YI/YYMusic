@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../platform/contracts/audio_output_gateway.dart';
 import '../playback/audio_engine.dart';
 import 'app_data_services.dart';
 import 'database_app_data_services.dart';
@@ -22,11 +23,13 @@ class AppBootstrap extends StatefulWidget {
     this.platform,
     this.dataServicesFactory = createProductionAppDataServices,
     this.audioEngineFactory = createProductionAudioEngine,
+    this.audioOutputGatewayFactory = createProductionAudioOutputGateway,
   });
 
   final YYPlatform? platform;
   final AppDataServicesFactory dataServicesFactory;
   final AudioEngineFactory audioEngineFactory;
+  final AudioOutputGatewayFactory audioOutputGatewayFactory;
 
   @override
   State<AppBootstrap> createState() => _AppBootstrapState();
@@ -54,15 +57,18 @@ class _AppBootstrapState extends State<AppBootstrap> {
   Future<void> _initialize(YYPlatform platform) async {
     AppDataServices? services;
     AudioEngine? engine;
+    AudioOutputGateway? output;
     DependencyGraph? graph;
     try {
       services = await widget.dataServicesFactory(platform);
       if (!mounted) return;
       engine = await widget.audioEngineFactory(platform);
       if (!mounted) return;
+      output = widget.audioOutputGatewayFactory(platform);
       graph = DependencyGraph(
         dataServices: services,
         audioEngine: engine,
+        audioOutputGateway: output,
         playbackSourceResolver: createProductionSourceResolver(platform),
       );
       await graph.initialize();
@@ -75,6 +81,7 @@ class _AppBootstrapState extends State<AppBootstrap> {
         if (graph != null) {
           await _release(graph.close);
         } else {
+          if (output != null) await _release(output.close);
           if (engine != null) await _release(engine.dispose);
           if (services != null) await _release(services.dispose);
         }
