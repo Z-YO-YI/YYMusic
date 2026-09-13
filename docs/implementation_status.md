@@ -1,5 +1,7 @@
 # 实施状态
 
+当前Phase7H4：[能力审计](phase_7h4_capability_audit.md)/ADR107/[验证](phase_7h4_capability_report.md)。补回§26的剩余时间/未过期恢复/平滑暂停缺口；输出设备与标准化等不得从插件声明或空成功返回推断已接入。下一批[H4A](phase_7h4a_sleep_remaining_plan.md)，之后恢复/淡出及真实设备/偏好。本轮文档与1项Node检查，1954 Flutter/152 Node、211原Golden不变、542格式/严格分析及Android Debug17.5秒复验通过，APK与H3B相同；无应用/依赖/schema变化。分支codex/playback-capability-audit，base codex/inspector-queue-access，前置6d1bb50双CI34727705634/34727730305 SUCCESS，新SHA另验。Phase7整体及Phase8–11未完成。以下为历史记录。
+
 最新Phase7H3B：[计划](phase_7h3b_inspector_queue_plan.md)/ADR106/[报告](phase_7h3b_inspector_queue_report.md)。Inspector绑定H3A根摘要与既有受保护队列入口，移除“队列详情正在开发”提示；以列表序号而非预测随机次序呈现。14新Widget+3新Golden，完整1954 Flutter/151 Node、211 Golden、542文件格式零修改、严格分析/生成迁移及Android Debug18.4秒通过。22旧图审核更新（侧栏页脚/滚动位置及相关绘制），186旧图不变。分支codex/inspector-queue-access，base codex/inspector-queue-summary；前置6d357ad双CI34726594415/34726626442 SUCCESS，确认排序修复。新SHA另验，Phase7整体及Phase8–11未完成。以下为历史记录。
 
 最新Phase7H3A：[计划](phase_7h3a_queue_summary_plan.md)/ADR105/[报告](phase_7h3a_queue_summary_report.md)。新增准确只读队列摘要与根身份缓存，10单测，不预测随机次序；尚未绑定Inspector UI。优先修复父阶段两次Windows截图失败：测试同名曲目逐次系统时间造成排序差异，固定导入批次时间并补1独立回归，未修改任何PNG。最终1937 Flutter/150 Node、208原Golden、540格式零改动、严格分析/生成迁移及Android Debug48秒通过。分支codex/inspector-queue-summary，base codex/inspector-sleep-settings；父SHA失败不冒称成功，新SHA另验。H3B继续侧栏摘要/入口，Phase7整体及Phase8–11未完成。以下为历史记录。
