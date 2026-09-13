@@ -1,5 +1,9 @@
 # YYMusic 架构决策记录
 
+## ADR-121：输出观察独立于播放状态，借用Gateway并排空关闭
+
+H5B2b。AudioOutputController仅协调瞬时观察，初始化/刷新串行，突发刷新合并后续读取，流修订保护迟到结果；错误不能继续确认旧路由。不复用PlaybackState.outputDevice推断系统默认与实际路由，不持久化名称、不打开系统设置、不改变音频引擎。关闭先撤销并排空，再由未来根所有者关闭Gateway。当前为独立可测模块，生产绑定和前台刷新下一阶段实现，见[报告](phase_7h5b2b_output_observer_report.md)。
+
 ## ADR-120：Windows只读默认端点并保留系统默认来源
 
 H5B2a。在既有UI COM apartment内用MMDevice查询活动eRender/eMultimedia默认端点，只读FriendlyName；HRESULT/类型/UTF长度校验失败均unknown，设置能力独立。ComPtr与PROPVARIANT作用域负责释放，不记录设备ID或名称。默认端点不能证明播放器实际输出，禁止返回playerRoute。原生测试无端点时允许unknown且不发声/启动设置，测试通过不能替代设备热插拔或听感验收。见[报告与依据](phase_7h5b2a_windows_output_report.md)。

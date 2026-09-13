@@ -1,5 +1,7 @@
 # YYMusic
 
+最新增量：**Phase 7H5B2b 输出观察协调层**。串行/合并刷新、迟到结果隔离、错误清空及关闭排空，13项新测试；见[报告](docs/phase_7h5b2b_output_observer_report.md)。父阶段双平台云端构建已通过；本批尚未接根/界面或自动前台刷新。以下为历史记录。
+
 最新增量：**Phase 7H5B2a Windows系统默认输出读取**。宿主只读查询活动多媒体默认端点及名称，失败退回未知，明确不冒充播放器实际路由；新增云端原生只读测试，见[报告](docs/phase_7h5b2a_windows_output_report.md)。Windows编译/原生测试待本SHA GitHub验收，Android仍未知，根/界面尚未绑定。以下为历史记录。
 
 最新增量：**Phase 7H5B1 原生声音设置通道**。Android/Windows宿主加入固定系统设置启动入口，Dart适配器覆盖关闭与失败降级，21项通道测试。见[报告](docs/phase_7h5b1_native_settings_report.md)。**尚无根/界面入口，实际输出路由仍未知**；Android原生编译通过，Windows本地缺symlink支持，编译待本SHA GitHub核验，不假称双平台验收完成。以下为历史记录。
