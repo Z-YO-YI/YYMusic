@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:just_audio/just_audio.dart';
 
+import 'playable_source.dart';
+
 /// Project-owned processing phases exposed by the just_audio candidate seam.
 enum JustAudioProcessingPhase { idle, loading, buffering, ready, completed }
 
@@ -15,6 +17,7 @@ final class JustAudioPlayerSnapshot {
     this.buffered = Duration.zero,
     this.volume = 1,
     this.speed = 1,
+    this.currentIndex,
   });
 
   final bool playing;
@@ -24,6 +27,9 @@ final class JustAudioPlayerSnapshot {
   final Duration buffered;
   final double volume;
   final double speed;
+
+  /// Native sequence index, not an application queue entry identifier.
+  final int? currentIndex;
 }
 
 /// Injectable seam around just_audio. Plugin types stay inside this file.
@@ -45,12 +51,26 @@ abstract interface class JustAudioPlayerBackend {
   Future<void> dispose();
 }
 
+/// Optional capability for isolated sequence validation. The production root
+/// still owns queue policy and uses single-source loading. Callers must serialize
+/// operations and must not share this instance with a second playback owner.
+abstract interface class JustAudioSequenceBackend
+    implements JustAudioPlayerBackend {
+  /// Preloads an immutable snapshot without requesting playback. Existing playing
+  /// state is not changed: a caller replacing active media must pause first.
+  /// Locators and headers are ephemeral and must not be persisted or logged.
+  Future<void> openSequence(
+    List<PlayableSource> sources, {
+    int initialIndex = 0,
+  });
+}
+
 /// The only class that talks to package:just_audio.
 ///
 /// [useProxyForRequestHeaders] is explicit because the selected Windows WinRT
 /// implementation cannot attach headers directly. Production selection is not
-/// made by this factory; Phase 4E uses it only from an isolated POC.
-final class NativeJustAudioPlayerBackend implements JustAudioPlayerBackend {
+/// made by this factory; the production factory selects it under ADR-044.
+final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
   factory NativeJustAudioPlayerBackend.create({
     required bool useProxyForRequestHeaders,
     required bool supportsRequestHeaders,
@@ -70,6 +90,7 @@ final class NativeJustAudioPlayerBackend implements JustAudioPlayerBackend {
     _watch(_player.bufferedPositionStream);
     _watch(_player.volumeStream);
     _watch(_player.speedStream);
+    _watch(_player.currentIndexStream);
     _subscriptions.add(
       _player.errorStream.listen(
         (_) {
@@ -101,6 +122,7 @@ final class NativeJustAudioPlayerBackend implements JustAudioPlayerBackend {
     buffered: _player.bufferedPosition,
     volume: _player.volume,
     speed: _player.speed,
+    currentIndex: _player.currentIndex,
   );
 
   @override
@@ -152,6 +174,52 @@ final class NativeJustAudioPlayerBackend implements JustAudioPlayerBackend {
       preload: true,
       initialPosition: Duration.zero,
     );
+  }
+
+  @override
+  Future<void> openSequence(
+    List<PlayableSource> sources, {
+    int initialIndex = 0,
+  }) async {
+    if (_disposed) throw StateError('Audio backend is disposed');
+    final snapshot = List<PlayableSource>.unmodifiable(sources);
+    if (snapshot.isEmpty ||
+        initialIndex < 0 ||
+        initialIndex >= snapshot.length) {
+      throw ArgumentError('Invalid audio sequence or initial index');
+    }
+    if (!supportsRequestHeaders &&
+        snapshot.any((source) => source.headers.isNotEmpty)) {
+      throw UnsupportedError('Request headers are unavailable');
+    }
+    try {
+      final nativeSources = snapshot
+          .map((source) {
+            final path = source.localPath;
+            final resource = path == null
+                ? source.uri!
+                : Uri.file(
+                    path,
+                    windows:
+                        RegExp(r'^[A-Za-z]:[\\/]').hasMatch(path) ||
+                        path.startsWith(r'\\'),
+                  );
+            return AudioSource.uri(
+              resource,
+              headers: source.headers.isEmpty ? null : source.headers,
+            );
+          })
+          .toList(growable: false);
+      await _player.setAudioSources(
+        nativeSources,
+        preload: true,
+        initialIndex: initialIndex,
+        initialPosition: Duration.zero,
+      );
+    } catch (_) {
+      // Plugin failures can contain stream credentials or local paths.
+      throw StateError('Audio sequence could not be loaded');
+    }
   }
 
   @override
