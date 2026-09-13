@@ -283,6 +283,142 @@ void main() {
     },
   );
 
+  test(
+    'boundary keeps current identity and clock without play/seek/reload',
+    () async {
+      final batch = sequence();
+      await engine.loadSequence(batch);
+      backend.emit(
+        index: 0,
+        playing: true,
+        position: const Duration(seconds: 9),
+      );
+      expect(
+        await engine.retainSequenceThrough(states.last.sequenceCursor!),
+        isTrue,
+      );
+      expect(states.last.sequenceCursor!.entryId, 'first');
+      expect(states.last.phase, AudioEnginePhase.playing);
+      expect(states.last.position, const Duration(seconds: 9));
+      expect(backend.calls, ['sequence:0', 'retain:0']);
+      expect(await engine.retainSequenceThrough(batch.cursors[1]), isFalse);
+      expect(backend.calls, ['sequence:0', 'retain:0']);
+    },
+  );
+
+  test(
+    'old batch or noncurrent entry never dispatches a boundary edit',
+    () async {
+      final old = sequence();
+      await engine.loadSequence(old);
+      final next = sequence();
+      await engine.loadSequence(next);
+      expect(await engine.retainSequenceThrough(old.cursors.first), isFalse);
+      expect(await engine.retainSequenceThrough(next.cursors.last), isFalse);
+      expect(backend.calls, ['sequence:0', 'sequence:0']);
+    },
+  );
+
+  test('queued replacement revokes an older boundary request', () async {
+    final old = sequence();
+    await engine.loadSequence(old);
+    final loading = engine.loadSequence(sequence());
+    final boundary = engine.retainSequenceThrough(old.cursors.first);
+    await loading;
+    expect(await boundary, isFalse);
+    expect(backend.calls, ['sequence:0', 'sequence:0']);
+  });
+
+  for (final returnsToOriginal in [false, true]) {
+    test(
+      'index movement during trim fails even if it returns=$returnsToOriginal',
+      () async {
+        await engine.loadSequence(sequence());
+        final expected = states.last.sequenceCursor!;
+        backend.trimGate = Completer<void>();
+        final editing = engine.retainSequenceThrough(expected);
+        final rejected = expectLater(editing, throwsA(isA<DomainFailure>()));
+        await Future<void>.delayed(Duration.zero);
+        final count = states.length;
+        backend.emit(index: 1);
+        if (returnsToOriginal) backend.emit(index: 0);
+        expect(states.length, count);
+        backend.trimGate!.complete();
+        await rejected;
+        expect(states.last.phase, AudioEnginePhase.error);
+        expect(states.last.sequenceCursor, isNull);
+        expect(
+          states.last.failure!.diagnosticId,
+          'audio.just-audio.sequence-boundary',
+        );
+        expect(backend.calls, ['sequence:0', 'retain:0', 'stop']);
+      },
+    );
+  }
+
+  test(
+    'native edit and stop errors remain safe and require a new load',
+    () async {
+      await engine.loadSequence(sequence());
+      backend.trimFails = true;
+      backend.stopFails = true;
+      await expectLater(
+        engine.retainSequenceThrough(states.last.sequenceCursor!),
+        throwsA(
+          isA<DomainFailure>().having(
+            (e) => e.diagnosticId,
+            'safe diagnostic',
+            'audio.just-audio.sequence-boundary',
+          ),
+        ),
+      );
+      expect(states.last.sequenceCursor, isNull);
+      await expectLater(engine.play(), throwsA(isA<DomainFailure>()));
+      backend.trimFails = false;
+      backend.stopFails = false;
+      await engine.loadSequence(sequence());
+      expect(states.last.sequenceCursor, isNotNull);
+    },
+  );
+
+  test(
+    'async error while trimming cannot report successful retention',
+    () async {
+      await engine.loadSequence(sequence());
+      backend.trimGate = Completer<void>();
+      final editing = engine.retainSequenceThrough(states.last.sequenceCursor!);
+      final rejected = expectLater(editing, throwsA(isA<DomainFailure>()));
+      await Future<void>.delayed(Duration.zero);
+      backend.errorsController.add(null);
+      backend.trimGate!.complete();
+      await rejected;
+      expect(states.last.sequenceCursor, isNull);
+      expect(backend.calls.last, 'stop');
+    },
+  );
+
+  test(
+    'close drains accepted trim without late notifications or new edits',
+    () async {
+      await engine.loadSequence(sequence());
+      final expected = states.last.sequenceCursor!;
+      backend.trimGate = Completer<void>();
+      final editing = engine.retainSequenceThrough(expected);
+      await Future<void>.delayed(Duration.zero);
+      final closing = engine.dispose();
+      final count = states.length;
+      await expectLater(
+        engine.retainSequenceThrough(expected),
+        throwsStateError,
+      );
+      backend.trimGate!.complete();
+      expect(await editing, isTrue);
+      await closing;
+      expect(states.length, count);
+      expect(backend.disposals, 1);
+    },
+  );
+
   test('play waits behind accepted sequence load', () async {
     backend.gate = Completer<void>();
     final loading = engine.loadSequence(sequence());
@@ -403,6 +539,16 @@ final class _SequenceBackend extends _SingleBackend
   Completer<void>? gate;
   bool fail = false;
   bool omitIndex = false;
+  Completer<void>? trimGate;
+  bool trimFails = false;
+  @override
+  Future<bool> retainSequenceThrough(int expectedIndex) async {
+    calls.add('retain:$expectedIndex');
+    if (trimGate != null) await trimGate!.future;
+    if (trimFails) throw StateError('private-boundary-failure');
+    return current.currentIndex == expectedIndex;
+  }
+
   @override
   Future<void> openSequence(
     List<PlayableSource> sources, {

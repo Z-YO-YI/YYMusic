@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7J4：[本曲边界报告](phase_7j4_continuation_boundary_report.md)/ADR135。原生尾部移除经共用引擎串行与身份复核，使用未被SequenceState截断的原始播放事件索引；13新测试覆盖正常保留、旧请求、切曲/回切竞态、失败与关闭。分支codex/sequence-continuation-boundary，base codex/sequence-event-isolation。根策略尚未绑定，不宣称用户无缝播放完成；以下为历史阶段。
+
 最新Phase7J3：[原生事件隔离报告](phase_7j3_event_isolation_report.md)/ADR134。整批替换使用新AudioPlayer与原生事件通道；旧订阅及play Future按generation撤销，音量/速率保留。8项新通道测试，含插件释放错误被吞的明确限制证据；根尚未切换序列，无缝未上线。分支codex/sequence-event-isolation，base codex/sequence-engine-identity；以下为历史阶段。
 
 最新Phase7J2：[序列引擎报告](phase_7j2_sequence_engine_report.md)/ADR133。JustAudioEngine实现可选AudioSequenceEngine，共用原有串行/关闭机制；同一状态携带不含URI/头的批次与entry身份。17新专项＋1真实插件跨层测试，根策略未切换、不宣称无缝已启用。分支codex/sequence-engine-identity，base codex/native-sequence-backend；以下为历史阶段。

@@ -64,6 +64,7 @@ abstract interface class JustAudioSequenceBackend
     List<PlayableSource> sources, {
     int initialIndex = 0,
   });
+  Future<bool> retainSequenceThrough(int expectedIndex);
 }
 
 /// The only class that talks to package:just_audio.
@@ -91,6 +92,16 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
 
   void _attachPlayer() {
     final generation = _generation;
+    _observedRawIndex = _player.playbackEvent.currentIndex;
+    _watch(
+      _player.playbackEventStream,
+      onValue: (event) {
+        if (_observedRawIndex != event.currentIndex) {
+          _observedRawIndex = event.currentIndex;
+          _rawIndexRevision++;
+        }
+      },
+    );
     _watch(_player.playingStream);
     _watch(_player.processingStateStream);
     _watch(_player.positionStream);
@@ -116,6 +127,8 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
   int _generation = 0;
   bool _hasSource = false;
   bool _replacementFailed = false;
+  int? _observedRawIndex;
+  int _rawIndexRevision = 0;
   @override
   final bool supportsRequestHeaders;
   final _snapshots = StreamController<JustAudioPlayerSnapshot>.broadcast(
@@ -134,7 +147,9 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
     buffered: _player.bufferedPosition,
     volume: _player.volume,
     speed: _player.speed,
-    currentIndex: _player.currentIndex,
+    // SequenceState clamps indexes after removals; playback events retain the
+    // native index needed to detect a transition during a tail edit.
+    currentIndex: _player.playbackEvent.currentIndex,
   );
 
   @override
@@ -143,13 +158,14 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
   @override
   Stream<JustAudioPlayerSnapshot> get snapshots => _snapshots.stream;
 
-  void _watch<T>(Stream<T> stream) {
+  void _watch<T>(Stream<T> stream, {void Function(T)? onValue}) {
     final generation = _generation;
     _subscriptions.add(
       stream.listen(
-        (_) {
+        (value) {
           if (_disposed || generation != _generation) return;
           try {
+            onValue?.call(value);
             _snapshots.add(current);
           } catch (_) {
             _errors.add(null);
@@ -272,6 +288,30 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
     } catch (_) {
       // Plugin failures can contain stream credentials or local paths.
       throw StateError('Audio sequence could not be loaded');
+    }
+  }
+
+  @override
+  Future<bool> retainSequenceThrough(int expectedIndex) async {
+    if (_disposed || _replacementFailed) {
+      throw StateError('Audio backend cannot edit media');
+    }
+    final length = _player.sequence.length;
+    if (expectedIndex < 0 ||
+        expectedIndex >= length ||
+        _player.playbackEvent.currentIndex != expectedIndex) {
+      return false;
+    }
+    try {
+      final revision = _rawIndexRevision;
+      if (expectedIndex + 1 < length) {
+        await _player.removeAudioSourceRange(expectedIndex + 1, length);
+      }
+      return !_disposed &&
+          revision == _rawIndexRevision &&
+          _player.playbackEvent.currentIndex == expectedIndex;
+    } catch (_) {
+      throw StateError('Audio sequence boundary could not be applied');
     }
   }
 
