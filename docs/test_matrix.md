@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+Phase7H6C：8新Widget验证三平台真实路由开关、错误重试与脱敏、隐藏路由/旧回调撤销、宽度切换/键盘、忙碌期间更新最终选择。3新130%字体Golden，7既有设置Golden因新增播放分类更新，均逐张查看，其他213图不变；详见[报告](phase_7h6c_continuation_settings_report.md)。
+
 Phase7H6B2b：19项协调器测试与3项生产SQLite集成测试，新增1项源码所有权门禁，精确更新既有启动/关闭序列断言。覆盖缺失不写默认、损坏不覆盖、显式同值选择、通知重入、关闭冻结/排空/失败、真实文件重开；220张Golden未修改。见[报告](phase_7h6b2b_continuation_binding_report.md)。
 
 Phase7H6B2a：新增11项恢复许可单测，覆盖两种布尔、重复捕获/应用、默认值显式选择、改回原值、关闭、通知重入以及完成后不重播/无音频设备。生产启动存储绑定仍待后续；结果见[报告](phase_7h6b2a_continuation_restore_report.md)，220张Golden不变。

@@ -35,6 +35,7 @@ import '../features/search/common/search_screen.dart';
 import '../features/settings/common/appearance_settings_controller.dart';
 import '../features/settings/common/licenses_screen.dart';
 import '../features/settings/common/settings_screen.dart';
+import '../playback/continuation_persistence_controller.dart';
 import '../playback/lyrics_controller.dart';
 import '../playback/playback_favorite_controller.dart';
 import '../playback/queue_controller.dart';
@@ -73,6 +74,7 @@ final class AppRouter implements AppNavigation {
     SystemPlaylistSessions? systemPlaylists,
     QueueController? queueController,
     AppearanceSettingsController? appearanceSettings,
+    ContinuationPersistenceController? continuationSettings,
     FullscreenPresenter? fullscreen,
     NavigatorObserver? fullscreenObserver,
   }) {
@@ -152,6 +154,7 @@ final class AppRouter implements AppNavigation {
             key: const ValueKey('screen-settings'),
             platform: platform,
             controller: appearanceSettings,
+            continuation: continuationSettings,
             routeActive: _settingsActivity,
             navigation: this,
             viewState: viewState,
