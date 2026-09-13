@@ -115,6 +115,9 @@ final class PlaybackController extends ChangeNotifier {
   bool get isClosed => _disposed;
   bool get continueAfterTrack => _continueAfterTrack;
 
+  /// Monotonic preference intent stamp, including explicit unchanged choices.
+  int get continuationIntentRevision => _continuationIntentRevision;
+
   /// Applies to natural completion only, including automatic repeat-one.
   /// Changing this never starts/stops the current track or resumes an ended one.
   void setContinueAfterTrack(bool enabled) {

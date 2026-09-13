@@ -6,6 +6,7 @@ import '../domain/repositories/library_repository.dart';
 import '../domain/repositories/local_library_repository.dart';
 import '../domain/repositories/lyrics_repository.dart';
 import '../domain/repositories/music_source_repository.dart';
+import '../domain/repositories/playback_continuation_repository.dart';
 import '../domain/repositories/search_history_repository.dart';
 import '../domain/repositories/sleep_timer_repository.dart';
 import '../platform/contracts/secure_credential_gateway.dart';
@@ -15,6 +16,7 @@ import '../platform/contracts/secure_credential_gateway.dart';
 abstract interface class AppDataServices {
   AppearanceSettingsRepository get appearanceSettings;
   SleepTimerRepository get sleepTimers;
+  PlaybackContinuationRepository get playbackContinuation;
   LibraryRepository get library;
   LocalLibraryRepository get localLibrary;
   CatalogSearchRepository get catalogSearch;

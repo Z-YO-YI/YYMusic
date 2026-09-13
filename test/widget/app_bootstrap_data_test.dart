@@ -27,6 +27,7 @@ import '../support/fake_audio_output_gateway.dart';
 import '../support/fake_catalog_browse_repository.dart';
 import '../support/fake_domain_repositories.dart';
 import '../support/fake_local_library_repository.dart';
+import '../support/fake_playback_continuation_repository.dart';
 import '../support/fake_search_repositories.dart';
 import '../support/fake_sleep_timer_repository.dart';
 
@@ -299,6 +300,8 @@ void main() {
 
 final class _FakeAppDataServices implements AppDataServices {
   @override
+  final playbackContinuation = FakePlaybackContinuationRepository();
+  @override
   final sleepTimers = FakeSleepTimerRepository();
   @override
   final FakeAppearanceSettingsRepository appearanceSettings =
@@ -333,6 +336,7 @@ final class _FakeAppDataServices implements AppDataServices {
     disposeCount += 1;
     await appearanceSettings.dispose();
     await sleepTimers.dispose();
+    await playbackContinuation.dispose();
     await localLibrary.close();
     await library.dispose();
     await searchHistory.dispose();

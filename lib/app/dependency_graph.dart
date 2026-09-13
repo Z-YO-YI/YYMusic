@@ -13,6 +13,7 @@ import '../domain/repositories/license_repository.dart';
 import '../domain/repositories/local_library_repository.dart';
 import '../domain/repositories/lyrics_repository.dart';
 import '../domain/repositories/music_source_repository.dart';
+import '../domain/repositories/playback_continuation_repository.dart';
 import '../domain/repositories/search_history_repository.dart';
 import '../domain/repositories/sleep_timer_repository.dart';
 import '../features/catalog_detail/common/catalog_detail_controller.dart';
@@ -31,6 +32,7 @@ import '../platform/contracts/fullscreen_gateway.dart';
 import '../platform/contracts/media_session_gateway.dart';
 import '../platform/contracts/secure_credential_gateway.dart';
 import '../playback/audio_engine.dart';
+import '../playback/continuation_persistence_controller.dart';
 import '../playback/lyrics_controller.dart';
 import '../playback/playback_controller.dart';
 import '../playback/playback_favorite_controller.dart';
@@ -53,6 +55,7 @@ final class DependencyGraph {
     this.dataServices,
     AppearanceSettingsRepository? appearanceRepository,
     SleepTimerRepository? sleepTimerRepository,
+    PlaybackContinuationRepository? continuationRepository,
     LibraryRepository? library,
     LocalLibraryRepository? localLibrary,
     CatalogSearchRepository? catalogSearch,
@@ -69,6 +72,7 @@ final class DependencyGraph {
              (library == null &&
                  appearanceRepository == null &&
                  sleepTimerRepository == null &&
+                 continuationRepository == null &&
                  localLibrary == null &&
                  catalogSearch == null &&
                  catalogBrowse == null &&
@@ -110,6 +114,10 @@ final class DependencyGraph {
       repository: dataServices?.sleepTimers ?? sleepTimerRepository,
     );
     queue = QueueController(playback);
+    continuationPersistence = ContinuationPersistenceController(
+      playback: playback,
+      repository: dataServices?.playbackContinuation ?? continuationRepository,
+    );
     playbackFavorite = PlaybackFavoriteController(
       playback: playback,
       repository: this.collection,
@@ -186,6 +194,7 @@ final class DependencyGraph {
   late final AudioOutputController audioOutput;
   late final PlaybackController playback;
   late final SleepPersistenceController sleepPersistence;
+  late final ContinuationPersistenceController continuationPersistence;
   late final QueueController queue;
   late final PlaybackFavoriteController playbackFavorite;
   late final LyricsController lyricsController;
@@ -207,6 +216,8 @@ final class DependencyGraph {
     await playback.initialize();
     if (_closeFuture != null) return;
     await sleepPersistence.initialize();
+    if (_closeFuture != null) return;
+    await continuationPersistence.initialize();
     if (_closeFuture == null) {
       playbackFavorite.start();
       // Optional device metadata must not delay the first business frame.
@@ -235,6 +246,7 @@ final class DependencyGraph {
     systemPlaylists.dispose();
     playbackPresenter.dispose();
     lyricsController.dispose();
+    continuationPersistence.dispose();
     sleepPersistence.dispose();
     audioOutput.dispose();
     playback.dispose();
@@ -261,6 +273,7 @@ final class DependencyGraph {
       playbackFavorite.close,
       playback.close,
       sleepPersistence.close,
+      continuationPersistence.close,
       audioOutput.close,
       _audioOutputGateway.close,
       _audioEngine.dispose,

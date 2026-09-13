@@ -50,7 +50,7 @@ test('independent lyrics route borrows root state and revokes hidden page intent
 test('lyrics synchronization borrows one root player and repository without a second clock', () => {
   const graph = read('lib/app/dependency_graph.dart');
   assert.equal((graph.match(/lyricsController = LyricsController\(/g) ?? []).length, 1);
-  assert.match(graph, /lyricsController\.dispose\(\);\s+sleepPersistence\.dispose\(\);\s+audioOutput\.dispose\(\);\s+playback\.dispose\(\)/);
+  assert.match(graph, /lyricsController\.dispose\(\);\s+continuationPersistence\.dispose\(\);\s+sleepPersistence\.dispose\(\);\s+audioOutput\.dispose\(\);\s+playback\.dispose\(\)/);
   assert.match(graph, /lyricsController\.close,\s+queue\.close,\s+playbackFavorite\.close,\s+playback\.close/);
   const lyrics = read('lib/playback/lyrics_controller.dart');
   assert.match(lyrics, /_repository!\.getLyrics\(identity\.track\)/);
