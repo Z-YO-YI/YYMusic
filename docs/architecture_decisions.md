@@ -1144,3 +1144,7 @@ SleepSettingsPanel复用现有_surfaceActive/_closing和_allowed(generation)作�
 H4B1。SleepTimerSnapshot位于domain，只有原durationMinutes（15/30/60）与UTC deadline；编码在data，固定version=1，不携带播放器/队列/媒体标识。剩余量只根据调用者传入now计算，过期返回null，绝不把剩余量当新选项。非法记录抛无原文的FormatException，读取/清理决定留给未来Repository及协调器，不能静默用默认定时替换损坏数据。未知版本拒绝解释，后续清理需明确版本迁移策略。
 
 本曲结束没有绝对到期且绑定会话entryId，本阶段不纳入分钟快照，不暗示它已经支持跨启动恢复。Repository要求接受顺序串行、保存/清理原子且隔离专用键、关闭真实排空；root恢复必须优先于旧异步加载且不触发自动播放。当前只实现快照/编码/契约，真实存储与根绑定分后续阶段验证。
+
+## ADR-111：存储尾链保证清理不会被旧保存复活
+
+H4B2。DriftSleepTimerRepository借用AppDatabase、只访问playbackSleepTimer键，单语句upsert/delete原子操作，不改schema。read/save/clear在调用时挂到同一Future尾链；内部尾链吸收失败以继续排队，但原Future仍抛安全DomainFailure。解析错误用私有标记映射schemaMismatch，其他异常统一databaseCorrupted，禁止把坏记录当missing或自动覆盖未知版本。dispose在依赖回调前已有尾链登记，拒绝后续操作并等待接受工作，不关闭数据库。本批真实适配器独立验证，尚不注册生产数据范围或根恢复。
