@@ -1,5 +1,9 @@
 # YYMusic 架构决策记录
 
+## ADR-126：自动继续布尔偏好独立版本化存储，读取不改数据
+
+H6B1。PlaybackContinuationRepository仅存储continueAfterTrack，Drift使用既有设置表专用key，version1有界codec拒绝错误类型/未知版本。missing为null、损坏为安全错误，不在读取时回填默认或删除。操作按调用顺序登记、失败不毒化尾链；关闭拒绝新工作并等待接受写入，不关闭借用数据库。生产恢复与UI后续接入，恢复不得自动播放或覆盖更晚的用户意图。见[报告](phase_7h6b1_continuation_storage_report.md)。
+
 ## ADR-125：自动继续只控制自然完成，变更撤销旧推进而不触发播放
 
 H6A。按HTML队列下一首语义，根策略默认true，关闭优先于自动repeat-one/all，手动导航保持；开关变化递增revision，重新开启也不恢复旧完成。canPlay跨解析/load/seek和最终play提交前复核；已提交副作用不伪称撤销。随机下一条候选不提前增游标，只有既有选中路径同步游标。UI/存储另阶段，恢复策略不能自动播放；无缝/标准化不以开关存储或插件空成功代替实现。见[报告](phase_7h6a_auto_continue_report.md)。
