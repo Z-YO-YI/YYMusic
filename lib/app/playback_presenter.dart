@@ -37,6 +37,17 @@ final class PlaybackPresenter extends ChangeNotifier {
   }
 
   PlaybackSleepTimerState get sleepState => _playback.sleepTimer;
+
+  /// Ceil positive fractions so a deadline is not displayed as elapsed early.
+  /// A visible view may sample this without changing the business timer.
+  int? get sleepRemainingSeconds {
+    if (_disposed) return null;
+    final remaining = _playback.sleepRemaining;
+    if (remaining == null) return null;
+    return (remaining.inMicroseconds + Duration.microsecondsPerSecond - 1) ~/
+        Duration.microsecondsPerSecond;
+  }
+
   bool get canSetSleepTimer =>
       !_disposed && !_playback.isClosed && _playback.isAvailable;
   bool get canSleepAtCurrentEntryEnd =>

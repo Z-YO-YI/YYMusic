@@ -90,6 +90,18 @@ final class PlaybackController extends ChangeNotifier {
   bool get isClosed => _disposed;
   PlaybackSleepTimerState get sleepTimer => _sleepState;
 
+  /// Read-only wall-clock projection. Reading never consumes the deadline.
+  Duration? get sleepRemaining {
+    final deadline = _sleepState.deadline;
+    if (_disposed ||
+        _sleepState.phase != PlaybackSleepPhase.armed ||
+        deadline == null) {
+      return null;
+    }
+    final remaining = deadline.difference(_clock().toUtc());
+    return remaining.isNegative ? Duration.zero : remaining;
+  }
+
   /// Null cancels. A deadline is session-only and never starts playback.
   void setSleepTimer(PlaybackSleepDuration? duration) =>
       _setSleepTimer(duration);
