@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7H6A：[自动继续根报告](phase_7h6a_auto_continue_report.md)/ADR125。实现continueAfterTrack策略与完成revision撤销，覆盖慢解析/load/seek、循环/随机及睡眠优先；新增17测试，关机恢复后完整2286 Flutter/160 Node通过。UI和持久化下一阶段。分支codex/playback-auto-continue，base codex/audio-output-panel；父f47c5d7双平台云端成功。以下为历史记录。
+
 最新Phase7H5C2：[输出面板报告](phase_7h5c2_output_panel_report.md)/ADR124。生产Presenter借用根观察器，播放/歌词/Inspector既有设置路由显示输出与系统设置入口；输出局部通知、页面许可及安全反馈。11新Widget+3新Golden，旧217图不变；父ab29b7f双平台云端成功。分支codex/audio-output-panel，base codex/output-settings-action。硬件验收和Phase7其他偏好及Phase8–11仍待完成。以下为历史记录。
 
 最新Phase7H5C1：[设置操作报告](phase_7h5c1_settings_action_report.md)/ADR123。根输出控制器显式设置请求等待读取后验证页面许可、能力及关闭状态，busy防重入，关闭排空已接受启动；15操作+1根测试。父b7ffb6f双平台云端成功。本批未接Presenter/界面，分支codex/output-settings-action，base codex/root-audio-output。以下为历史记录。

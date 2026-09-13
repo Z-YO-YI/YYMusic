@@ -89,6 +89,8 @@ final class PlaybackController extends ChangeNotifier {
   // App volume intent is distinct from backend amplitude (e.g. a sleep fade).
   // Before the first valid command, backend reports seed the initial value.
   double? _userVolume;
+  bool _continueAfterTrack = true;
+  int _continuationRevision = 0;
   Future<void> _operationTail = Future<void>.value();
   Future<void> _mediaSyncTail = Future<void>.value();
   Future<void>? _initialization;
@@ -108,6 +110,17 @@ final class PlaybackController extends ChangeNotifier {
 
   PlaybackState get state => _state;
   bool get isClosed => _disposed;
+  bool get continueAfterTrack => _continueAfterTrack;
+
+  /// Applies to natural completion only, including automatic repeat-one.
+  /// Changing this never starts/stops the current track or resumes an ended one.
+  void setContinueAfterTrack(bool enabled) {
+    if (_disposed || enabled == _continueAfterTrack) return;
+    _continueAfterTrack = enabled;
+    _continuationRevision++;
+    _publish(_state);
+  }
+
   PlaybackSleepTimerState get sleepTimer => _sleepState;
 
   /// Read-only wall-clock projection. Reading never consumes the deadline.
@@ -527,7 +540,7 @@ final class PlaybackController extends ChangeNotifier {
         await _stopEngine();
         return;
       }
-      await _startPlayback();
+      await _startPlayback(canPlay: canPlay);
     } catch (error, stack) {
       _loadingSource = false;
       history.end();
@@ -537,8 +550,12 @@ final class PlaybackController extends ChangeNotifier {
     }
   }
 
-  Future<void> _advanceInternal({required bool isAutomatic}) async {
+  Future<void> _advanceInternal({
+    required bool isAutomatic,
+    bool Function()? canAdvance,
+  }) async {
     _requireEngine();
+    if (canAdvance?.call() == false) return;
     if (!isAutomatic) {
       _interruptSleepFade();
       await _restoreFadeVolume();
@@ -547,12 +564,12 @@ final class PlaybackController extends ChangeNotifier {
       if (_state.currentTrack != null) {
         history.begin(_state.currentTrack!.ref);
         await _engine.seek(Duration.zero);
-        await _startPlayback();
+        await _startPlayback(canPlay: canAdvance);
       }
       return;
     }
     final next = _nextEntry();
-    if (next != null) await _playEntryInternal(next.id);
+    if (next != null) await _playEntryInternal(next.id, canPlay: canAdvance);
   }
 
   QueueEntry? _nextEntry() {
@@ -568,12 +585,12 @@ final class PlaybackController extends ChangeNotifier {
     }
     _ensureShuffleOrder();
     if (_shuffleCursor + 1 < _shuffleOrder.length) {
-      return _entry(_shuffleOrder[++_shuffleCursor]);
+      return _entry(_shuffleOrder[_shuffleCursor + 1]);
     }
     if (_state.repeatMode != RepeatMode.all) return null;
     _rebuildShuffleOrder();
     if (_shuffleCursor + 1 < _shuffleOrder.length) {
-      return _entry(_shuffleOrder[++_shuffleCursor]);
+      return _entry(_shuffleOrder[_shuffleCursor + 1]);
     }
     return entries.length == 1 ? entries.single : null;
   }
@@ -629,6 +646,7 @@ final class PlaybackController extends ChangeNotifier {
       _completionHandled = false;
     }
     final revision = _sessionRevision;
+    final continuationRevision = _continuationRevision;
     if (!_loadingSource &&
         _loadedEntryId != null &&
         _loadedEntryId == _state.queue.currentEntryId &&
@@ -641,6 +659,7 @@ final class PlaybackController extends ChangeNotifier {
         !_completionHandled &&
         _consumeEntrySleep(completedEntryId);
     final shouldAdvance =
+        _continueAfterTrack &&
         value.phase == AudioEnginePhase.completed &&
         !_completionHandled &&
         !sleepConsumed &&
@@ -671,12 +690,17 @@ final class PlaybackController extends ChangeNotifier {
       unawaited(
         _schedule(
           () => _guarded('auto-advance', () async {
-            if (_sessionRevision != revision ||
+            bool canContinue() =>
+                !_disposed &&
+                _continueAfterTrack &&
+                continuationRevision == _continuationRevision;
+            if (!canContinue() ||
+                _sessionRevision != revision ||
                 _loadedEntryId != completedEntryId ||
                 _state.phase != PlaybackPhase.completed) {
               return;
             }
-            await _advanceInternal(isAutomatic: true);
+            await _advanceInternal(isAutomatic: true, canAdvance: canContinue);
           }),
         ).catchError((Object _) {}),
       );
@@ -759,11 +783,13 @@ final class PlaybackController extends ChangeNotifier {
         );
   }
 
-  Future<void> _startPlayback() async {
+  Future<void> _startPlayback({bool Function()? canPlay}) async {
     _checkNotDisposed();
+    if (canPlay?.call() == false) return;
     _interruptSleepFade();
     await _restoreFadeVolume();
     _checkNotDisposed();
+    if (canPlay?.call() == false) return;
     if (history.ended && _state.currentTrack != null) {
       history.begin(_state.currentTrack!.ref);
     }

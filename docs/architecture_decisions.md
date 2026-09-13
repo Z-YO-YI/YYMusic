@@ -1,5 +1,9 @@
 # YYMusic 架构决策记录
 
+## ADR-125：自动继续只控制自然完成，变更撤销旧推进而不触发播放
+
+H6A。按HTML队列下一首语义，根策略默认true，关闭优先于自动repeat-one/all，手动导航保持；开关变化递增revision，重新开启也不恢复旧完成。canPlay跨解析/load/seek和最终play提交前复核；已提交副作用不伪称撤销。随机下一条候选不提前增游标，只有既有选中路径同步游标。UI/存储另阶段，恢复策略不能自动播放；无缝/标准化不以开关存储或插件空成功代替实现。见[报告](phase_7h6a_auto_continue_report.md)。
+
 ## ADR-124：输出面板借用根观察器并局部重绘，不提供模拟选择
 
 H5C2。既有PlaybackPresenter传递可选根观察器，但不转发它的高频/busy通知；输出区域独立监听，避免自己的启动使父generation失效。生产工厂始终注入，独立无平台契约的旧展示保持可选。只读状态严格区分unknown/systemDefault/playerRoute，设置操作复用H5C1实时许可，反馈再验页面；不改变根观察或宣称设备切换。现有合成设计token与原生Dialog/BottomSheet复用，无WebView或伪设备卡。见[报告](phase_7h5c2_output_panel_report.md)。
