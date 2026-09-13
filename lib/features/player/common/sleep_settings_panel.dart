@@ -9,6 +9,7 @@ import '../../../design_system/yy_option_card.dart';
 import '../../../design_system/yy_theme.dart';
 import '../../../design_system/yy_tokens.dart';
 import '../../../playback/playback_sleep_timer_state.dart';
+import 'audio_output_section.dart';
 import 'sleep_remaining_text.dart';
 
 /// Shared native surface; its host owns insertion, barrier and route lifetime.
@@ -113,6 +114,13 @@ class _SleepSettingsPanelState extends State<SleepSettingsPanel> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
+          if (presenter.audioOutput case final output?) ...[
+            AudioOutputSection(
+              controller: output,
+              isCurrent: () => _allowed(generation),
+            ),
+            const SizedBox(height: 24),
+          ],
           Text('睡眠定时', style: YYTypography.sectionTitle),
           const SizedBox(height: 4),
           Semantics(
@@ -194,14 +202,18 @@ class _SleepSettingsPanelState extends State<SleepSettingsPanel> {
           child: phone
               ? YYBottomSheet(
                   title: '播放设置',
-                  subtitle: '睡眠定时',
+                  subtitle: presenter.audioOutput == null
+                      ? '睡眠定时'
+                      : '音频输出与睡眠定时',
                   body: body,
                   onClose: close,
                   actions: actions,
                 )
               : YYDialog(
                   title: '播放设置',
-                  subtitle: '睡眠定时',
+                  subtitle: presenter.audioOutput == null
+                      ? '睡眠定时'
+                      : '音频输出与睡眠定时',
                   body: body,
                   onClose: close,
                   actions: actions,

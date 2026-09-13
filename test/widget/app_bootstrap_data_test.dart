@@ -195,6 +195,7 @@ void main() {
       );
       expect(audioCalls, 1);
       expect(outputCalls, 1);
+      expect(graph.playbackPresenter.audioOutput, same(graph.audioOutput));
       expect(output.calls, ['initialize']);
       await tester.pumpWidget(const SizedBox.shrink());
       await closeGraph(tester, graph);

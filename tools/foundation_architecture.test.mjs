@@ -486,7 +486,7 @@ test('only the just_audio native POC remains active in read-only dual-platform C
 
 test('shared Shell presenter maps root playback and guards queued seek identity', () => {
   const graph = read('lib/app/dependency_graph.dart');
-  assert.equal(graph.match(/PlaybackPresenter\(\s*playback,\s*sleepPersistence: sleepPersistence,\s*\)/g)?.length, 1);
+  assert.equal(graph.match(/PlaybackPresenter\(\s*playback,\s*sleepPersistence: sleepPersistence,\s*audioOutput: audioOutputGateway == null \? null : audioOutput,\s*\)/g)?.length, 1);
   const presenter = read('lib/app/playback_presenter.dart');
   assert.match(presenter, /extends ChangeNotifier/);
   assert.match(presenter, /expectedEntryId: expectedEntryId/);
