@@ -4,6 +4,7 @@ import '../design_system/yy_player_data.dart';
 import '../domain/models/collection_models.dart';
 import '../domain/models/domain_failure.dart';
 import '../domain/models/track.dart';
+import '../platform/audio_output/audio_output_controller.dart';
 import '../playback/playback_controller.dart';
 import '../playback/playback_sleep_timer_state.dart';
 import '../playback/playback_state.dart';
@@ -15,7 +16,7 @@ part 'playback_sleep_projection.dart';
 
 /// Root-owned UI projection; the controller remains the only playback truth.
 final class PlaybackPresenter extends ChangeNotifier {
-  PlaybackPresenter(this._playback, {this.sleepPersistence}) {
+  PlaybackPresenter(this._playback, {this.sleepPersistence, this.audioOutput}) {
     _playback.addListener(_changed);
     _playback.history.addListener(_historyChanged);
     sleepPersistence?.addListener(_historyChanged);
@@ -23,6 +24,9 @@ final class PlaybackPresenter extends ChangeNotifier {
 
   final PlaybackController _playback;
   final SleepPersistenceController? sleepPersistence;
+
+  /// Borrowed root observer; output-only notifications stay in the output panel.
+  final AudioOutputController? audioOutput;
   bool _pending = false;
   bool _disposed = false;
   bool _actionFailed = false;

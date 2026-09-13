@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7H5C2：[输出面板报告](phase_7h5c2_output_panel_report.md)/ADR124。生产Presenter借用根观察器，播放/歌词/Inspector既有设置路由显示输出与系统设置入口；输出局部通知、页面许可及安全反馈。11新Widget+3新Golden，旧217图不变；父ab29b7f双平台云端成功。分支codex/audio-output-panel，base codex/output-settings-action。硬件验收和Phase7其他偏好及Phase8–11仍待完成。以下为历史记录。
+
 最新Phase7H5C1：[设置操作报告](phase_7h5c1_settings_action_report.md)/ADR123。根输出控制器显式设置请求等待读取后验证页面许可、能力及关闭状态，busy防重入，关闭排空已接受启动；15操作+1根测试。父b7ffb6f双平台云端成功。本批未接Presenter/界面，分支codex/output-settings-action，base codex/root-audio-output。以下为历史记录。
 
 最新Phase7H5B2c：[根输出报告](phase_7h5b2c_root_output_report.md)/ADR122。双平台生产Gateway已由Bootstrap交根所有，非阻塞初始化、前台转换刷新、关闭排空与安全失败清理；修复观察器事件Timer残留。新增9项Flutter测试并增强既有启动测试；Presenter/界面入口下一阶段。父6345f49双平台云端成功。分支codex/root-audio-output，base codex/audio-output-observer。以下为历史记录。

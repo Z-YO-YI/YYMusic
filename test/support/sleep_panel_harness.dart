@@ -5,6 +5,7 @@ import 'package:yymusic/app/playback_presenter.dart';
 import 'package:yymusic/design_system/yy_theme.dart';
 import 'package:yymusic/domain/repositories/sleep_timer_repository.dart';
 import 'package:yymusic/features/player/common/sleep_settings_panel.dart';
+import 'package:yymusic/platform/audio_output/audio_output_controller.dart';
 import 'package:yymusic/playback/playback_controller.dart';
 import 'package:yymusic/playback/sleep_persistence_controller.dart';
 
@@ -18,6 +19,7 @@ final class SleepPanelFixture {
     bool schedulerFails = false,
     DateTime Function()? clock,
     SleepTimerRepository? repository,
+    AudioOutputController? output,
   }) {
     playback = PlaybackController(
       engine,
@@ -34,7 +36,11 @@ final class SleepPanelFixture {
         repository: repository,
       );
     }
-    presenter = PlaybackPresenter(playback, sleepPersistence: persistence);
+    presenter = PlaybackPresenter(
+      playback,
+      sleepPersistence: persistence,
+      audioOutput: output,
+    );
   }
   final engine = FakeAudioEngine();
   final library = FakeLibraryRepository(tracks: [playbackFixtureTrack]);

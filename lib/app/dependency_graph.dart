@@ -121,6 +121,7 @@ final class DependencyGraph {
     playbackPresenter = PlaybackPresenter(
       playback,
       sleepPersistence: sleepPersistence,
+      audioOutput: audioOutputGateway == null ? null : audioOutput,
     );
     home = HomeController(
       playback: playback,

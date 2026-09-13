@@ -1,5 +1,9 @@
 # YYMusic 架构决策记录
 
+## ADR-124：输出面板借用根观察器并局部重绘，不提供模拟选择
+
+H5C2。既有PlaybackPresenter传递可选根观察器，但不转发它的高频/busy通知；输出区域独立监听，避免自己的启动使父generation失效。生产工厂始终注入，独立无平台契约的旧展示保持可选。只读状态严格区分unknown/systemDefault/playerRoute，设置操作复用H5C1实时许可，反馈再验页面；不改变根观察或宣称设备切换。现有合成设计token与原生Dialog/BottomSheet复用，无WebView或伪设备卡。见[报告](phase_7h5c2_output_panel_report.md)。
+
 ## ADR-123：系统设置启动由根控制器以实时页面许可守护
 
 H5C1。先登记单一launch Future以防通知/许可回调重入，等待读操作排空后再复核页面许可与能力；失效许可不调用原生宿主。opened保持OS接受启动语义，不改观察或立即推断路由；反馈由后续Presenter复核页面。根关闭等待已接受启动，但不能撤销已交给OS的副作用。未知路由不意味着系统设置不可用，两类事实独立。见[报告](phase_7h5c1_settings_action_report.md)。
