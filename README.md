@@ -1,5 +1,7 @@
 # YYMusic
 
+最新增量：**Phase 7H6C 播放偏好设置界面**。在“设置 → 播放”提供真实“播放结束后继续”开关、保存状态与失败重试，Android手机/平板和Windows共用已接入生产存储的根协调器。见[报告](docs/phase_7h6c_continuation_settings_report.md)。无缝播放、音量标准化未实现，仅说明限制；整体尚未上线。以下为历史记录。
+
 最新增量：**Phase 7H6B2b 自动继续生产持久化接入**。应用数据范围与根启动流程已接通偏好读取/保存，真实SQLite重开验证；用户意图优先、损坏记录保留、保存可重试、退出排空。见[报告](docs/phase_7h6b2b_continuation_binding_report.md)。设置开关UI仍待H6C，不代表完整应用已上线。以下为历史记录。
 
 最新增量：**Phase 7H6B2a 自动继续启动恢复保护**。新增一次性根恢复许可，晚到的存储结果不能覆盖用户选择（包括选择当前默认值），关闭/通知重入安全且恢复不触发播放。见[报告](docs/phase_7h6b2a_continuation_restore_report.md)。尚未连接应用启动读写或设置开关，整体仍在 Phase 7。以下为历史记录。

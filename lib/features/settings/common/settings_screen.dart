@@ -5,6 +5,7 @@ import '../../../app/app_routes.dart';
 import '../../../app/app_view_state.dart';
 import '../../../app/layout_class.dart';
 import '../../../design_system/yy_tokens.dart';
+import '../../../playback/continuation_persistence_controller.dart';
 import '../phone/phone_settings_layout.dart';
 import '../tablet/tablet_settings_layout.dart';
 import '../windows/windows_settings_layout.dart';
@@ -20,11 +21,13 @@ class SettingsScreen extends StatefulWidget {
     required this.navigation,
     required this.viewState,
     this.routeActive,
+    this.continuation,
   });
   final YYPlatform platform;
   final AppearanceSettingsController controller;
   final AppNavigation navigation;
   final AppViewState viewState;
+  final ContinuationPersistenceController? continuation;
 
   /// Borrowed app-level route visibility; no routing package enters this feature.
   final ValueListenable<bool>? routeActive;
@@ -54,9 +57,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _scroll = ScrollController(
       initialScrollOffset: widget.viewState.scrollOffset(AppRoute.settings),
     )..addListener(_saveScroll);
-    if (widget.viewState.selection(AppRoute.settings) == 'about') {
-      _section = SettingsSection.about;
+    for (final section in SettingsSection.values) {
+      if (widget.viewState.selection(AppRoute.settings) == section.name &&
+          (section != SettingsSection.playback ||
+              widget.continuation != null)) {
+        _section = section;
+      }
     }
+    widget.continuation?.addListener(_continuationChanged);
     widget.controller.appearance.addListener(_appearanceChanged);
     widget.routeActive?.addListener(_routeChanged);
   }
@@ -86,6 +94,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void didUpdateWidget(SettingsScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.continuation != widget.continuation) {
+      oldWidget.continuation?.removeListener(_continuationChanged);
+      widget.continuation?.addListener(_continuationChanged);
+      _generation++;
+      if (widget.continuation == null && _section == SettingsSection.playback) {
+        _section = SettingsSection.appearance;
+      }
+    }
     if (oldWidget.routeActive != widget.routeActive) {
       oldWidget.routeActive?.removeListener(_routeChanged);
       widget.routeActive?.addListener(_routeChanged);
@@ -102,6 +118,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   bool get _onSettingsRoute => widget.routeActive?.value ?? true;
+
+  void _continuationChanged() {
+    if (mounted) setState(() => _generation++);
+  }
 
   void _releaseEditorFocus() {
     final generation = _generation;
@@ -166,6 +186,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void dispose() {
     _generation++;
     widget.routeActive?.removeListener(_routeChanged);
+    widget.continuation?.removeListener(_continuationChanged);
     widget.controller.appearance.removeListener(_appearanceChanged);
     _scroll.removeListener(_saveScroll);
     _scroll.dispose();
@@ -192,6 +213,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           final size = MediaQuery.sizeOf(context);
           final sections = SettingsSections(
             controller: widget.controller,
+            continuation: widget.continuation,
             section: _section,
             panelKey: _panelKey,
             hex: _hex,

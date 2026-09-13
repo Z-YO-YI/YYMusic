@@ -107,6 +107,9 @@ class _YYMusicAppState extends ConsumerState<YYMusicApp>
         playlistAdds: ref.read(dependencyGraphProvider).playlistAdds,
         systemPlaylists: ref.read(dependencyGraphProvider).systemPlaylists,
         queueController: ref.read(dependencyGraphProvider).queue,
+        continuationSettings: ref
+            .read(dependencyGraphProvider)
+            .continuationPersistence,
         appearanceSettings: ref
             .read(dependencyGraphProvider)
             .appearanceSettings,

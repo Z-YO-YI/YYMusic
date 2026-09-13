@@ -12,10 +12,12 @@ import '../../../design_system/yy_theme_swatch.dart';
 import '../../../design_system/yy_toggle.dart';
 import '../../../design_system/yy_tokens.dart';
 import '../../../domain/models/load_state.dart';
+import '../../../playback/continuation_persistence_controller.dart';
 import 'appearance_settings_controller.dart';
 
 enum SettingsSection {
   appearance('外观', YYGlyph.palette),
+  playback('播放', YYGlyph.play),
   about('关于 YYMusic', YYGlyph.info);
 
   const SettingsSection(this.label, this.glyph);
@@ -40,8 +42,10 @@ final class SettingsSections {
     required this.onPreset,
     required this.onSection,
     required this.onLicenses,
+    this.continuation,
   });
   final AppearanceSettingsController controller;
+  final ContinuationPersistenceController? continuation;
   final SettingsSection section;
   final GlobalKey panelKey;
   final TextEditingController hex;
@@ -83,58 +87,59 @@ final class SettingsSections {
     final theme = YYTheme.of(context);
     final items = [
       for (final item in SettingsSection.values)
-        YYControlAction(
-          key: ValueKey('settings-section-${item.name}'),
-          label: item.label,
-          selected: section == item,
-          onActivate: _action(() => onSection(item)),
-          builder: (context, state) {
-            final selected = section == item;
-            final fill = selected
-                ? Color.alphaBlend(theme.accent.soft, theme.colors.elevated)
-                : state.pressed || state.hovered
-                ? theme.colors.subtle
-                : theme.colors.elevated;
-            final color = selected
-                ? theme.accent.readableOn(fill)
-                : theme.colors.secondary;
-            return Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: YYSpace.md,
-                vertical: YYSpace.md,
-              ),
-              decoration: BoxDecoration(
-                color: fill,
-                borderRadius: BorderRadius.circular(
-                  YYRadius.settingsNavigation,
+        if (item != SettingsSection.playback || continuation != null)
+          YYControlAction(
+            key: ValueKey('settings-section-${item.name}'),
+            label: item.label,
+            selected: section == item,
+            onActivate: _action(() => onSection(item)),
+            builder: (context, state) {
+              final selected = section == item;
+              final fill = selected
+                  ? Color.alphaBlend(theme.accent.soft, theme.colors.elevated)
+                  : state.pressed || state.hovered
+                  ? theme.colors.subtle
+                  : theme.colors.elevated;
+              final color = selected
+                  ? theme.accent.readableOn(fill)
+                  : theme.colors.secondary;
+              return Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: YYSpace.md,
+                  vertical: YYSpace.md,
                 ),
-                border: Border.all(
-                  color: state.focused
-                      ? theme.colors.text
-                      : const Color(0x00000000),
-                  width: 1.5,
+                decoration: BoxDecoration(
+                  color: fill,
+                  borderRadius: BorderRadius.circular(
+                    YYRadius.settingsNavigation,
+                  ),
+                  border: Border.all(
+                    color: state.focused
+                        ? theme.colors.text
+                        : const Color(0x00000000),
+                    width: 1.5,
+                  ),
                 ),
-              ),
-              child: Row(
-                mainAxisSize: vertical ? MainAxisSize.max : MainAxisSize.min,
-                children: [
-                  YYIcon(glyph: item.glyph, size: 18, color: color),
-                  const SizedBox(width: YYSpace.sm),
-                  Flexible(
-                    child: Text(
-                      item.label,
-                      style: YYTypography.text(
-                        size: 12,
-                        weight: 650,
-                        color: color,
+                child: Row(
+                  mainAxisSize: vertical ? MainAxisSize.max : MainAxisSize.min,
+                  children: [
+                    YYIcon(glyph: item.glyph, size: 18, color: color),
+                    const SizedBox(width: YYSpace.sm),
+                    Flexible(
+                      child: Text(
+                        item.label,
+                        style: YYTypography.text(
+                          size: 12,
+                          weight: 650,
+                          color: color,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
+                  ],
+                ),
+              );
+            },
+          ),
     ];
     return YYSurface(
       padding: const EdgeInsets.all(YYSpace.sm),
@@ -152,10 +157,68 @@ final class SettingsSections {
 
   Widget panel(BuildContext context) => YYSurface(
     key: panelKey,
-    child: section == SettingsSection.appearance
-        ? _appearance(context)
-        : _about(context),
+    child: switch (section) {
+      SettingsSection.appearance => _appearance(context),
+      SettingsSection.playback => _playback(context),
+      SettingsSection.about => _about(context),
+    },
   );
+
+  Widget _playback(BuildContext context) {
+    final storage = continuation!;
+    final failure = storage.failure;
+    final status = !storage.persistent
+        ? '仅本次会话生效'
+        : storage.loading
+        ? '正在读取播放偏好…'
+        : storage.saving || storage.unsaved
+        ? '正在保存播放偏好…'
+        : '播放偏好使用本机存储，更改后会自动保存。';
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('播放', style: YYTypography.sectionTitle),
+        const SizedBox(height: YYSpace.sm),
+        _copy(context, '更改自动继续不会中断当前曲目，也不会重新播放已结束的曲目。'),
+        _SettingsRow(
+          label: '播放结束后继续',
+          help: '从当前队列自动播放下一首。关闭时，本曲结束后停止自动推进；手动切歌不受影响。',
+          compact: true,
+          child: YYToggle(
+            key: const ValueKey('continuation-toggle'),
+            label: '播放结束后继续',
+            value: storage.enabled,
+            onChanged: !enabled || !storage.canSet
+                ? null
+                : (value) {
+                    _action(() {
+                      if (storage.canSet) storage.setEnabled(value);
+                    })?.call();
+                  },
+          ),
+        ),
+        const SizedBox(height: YYSpace.md),
+        if (failure != null)
+          YYErrorBanner(
+            key: const ValueKey('continuation-storage-error'),
+            title: failure.diagnosticId == 'continuation-persistence.load'
+                ? '无法读取播放偏好'
+                : '播放偏好尚未保存',
+            message: failure.diagnosticId == 'continuation-persistence.load'
+                ? '原有记录未被覆盖。可重试读取，或明确更改开关以保存本次选择。'
+                : '本次选择已生效，重启后可能使用旧设置。请重试保存。',
+            actionLabel: '重试',
+            onAction: storage.canRetry
+                ? _action(() => storage.retry(failure))
+                : null,
+          )
+        else
+          Semantics(liveRegion: true, child: _copy(context, status)),
+        const SizedBox(height: YYSpace.lg),
+        _copy(context, '无缝播放与音量标准化尚未支持，当前不提供这两项开关。'),
+      ],
+    );
+  }
 
   Widget _copy(BuildContext context, String text) => Text(
     text,

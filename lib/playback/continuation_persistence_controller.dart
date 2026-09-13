@@ -33,6 +33,8 @@ final class ContinuationPersistenceController extends ChangeNotifier {
   Future<void>? _worker, _initializing, _closing;
 
   bool get persistent => repository != null;
+  bool get enabled => _playback.continueAfterTrack;
+  bool get canSet => !_stopped && !_playback.isClosed;
   bool get loading => _loading;
   bool get saving => _saving;
   bool get unsaved => persistent && (_dirty || _saving);
