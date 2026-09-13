@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7I2：[可见反馈报告](phase_7i2_queue_feedback_report.md)/ADR131。QueueScreen已接根失败列表，显示安全原因和当前精确匹配元数据，快照确认不影响队列/播放；7新Widget及3新Golden，原223图不变。分支codex/queue-skip-feedback，base codex/queue-skip-unplayable。整体目标尚未完成。
+
 最新Phase7I：[队列失效跳过报告](phase_7i_queue_skip_report.md)/ADR130。复核主指令§20发现此前只尝试一次下一项，现按捕获队列有界跳过曲目失败并保留20项安全会话记录；明确点选不自动替换，错误分类限定音频/解析边界，不吞持久化故障。可见反馈、其他Phase7缺口和Phase8–11仍待完成。分支codex/queue-skip-unplayable，base codex/continuation-settings-ui。
 
 最新Phase7H6C：[设置界面报告](phase_7h6c_continuation_settings_report.md)/ADR129。播放分类、真实自动继续开关、读取/保存/错误重试已接生产路由；保留分类与宽度切换，旧回调/隐藏路由不可操作。3新Golden、7设置分类Golden更新且逐图检查，213旧图不变。分支codex/continuation-settings-ui，base codex/continuation-persistence-binding。以下为历史记录。

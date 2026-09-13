@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+Phase7I2：7新Widget覆盖三平台实际反馈/确认无副作用、旧快照不能清新记录、离开队列后旧操作失效、移除项仍保留安全记录、568×320横屏滚动可操作；3新130%字体Golden逐张查看，223旧图不变。见[报告](phase_7i2_queue_feedback_report.md)。
+
 Phase7I：19项新队列失效推进测试，覆盖顺序/随机、缺失软引用、四种不可用metadata、循环有界、显式点选不替换、全局故障停止、load与stop错误边界、关闭/自动继续撤销及20条不可变诊断上限。223张Golden不变，详见[报告](phase_7i_queue_skip_report.md)。
 
 Phase7H6C：8新Widget验证三平台真实路由开关、错误重试与脱敏、隐藏路由/旧回调撤销、宽度切换/键盘、忙碌期间更新最终选择。3新130%字体Golden，7既有设置Golden因新增播放分类更新，均逐张查看，其他213图不变；详见[报告](phase_7h6c_continuation_settings_report.md)。

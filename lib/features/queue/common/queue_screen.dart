@@ -13,10 +13,13 @@ import '../../../design_system/yy_icon.dart';
 import '../../../design_system/yy_queue_tile.dart';
 import '../../../design_system/yy_theme.dart';
 import '../../../design_system/yy_tokens.dart';
+import '../../../domain/models/domain_failure.dart';
 import '../../../domain/models/load_state.dart';
 import '../../../domain/models/queue_edit.dart';
 import '../../../domain/models/system_playlist_content.dart';
+import '../../../domain/models/track.dart';
 import '../../../playback/queue_controller.dart';
+import '../../../playback/queue_playback_failure.dart';
 import '../../playlists/common/system_playlist_controller.dart';
 import '../../playlists/common/system_playlist_sections.dart';
 import '../phone/phone_queue_layout.dart';
@@ -25,6 +28,7 @@ import '../windows/windows_queue_layout.dart';
 import 'queue_page_controller.dart';
 import 'queue_reorder_sliver.dart';
 
+part 'queue_playback_feedback.dart';
 part 'queue_sections.dart';
 
 class QueueScreen extends StatefulWidget {
@@ -62,12 +66,16 @@ class QueueScreenState extends State<QueueScreen> {
   SystemPlaylistContent? _focusContent;
   _QueueConfirmation? _confirmation;
   bool _active = true;
+  bool _showPlaybackFailures = false;
   Size? _size;
   int _offset = 0;
 
   bool get _live =>
       mounted && _active && (ModalRoute.of(context)?.isCurrent ?? true);
   bool get _interactive => _live && _confirmation == null;
+
+  void _togglePlaybackFailures() =>
+      setState(() => _showPlaybackFailures = !_showPlaybackFailures);
 
   @override
   void initState() {

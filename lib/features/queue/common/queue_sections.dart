@@ -62,6 +62,8 @@ extension _QueueSections on QueueScreenState {
           ],
         ),
       ),
+      if (widget.queue.playbackFailures.isNotEmpty)
+        box(_playbackFeedback(permit)),
       if (widget.queue.editBusy || read.busy) box(const Text('正在处理队列操作…')),
       if (failure != null)
         box(

@@ -119,6 +119,18 @@ final class PlaybackController extends ChangeNotifier {
   /// Most recent 20 skipped entries; survives successful advancement this session.
   List<QueuePlaybackFailure> get queuePlaybackFailures =>
       _queuePlaybackFailures;
+
+  /// Acknowledges only this exact diagnostic snapshot; never edits the queue.
+  void acknowledgeQueuePlaybackFailures(List<QueuePlaybackFailure> expected) {
+    if (_disposed ||
+        expected.isEmpty ||
+        !identical(expected, _queuePlaybackFailures)) {
+      return;
+    }
+    _queuePlaybackFailures = const [];
+    _publish(_state);
+  }
+
   bool get isClosed => _disposed;
   bool get continueAfterTrack => _continueAfterTrack;
 
