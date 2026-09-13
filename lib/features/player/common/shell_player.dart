@@ -221,11 +221,14 @@ class _PlayerControlsState extends State<_PlayerControls> {
         : null;
     void seekCancel() => setState(() => _seekPreview = null);
     if (widget.inspector) {
+      final summary = presenter.queueSummary;
       return YYNowPlayingInspector(
         onOpenSettings: _navigationAction(
           favoriteGeneration,
           widget.onOpenSettings,
         ),
+        onOpenQueue: _queueAction(favoriteGeneration),
+        currentQueueOrdinal: summary.currentOrdinal,
         onOpenFullscreen: _navigationAction(
           favoriteGeneration,
           widget.onOpenFullscreen,
@@ -236,7 +239,7 @@ class _PlayerControlsState extends State<_PlayerControls> {
         data: view,
         sourceLabel: presenter.sourceLabel,
         statusLabel: presenter.statusLabel,
-        queueCount: presenter.queueCount,
+        queueCount: summary.totalCount,
         errorMessage: presenter.errorMessage,
         loading: presenter.busy,
         onTogglePlayback: toggle,

@@ -1,5 +1,7 @@
 # YYMusic
 
+最新增量：**Phase 7H3B 侧栏队列摘要与入口**。Windows/平板侧栏显示真实队列总数、当前列表序号，可展开原生队列页；空态、重排同步、短窗口滚动、键盘与旧操作保护已验证。14新Widget+3新Golden，完整1954 Flutter/151 Node、严格分析及Android Debug预检通过，见[报告](docs/phase_7h3b_inspector_queue_report.md)。复用原设计组件，未复制模拟下一首列表；其他播放偏好、真实导入及发行尚未完成。以下为历史记录。
+
 最新增量：**Phase 7H3A 只读队列摘要接口**。准确保留当前队列条目和列表序号，缓存避免进度通知反复扫描；尚未绑定侧栏界面。另修复云端截图中测试曲目入库时间造成的排序不稳定，不修改截图基准。完整1937 Flutter/150 Node、208原Golden、严格分析和Android Debug预检通过，见[报告](docs/phase_7h3a_queue_summary_report.md)。父阶段Windows失败由新提交修复并另验，H3B继续界面接入，应用整体尚未上线。以下为历史记录。
 
 最新增量：**Phase 7H2C4 侧栏睡眠设置入口**。Windows/平板侧栏“更多”和“播放设置”接入同一受保护原生弹层；手机、平板竖屏和窄Windows经曲目信息→播放页可达。18新Widget+3新Golden，完整1926 Flutter/149 Node、严格分析及Android Debug预检通过，见[报告](docs/phase_7h2c4_inspector_sleep_report.md)。复用原Figma导出组件/图标，无WebView；侧栏队列摘要、其余播放设置及真实导入/后台/发行尚未完成。以下为历史记录。

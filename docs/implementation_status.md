@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7H3B：[计划](phase_7h3b_inspector_queue_plan.md)/ADR106/[报告](phase_7h3b_inspector_queue_report.md)。Inspector绑定H3A根摘要与既有受保护队列入口，移除“队列详情正在开发”提示；以列表序号而非预测随机次序呈现。14新Widget+3新Golden，完整1954 Flutter/151 Node、211 Golden、542文件格式零修改、严格分析/生成迁移及Android Debug18.4秒通过。22旧图审核更新（侧栏页脚/滚动位置及相关绘制），186旧图不变。分支codex/inspector-queue-access，base codex/inspector-queue-summary；前置6d357ad双CI34726594415/34726626442 SUCCESS，确认排序修复。新SHA另验，Phase7整体及Phase8–11未完成。以下为历史记录。
+
 最新Phase7H3A：[计划](phase_7h3a_queue_summary_plan.md)/ADR105/[报告](phase_7h3a_queue_summary_report.md)。新增准确只读队列摘要与根身份缓存，10单测，不预测随机次序；尚未绑定Inspector UI。优先修复父阶段两次Windows截图失败：测试同名曲目逐次系统时间造成排序差异，固定导入批次时间并补1独立回归，未修改任何PNG。最终1937 Flutter/150 Node、208原Golden、540格式零改动、严格分析/生成迁移及Android Debug48秒通过。分支codex/inspector-queue-summary，base codex/inspector-sleep-settings；父SHA失败不冒称成功，新SHA另验。H3B继续侧栏摘要/入口，Phase7整体及Phase8–11未完成。以下为历史记录。
 
 最新Phase7H2C4：[计划](phase_7h2c4_inspector_sleep_plan.md)/ADR104/[报告](phase_7h2c4_inspector_sleep_report.md)。Inspector两个既有按钮绑定根URI动作，沿用Shell生命周期撤销和唯一modal；窄屏通过既有曲目信息/播放页路径实际点击验收。18新Widget+3新Golden，完整1926 Flutter/149 Node、208 Golden、537文件格式零修改、严格分析/生成/迁移及Android Debug预检通过。24旧截图审核更新启用态，181旧图不变；新增图挂载前固定阴影策略，避免缓存绘制差异，未放宽阈值。分支codex/inspector-sleep-settings，Draft base codex/shell-sleep-settings。前置4784cba双CI34724213791/34724254216 SUCCESS；本批新SHA另验。Phase7整体及Phase8–11尚未完成，无新增设备安装/出声或发行验收。以下为历史记录。
