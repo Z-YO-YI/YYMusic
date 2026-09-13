@@ -13,6 +13,8 @@ import '../domain/repositories/library_repository.dart';
 import '../platform/contracts/media_session_gateway.dart';
 import 'audio_engine.dart';
 import 'audio_engine_state.dart';
+import 'audio_sequence.dart';
+import 'playable_source.dart';
 import 'playback_continuation_restore.dart';
 import 'playback_history_recorder.dart';
 import 'playback_sleep_restore.dart';
@@ -28,6 +30,7 @@ part 'sleep_deadline_actions.dart';
 part 'sleep_restore_actions.dart';
 part 'sleep_fade_actions.dart';
 part 'queue_advance.dart';
+part 'native_sequence_playback.dart';
 
 typedef PlaybackRandomIndex = int Function(int upperBound);
 
@@ -107,6 +110,8 @@ final class PlaybackController extends ChangeNotifier {
   int _sessionRevision = 0;
   bool _completionHandled = true;
   bool _loadingSource = false;
+  _NativeSequenceBinding? _nativeSequence;
+  int _nativePolicyRevision = 0;
   bool _disposed = false;
   bool _notifierDisposed = false;
   int _notificationDepth = 0;
@@ -146,6 +151,8 @@ final class PlaybackController extends ChangeNotifier {
     if (enabled == _continueAfterTrack) return;
     _continueAfterTrack = enabled;
     _continuationRevision++;
+    _nativePolicyRevision++;
+    _requestNativeBoundary();
     _publish(_state);
   }
 
@@ -496,6 +503,8 @@ final class PlaybackController extends ChangeNotifier {
 
   void setShuffleEnabled(bool value) {
     if (_disposed || value == _state.shuffleEnabled) return;
+    _nativePolicyRevision++;
+    _requestNativeBoundary();
     _publish(_state.copyWith(shuffleEnabled: value));
     if (value) {
       _rebuildShuffleOrder();
@@ -507,6 +516,8 @@ final class PlaybackController extends ChangeNotifier {
 
   void setRepeatMode(RepeatMode value) {
     if (_disposed || value == _state.repeatMode) return;
+    _nativePolicyRevision++;
+    _requestNativeBoundary();
     _publish(_state.copyWith(repeatMode: value));
   }
 
@@ -514,6 +525,7 @@ final class PlaybackController extends ChangeNotifier {
     String entryId, {
     bool Function()? canPlay,
     void Function(DomainFailure)? onSkippableFailure,
+    bool nativeSequence = false,
   }) async {
     if (canPlay?.call() == false) return;
     _requireEngine();
@@ -561,6 +573,12 @@ final class PlaybackController extends ChangeNotifier {
         );
       }
       trackFailureBoundary = false;
+      final nativePlan = nativeSequence
+          ? await _resolveNativeSequence(entryId, track, source, canPlay)
+          : null;
+      final nativeRevision = _nativePolicyRevision;
+      _checkNotDisposed();
+      if (canPlay?.call() == false) return;
       if (canPlay != null) {
         _sessionRevision++;
         _completionHandled = true;
@@ -590,18 +608,42 @@ final class PlaybackController extends ChangeNotifier {
       _loadingSource = true;
       history.end();
       trackFailureBoundary = true;
-      await _engine.load(source);
+      if (nativePlan == null) {
+        await _engine.load(source);
+      } else {
+        final binding = _NativeSequenceBinding(
+          nativePlan.sequence.cursors,
+          nativePlan.tracks,
+        );
+        _nativeSequence = binding;
+        await (_engine as AudioSequenceEngine).loadSequence(
+          nativePlan.sequence,
+        );
+        if (!identical(_nativeSequence, binding)) {
+          throw DomainFailure(
+            code: DomainFailureCode.playbackInterrupted,
+            diagnosticId: 'playback.native-sequence-load-revoked',
+          );
+        }
+      }
       trackFailureBoundary = false;
       _loadingSource = false;
       _checkNotDisposed();
       _loadedEntryId = entryId;
       history.begin(track.ref);
+      final binding = _nativeSequence;
+      if (binding != null &&
+          (binding.boundaryRequested ||
+              nativeRevision != _nativePolicyRevision)) {
+        await _retainNativeCurrent(binding);
+      }
       if (canPlay?.call() == false) {
         await _stopEngine();
         return;
       }
       await _startPlayback(canPlay: canPlay);
     } catch (error, stack) {
+      _nativeSequence = null;
       _loadingSource = false;
       history.end();
       final failure = _safeFailure(error, 'load-entry');
@@ -676,8 +718,15 @@ final class PlaybackController extends ChangeNotifier {
     return null;
   }
 
-  void _acceptEngineState(AudioEngineState value) {
+  void _acceptEngineState(
+    AudioEngineState value, {
+    QueueSnapshot? adoptedQueue,
+    Track? adoptedTrack,
+  }) {
     if (_disposed) return;
+    if (adoptedQueue == null && _receiveNativeState(value)) return;
+    final effectiveQueue = adoptedQueue ?? _state.queue;
+    final effectiveTrack = adoptedTrack ?? _state.currentTrack;
     if (value.phase == AudioEnginePhase.completed && _loadedEntryId == null) {
       return;
     }
@@ -711,8 +760,8 @@ final class PlaybackController extends ChangeNotifier {
     final continuationRevision = _continuationRevision;
     if (!_loadingSource &&
         _loadedEntryId != null &&
-        _loadedEntryId == _state.queue.currentEntryId &&
-        _state.currentTrack != null) {
+        _loadedEntryId == effectiveQueue.currentEntryId &&
+        effectiveTrack != null) {
       history.observe(value);
     }
     final completedEntryId = _loadedEntryId;
@@ -740,6 +789,8 @@ final class PlaybackController extends ChangeNotifier {
     _publish(
       _state.copyWith(
         phase: phase,
+        queue: effectiveQueue,
+        currentTrack: effectiveTrack,
         position: value.position,
         buffered: value.buffered,
         duration: value.duration,
@@ -778,6 +829,13 @@ final class PlaybackController extends ChangeNotifier {
     String? nextEntryId,
   }) async {
     if (canCommit?.call() == false) return false;
+    if (_nativeSequence != null && _retainsCurrentTrack(snapshot)) {
+      if (_nativeSequence!.pending.isNotEmpty) {
+        await _stopEngine();
+      } else {
+        await _retainNativeCurrent(_nativeSequence!);
+      }
+    }
     if (!_retainsCurrentTrack(snapshot) &&
         _state.currentTrack != null &&
         _engine.isAvailable) {
@@ -862,6 +920,7 @@ final class PlaybackController extends ChangeNotifier {
   }
 
   Future<void> _stopEngine() async {
+    _nativeSequence = null;
     _interruptSleepFade();
     history.end();
     _sessionRevision++;

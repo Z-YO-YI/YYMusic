@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7J5：[播放根序列报告](phase_7j5_root_native_sequence_report.md)/ADR136。显式playNativeSequence已贯通唯一PlaybackController：顺序解析前缀、一次加载、原生切曲持久化、原子元数据/时钟及有界历史证据，策略/编辑截尾。27项根测试含真实SQLite及加载撤销后禁止play，加1项真实插件通道到根贯通。分支codex/root-native-sequence，base codex/sequence-continuation-boundary。生产UI未开放，无缝/连续窗口预载及原生验收不记完成；以下为历史阶段。
+
 最新Phase7J4：[本曲边界报告](phase_7j4_continuation_boundary_report.md)/ADR135。原生尾部移除经共用引擎串行与身份复核，使用未被SequenceState截断的原始播放事件索引；13新测试覆盖正常保留、旧请求、切曲/回切竞态、失败与关闭。分支codex/sequence-continuation-boundary，base codex/sequence-event-isolation。根策略尚未绑定，不宣称用户无缝播放完成；以下为历史阶段。
 
 最新Phase7J3：[原生事件隔离报告](phase_7j3_event_isolation_report.md)/ADR134。整批替换使用新AudioPlayer与原生事件通道；旧订阅及play Future按generation撤销，音量/速率保留。8项新通道测试，含插件释放错误被吞的明确限制证据；根尚未切换序列，无缝未上线。分支codex/sequence-event-isolation，base codex/sequence-engine-identity；以下为历史阶段。
