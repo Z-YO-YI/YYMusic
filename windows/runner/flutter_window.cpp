@@ -27,6 +27,7 @@ bool FlutterWindow::OnCreate() {
   RegisterPlugins(flutter_controller_->engine());
   InitializeWindowChannel();
   InitializeFullscreenChannel();
+  InitializeAudioOutputChannel();
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
 
   flutter_controller_->engine()->SetNextFrameCallback([&]() {
@@ -42,6 +43,7 @@ bool FlutterWindow::OnCreate() {
 }
 
 void FlutterWindow::OnDestroy() {
+  audio_output_channel_ = nullptr;
   SetFullscreen(false);
   fullscreen_channel_ = nullptr;
   window_channel_ = nullptr;

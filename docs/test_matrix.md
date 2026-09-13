@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+Phase7H5B1：21项通道mock测试和1项双宿主固定目标/构建注册源文件门禁。Android宿主编译通过，Windows本地预检受symlink环境限制，不能记通过。全量及后续云端证据见[报告](phase_7h5b1_native_settings_report.md)，无新截图或实际设置启动验收。
+
 Phase7H5A：22项输出路由/来源/标签校验/隐私/能力/不可用Gateway单测；不是原生设备读取或设置启动测试。全量与构建证据见[报告](phase_7h5a_audio_output_contract_report.md)，无新截图基线。
 
 Phase7H4C2b2：17项新真实根/FakeAudioEngine集成测试，覆盖音量与渐降、中断、旧许可、失败、慢命令及原生回调关闭；旧截止/恢复/存储用例显式验证新增音量写入，不过滤命令。最终全量/构建见[报告](phase_7h4c2b2_root_fade_report.md)。无新视觉基线或设备听感验收。
