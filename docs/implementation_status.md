@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7H5A：[输出契约报告及H5B计划](phase_7h5a_audio_output_contract_report.md)/ADR118。AudioOutputGateway区分未知、系统默认和实际路由；设置启动结果不等同切换；标签校验/日志脱敏、安全不可用实现及22项测试。尚无原生或UI绑定，下一批按锁定平台代码和一手API落实读取/启动。分支codex/audio-output-contract，base codex/root-sleep-fade。以下为历史记录。
+
 最新Phase7H4C2b2：[生产根淡出报告](phase_7h4c2b2_root_fade_report.md)/ADR117。分钟到期已绑定SleepFadeRunner，临时振幅与用户音量隔离，用户中断/切曲前恢复、关闭清理通道排空，恢复失败可观察且不掩盖先前播放错误。17项新根测试，旧截止/恢复/持久化断言明确加入音量命令，无Golden改动。分支codex/root-sleep-fade，base codex/sleep-fade-runner。代码启用不等同实机听感或Phase7整体完成。以下为历史记录。
 
 最新Phase7H4C2b1：[执行器报告与根接线清单](phase_7h4c2b1_fade_runner_report.md)/ADR116。SleepFadeRunner独立实现可取消等待、单调渐降、一次暂停、在途排空及finally恢复，20项时序单测。生产根尚未绑定，下一批H4C2b2处理逐步串行与关闭恢复的防自等待。分支codex/sleep-fade-runner，base codex/playback-volume-intent。以下为历史记录。

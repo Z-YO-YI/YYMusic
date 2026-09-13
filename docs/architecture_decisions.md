@@ -1,5 +1,9 @@
 # YYMusic 架构决策记录
 
+## ADR-118：输出设备观察必须保留来源，设置启动不是切换成功
+
+H5A。平台契约区分unknown/systemDefault/playerRoute，未知不填设备名；系统默认不冒充当前播放器实际路由，已连接设备不构成路由证据。设置入口能力独立，opened仅为OS接受启动；返回后重新读取。设备标签限长且拒绝内部控制字符，异常及调试输出脱敏，无持久化。先提供诚实不可用Gateway，不暴露未实现的切换API；原生适配与唯一根投影后续独立验收。见[报告](phase_7h5a_audio_output_contract_report.md)。
+
 ## ADR-117：根淡出作业与命令尾链分开排空
 
 H4C2b2。根持有唯一当前SleepFadeRunner及在途作业集合，逐步写/暂停通过原_operationTail，每次重验generation/entry；间隔在尾链外。临时振幅dirty标记只在实际写前置位，恢复或用户新音量成功才清除。用户播放前恢复，暂停/停止后finally恢复；旧runner让位新runner。关闭先撤销，再等待作业和尾链，只允许私有恢复命令在disposed后执行，借用引擎由Graph最后释放。恢复失败由close返回，音量回报不抹除已有播放错误。生产分钟到期正式启用；本曲结束自然完成策略不变。见[报告](phase_7h4c2b2_root_fade_report.md)。

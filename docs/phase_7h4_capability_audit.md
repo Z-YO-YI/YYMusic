@@ -1,5 +1,7 @@
 # Phase 7H4：剩余播放能力审计
 
+后续状态：H4A倒计时、H4B分钟恢复及[H4C生产根淡出](phase_7h4c2b2_root_fade_report.md)已实现，真实设备听感仍待验收。[H5A](phase_7h5a_audio_output_contract_report.md)现开始输出设备契约，尚无原生/UI绑定。下文是原始审计记录，其“未实现”睡眠条目不代表最新代码状态；输出设备、无缝、标准化与继续策略缺口仍保留。
+
 2026-09-13，基线6d1bb500ec1b6a49a222ae73f8206488b80787ce，仓库Z-YO-YI/YYMusic。fetch/ff-only pull且干净，独立分支codex/playback-capability-audit，Draft base codex/inspector-queue-access。本批只审计、修正验收记录及制定下一批协议，不改变应用行为、依赖或数据库。
 
 ## 用户要求与真实实现的差距
