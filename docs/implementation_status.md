@@ -1,5 +1,7 @@
 # 实施状态
 
+最新Phase7H6B2b：[生产持久化报告](phase_7h6b2b_continuation_binding_report.md)/ADR128。AppDataServices拥有专用仓库，根协调器启动恢复、串行保存并关闭排空。真实SQLite三次重开、坏记录保留/显式修复及关闭屏障均有测试；设置UI尚未接入。分支codex/continuation-persistence-binding，base codex/continuation-restore-permit。以下为历史记录。
+
 最新Phase7H6B2a：[恢复保护报告](phase_7h6b2a_continuation_restore_report.md)/ADR127。一次性许可及独立显式意图计数，11项新测试保护用户选择、关闭与重入；没有接通生产持久化协调器。分支codex/continuation-restore-permit，base codex/continuation-preference-storage。以下为历史记录。
 
 最新Phase7H6B1：[继续偏好存储报告](phase_7h6b1_continuation_storage_report.md)/ADR126。专用Repository、version1布尔codec及借用数据库的Drift适配，21新测试；不改schema。启动恢复/保存协调器和设置开关待后续。分支codex/continuation-preference-storage，base codex/playback-auto-continue。以下为历史记录。

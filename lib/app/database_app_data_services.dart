@@ -5,6 +5,7 @@ import '../data/repositories/drift_collection_repository.dart';
 import '../data/repositories/drift_library_repository.dart';
 import '../data/repositories/drift_lyrics_repository.dart';
 import '../data/repositories/drift_music_source_repository.dart';
+import '../data/repositories/drift_playback_continuation_repository.dart';
 import '../data/repositories/drift_search_history_repository.dart';
 import '../data/repositories/drift_sleep_timer_repository.dart';
 import '../domain/repositories/appearance_settings_repository.dart';
@@ -15,6 +16,7 @@ import '../domain/repositories/library_repository.dart';
 import '../domain/repositories/local_library_repository.dart';
 import '../domain/repositories/lyrics_repository.dart';
 import '../domain/repositories/music_source_repository.dart';
+import '../domain/repositories/playback_continuation_repository.dart';
 import '../domain/repositories/search_history_repository.dart';
 import '../domain/repositories/sleep_timer_repository.dart';
 import '../platform/contracts/secure_credential_gateway.dart';
@@ -66,6 +68,7 @@ final class DatabaseAppDataServices implements AppDataServices {
       library: library,
       appearanceSettings: DriftAppearanceSettingsRepository(database),
       sleepTimers: DriftSleepTimerRepository(database),
+      playbackContinuation: DriftPlaybackContinuationRepository(database),
       searchHistory: DriftSearchHistoryRepository(database),
       collection: DriftCollectionRepository(database),
       lyrics: DriftLyricsRepository(database),
@@ -86,6 +89,7 @@ final class DatabaseAppDataServices implements AppDataServices {
     required this._library,
     required this._appearanceSettings,
     required this._sleepTimers,
+    required this._playbackContinuation,
     required this._searchHistory,
     required this._collection,
     required this._lyrics,
@@ -97,6 +101,7 @@ final class DatabaseAppDataServices implements AppDataServices {
   final DriftLibraryRepository _library;
   final DriftAppearanceSettingsRepository _appearanceSettings;
   final DriftSleepTimerRepository _sleepTimers;
+  final DriftPlaybackContinuationRepository _playbackContinuation;
   final DriftSearchHistoryRepository _searchHistory;
   final DriftCollectionRepository _collection;
   final DriftLyricsRepository _lyrics;
@@ -111,6 +116,10 @@ final class DatabaseAppDataServices implements AppDataServices {
 
   @override
   SleepTimerRepository get sleepTimers => _sleepTimers;
+
+  @override
+  PlaybackContinuationRepository get playbackContinuation =>
+      _playbackContinuation;
 
   @override
   LocalLibraryRepository get localLibrary => _library;
@@ -145,6 +154,7 @@ final class DatabaseAppDataServices implements AppDataServices {
         _library.dispose(),
         _appearanceSettings.dispose(),
         _sleepTimers.dispose(),
+        _playbackContinuation.dispose(),
         _searchHistory.dispose(),
         _collection.dispose(),
         _lyrics.dispose(),

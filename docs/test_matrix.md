@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+Phase7H6B2b：19项协调器测试与3项生产SQLite集成测试，新增1项源码所有权门禁，精确更新既有启动/关闭序列断言。覆盖缺失不写默认、损坏不覆盖、显式同值选择、通知重入、关闭冻结/排空/失败、真实文件重开；220张Golden未修改。见[报告](phase_7h6b2b_continuation_binding_report.md)。
+
 Phase7H6B2a：新增11项恢复许可单测，覆盖两种布尔、重复捕获/应用、默认值显式选择、改回原值、关闭、通知重入以及完成后不重播/无音频设备。生产启动存储绑定仍待后续；结果见[报告](phase_7h6b2a_continuation_restore_report.md)，220张Golden不变。
 
 Phase7H6B1：21项继续偏好codec/SQLite测试，含未知版本不删除、顺序读写、阻塞关闭屏障、错误后重试及真实文件重开；不以适配器测试代替应用启动恢复。结果见[报告](phase_7h6b1_continuation_storage_report.md)，220图未改。
