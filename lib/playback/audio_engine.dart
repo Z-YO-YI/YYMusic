@@ -26,6 +26,7 @@ abstract interface class AudioSequenceEngine implements AudioEngine {
   /// no-op (false); an in-flight transition/failure requires a fresh load.
   Future<bool> retainSequenceThrough(AudioSequenceCursor expected);
   Future<bool> appendSequence(AudioSequenceAppend request);
+  Future<bool> pruneSequenceBefore(AudioSequenceCursor expected);
 }
 
 /// Deliberately reports no backend, never simulates successful playback.

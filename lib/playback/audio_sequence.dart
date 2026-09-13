@@ -79,6 +79,8 @@ final class AudioSequenceCursor {
   });
 
   final Object sequenceIdentity;
+
+  /// Absolute ordinal within the batch; native window indices may be rebased.
   final int index;
   final String entryId;
   final TrackRef track;

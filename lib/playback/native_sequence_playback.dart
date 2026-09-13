@@ -198,10 +198,10 @@ extension NativeSequencePlayback on PlaybackController {
       return true;
     }
     final index = cursor.index;
-    if (index < 0 ||
-        index >= binding.cursors.length ||
-        binding.cursors[index].entryId != cursor.entryId ||
-        binding.cursors[index].track != cursor.track) {
+    if (index < binding.firstIndex ||
+        index > binding.cursors.last.index ||
+        binding.cursorAt(index).entryId != cursor.entryId ||
+        binding.cursorAt(index).track != cursor.track) {
       _rejectNativeSequence(binding);
       return true;
     }
@@ -261,9 +261,10 @@ extension NativeSequencePlayback on PlaybackController {
             _acceptEngineState(
               evidence,
               adoptedQueue: snapshot,
-              adoptedTrack: binding.tracks[index],
+              adoptedTrack: binding.tracks[index - binding.firstIndex],
             );
           }
+          await _pruneNativeHistory(binding);
           _ensureNativeLookahead(binding);
         } catch (_) {
           _rejectNativeSequence(binding);
@@ -300,10 +301,27 @@ extension NativeSequencePlayback on PlaybackController {
       _state.phase != PlaybackPhase.error &&
       _sleepState.phase != PlaybackSleepPhase.pausing;
 
+  Future<void> _pruneNativeHistory(_NativeSequenceBinding binding) async {
+    final count = binding.currentIndex - binding.firstIndex;
+    if (!identical(_nativeSequence, binding) ||
+        count < 8 ||
+        binding.pending.isNotEmpty ||
+        binding.currentIndex != binding.highestObserved) {
+      return;
+    }
+    if (await (_engine as AudioSequenceEngine).pruneSequenceBefore(
+      binding.cursorAt(binding.currentIndex),
+    )) {
+      binding.cursors = List.unmodifiable(binding.cursors.skip(count));
+      binding.tracks = List.unmodifiable(binding.tracks.skip(count));
+    }
+  }
+
   void _ensureNativeLookahead(_NativeSequenceBinding binding) {
     if (!_canRefill(binding) ||
         binding.refilling ||
-        binding.cursors.length - binding.highestObserved - 1 >= 2) {
+        binding.cursors.length >= 11 ||
+        binding.cursors.last.index - binding.highestObserved >= 2) {
       return;
     }
     final order = _state.shuffleEnabled
@@ -353,7 +371,7 @@ extension NativeSequencePlayback on PlaybackController {
             final accepted = await (_engine as AudioSequenceEngine)
                 .appendSequence(request);
             if (!accepted && identical(_nativeSequence, binding)) {
-              if (binding.highestObserved >= oldCursors.length) {
+              if (binding.highestObserved > oldCursors.last.index) {
                 _rejectNativeSequence(binding);
               } else {
                 binding.cursors = oldCursors;
@@ -381,7 +399,7 @@ extension NativeSequencePlayback on PlaybackController {
     binding.boundaryRequested = true;
     final engine = _engine as AudioSequenceEngine;
     if (!await engine.retainSequenceThrough(
-      binding.cursors[binding.highestObserved],
+      binding.cursorAt(binding.highestObserved),
     )) {
       _rejectNativeSequence(binding);
       throw DomainFailure(
@@ -419,6 +437,8 @@ final class _NativeSequenceBinding {
   _NativeSequenceBinding(this.cursors, this.tracks);
   List<AudioSequenceCursor> cursors;
   List<Track> tracks;
+  int get firstIndex => cursors.first.index;
+  AudioSequenceCursor cursorAt(int index) => cursors[index - firstIndex];
   Object get identity => cursors.first.sequenceIdentity;
   int currentIndex = 0;
   int highestObserved = 0;

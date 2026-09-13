@@ -36,6 +36,72 @@ void main() {
   });
   tearDown(() => engine.dispose());
 
+  test(
+    'prefix rebase preserves absolute cursors for append and tail retention',
+    () async {
+      final batch = AudioSequence([
+        for (var i = 0; i < 11; i++)
+          AudioSequenceEntry(entryId: 'e$i', source: source),
+      ]);
+      await engine.loadSequence(batch, initialIndex: 8);
+      backend.emit(
+        index: 8,
+        playing: true,
+        position: const Duration(milliseconds: 150),
+      );
+      expect(await engine.pruneSequenceBefore(batch.cursors[8]), isTrue);
+      expect(states.last.sequenceCursor!.index, 8);
+      expect(states.last.sequenceCursor!.entryId, 'e8');
+      expect(states.last.position, const Duration(milliseconds: 150));
+      expect(
+        states.last.sequenceCursor!.sequenceIdentity,
+        same(batch.identity),
+      );
+      final extension = AudioSequenceAppend(
+        expectedTail: batch.cursors.last,
+        entries: [AudioSequenceEntry(entryId: 'e11', source: source)],
+      );
+      expect(await engine.appendSequence(extension), isTrue);
+      backend.emit(index: 3, playing: true);
+      expect(states.last.sequenceCursor!.index, 11);
+      expect(
+        await engine.retainSequenceThrough(extension.cursors.single),
+        isTrue,
+      );
+      expect(backend.calls.last, 'retain:3');
+      expect(
+        await engine.pruneSequenceBefore(extension.cursors.single),
+        isTrue,
+      );
+      expect(states.last.sequenceCursor!.index, 11);
+      expect(backend.calls.where((call) => call == 'play'), isEmpty);
+    },
+  );
+
+  test(
+    'late pre-rebase large index fails without assigning wrong entry',
+    () async {
+      final batch = AudioSequence([
+        for (var i = 0; i < 11; i++)
+          AudioSequenceEntry(entryId: 'e$i', source: source),
+      ]);
+      await engine.loadSequence(batch, initialIndex: 8);
+      await engine.pruneSequenceBefore(batch.cursors[8]);
+      backend.emit(index: 8, playing: true);
+      expect(states.last.phase, AudioEnginePhase.error);
+      expect(states.last.sequenceCursor, isNull);
+    },
+  );
+
+  test('stale or foreign prefix cursor cannot mutate list', () async {
+    final batch = sequence();
+    await engine.loadSequence(batch);
+    expect(await engine.pruneSequenceBefore(batch.cursors.last), isFalse);
+    backend.emit(index: 1);
+    expect(await engine.pruneSequenceBefore(sequence().cursors.last), isFalse);
+    expect(backend.calls, ['sequence:0']);
+  });
+
   AudioSequenceAppend append(AudioSequence batch, {String id = 'third'}) =>
       AudioSequenceAppend(
         expectedTail: batch.cursors.last,
@@ -692,6 +758,13 @@ class _SingleBackend implements JustAudioPlayerBackend {
 
 final class _SequenceBackend extends _SingleBackend
     implements JustAudioSequenceBackend {
+  @override
+  Future<bool> pruneSequenceBefore(int expectedIndex) async {
+    calls.add('prune:$expectedIndex');
+    emit(index: 0, playing: current.playing, position: current.position);
+    return true;
+  }
+
   Completer<void>? gate;
   bool fail = false;
   bool omitIndex = false;
