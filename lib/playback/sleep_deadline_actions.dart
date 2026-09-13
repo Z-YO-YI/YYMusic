@@ -78,7 +78,14 @@ extension _SleepDeadlineActions on PlaybackController {
 
   void _armSleepWake(int generation, Duration delay) {
     try {
-      _sleepWake = _sleepScheduler(delay, () => _sleepWoke(generation));
+      final wake = _sleepScheduler(delay, () => _sleepWoke(generation));
+      if (_disposed ||
+          generation != _sleepGeneration ||
+          _sleepState.phase != PlaybackSleepPhase.armed) {
+        wake.cancel();
+        return;
+      }
+      _sleepWake = wake;
     } catch (_) {
       if (!_disposed && generation == _sleepGeneration) {
         _sleepState = PlaybackSleepTimerState.failed(_sleepState.deadline);
@@ -96,6 +103,11 @@ extension _SleepDeadlineActions on PlaybackController {
     _sleepWake = null;
     final deadline = _sleepState.deadline!;
     final remaining = deadline.difference(_clock().toUtc());
+    if (_disposed ||
+        generation != _sleepGeneration ||
+        _sleepState.phase != PlaybackSleepPhase.armed) {
+      return;
+    }
     if (remaining > Duration.zero) {
       // A new wake token also revokes a retained callback from an early wake.
       _armSleepWake(++_sleepGeneration, remaining);
