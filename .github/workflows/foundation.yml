@@ -27,6 +27,11 @@ on:
         required: true
         default: false
         type: boolean
+      include_sequence_audio_poc:
+        description: Also run the isolated repeat-window probe in Android diagnostic mode
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -44,6 +49,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
+      - name: Reject sequence probe outside isolated Android diagnostics
+        if: inputs.include_sequence_audio_poc && (github.event_name != 'workflow_dispatch' || !inputs.run_just_audio_poc || inputs.just_audio_poc_platform != 'android' || inputs.include_https_audio_poc || inputs.build_windows_audio_probe)
+        run: exit 1
       - name: Reject conflicting diagnostic modes
         if: inputs.run_just_audio_poc && inputs.build_windows_audio_probe
         run: exit 1
@@ -306,4 +314,7 @@ jobs:
           ndk: 28.2.13676358
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: flutter test --no-pub ${{ inputs.include_https_audio_poc && 'integration_test/just_audio_native_sources_poc_test.dart' || 'integration_test/just_audio_android_sources_poc_test.dart' }} -d emulator-${EMULATOR_PORT} --reporter expanded
+          script: |
+            set -e
+            flutter test --no-pub ${{ inputs.include_https_audio_poc && 'integration_test/just_audio_native_sources_poc_test.dart' || 'integration_test/just_audio_android_sources_poc_test.dart' }} -d emulator-${EMULATOR_PORT} --reporter expanded
+            if [ '${{ inputs.include_sequence_audio_poc }}' = 'true' ]; then flutter test --no-pub integration_test/just_audio_native_sequence_poc_test.dart --dart-define=YYMUSIC_SEQUENCE_SOURCE_COMMIT=${GITHUB_SHA} -d emulator-${EMULATOR_PORT} --reporter expanded; fi
