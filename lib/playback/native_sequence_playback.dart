@@ -48,6 +48,8 @@ extension NativeSequencePlayback on PlaybackController {
         final binding = _NativeSequenceBinding(
           plan.sequence.cursors,
           plan.tracks,
+          plan.orders,
+          _shuffleOrder,
         );
         _nativeSequence = binding;
         await (_engine as AudioSequenceEngine).loadSequence(plan.sequence);
@@ -132,7 +134,14 @@ extension NativeSequencePlayback on PlaybackController {
     });
   }
 
-  Future<({AudioSequence sequence, List<Track> tracks})> _resolveNativeSequence(
+  Future<
+    ({
+      AudioSequence sequence,
+      List<Track> tracks,
+      Map<int, List<String>> orders,
+    })
+  >
+  _resolveNativeSequence(
     String entryId,
     Track track,
     PlayableSource source,
@@ -140,13 +149,14 @@ extension NativeSequencePlayback on PlaybackController {
   ) async {
     final revision = _nativePolicyRevision;
     if (_state.shuffleEnabled) _ensureShuffleOrder();
-    final order = _state.shuffleEnabled
+    var order = _state.shuffleEnabled
         ? List<String>.of(_shuffleOrder)
         : _state.queue.entries.map((entry) => entry.id).toList();
-    final start = order.indexOf(entryId);
+    var at = order.indexOf(entryId), cycle = 0;
+    final orders = <int, List<String>>{0: List.unmodifiable(order)};
     final entries = [AudioSequenceEntry(entryId: entryId, source: source)];
     final tracks = [track];
-    for (final id in order.skip(start + 1).take(2)) {
+    for (var ahead = 0; ahead < 2; ahead++) {
       if (!_continueAfterTrack ||
           _state.repeatMode == RepeatMode.one ||
           revision != _nativePolicyRevision ||
@@ -154,6 +164,14 @@ extension NativeSequencePlayback on PlaybackController {
         break;
       }
       try {
+        at++;
+        if (at >= order.length) {
+          if (_state.repeatMode != RepeatMode.all) break;
+          order = _newNativeCycleOrder(entries.last.entryId);
+          at = _state.shuffleEnabled && order.length > 1 ? 1 : 0;
+          orders[++cycle] = order;
+        }
+        final id = order[at];
         final entry = _entry(id);
         final next = await _libraryRepository!.getTrack(entry.track);
         _checkNotDisposed();
@@ -161,7 +179,9 @@ extension NativeSequencePlayback on PlaybackController {
         final resolved = await _resolver!.resolve(next);
         _checkNotDisposed();
         if (resolved.track != next.ref || resolved.expiresAt != null) break;
-        entries.add(AudioSequenceEntry(entryId: id, source: resolved));
+        entries.add(
+          AudioSequenceEntry(entryId: id, source: resolved, cycle: cycle),
+        );
         tracks.add(next);
       } catch (_) {
         if (_disposed) rethrow;
@@ -179,7 +199,22 @@ extension NativeSequencePlayback on PlaybackController {
     return (
       sequence: AudioSequence(entries),
       tracks: List<Track>.unmodifiable(tracks),
+      orders: orders,
     );
+  }
+
+  List<String> _newNativeCycleOrder(String preceding) {
+    final ids = _state.queue.entries.map((entry) => entry.id).toList();
+    if (!_state.shuffleEnabled) return List.unmodifiable(ids);
+    ids.remove(preceding);
+    for (var i = ids.length - 1; i > 0; i--) {
+      final picked = _randomIndex(i + 1);
+      if (picked < 0 || picked > i) throw StateError('Invalid shuffle index');
+      final value = ids[i];
+      ids[i] = ids[picked];
+      ids[picked] = value;
+    }
+    return List.unmodifiable([preceding, ...ids]);
   }
 
   bool _receiveNativeState(AudioEngineState value) {
@@ -201,6 +236,7 @@ extension NativeSequencePlayback on PlaybackController {
     if (index < binding.firstIndex ||
         index > binding.cursors.last.index ||
         binding.cursorAt(index).entryId != cursor.entryId ||
+        binding.cursorAt(index).cycle != cursor.cycle ||
         binding.cursorAt(index).track != cursor.track) {
       _rejectNativeSequence(binding);
       return true;
@@ -244,6 +280,7 @@ extension NativeSequencePlayback on PlaybackController {
           if (collection != null) await collection.saveQueue(snapshot);
           if (_disposed || !identical(_nativeSequence, binding)) return;
           final pending = binding.pending.remove(index)!;
+          final previousCycle = binding.cursorAt(binding.currentIndex).cycle;
           binding.currentIndex = index;
           history.end();
           history.begin(cursor.track);
@@ -253,6 +290,12 @@ extension NativeSequencePlayback on PlaybackController {
           _loadedSourceExpiresAt = null;
           _sessionRevision++;
           _completionHandled = false;
+          if (_state.shuffleEnabled &&
+              cursor.cycle != previousCycle &&
+              identical(_shuffleOrder, binding.appliedShuffleOrder)) {
+            _shuffleOrder = List.of(binding.orders[cursor.cycle]!);
+            binding.appliedShuffleOrder = _shuffleOrder;
+          }
           _syncShuffleCursor(entry.id);
           // Replay only bounded, actually observed evidence after persistence.
           // Metadata and each corresponding native clock publish atomically.
@@ -314,6 +357,9 @@ extension NativeSequencePlayback on PlaybackController {
     )) {
       binding.cursors = List.unmodifiable(binding.cursors.skip(count));
       binding.tracks = List.unmodifiable(binding.tracks.skip(count));
+      binding.orders.removeWhere(
+        (cycle, _) => cycle < binding.cursors.first.cycle,
+      );
     }
   }
 
@@ -324,12 +370,16 @@ extension NativeSequencePlayback on PlaybackController {
         binding.cursors.last.index - binding.highestObserved >= 2) {
       return;
     }
-    final order = _state.shuffleEnabled
-        ? List<String>.of(_shuffleOrder)
-        : _state.queue.entries.map((entry) => entry.id).toList();
     final tail = binding.cursors.last;
-    final nextIndex = order.indexOf(tail.entryId) + 1;
-    if (nextIndex <= 0 || nextIndex >= order.length) return;
+    var cycle = tail.cycle;
+    var order = binding.orders[cycle]!;
+    var nextIndex = order.indexOf(tail.entryId) + 1;
+    if (nextIndex <= 0) return;
+    if (nextIndex >= order.length) {
+      if (_state.repeatMode != RepeatMode.all) return;
+      order = binding.orders[++cycle] ??= _newNativeCycleOrder(tail.entryId);
+      nextIndex = _state.shuffleEnabled && order.length > 1 ? 1 : 0;
+    }
     final entry = _entry(order[nextIndex]);
     final revision = _nativePolicyRevision;
     binding.refilling = true;
@@ -359,7 +409,13 @@ extension NativeSequencePlayback on PlaybackController {
           }
           final request = AudioSequenceAppend(
             expectedTail: tail,
-            entries: [AudioSequenceEntry(entryId: entry.id, source: source)],
+            entries: [
+              AudioSequenceEntry(
+                entryId: entry.id,
+                source: source,
+                cycle: cycle,
+              ),
+            ],
           );
           final oldCursors = binding.cursors, oldTracks = binding.tracks;
           binding.cursors = List.unmodifiable([
@@ -434,7 +490,14 @@ extension NativeSequencePlayback on PlaybackController {
 }
 
 final class _NativeSequenceBinding {
-  _NativeSequenceBinding(this.cursors, this.tracks);
+  _NativeSequenceBinding(
+    this.cursors,
+    this.tracks,
+    Map<int, List<String>> orders,
+    this.appliedShuffleOrder,
+  ) : orders = Map.of(orders);
+  final Map<int, List<String>> orders;
+  List<String> appliedShuffleOrder;
   List<AudioSequenceCursor> cursors;
   List<Track> tracks;
   int get firstIndex => cursors.first.index;

@@ -36,6 +36,56 @@ void main() {
   });
   tearDown(() => engine.dispose());
 
+  test('cycle identity permits repeated entry only in a later cycle', () async {
+    final batch = AudioSequence([
+      AudioSequenceEntry(entryId: 'same', source: source),
+    ]);
+    await engine.loadSequence(batch);
+    final extension = AudioSequenceAppend(
+      expectedTail: batch.cursors.single,
+      entries: [AudioSequenceEntry(entryId: 'same', source: source, cycle: 1)],
+    );
+    expect(await engine.appendSequence(extension), isTrue);
+    backend.emit(index: 1, playing: true);
+    expect(states.last.sequenceCursor!.entryId, 'same');
+    expect(states.last.sequenceCursor!.cycle, 1);
+    expect(states.last.sequenceCursor!.index, 1);
+    expect(await engine.pruneSequenceBefore(extension.cursors.single), isTrue);
+    expect(states.last.sequenceCursor!.cycle, 1);
+    await expectLater(
+      engine.appendSequence(
+        AudioSequenceAppend(
+          expectedTail: extension.cursors.single,
+          entries: [
+            AudioSequenceEntry(entryId: 'same', source: source, cycle: 1),
+          ],
+        ),
+      ),
+      throwsArgumentError,
+    );
+  });
+
+  test(
+    'cycles reject negative, duplicate, skipped and backwards occurrences',
+    () {
+      AudioSequenceEntry entry(int cycle) =>
+          AudioSequenceEntry(entryId: 'same', source: source, cycle: cycle);
+      expect(() => entry(-1), throwsArgumentError);
+      expect(() => AudioSequence([entry(0), entry(0)]), throwsArgumentError);
+      expect(() => AudioSequence([entry(0), entry(2)]), throwsArgumentError);
+      expect(() => AudioSequence([entry(1), entry(0)]), throwsArgumentError);
+      final batch = AudioSequence([entry(0), entry(1)]);
+      expect(
+        () => AudioSequenceAppend(
+          expectedTail: batch.cursors.last,
+          entries: [entry(0)],
+        ),
+        throwsArgumentError,
+      );
+      expect(batch.cursors.map((cursor) => cursor.cycle), [0, 1]);
+    },
+  );
+
   test(
     'prefix rebase preserves absolute cursors for append and tail retention',
     () async {

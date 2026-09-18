@@ -116,6 +116,33 @@ void main() {
     );
   });
 
+  test(
+    'actual plugin index distinguishes repeated queue entry cycles',
+    () async {
+      final engine = JustAudioEngine(backend);
+      addTearDown(engine.dispose);
+      final states = <AudioEngineState>[];
+      engine.states.listen(states.add);
+      final batch = AudioSequence([
+        for (var cycle = 0; cycle < 3; cycle++)
+          AudioSequenceEntry(
+            entryId: 'same',
+            source: local('/same.wav'),
+            cycle: cycle,
+          ),
+      ]);
+      await engine.loadSequence(batch);
+      await engine.play();
+      await probe.emit(1);
+      expect(states.last.sequenceCursor!.entryId, 'same');
+      expect(states.last.sequenceCursor!.cycle, 1);
+      await probe.emit(2);
+      expect(states.last.sequenceCursor!.cycle, 2);
+      expect(probe.loads, hasLength(1));
+      expect(probe.calls.where((call) => call == 'play'), hasLength(1));
+    },
+  );
+
   test('expired preflight keeps prior native media usable', () async {
     await backend.openSequence([local('/old.wav')]);
     final id = probe.playerId;

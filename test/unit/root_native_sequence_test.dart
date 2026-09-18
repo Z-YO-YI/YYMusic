@@ -41,7 +41,9 @@ void main() {
   late FakeMediaSessionGateway media;
   late GatedResolver resolver;
   late DateTime now;
+  var reverseShuffle = false;
   setUp(() async {
+    reverseShuffle = false;
     now = DateTime.utc(2026, 9, 13);
     engine = NativeEngine();
     collection = FakeCollectionRepository();
@@ -54,7 +56,7 @@ void main() {
       collection: collection,
       sourceResolver: resolver,
       mediaSession: media,
-      randomIndex: (upper) => upper - 1,
+      randomIndex: (upper) => reverseShuffle ? 0 : upper - 1,
       clock: () => now,
     );
     await root.initialize();
@@ -135,6 +137,159 @@ void main() {
     expect(calls, 1);
     expect(engine.calls, ['play']);
   });
+
+  test('repeat all preloads head and loops across bounded windows', () async {
+    root.setRepeatMode(RepeatMode.all);
+    await root.playNativeSequence('q2');
+    expect(engine.sequence!.entries.map((entry) => entry.entryId), [
+      'q2',
+      'q0',
+      'q1',
+    ]);
+    expect(engine.sequence!.entries.map((entry) => entry.cycle), [0, 1, 1]);
+    final identity = engine.sequence!.identity;
+    for (var i = 1; i <= 30; i++) {
+      engine.tick(i, 10);
+      await flush();
+      expect(root.state.queue.currentEntryId, 'q${(i + 2) % 3}');
+      expect(root.state.phase, PlaybackPhase.playing);
+      expect(engine.extendedCursors!.length, lessThanOrEqualTo(11));
+      expect(engine.extendedCursors!.first.sequenceIdentity, same(identity));
+    }
+    expect(
+      engine.calls.where((call) => call.startsWith('sequence:')),
+      hasLength(1),
+    );
+    expect(engine.calls.where((call) => call == 'play'), hasLength(1));
+    expect(root.state.queue.entries, hasLength(3));
+  });
+
+  test(
+    'single entry repeat preloads cycles and records new listening',
+    () async {
+      await longQueue(1);
+      root.setRepeatMode(RepeatMode.all);
+      await root.playNativeSequence('long0');
+      expect(engine.sequence!.entries.map((entry) => entry.cycle), [0, 1, 2]);
+      final recorded = <PlayHistoryEntry>[];
+      collection.onHistoryRecord = (entry) async {
+        recorded.add(entry);
+      };
+      for (var i = 1; i <= 12; i++) {
+        engine.tick(i, 0);
+        engine.tick(i, 100);
+        await flush();
+        await waitHistory(root.history);
+        expect(root.state.queue.currentEntryId, 'long0');
+        expect(engine.extendedCursors!.length, lessThanOrEqualTo(11));
+      }
+      expect(recorded, hasLength(12));
+      expect(recorded.map((entry) => entry.id).toSet(), hasLength(12));
+      // Recent history deliberately deduplicates stable TrackRef values.
+      expect((await collection.watchHistory().first), hasLength(1));
+      expect(root.state.queue.entries, hasLength(1));
+      expect(engine.calls.where((call) => call == 'play'), hasLength(1));
+    },
+  );
+
+  test('future shuffle cycle does not change current manual next', () async {
+    root.setShuffleEnabled(true);
+    root.setRepeatMode(RepeatMode.all);
+    await root.playNativeSequence('q0');
+    engine.tick(1, 0);
+    await flush();
+    expect(engine.extendedCursors!.last.entryId, 'q0');
+    await root.skipNext();
+    expect(root.state.queue.currentEntryId, 'q2');
+  });
+
+  test('adopted shuffle cycle controls subsequent manual next', () async {
+    root.setShuffleEnabled(true);
+    root.setRepeatMode(RepeatMode.all);
+    await root.playNativeSequence('q0');
+    const expected = ['q1', 'q2', 'q0', 'q1'];
+    for (var i = 1; i <= 4; i++) {
+      engine.tick(i, 0);
+      await flush();
+      expect(root.state.queue.currentEntryId, expected[i - 1]);
+    }
+    await root.skipNext();
+    expect(root.state.queue.currentEntryId, 'q0');
+  });
+
+  test('turning repeat off removes preloaded future cycles', () async {
+    root.setRepeatMode(RepeatMode.all);
+    await root.playNativeSequence('q2');
+    root.setRepeatMode(RepeatMode.off);
+    await flush();
+    expect(engine.calls.last, 'retain:0');
+    engine.complete();
+    await flush();
+    expect(root.state.queue.currentEntryId, 'q2');
+    expect(root.state.phase, PlaybackPhase.completed);
+    expect(engine.calls.where((call) => call == 'play'), hasLength(1));
+  });
+
+  test(
+    'pending cycle adoption cannot overwrite newer explicit shuffle order',
+    () async {
+      root.setShuffleEnabled(true);
+      root.setRepeatMode(RepeatMode.all);
+      await root.playNativeSequence('q0');
+      engine.tick(1, 0);
+      await flush();
+      engine.tick(2, 0);
+      await flush();
+      final gate = Completer<void>();
+      collection.beforeQueueWrite = (_) => gate.future;
+      engine.tick(3, 0);
+      await flush();
+      reverseShuffle = true;
+      root.setShuffleEnabled(false);
+      root.setShuffleEnabled(true);
+      gate.complete();
+      await flush();
+      collection.beforeQueueWrite = null;
+      expect(root.state.queue.currentEntryId, 'q0');
+      await root.skipNext();
+      expect(root.state.queue.currentEntryId, 'q2');
+    },
+  );
+
+  test(
+    'repeat revoked during next cycle resolution cannot preload that cycle',
+    () async {
+      root.setRepeatMode(RepeatMode.all);
+      resolver.gateTrack = tracks[0].id;
+      final gate = resolver.gate = Completer<void>();
+      final playing = root.playNativeSequence('q2');
+      await flush();
+      root.setRepeatMode(RepeatMode.off);
+      gate.complete();
+      await playing;
+      expect(engine.sequence!.entries, hasLength(1));
+      expect(engine.sequence!.entries.single.cycle, 0);
+      expect(engine.calls, ['sequence:1', 'play']);
+    },
+  );
+
+  test(
+    'expiring next cycle is resolved on advancement without discarding queue',
+    () async {
+      resolver.callback = (track) async => track.id == tracks[0].id
+          ? timed(track, now.add(const Duration(minutes: 5)))
+          : FakePlaybackSourceResolver().resolve(track);
+      root.setRepeatMode(RepeatMode.all);
+      await root.playNativeSequence('q2');
+      await flush();
+      expect(engine.sequence!.entries, hasLength(1));
+      engine.complete();
+      await flush();
+      expect(root.state.queue.currentEntryId, 'q0');
+      expect(root.state.phase, PlaybackPhase.playing);
+      expect(root.state.queue.entries, hasLength(3));
+    },
+  );
 
   for (final playing in [false, true]) {
     test('expired seek restores target and playing=$playing', () async {

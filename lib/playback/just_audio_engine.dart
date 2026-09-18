@@ -182,13 +182,18 @@ final class JustAudioEngine implements AudioSequenceEngine {
       final tail = cursors.last;
       if (!identical(tail.sequenceIdentity, expected.sequenceIdentity) ||
           tail.index != expected.index ||
+          tail.cycle != expected.cycle ||
           tail.entryId != expected.entryId ||
           tail.track != expected.track) {
         return;
       }
-      final existing = cursors.map((cursor) => cursor.entryId).toSet();
+      final existing = cursors
+          .map((cursor) => (cursor.cycle, cursor.entryId))
+          .toSet();
       _requireFreshSources(request.entries.map((entry) => entry.source));
-      if (request.entries.any((entry) => existing.contains(entry.entryId))) {
+      if (request.entries.any(
+        (entry) => existing.contains((entry.cycle, entry.entryId)),
+      )) {
         throw ArgumentError('Audio append contains an existing entry');
       }
       if (!backend.supportsRequestHeaders &&
@@ -257,6 +262,7 @@ final class JustAudioEngine implements AudioSequenceEngine {
       final current = cursors[nativeIndex];
       if (!identical(current.sequenceIdentity, expected.sequenceIdentity) ||
           current.entryId != expected.entryId ||
+          current.cycle != expected.cycle ||
           current.track != expected.track ||
           backend.current.currentIndex != nativeIndex) {
         return;
@@ -327,6 +333,7 @@ final class JustAudioEngine implements AudioSequenceEngine {
       final cursor = cursors[index];
       if (!identical(cursor.sequenceIdentity, expected.sequenceIdentity) ||
           cursor.entryId != expected.entryId ||
+          cursor.cycle != expected.cycle ||
           cursor.track != expected.track) {
         return;
       }
