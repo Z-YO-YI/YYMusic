@@ -1,5 +1,9 @@
 # Phase 7 出口审计与剩余工作
 
+## 2026-09-19 J12F双平台构建与下一验证层
+
+e49f048的两组Android/Windows Debug构建及云端回归已success；同SHA Android原生WAV/content/序列3项也已通过，见[J12F报告](phase_7j12f_command_failure_report.md)。Windows独立映射探针实际选择与首选不同，属于[J12E路径证据](phase_7j12e_windows_audio_comparison.md)，不是YYMusic出声验收，也不授权自动换输出。[7J13计划](phase_7j13_root_native_validation_plan.md)在已有引擎级证据之上补唯一根的自然循环、SQLite队列/历史和恢复，不重新实现循环/随机；此处仅确定下一批范围，没有新增已通过功能或关闭Phase7出口。
+
 ## Phase7J12F命令确认与错误保留
 
 16项失败回归确认并修复命令等待期间错误仍被成功确认、偏好更新掩盖旧播放错误的缺口；2556 Flutter、168 Node及严格分析通过，见[J12F报告](phase_7j12f_command_failure_report.md)。双平台构建将按新SHA单独验证。只关闭该软件错误语义缺口，不把状态保护称为Windows实际播放恢复，不关闭生产无缝、声学/资源/生命周期、标准化或Phase8–11；用户设备其他应用正常的反馈保持有效，不再要求重启或换设备作为前提。

@@ -1,5 +1,7 @@
 # 实施状态
 
+2026-09-19 J12F云端补记：e49f048的push35440707665与PR35440709263均success，Android Debug、Windows Debug、2330普通测试、226 Windows Golden和3原生窗口测试通过，见[J12F报告](phase_7j12f_command_failure_report.md)。同SHA Android原生35441460890已success，WAV/content/序列3项通过，序列进度[303,103,115]ms。Windows无声映射状态查询首次确认该诊断实际索引1不同于首选0，详见[J12E补记](phase_7j12e_windows_audio_comparison.md)；不据此自动换输出或认定其他应用路由。下一批按[7J13根级原生计划](phase_7j13_root_native_validation_plan.md)推进Android自然循环、队列与历史验证，不重复引擎级实现，Phase7仍未完整验收。
+
 Phase7J12F：修复非加载命令确认忽略异步错误，以及音量/倍速掩盖已有错误；16项回归先失败后通过，73专项、2556全量Flutter、168 Node、614文件格式及严格分析通过，见[报告](phase_7j12f_command_failure_report.md)/ADR146。同分支codex/native-repeat-window、基线d6230e2，双平台新构建按新SHA单独核验。不重做循环/随机，不改变系统音频设置，Windows实际播放与Phase7完整出口仍未通过。
 
 2026-09-19 J12E诊断修正：用户确认其他软件均能正常出声。独立WinRT默认输出加载失败，但WinMM自动映射打开成功、明确指定默认端点打开失败；详见[音频路径对照](phase_7j12e_windows_audio_comparison.md)。不能据此认定电脑故障、确认占用者或要求用户先重启/换设备；后续聚焦路径与兼容性，系统设置保持不变。42ad95e的push/PR双平台CI均success，但本机播放与Phase7出口仍未通过。

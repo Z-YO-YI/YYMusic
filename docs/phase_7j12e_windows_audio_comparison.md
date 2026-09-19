@@ -1,5 +1,17 @@
 # Phase 7J12E：Windows 音频路径对照与结论修正
 
+## 2026-09-19 后续只读与无声对照
+
+下文最初使用waveOutGetID/实例ID未能确定映射目标的限制保留；本次改用映射句柄的状态查询，首次取得另一个可验证事实。独立诊断使用相同48kHz双声道PCM16、WAVE_MAPPER，打开/关闭返回0；`WODM_MAPPER_STATUS`的DEVICE查询返回0、实际索引1，MAPPED查询返回0、值0。同时`DRVM_MAPPER_PREFERRED_GET`返回0、首选索引0、flags=0，设备总数2。实际索引在有效范围且与首选不同，因此这次WinMM自动映射初始化成功不是首选端点初始化成功。没有调用waveOutWrite或播放，没有硬编码设备索引到应用。
+
+状态常量来自[微软SDK头文件](https://raw.githubusercontent.com/microsoft/win32metadata/main/generation/WinSDK/RecompiledIdlHeaders/um/mmddk.h)，首选设备查询遵循[微软说明](https://learn.microsoft.com/en-us/windows-hardware/drivers/audio/accessing-the-preferred-device-id)。这是本次诊断进程在该时刻的结果；索引随环境可变，不等于声学成功，也没有观察其他应用的实际路由。不能推断用户的其他软件一定走索引1、识别出独占占用者，或据此自动把YYMusic切换到另一输出。用户已排除的Steam输出切换方案不恢复执行。
+
+此前两项只读核对也已完成：WinRT默认多媒体/通信选择与MMDevice各默认角色一致，WinMM首选/通信选择均对应索引0、flags=0；诊断与桌面进程处于相同用户、登录身份和交互会话，均为medium完整性、非restricted/AppContainer、非提权。只记录这些比较结果，不记录进程/端点标识或修改安全上下文；一致不证明所有媒体路径兼容。
+
+另一个独立WinRT对照只把诊断自身的AudioCategory改为Movie，仍使用相同静音原生内存WAV、默认AudioDevice和AutoPlay=false：320ms内MediaFailed、C00D4E85、state=None、loaded=false、playRequested=false。原Media分类对照为221ms同码失败。Movie与Media都是[媒体用途分类](https://learn.microsoft.com/en-us/uwp/api/windows.media.playback.mediaplayeraudiocategory?view=winrt-26100)，此次无声加载没有证明换分类可以修复，因此未改生产插件或分类。
+
+这些新证据只收窄不同调用路径的比较范围，没有证明Windows播放恢复，也不要求重启/更换设备。应用代码、系统默认输出、音量、独占设置和驱动保持不变；后续Windows继续在不自动路由到其他设备的边界内定位，Android根级原生验证独立推进。
+
 ## 范围与当前结论
 
 2026-09-19，基线42ad95e，仓库Z-YO-YI/YYMusic，分支codex/native-repeat-window，沿用Draft PR #136。用户已明确反馈这台电脑的其他软件均能正常出声。不能再将YYMusic的失败概括为“电脑音频故障”，也不把重启电脑、关闭其他程序或更换设备作为继续开发的前置条件。本次补记此前会话中已执行的独立对照，不重复运行已确认的失败探针，不更改应用、依赖、系统设置或既有循环/随机实现。
