@@ -1,5 +1,9 @@
 # 实施状态
 
+Phase7J13B：新增固定Random(42)三曲Android根原生验证，覆盖自然跨轮、关闭随机后保留当前时钟并按应用顺序回退、队列持久化与最终停止，见[B报告](phase_7j13b_root_native_shuffle_report.md)/ADR148。7项新Dart与3项新Node门禁，79专项、2573全量Flutter、174 Node、624文件格式和严格分析通过。只改独立诊断/CI/文档，生产与已验收A不变。B的新SHA云构建及原生实测需单独取证，尚不标记设备通过或Phase7完成。
+
+2026-09-19 J13A云端验收：精确7b28a16的push35445546018、PR35445548388与Android原生35445563113均success。三段根/引擎进度[302,111,101]ms，历史替换、持久化与重开无自动播放通过，见[A报告](phase_7j13a_root_native_repeat_report.md)。继续[B随机验证](phase_7j13b_root_native_shuffle_report.md)，不修改已通过的A或重做生产算法；B实现/本地测试不替代待执行的设备结果。Windows实际播放和Phase7整体仍未通过。以下“尚未执行”是A提交时历史记录。
+
 Phase7J13A：新增Android隔离根原生循环、文件SQLite队列/历史、关闭自动继续及重开不自动播放的验证入口，见[报告](phase_7j13a_root_native_repeat_report.md)/ADR147。10项新增Dart测试、完整2566 Flutter、171 Node、620文件格式与严格分析通过；首轮CI命令精确断言失败已修正工作流后全量重跑，同SHA云端结果另记。设备测试尚未执行，不将实现入口计作设备验收。基线c8dc13e的两条CI已success，生产代码/依赖/设计参考/Golden不变，仍沿用codex/native-repeat-window和Draft PR #136。
 
 2026-09-19 J12F云端补记：e49f048的push35440707665与PR35440709263均success，Android Debug、Windows Debug、2330普通测试、226 Windows Golden和3原生窗口测试通过，见[J12F报告](phase_7j12f_command_failure_report.md)。同SHA Android原生35441460890已success，WAV/content/序列3项通过，序列进度[303,103,115]ms。Windows无声映射状态查询首次确认该诊断实际索引1不同于首选0，详见[J12E补记](phase_7j12e_windows_audio_comparison.md)；不据此自动换输出或认定其他应用路由。下一批按[7J13根级原生计划](phase_7j13_root_native_validation_plan.md)推进Android自然循环、队列与历史验证，不重复引擎级实现，Phase7仍未完整验收。

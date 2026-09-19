@@ -33,6 +33,12 @@ gh workflow run foundation.yml --repo Z-YO-YI/YYMusic --ref codex/native-repeat-
 
 最终提交前验证：16项相关Dart专项、完整2566项Flutter全部通过（测试138秒、命令146.06秒，含226项既有Windows Golden）；171项Node全部通过（46.17秒，无失败/跳过）；620个Dart文件格式零修改、严格分析零问题（25.5秒）；14份待提交文件UTF-8与敏感模式检查、300个本地文档链接、差异空白检查通过。没有改动lib、Android/Windows宿主、pubspec/lock、设计参考或既有Golden。完整Flutter不包含本批尚未执行的Android原生集成测试。
 
-当前新原生测试尚未在Android执行，不能计作通过；旧e49f048的三项Android引擎/源结果不能替代本批根链路。新提交的双平台构建与原生运行按精确SHA在PR补记。Windows实际播放仍未通过，本批不重复服务重启、不自动更换输出或指责用户电脑；系统设置与生产代码均未改变。
+### 同SHA云端与Android实测补记
+
+精确源码7b28a166bb5a308d2a806a5ccde88f665487cef5的[push 35445546018](https://github.com/Z-YO-YI/YYMusic/actions/runs/35445546018)、[PR 35445548388](https://github.com/Z-YO-YI/YYMusic/actions/runs/35445548388)与[Android原生 35445563113](https://github.com/Z-YO-YI/YYMusic/actions/runs/35445563113)均success。Linux普通测试2340通过/226 Windows Golden按平台跳过，Windows另行226 Golden及3原生窗口握手通过；Android Debug及Windows Debug构建通过。Android签名v2和51项原生音频坐标/3份法律文本校验通过。常规push/PR未发布Release，不把Debug包称为上线。
+
+Android API36 x86_64模拟器实际执行既有WAV/content两项（6秒）及本批独立根测试一项（34秒）。宿主校验唯一完整SHA、purpose、testCount=1、passed=true的最终记录通过：native/root/persistedEntries均[q0,q1,q0]，nativeIndices=[0,1,2]、nativeCycles=[0,0,1]，nativeProgressMs与rootProgressMs均[302,111,101]；同一批次、元数据对齐、历史替换、重开无播放和资源关闭均true；historyCount=2，完成项q0/index2/cycle1；完成无重启观察1206ms，重开无播放观察1201ms。acousticGapMeasured=false，模拟器使用-noaudio，不能声称实际听感或真机后台通过。该根测试不混入普通Flutter数量。
+
+本阶段最小Android顺序根链路已取得真实通过，后续按[7J13B](phase_7j13b_root_native_shuffle_report.md)独立补随机与策略变更。Windows实际播放仍未通过，本批不重复服务重启、不自动更换输出或指责用户电脑；系统设置与生产代码均未改变。
 
 顺序原生验证通过后再独立补原生随机跨轮及显式策略变更；声学、资源字节、真机后台/生命周期、标准化、Phase7其他出口及Phase8–11仍未验收。PR保持Draft，不自动合并，不将Debug或诊断包称为上线。

@@ -1,5 +1,9 @@
 # 原生基础验证矩阵
 
+Phase7J13B：7项新增种子/结果合同/宿主日志单测、3项Node隔离门禁；79相关Flutter、完整2573 Flutter（134秒，含226 Windows Golden）、174 Node（51.13秒）、624文件格式零修改与严格分析零问题通过。独立Android随机跨轮/关闭随机场景尚待新SHA Actions执行，不混入上述数字，详见[B报告](phase_7j13b_root_native_shuffle_report.md)。原生产代码、A探针、Windows入口与旧合同不变。
+
+2026-09-19 J13A设备补记：精确7b28a16的push/PR成功，Linux2340普通测试与Windows226 Golden、3原生窗口握手分别通过，Android/Windows Debug构建成功。Android原生35445563113的WAV/content两项及根循环一项通过，根/引擎进度[302,111,101]ms，历史两项去重更新、自然完成和数据库重开无播放已取证，见[A报告](phase_7j13a_root_native_repeat_report.md)。模拟器-noaudio，声学未测。B固定种子随机与策略变更单独新增、单独计数，见[B报告](phase_7j13b_root_native_shuffle_report.md)。下方A“尚未设备执行”是该提交时记录，以本补记为准。
+
 Phase7J13A：新增6项严格结果/宿主日志反例测试、4项观察等待及取消测试、3项Node隔离门禁；最终2566 Flutter（138秒）、171 Node（46.17秒）、620文件格式零修改与严格分析零问题通过，首轮CI命令精确断言失败已修复后重跑。新增Android独立真实根测试使用文件SQLite，目标q0→q1→q0、历史去重更新、自然边界完成及重开不播放；尚未设备执行，未纳入普通Flutter测试通过数，详见[报告](phase_7j13a_root_native_repeat_report.md)。既有Windows Profile和引擎探针合同保持不变。
 
 2026-09-19 J12F云端补记：精确e49f048的push/PR均success；Linux2330通过/226 Golden跳过、Windows另行226 Golden及3原生窗口测试通过，Android Debug签名/48资产/音频许可与Windows65文件开发包通过。Android原生35441460890的WAV/content/序列3项通过，序列进度[303,103,115]ms，追加/清理/截尾/释放true，但acousticGapMeasured=false。WinMM独立无声状态查询actualDevice=1、preferredDevice=0，打开/查询/关闭成功，只证实该探针映射不同，不计实际出声或Flutter新增测试。见[J12F报告](phase_7j12f_command_failure_report.md)、[J12E对照](phase_7j12e_windows_audio_comparison.md)；[7J13根探针](phase_7j13_root_native_validation_plan.md)尚为计划。

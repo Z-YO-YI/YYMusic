@@ -1,6 +1,10 @@
 # Phase 7 出口审计与剩余工作
 
-## Phase7J13A：增加根级原生证据入口，验收仍按运行结果
+## Phase7J13A：Android最小顺序根链路已实测，随机出口继续B
+
+7b28a16的Android原生35445563113以及双平台push/PR均success，具体状态/时钟/SQLite/历史/关闭/重开证据见[A报告](phase_7j13a_root_native_repeat_report.md)。这只关闭最小Android顺序根验证，随机自然跨轮及显式策略变更按[B报告](phase_7j13b_root_native_shuffle_report.md)独立补证；不关闭Windows实际播放、声学/资源/生命周期、标准化、Phase7完整出口或Phase8–11。
+
+## Phase7J13A提交时：增加根级原生证据入口，验收仍按运行结果
 
 [Android根原生报告](phase_7j13a_root_native_repeat_report.md)在既有引擎级证据之上覆盖生产根、文件SQLite队列/历史、自然循环和继续策略；此提交只实现验证入口与本地门禁，同SHA原生结果尚待GitHub Actions。不得据此关闭原生随机、Windows实际播放、声学/资源/生命周期或整个Phase7，不重新实现已完成的循环/随机逻辑。
 
