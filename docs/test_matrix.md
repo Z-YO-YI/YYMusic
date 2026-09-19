@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+Phase7J12C：Windows旧式原生错误的单源/序列回归先失败后通过，51项专项含新协议/脱敏/取消/恢复隔离验证；最终2536项Flutter、168项Node、614文件格式和严格分析通过。一次授权音频服务重启后的旧单曲与序列包仍failed，见[J12C报告](phase_7j12c_windows_error_report.md)。协议模拟测试与真实设备结果分开记录，不能替代后者。
+
 2026-09-19设备补记：2828d38四条云运行success，Android序列实际1项通过、进度[301,102,108]ms。Windows Profile构建/指纹/身份通过，但设备执行退出1、首项25秒进度超时；旧单曲对照亦有相同设备占用错误。服务Running或端点OK不等于可播放，见[J12B报告](phase_7j12b_windows_sequence_report.md)。先恢复音频环境再重测，不跳过测试或延长超时制造成功。
 
 Phase7J12B：6项Dart结果合同测试，外部PowerShell结果反例、归档模式混淆/指纹/类型保护和独立入口门禁；最终2526 Flutter（131秒）、168 Node（43.58秒，无跳过）、严格分析零问题，612 Dart格式零修改。真实序列额外记录三段原生状态进度，Windows Profile实际执行与构建须分别取证，见[报告](phase_7j12b_windows_sequence_report.md)。没有修改226张既有Golden或旧1/2项音频探针合同。

@@ -212,6 +212,10 @@ Phase4M将Phase4E六个Pub包的完整许可原文和两个原生构建文件指
 详细范围见ADR-041：本批仅关闭六个音频Dart包的来源与打包覆盖，不伪称已经审完全部Maven传递材料，
 也不接生产AudioEngine。完整原生NOTICE与最终选型/许可展示仍是正式接线前的剩余工作。
 
+## Phase 7J12C Windows错误协议兼容（2026-09-19）
+
+just_audio_platform_interface4.6.0提升为直接依赖，仅为使用公开MethodChannel继承点修复Windows旧式错误协议。解析版本、归档哈希、音频原生插件和许可材料不变，不升级或fork依赖，不修改Pub缓存。注册限定于Windows和原始默认平台，自定义平台保持不变；详情及验证见ADR144与[J12C报告](phase_7j12c_windows_error_report.md)。
+
 ## Phase 4N 原生材料（2026-09-05）
 
 当前Media3实际Debug/Profile闭包51项、Release48项均已按精确POM/父POM和归档哈希核对，

@@ -1,5 +1,9 @@
 # Phase 7 出口审计与剩余工作
 
+## Phase7J12C错误传播与设备阻碍
+
+一次明确授权的Audiosrv重启已经成功，但旧单曲和2828d38序列包仍报告设备占用并超时。另发现锁定Windows插件的旧式EventChannel错误被just_audio忽略；J12C补Windows专属协议兼容，使失败可见，见[报告](phase_7j12c_windows_error_report.md)。这是独立软件修复，不是设备播放恢复；新源码的云构建、实际Windows序列成功及其余Phase7出口仍须逐项取证。
+
 ## Phase7J12原生验证状态
 
 截至2026-09-19，2828d38普通双平台CI与Windows Profile构建成功，Android模拟器真实序列测试通过。Windows本机未通过：新序列与旧单曲对照均报告设备占用并超时，需环境恢复后重测，见[J12B报告](phase_7j12b_windows_sequence_report.md)。不得据构建成功开放生产无缝设置或标记Phase7完成；声学、内存、生命周期及后续阶段仍保留。

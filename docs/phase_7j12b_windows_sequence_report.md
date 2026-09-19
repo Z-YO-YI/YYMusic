@@ -1,5 +1,7 @@
 # Phase 7J12B：独立 Windows 原生序列诊断
 
+后续设备恢复尝试与发现的Windows旧式错误传播缺口见[J12C报告](phase_7j12c_windows_error_report.md)。下列首轮失败记录保留；一次授权服务重启已经执行，但旧包复测仍未通过，不再沿用“尚未授权/未重启”作为当前状态。
+
 ## 2026-09-19 云构建与 Windows 实测补记
 
 目标源码 `2828d389634bae009aaf025e097354db000e9d72` 的 [push 35413316045](https://github.com/Z-YO-YI/YYMusic/actions/runs/35413316045)、[PR 35413318387](https://github.com/Z-YO-YI/YYMusic/actions/runs/35413318387)、[Android 35413321227](https://github.com/Z-YO-YI/YYMusic/actions/runs/35413321227)、[Windows Profile 35413318767](https://github.com/Z-YO-YI/YYMusic/actions/runs/35413318767) 均已success。普通双平台构建成功；Linux普通回归2300通过、226个Windows宿主Golden跳过，Windows专用226项另行通过。

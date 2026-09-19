@@ -1,5 +1,7 @@
 # 实施状态
 
+Phase7J12C：活动Windows旧式EventChannel错误被just_audio0.10.6忽略的缺口已用两项失败回归复现并补协议兼容，见[报告](phase_7j12c_windows_error_report.md)/ADR144。用户授权的Audiosrv单次重启成功，但未修改的旧单曲/序列包仍因设备占用失败；不重复重启，不标记Windows播放或Phase7完成。本批测试与新构建状态以报告和对应SHA为准。
+
 2026-09-19 J12B实测：2828d38的push/PR双平台构建、Android序列诊断、Windows Profile构建全部success；Android实际序列进度已取证。Windows新序列和旧单曲对照均报告音频设备占用并进度超时，实测failed；未更改系统设置，待环境恢复/明确授权后重测。见[J12B报告](phase_7j12b_windows_sequence_report.md)，不标记Phase7或J12整体完成。
 
 Phase7J12B：[Windows序列报告](phase_7j12b_windows_sequence_report.md)/ADR143。独立Profile入口与Dart/PowerShell双重结果验证，精确source/native SHA、单测试合同、索引/轮次及三段真实进度；旧WAV/HTTPS探针不变。全量2526 Flutter、168 Node及严格分析通过；代码/构建/真实运行分别记账，实际设备结果及本批CI以报告为准，不能标记Phase7完成。

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:just_audio_platform_interface/just_audio_platform_interface.dart';
 import 'package:yymusic/domain/models/collection_models.dart';
 import 'package:yymusic/domain/models/domain_failure.dart';
 import 'package:yymusic/domain/models/track.dart';
@@ -11,6 +12,7 @@ import 'package:yymusic/playback/just_audio_backend.dart';
 import 'package:yymusic/playback/just_audio_engine.dart';
 import 'package:yymusic/playback/playable_source.dart';
 import 'package:yymusic/playback/playback_controller.dart';
+import 'package:yymusic/playback/windows_just_audio_error_compatibility.dart';
 
 import '../support/fake_domain_repositories.dart';
 import '../support/fake_playback_dependencies.dart';
@@ -20,6 +22,7 @@ void main() {
   late _NativeChannelProbe probe;
   late NativeJustAudioPlayerBackend backend;
   late DateTime now;
+  late JustAudioPlatform originalPlatform;
   final track = TrackRef(
     trackId: 'sequence-fixture',
     sourceId: 'local-fixture',
@@ -38,6 +41,8 @@ void main() {
   );
 
   setUp(() {
+    originalPlatform = JustAudioPlatform.instance;
+    configureWindowsJustAudioErrors(isWindows: true);
     now = DateTime.utc(2026, 9, 13);
     probe = _NativeChannelProbe()..install();
     backend = NativeJustAudioPlayerBackend.create(
@@ -49,7 +54,41 @@ void main() {
   tearDown(() async {
     await backend.dispose();
     probe.uninstall();
+    JustAudioPlatform.instance = originalPlatform;
   });
+
+  for (final sequence in [false, true]) {
+    test(
+      'active legacy Windows event error reaches engine, sequence=$sequence',
+      () async {
+        final engine = JustAudioEngine(backend);
+        final states = <AudioEngineState>[];
+        final subscription = engine.states.listen(states.add);
+        addTearDown(subscription.cancel);
+        addTearDown(engine.dispose);
+        if (sequence) {
+          await engine.loadSequence(
+            AudioSequence([
+              AudioSequenceEntry(
+                entryId: 'current',
+                source: local('/current.wav'),
+              ),
+            ]),
+          );
+        } else {
+          await engine.load(local('/current.wav'));
+        }
+        await probe.emitError(probe.playerId!);
+        await Future<void>.delayed(Duration.zero);
+        expect(states.last.phase, AudioEnginePhase.error);
+        expect(states.last.failure!.diagnosticId, 'audio.just-audio.stream');
+        expect(
+          states.last.failure!.code,
+          DomainFailureCode.playbackInterrupted,
+        );
+      },
+    );
+  }
 
   test(
     'native prefix removal waits for raw rebase without reloading',
@@ -72,6 +111,32 @@ void main() {
       expect(probe.playerId, id);
       expect(backend.current.playing, isTrue);
       expect(await backend.pruneSequenceBefore(8), isFalse);
+    },
+  );
+
+  test(
+    'load after legacy error recovers and ignores stale failed player',
+    () async {
+      final engine = JustAudioEngine(backend);
+      final states = <AudioEngineState>[];
+      final subscription = engine.states.listen(states.add);
+      addTearDown(subscription.cancel);
+      addTearDown(engine.dispose);
+      await engine.load(local('/first.wav'));
+      final failedId = probe.playerId!;
+      await probe.emitError(failedId);
+      await Future<void>.delayed(Duration.zero);
+      expect(states.last.phase, AudioEnginePhase.error);
+      await engine.load(local('/second.wav'));
+      expect(states.last.phase, AudioEnginePhase.ready);
+      expect(states.last.failure, isNull);
+      expect(probe.playerId, isNot(failedId));
+      await probe.emitError(failedId);
+      await Future<void>.delayed(Duration.zero);
+      expect(states.last.phase, AudioEnginePhase.ready);
+      await probe.emitError(probe.playerId!);
+      await Future<void>.delayed(Duration.zero);
+      expect(states.last.failure!.diagnosticId, 'audio.just-audio.stream');
     },
   );
 

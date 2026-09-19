@@ -1,5 +1,11 @@
 # YYMusic 架构决策记录
 
+## ADR-144：Windows旧式错误在平台协议边界转换，不复制事件订阅
+
+Phase7J12C。设备占用复验同时暴露独立的软件兼容缺口：锁定just_audio_windows0.2.3发送EventChannel错误包，而just_audio0.10.6忽略平台流onError，只从PlaybackEventMessage.errorCode生成公开错误流。单曲与序列的活动通道回归均复现ready而非error。采用公开MethodChannelJustAudio/MethodChannelAudioPlayer继承点，在Windows后端创建首个播放器前幂等注册兼容层；仅替换原始默认实现，不覆盖其他插件/测试注入，不修改Pub缓存、原生插件或Android实现。将已有传递依赖just_audio_platform_interface4.6.0提升为精确直接依赖，不升级解析版本。
+
+每个原生播放器仅有一个缓存事件流，正常事件及所有原生命令沿用上游；旧式流错误转换为固定脱敏的errorCode=-1事件，仅保留上一条位置/索引事实，无前序时保持零位置及未知索引。错误状态idle用于释放失败的原生连接，不伪造成功、推进或播放时钟；不复制错误原文/细节/堆栈。既有引擎负责DomainFailure，既有generation负责隔离旧播放器。验证活动单源/序列错误、恢复、迟到事件、取消及非Windows不干预。设备占用仍是独立环境阻碍；软件错误及时可见不等于Windows播放通过，须重新取得同SHA的GitHub构建与设备证据。
+
 ## ADR-143：Windows序列诊断使用独立入口和严格证据合同
 
 Phase7J12B。复用已有真实序列测试，不改变旧单源/HTTPS探针的1/2项测试合同。独立Windows Profile入口仅允许显式启用、source/native精确同SHA和非Release环境；结果在allTestsPassed（含teardown）之后生成，必须恰有一项成功测试。白名单校验平台、源码身份、索引/轮次0/1/2、三次真实播放进度、追加/清理/截尾/关闭；缺失、错误类型、超时与旧产物均失败。不会把状态证据标成声学无缝。复用已有归档路径/哈希/SDK/端点保护，仅显式序列模式选择独立入口、purpose和结果文件；默认生产构建及旧诊断仍独立。Profile构建与有端点设备运行分别记录，不能相互替代。
