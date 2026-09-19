@@ -87,6 +87,7 @@ final class JustAudioEngine implements AudioSequenceEngine {
             ? source.headers
             : const {},
       );
+      if (_failure != null) throw _failure!;
       _loading = false;
       _acceptSnapshot(_backend.current);
     } catch (error) {

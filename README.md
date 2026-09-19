@@ -1,5 +1,7 @@
 # YYMusic
 
+最新增量：**Phase 7J12D 加载期异步失败保护**。单曲加载期间已收到错误，即使底层随后确认成功也不会开始播放；明确重新加载后可恢复。见[报告](docs/phase_7j12d_load_failure_report.md)。与J12C的Windows错误兼容分别验证，设备占用、Phase7完整验收及正式发布仍未完成。以下为历史记录。
+
 最新增量：**Phase 7J12C Windows 原生错误兼容**。修复旧式插件错误被音频库忽略的问题，使单曲和序列失败及时映射为安全错误；保留Android协议、播放队列与既有播放器隔离。见[报告](docs/phase_7j12c_windows_error_report.md)。本机音频设备占用在一次授权服务重启后仍存在，不能把软件错误传播修复称为Windows播放通过或正式上线。以下为历史记录。
 
 最新增量：**Phase 7J12B 独立 Windows 序列诊断**。在 J12A 真实序列测试基础上补独立 Profile 入口、精确构建身份与三段实际播放进度校验；旧单源/HTTPS 探针与默认生产构建保持独立。见[报告与操作说明](docs/phase_7j12b_windows_sequence_report.md)。诊断构建不等于设备运行，更不等于无缝听感或正式上线；Phase 7 与 Phase 8–11 尚未完成。以下为历史记录。

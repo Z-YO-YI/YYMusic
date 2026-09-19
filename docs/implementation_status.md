@@ -1,5 +1,7 @@
 # 实施状态
 
+Phase7J12D：单源加载期间的异步错误此前未使load返回失败，根可能继续play；两项回归复现后补加载提交前置条件。引擎/根重试及单源/序列方法通道测试见[报告](phase_7j12d_load_failure_report.md)/ADR145。J12C已以c2177b0推送，同分支继续；新源码构建与设备结果分别核验，不标记Windows播放或Phase7完成。
+
 Phase7J12C：活动Windows旧式EventChannel错误被just_audio0.10.6忽略的缺口已用两项失败回归复现并补协议兼容，见[报告](phase_7j12c_windows_error_report.md)/ADR144。用户授权的Audiosrv单次重启成功，但未修改的旧单曲/序列包仍因设备占用失败；不重复重启，不标记Windows播放或Phase7完成。本批测试与新构建状态以报告和对应SHA为准。
 
 2026-09-19 J12B实测：2828d38的push/PR双平台构建、Android序列诊断、Windows Profile构建全部success；Android实际序列进度已取证。Windows新序列和旧单曲对照均报告音频设备占用并进度超时，实测failed；未更改系统设置，待环境恢复/明确授权后重测。见[J12B报告](phase_7j12b_windows_sequence_report.md)，不标记Phase7或J12整体完成。

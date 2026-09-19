@@ -59,6 +59,48 @@ void main() {
 
   for (final sequence in [false, true]) {
     test(
+      'legacy error before native load acknowledgement rejects, sequence=$sequence',
+      () async {
+        final engine = JustAudioEngine(backend);
+        final states = <AudioEngineState>[];
+        final subscription = engine.states.listen(states.add);
+        addTearDown(subscription.cancel);
+        addTearDown(engine.dispose);
+        final gate = probe.loadGate = Completer<void>();
+        final result = expectLater(
+          sequence
+              ? engine.loadSequence(
+                  AudioSequence([
+                    AudioSequenceEntry(
+                      entryId: 'current',
+                      source: local('/current.wav'),
+                    ),
+                  ]),
+                )
+              : engine.load(local('/current.wav')),
+          throwsA(
+            isA<DomainFailure>().having(
+              (failure) => failure.code,
+              'code',
+              DomainFailureCode.playbackOpenFailed,
+            ),
+          ),
+        );
+        await probe.loading.future;
+        await probe.emitError(probe.playerId!);
+        await Future<void>.delayed(Duration.zero);
+        gate.complete();
+        await result;
+        expect(states.last.phase, AudioEnginePhase.error);
+        expect(
+          states.last.failure!.diagnosticId,
+          sequence ? 'audio.just-audio.sequence' : 'audio.just-audio.open',
+        );
+        expect(probe.calls, isNot(contains('play')));
+      },
+    );
+
+    test(
       'active legacy Windows event error reaches engine, sequence=$sequence',
       () async {
         final engine = JustAudioEngine(backend);

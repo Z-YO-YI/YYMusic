@@ -8,6 +8,7 @@ import 'package:yymusic/playback/just_audio_backend.dart';
 import 'package:yymusic/playback/just_audio_engine.dart';
 import 'package:yymusic/playback/playable_source.dart';
 import 'package:yymusic/playback/playback_controller.dart';
+import 'package:yymusic/playback/playback_state.dart';
 
 import '../support/catalog_detail_probe.dart';
 import '../support/fake_domain_repositories.dart';
@@ -74,6 +75,86 @@ void main() {
     trackId: 'remote-track',
     sourceId: 'remote-source',
     sourceType: MusicSourceType.rest,
+  );
+
+  test(
+    'single load rejects an asynchronous error before acknowledgement',
+    () async {
+      final backend = _FakeJustAudioBackend()..openGate = Completer<void>();
+      final engine = JustAudioEngine(backend);
+      final states = <AudioEngineState>[];
+      final subscription = engine.states.listen(states.add);
+      addTearDown(subscription.cancel);
+      addTearDown(engine.dispose);
+      final source = PlayableSource.localFile(
+        track: localTrack,
+        path: r'C:\Music\load.wav',
+      );
+      final result = expectLater(
+        engine.load(source),
+        throwsA(
+          isA<DomainFailure>().having(
+            (failure) => failure.code,
+            'code',
+            DomainFailureCode.playbackOpenFailed,
+          ),
+        ),
+      );
+      await backend.opened.future;
+      backend.emitError();
+      backend.openGate!.complete();
+      await result;
+      expect(states.last.phase, AudioEnginePhase.error);
+      expect(states.last.failure!.diagnosticId, 'audio.just-audio.open');
+      expect(backend.calls, isNot(contains('play')));
+      await expectLater(engine.play(), throwsA(isA<DomainFailure>()));
+      expect(backend.calls, isNot(contains('play')));
+      backend.openGate = null;
+      await engine.load(source);
+      expect(states.last.phase, AudioEnginePhase.ready);
+      expect(states.last.failure, isNull);
+      await engine.play();
+      expect(states.last.phase, AudioEnginePhase.playing);
+    },
+  );
+
+  test(
+    'root never starts a failed single load and explicit retry reloads',
+    () async {
+      final track = detailTrack('async-load-error');
+      final backend = _FakeJustAudioBackend()..openGate = Completer<void>();
+      final engine = JustAudioEngine(backend);
+      final library = FakeLibraryRepository(tracks: [track]);
+      final collection = FakeCollectionRepository();
+      await collection.saveQueue(systemQueue([track.ref], current: 'q-0'));
+      final player = PlaybackController(
+        engine,
+        library: library,
+        collection: collection,
+        sourceResolver: FakePlaybackSourceResolver(),
+      );
+      addTearDown(() async {
+        await player.close();
+        await engine.dispose();
+        await library.dispose();
+        await collection.dispose();
+      });
+      await player.initialize();
+      final result = expectLater(player.play(), throwsA(isA<DomainFailure>()));
+      await backend.opened.future;
+      backend.emitError();
+      backend.openGate!.complete();
+      await result;
+      expect(player.state.phase, PlaybackPhase.error);
+      expect(backend.calls, isNot(contains('play')));
+      expect(await collection.watchHistory().first, isEmpty);
+      backend.openGate = null;
+      await player.play();
+      expect(backend.calls.where((call) => call == 'open'), hasLength(2));
+      expect(backend.calls.where((call) => call == 'play'), hasLength(1));
+      expect(player.state.phase, PlaybackPhase.playing);
+      expect(await collection.watchHistory().first, isEmpty);
+    },
   );
 
   test(
@@ -355,6 +436,7 @@ final class _FakeJustAudioBackend implements JustAudioPlayerBackend {
   Uri? lastResource;
   Map<String, String> lastHeaders = const {};
   Object? openError;
+  final opened = Completer<void>();
   Completer<void>? openGate;
   Object? disposeError;
   int disposalCount = 0;
@@ -375,6 +457,7 @@ final class _FakeJustAudioBackend implements JustAudioPlayerBackend {
     DateTime? expiresAt,
   }) async {
     calls.add('open');
+    if (!opened.isCompleted) opened.complete();
     lastResource = resource;
     lastHeaders = Map.unmodifiable(headers);
     final error = openError;

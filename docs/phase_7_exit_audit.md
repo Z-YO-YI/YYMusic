@@ -1,5 +1,9 @@
 # Phase 7 出口审计与剩余工作
 
+## Phase7J12D加载提交保护
+
+单源open等待期间的异步错误不再被成功的方法确认掩盖；阻止根启动失败项并保留显式重试，见[报告](phase_7j12d_load_failure_report.md)。这是J12C后续错误链路修复，不是设备环境恢复；既有循环/随机/窗口代码不重做，Phase7完整出口与后续阶段仍未验收。
+
 ## Phase7J12C错误传播与设备阻碍
 
 一次明确授权的Audiosrv重启已经成功，但旧单曲和2828d38序列包仍报告设备占用并超时。另发现锁定Windows插件的旧式EventChannel错误被just_audio忽略；J12C补Windows专属协议兼容，使失败可见，见[报告](phase_7j12c_windows_error_report.md)。这是独立软件修复，不是设备播放恢复；新源码的云构建、实际Windows序列成功及其余Phase7出口仍须逐项取证。

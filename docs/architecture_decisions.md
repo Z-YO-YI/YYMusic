@@ -1,5 +1,9 @@
 # YYMusic 架构决策记录
 
+## ADR-145：单源加载确认前的异步失败不得返回成功
+
+Phase7J12D。在J12C云构建等待期间复核加载错误链路，两个失败回归确认：JustAudioEngine.load收到后端异步失败后仍成功返回，根随即play并清除该失败。序列加载已有失败复核，单源缺失。单源在open返回后、提交ready前同样复核本次_failure，走已有playbackOpenFailed/open异常路径并撤销_loaded；禁止根自动开始已失败项，显式重新加载仍可恢复。不新增平台调用、超时策略或公共接口，不改变循环/随机策略；以Fake后端的引擎及根回归和真实插件方法通道回归验证。设备占用及Windows实际序列验收仍独立，不把协议回归称为实机通过。
+
 ## ADR-144：Windows旧式错误在平台协议边界转换，不复制事件订阅
 
 Phase7J12C。设备占用复验同时暴露独立的软件兼容缺口：锁定just_audio_windows0.2.3发送EventChannel错误包，而just_audio0.10.6忽略平台流onError，只从PlaybackEventMessage.errorCode生成公开错误流。单曲与序列的活动通道回归均复现ready而非error。采用公开MethodChannelJustAudio/MethodChannelAudioPlayer继承点，在Windows后端创建首个播放器前幂等注册兼容层；仅替换原始默认实现，不覆盖其他插件/测试注入，不修改Pub缓存、原生插件或Android实现。将已有传递依赖just_audio_platform_interface4.6.0提升为精确直接依赖，不升级解析版本。
