@@ -1,5 +1,7 @@
 # 实施状态
 
+Phase7J13A：新增Android隔离根原生循环、文件SQLite队列/历史、关闭自动继续及重开不自动播放的验证入口，见[报告](phase_7j13a_root_native_repeat_report.md)/ADR147。10项新增Dart测试、完整2566 Flutter、171 Node、620文件格式与严格分析通过；首轮CI命令精确断言失败已修正工作流后全量重跑，同SHA云端结果另记。设备测试尚未执行，不将实现入口计作设备验收。基线c8dc13e的两条CI已success，生产代码/依赖/设计参考/Golden不变，仍沿用codex/native-repeat-window和Draft PR #136。
+
 2026-09-19 J12F云端补记：e49f048的push35440707665与PR35440709263均success，Android Debug、Windows Debug、2330普通测试、226 Windows Golden和3原生窗口测试通过，见[J12F报告](phase_7j12f_command_failure_report.md)。同SHA Android原生35441460890已success，WAV/content/序列3项通过，序列进度[303,103,115]ms。Windows无声映射状态查询首次确认该诊断实际索引1不同于首选0，详见[J12E补记](phase_7j12e_windows_audio_comparison.md)；不据此自动换输出或认定其他应用路由。下一批按[7J13根级原生计划](phase_7j13_root_native_validation_plan.md)推进Android自然循环、队列与历史验证，不重复引擎级实现，Phase7仍未完整验收。
 
 Phase7J12F：修复非加载命令确认忽略异步错误，以及音量/倍速掩盖已有错误；16项回归先失败后通过，73专项、2556全量Flutter、168 Node、614文件格式及严格分析通过，见[报告](phase_7j12f_command_failure_report.md)/ADR146。同分支codex/native-repeat-window、基线d6230e2，双平台新构建按新SHA单独核验。不重做循环/随机，不改变系统音频设置，Windows实际播放与Phase7完整出口仍未通过。

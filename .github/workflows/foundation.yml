@@ -32,6 +32,11 @@ on:
         required: true
         default: false
         type: boolean
+      include_root_repeat_poc:
+        description: Run isolated Android root repeat and SQLite diagnostics (not a release)
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -49,6 +54,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
+      - name: Reject root repeat outside isolated Android diagnostics
+        if: inputs.include_root_repeat_poc && (github.event_name != 'workflow_dispatch' || !inputs.run_just_audio_poc || inputs.just_audio_poc_platform != 'android' || inputs.build_windows_audio_probe || inputs.include_https_audio_poc || inputs.include_sequence_audio_poc)
+        run: exit 1
       - name: Reject sequence probe outside isolated Android or Windows Profile diagnostics
         if: inputs.include_sequence_audio_poc && (github.event_name != 'workflow_dispatch' || inputs.include_https_audio_poc || !((inputs.run_just_audio_poc && inputs.just_audio_poc_platform == 'android' && !inputs.build_windows_audio_probe) || (inputs.build_windows_audio_probe && !inputs.run_just_audio_poc)))
         run: exit 1
@@ -82,6 +90,7 @@ jobs:
       - run: dart run drift_dev make-migrations
       - run: git diff --exit-code -- lib/data/database/app_database.g.dart lib/data/database/app_database.steps.dart drift_schemas/ test/drift/
       - run: dart format --output=none --set-exit-if-changed lib test integration_test
+      - run: dart format --output=none --set-exit-if-changed tools/verify_root_native_repeat.dart
       - run: flutter analyze --no-pub --fatal-infos
       - run: flutter test --no-pub --reporter expanded
 
@@ -322,3 +331,4 @@ jobs:
             set -e
             flutter test --no-pub ${{ inputs.include_https_audio_poc && 'integration_test/just_audio_native_sources_poc_test.dart' || 'integration_test/just_audio_android_sources_poc_test.dart' }} -d emulator-${EMULATOR_PORT} --reporter expanded
             if [ '${{ inputs.include_sequence_audio_poc }}' = 'true' ]; then flutter test --no-pub integration_test/just_audio_native_sequence_poc_test.dart --dart-define=YYMUSIC_SEQUENCE_SOURCE_COMMIT=${GITHUB_SHA} -d emulator-${EMULATOR_PORT} --reporter expanded; fi
+            if [ '${{ inputs.include_root_repeat_poc }}' = 'true' ]; then flutter test --no-pub integration_test/root_native_repeat_poc_test.dart --dart-define=YYMUSIC_ROOT_REPEAT_SOURCE_COMMIT=${GITHUB_SHA} -d emulator-${EMULATOR_PORT} --reporter expanded > "${RUNNER_TEMP}/yymusic-root-native-repeat.log" 2>&1 && dart run tools/verify_root_native_repeat.dart "${RUNNER_TEMP}/yymusic-root-native-repeat.log" "${GITHUB_SHA}"; yy_root_status=$?; cat "${RUNNER_TEMP}/yymusic-root-native-repeat.log"; exit "$yy_root_status"; fi

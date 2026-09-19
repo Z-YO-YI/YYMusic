@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+Phase7J13A：新增6项严格结果/宿主日志反例测试、4项观察等待及取消测试、3项Node隔离门禁；最终2566 Flutter（138秒）、171 Node（46.17秒）、620文件格式零修改与严格分析零问题通过，首轮CI命令精确断言失败已修复后重跑。新增Android独立真实根测试使用文件SQLite，目标q0→q1→q0、历史去重更新、自然边界完成及重开不播放；尚未设备执行，未纳入普通Flutter测试通过数，详见[报告](phase_7j13a_root_native_repeat_report.md)。既有Windows Profile和引擎探针合同保持不变。
+
 2026-09-19 J12F云端补记：精确e49f048的push/PR均success；Linux2330通过/226 Golden跳过、Windows另行226 Golden及3原生窗口测试通过，Android Debug签名/48资产/音频许可与Windows65文件开发包通过。Android原生35441460890的WAV/content/序列3项通过，序列进度[303,103,115]ms，追加/清理/截尾/释放true，但acousticGapMeasured=false。WinMM独立无声状态查询actualDevice=1、preferredDevice=0，打开/查询/关闭成功，只证实该探针映射不同，不计实际出声或Flutter新增测试。见[J12F报告](phase_7j12f_command_failure_report.md)、[J12E对照](phase_7j12e_windows_audio_comparison.md)；[7J13根探针](phase_7j13_root_native_validation_plan.md)尚为计划。
 
 Phase7J12F：16项新增回归全部先失败后通过，覆盖play/pause/seek/stop/音量/倍速等待期流错误、旧错误下偏好更新及再次错误、根历史与明确重试、真实插件旧式Windows错误。73项专项及完整2556项Flutter通过（117秒），168 Node通过（49.03秒），614文件格式零修改、严格分析零问题。新SHA双平台CI待推送后独立核验；协议/状态测试不计Windows实际播放通过，见[J12F报告](phase_7j12f_command_failure_report.md)。

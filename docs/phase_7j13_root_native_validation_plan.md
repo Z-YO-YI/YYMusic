@@ -1,5 +1,7 @@
 # Phase 7J13：唯一播放根的原生循环验证计划
 
+2026-09-19进展：7J13A已新增独立Android根探针、文件SQLite重开、严格结果/宿主校验及默认关闭的工作流入口，见[实现报告](phase_7j13a_root_native_repeat_report.md)。本地与原生设备结果按报告分开记账；下文“尚未实现”保留为计划制定时的状态，不表示需要重写既有入口。原生随机和Windows后续仍是独立增量。
+
 ## 已有证据与本次缺口
 
 基线e49f048，保留Z-YO-YI/YYMusic的codex/native-repeat-window和Draft PR #136。J11循环窗口与随机顺序、J12C/D/F安全失败已经有2556项本地Flutter回归及对应双平台云构建；不重做这些实现。J12的独立原生序列探针直接操作JustAudioEngine，Android旧e84bda7与新e49f048的WAV/content/序列3项均已通过，新运行35441460890的序列进度为[303,103,115]ms；两者都不能替代真实插件驱动PlaybackController后的队列、历史和继续策略证据。
