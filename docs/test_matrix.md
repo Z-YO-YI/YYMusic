@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+2026-09-19设备补记：2828d38四条云运行success，Android序列实际1项通过、进度[301,102,108]ms。Windows Profile构建/指纹/身份通过，但设备执行退出1、首项25秒进度超时；旧单曲对照亦有相同设备占用错误。服务Running或端点OK不等于可播放，见[J12B报告](phase_7j12b_windows_sequence_report.md)。先恢复音频环境再重测，不跳过测试或延长超时制造成功。
+
 Phase7J12B：6项Dart结果合同测试，外部PowerShell结果反例、归档模式混淆/指纹/类型保护和独立入口门禁；最终2526 Flutter（131秒）、168 Node（43.58秒，无跳过）、严格分析零问题，612 Dart格式零修改。真实序列额外记录三段原生状态进度，Windows Profile实际执行与构建须分别取证，见[报告](phase_7j12b_windows_sequence_report.md)。没有修改226张既有Golden或旧1/2项音频探针合同。
 
 Phase7J12A：新增独立设备集成测试（不计入普通flutter test的2520项），使用真实JustAudioEngine事件覆盖cycle0/1/2、播放中追加、前缀清理、截尾完成和关闭；另两项Node静态门禁保护显式诊断隔离。详情及实际运行状态见[报告](phase_7j12a_native_sequence_probe_report.md)，未执行设备测试时不得算通过。

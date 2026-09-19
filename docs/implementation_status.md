@@ -1,5 +1,7 @@
 # 实施状态
 
+2026-09-19 J12B实测：2828d38的push/PR双平台构建、Android序列诊断、Windows Profile构建全部success；Android实际序列进度已取证。Windows新序列和旧单曲对照均报告音频设备占用并进度超时，实测failed；未更改系统设置，待环境恢复/明确授权后重测。见[J12B报告](phase_7j12b_windows_sequence_report.md)，不标记Phase7或J12整体完成。
+
 Phase7J12B：[Windows序列报告](phase_7j12b_windows_sequence_report.md)/ADR143。独立Profile入口与Dart/PowerShell双重结果验证，精确source/native SHA、单测试合同、索引/轮次及三段真实进度；旧WAV/HTTPS探针不变。全量2526 Flutter、168 Node及严格分析通过；代码/构建/真实运行分别记账，实际设备结果及本批CI以报告为准，不能标记Phase7完成。
 
 Phase7J12A：[独立序列探针](phase_7j12a_native_sequence_probe_report.md)新增真实插件集成测试和显式Android诊断选项，验证追加的cycle2实际播放、清理/截尾后的绝对身份与关闭。生产播放代码未变，旧Windows探针合同未变；设备执行状态以报告及对应Actions为准，不能将编译或静态门禁称为原生验收。J12整体、Phase7出口和Phase8–11仍未完成。

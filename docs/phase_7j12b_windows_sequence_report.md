@@ -1,5 +1,21 @@
 # Phase 7J12B：独立 Windows 原生序列诊断
 
+## 2026-09-19 云构建与 Windows 实测补记
+
+目标源码 `2828d389634bae009aaf025e097354db000e9d72` 的 [push 35413316045](https://github.com/Z-YO-YI/YYMusic/actions/runs/35413316045)、[PR 35413318387](https://github.com/Z-YO-YI/YYMusic/actions/runs/35413318387)、[Android 35413321227](https://github.com/Z-YO-YI/YYMusic/actions/runs/35413321227)、[Windows Profile 35413318767](https://github.com/Z-YO-YI/YYMusic/actions/runs/35413318767) 均已success。普通双平台构建成功；Linux普通回归2300通过、226个Windows宿主Golden跳过，Windows专用226项另行通过。
+
+Android保留local/content两项成功，独立序列1项31秒通过；sourceCommit匹配本提交，indices/cycles=[0,1,2]，progressMs=[301,102,108]，append/prune/retain/disposed=true，completedAtIndex=2，acousticGapMeasured=false。仅认定模拟器原生状态/进度验收，不认定声学无缝。
+
+Windows Profile产物ID `10575307339`，24724334字节，归档SHA256 `31e2c3772d7c7ff3421e3ffd19210f7b3a23cbdd0e01cf8844f6228e37d7b0f9`，下载指纹与GitHub digest一致；归档路径、AOT、source/native身份及Flutter运行库核验通过。CI确认64文件应用包、6项音频许可及完整原生声明，不依赖Debug CRT。不是正式用户安装包。
+
+**Windows真实运行失败，J12不能标为完成。** 在全新忽略目录运行未修改的Profile包：两个音频服务均运行、2个活跃输出端点，但原生后端报告“请求的音频播放设备当前正在使用中”。首项进度等待25秒超时，进程退出码1、elapsedMs=27220；结果source/native均匹配2828d38，testCount=1、passed=false、diagnosticId=sequence-poc.failed。尚未执行到追加/清理验收，无成功序列指标。
+
+对照复验使用仓库已记录指纹的旧单曲Profile包25747bc（归档SHA256 c78d00de299072d4da2da7ce7325abafec63b62733f86e2cc2a2125a84277c0a），另建目录。它也出现相同设备占用错误，20秒等待超时、退出码1（21845ms）、passed=false。这支持当前音频环境存在共同阻碍，但不能证明具体占用者或证明新序列无缺陷。
+
+原始日志与失败结果只留本机build目录，不提交用户设备名、端点ID或原始插件日志。未关闭程序、未切换默认输出、未重启服务或改驱动/独占设置，未放宽测试。需要用户释放音频输出或明确授权指定的音频环境调整，再在新目录重测。当前只读权限下，下载/诊断运行与脱敏证据文档分别申请权限。下文为实现时的历史记录。
+
+本次仅补充四份阶段/测试文档；提交前复验168项Node全部通过（26.52秒）、612个Dart文件格式零改动、严格分析零问题（10.5秒），差异空白检查通过。Flutter全量2526项及上述双平台构建证据属于未改动的2828d38源码；没有将本次Windows失败计为通过，也没有为纯文档变更重复执行设备测试。文档提交的新CI另行追踪。
+
 ## 基线、目标与范围
 
 2026-09-19，仓库 Z-YO-YI/YYMusic，沿用 codex/native-repeat-window，基线 bd0c374。先 fetch 核对工作区干净且与远程一致；此前 workflow 权限问题已通过用户明确授权的设备流程解决，bd0c374 已推送，同一 Draft PR #136 保持未合并。
