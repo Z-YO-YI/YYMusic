@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+2026-09-19 J13D设备补记：精确4380386的push35450858997、PR35450861486、Windows Profile35450881237、Android原生35450882711全部success。Linux2354通过/226宿主跳过；Windows另行226 Golden、3原生窗口握手及Debug包通过。Android原生WAV/content2项、序列1项通过，进度[302,115,100]ms。Windows原样Profile严格单项通过、退出0，三轮进度[114,100,103]ms、前缀38ms真实归零、追加/截尾/释放通过，运行库指纹不变；见[D证据](phase_7j13d_windows_prefix_fix_report.md)。acousticGapMeasured=false，不能计为声学或Windows根整合；[E计划](phase_7j13e_windows_root_validation_plan.md)不计已实现测试。以下D待设备措辞是提交时状态。
+
 Phase7J13D：新增1项真实Dart插件通道回归（原始索引0先于方法确认、应用绝对entry/cursor不变且不重载），4项Node源码/路径完整性门禁。80相关Flutter、2580全量（119秒，含原226 Windows Golden）、179 Node（22.57秒，无失败/跳过）、626文件格式零修改、严格分析和6许可/2原生源码指纹通过。旧Node的hosted依赖断言已改成精确本地路径、锁文件来源与0.2.3版本检查，完整重跑通过，未移除门禁。新SHA原生构建和Windows实测尚待执行，见[D报告](phase_7j13d_windows_prefix_fix_report.md)。J13C精确3e34aa9四条Actions及Android3项通过；Windows失败轨迹见[C报告](phase_7j13c_windows_prefix_report.md)，不计通过。
 
 Phase7J13C：6项新增脱敏原始索引追踪测试，61项序列/结果专项及完整2579 Flutter（105秒）、175 Node（43.90秒，无失败/跳过）、严格分析通过；新Windows诊断待GitHub构建和原样执行，见[C报告](phase_7j13c_windows_prefix_report.md)。用户重启后旧e84bda7进入第三轮后前缀清理失败，不计通过。B精确2856dfa的Android原生35447685127已有1项根随机实测通过（53秒）及旧WAV/content2项通过，双平台push35447630428 success，见[B原生补记](phase_7j13b_root_native_shuffle_report.md)；下方B未执行措辞为提交时历史。

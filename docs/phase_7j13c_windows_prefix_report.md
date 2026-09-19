@@ -22,6 +22,8 @@ Windows artifact10586454064，24729830字节，官方与下载SHA256均5666420b5
 
 因此当前直接失败条件是原始索引重排确认缺失，而非电脑无法开始播放。锁定Windows插件删除后没有显式broadcastState，当前媒体对象未变时不能依赖CurrentItemChanged及时通知；选择[J13D最小原生回传修复](phase_7j13d_windows_prefix_fix_report.md)并用同一失败探针复验。实际原生CurrentItemIndex是否正确重排仍以修复后来自WinRT的事件为准，不从Dart列表推算零，不解除超时/非法索引保护。C诊断完成不等于Windows播放验收通过。
 
+### C提交时的实现与本地验证（设备结果已在上文补齐）
+
 新增`integration_test/support/native_sequence_prune_trace.dart`、`test/unit/native_sequence_prune_trace_test.dart`，修改既有序列探针以显式创建同一个真实后端并交给引擎；只在prune窗口订阅原始快照，finally取消并输出独立诊断标记。保留初始样本与最近有界尾部，原始null/负值/增加索引不裁剪；重复100ms桶合并，溢出计数可见。失败仍rethrow，旧成功合同、Profile退出条件和所有生产代码均不变。Node门禁改为检查明确的真实后端/引擎构造，并增加单实例、取消和失败传播检查，没有删除旧门禁。
 
 本地验证：6项新增诊断单测与既有序列/结果专项共61项通过；全量Flutter **2579项通过（105秒）**；完整Node **175项通过（43.90秒，无失败/跳过）**；626个Dart文件格式零修改，严格分析零问题。10个变更文件UTF-8与敏感模式检查通过，`git diff --check`通过。日志仅在忽略的build目录。未在本机编译Windows或Android程序。尚未执行新SHA的原生探针，不能称前缀问题已修复。

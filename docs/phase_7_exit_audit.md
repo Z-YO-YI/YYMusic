@@ -1,5 +1,9 @@
 # Phase 7 出口审计与剩余工作
 
+## Phase7J13D实机通过：关闭前缀故障，继续Windows根整合
+
+精确4380386原样GitHub Profile已在本机完成三轮自然序列、追加、前缀清理、截尾结束及释放；rawIndex在38ms从2归零而非此前超时，进程退出0，见[D实测](phase_7j13d_windows_prefix_fix_report.md)。同SHA普通双平台/PR及Android原生全成功。因此Windows引擎序列不再是未通过项；仍需[E计划](phase_7j13e_windows_root_validation_plan.md)的真实根/SQLite/历史/继续策略证据，并保留声学、长时资源、后台生命周期、标准化及Phase8–11。不会据此自动开放生产无缝、合并PR或正式发布。
+
 ## Phase7J13D：保留安全判据修复Windows原生状态回报
 
 J13C精确3e34aa9原样Profile已确认当前失败为删除前缀后1秒没有原始索引0，不再沿用重启前加载失败结论。D只修改锁定插件成功删除后的真实状态广播，保留Dart所有确认/越界/超时保护；源码及本地回归通过不关闭设备出口，必须在GitHub新SHA构建后复测同一探针，见[D报告](phase_7j13d_windows_prefix_fix_report.md)。Android序列及根循环/随机已有各自证据，Windows完整状态/声学/资源/生命周期、音量标准化和Phase8–11仍保留。
