@@ -1,5 +1,7 @@
 # 实施状态
 
+2026-09-19 J12D最终验证：e84bda7的push/PR双平台Debug、Android原生诊断和Windows Profile四条Actions均success。云端2314普通测试与Windows226项Golden分别通过；Android本地/content/序列3项通过。Windows完整Profile包指纹与身份通过，但本机仍因设备占用在2236ms内正确返回加载失败，不再25秒超时；不是播放成功。见[J12D报告](phase_7j12d_load_failure_report.md)。未重复服务重启或更改系统设置，Windows成功播放仍需恢复环境/可用设备；Phase7及后续出口保持未验收。
+
 Phase7J12D：单源加载期间的异步错误此前未使load返回失败，根可能继续play；两项回归复现后补加载提交前置条件。引擎/根重试及单源/序列方法通道测试见[报告](phase_7j12d_load_failure_report.md)/ADR145。J12C已以c2177b0推送，同分支继续；新源码构建与设备结果分别核验，不标记Windows播放或Phase7完成。
 
 Phase7J12C：活动Windows旧式EventChannel错误被just_audio0.10.6忽略的缺口已用两项失败回归复现并补协议兼容，见[报告](phase_7j12c_windows_error_report.md)/ADR144。用户授权的Audiosrv单次重启成功，但未修改的旧单曲/序列包仍因设备占用失败；不重复重启，不标记Windows播放或Phase7完成。本批测试与新构建状态以报告和对应SHA为准。

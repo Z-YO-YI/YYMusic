@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+2026-09-19 J12D最终设备/云端补记：精确e84bda7四条Actions均success，Linux2314通过/226宿主Golden跳过，Windows另行226项通过，原生窗口3项通过；Android本地/content两项和序列一项通过（progressMs=[301,112,110]）。Windows未修改Profile归档SHA验证通过，但实际序列在2236ms退出1，加载失败已正确传播、音频设备占用仍在；失败不计通过、没有运行到追加/清理指标。详见[J12D报告](phase_7j12d_load_failure_report.md)，不将云构建或错误及时可见视为本机播放恢复。
+
 Phase7J12D：4项新增回归验证单源加载确认前异步失败、根不play/不写历史且明确重试可恢复，以及真实just_audio方法通道的单源/序列加载期旧式错误。修复前两个行为断言失败；64项相关专项通过，最终全量与云构建见[报告](phase_7j12d_load_failure_report.md)。没有改动Golden或放宽失败/超时断言。
 
 Phase7J12C：Windows旧式原生错误的单源/序列回归先失败后通过，51项专项含新协议/脱敏/取消/恢复隔离验证；最终2536项Flutter、168项Node、614文件格式和严格分析通过。一次授权音频服务重启后的旧单曲与序列包仍failed，见[J12C报告](phase_7j12c_windows_error_report.md)。协议模拟测试与真实设备结果分开记录，不能替代后者。
