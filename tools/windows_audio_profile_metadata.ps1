@@ -1,8 +1,9 @@
 #Requires -Version 7.0
 # Invoked only after CI has built the explicit Profile diagnostic entry point.
 [CmdletBinding()]
-param([switch]$IncludeHttps)
+param([switch]$IncludeHttps, [switch]$IncludeSequence)
 $ErrorActionPreference = 'Stop'
+if ($IncludeHttps -and $IncludeSequence) { throw 'Sequence and HTTPS probes must remain isolated' }
 if (-not $IsWindows -or $env:GITHUB_ACTIONS -cne 'true' -or
     $env:GITHUB_REPOSITORY -cne 'Z-YO-YI/YYMusic' -or $env:GITHUB_EVENT_NAME -cne 'workflow_dispatch' -or
     $env:GITHUB_SHA -cnotmatch '^[0-9a-f]{40}$') { throw 'Only the manual YYMusic CI diagnostic may package this probe' }
@@ -28,7 +29,8 @@ foreach ($file in (Get-ChildItem -LiteralPath $bundle -File | Where-Object { $_.
 }
 [ordered]@{ schemaVersion = 1; sourceCommit = $commit; nativeCommit = $commit; runtimeMode = 'Profile';
     includeHttps = [bool]$IncludeHttps;
-    purpose = $(if ($IncludeHttps) { 'isolated-audio-source-test' } else { 'isolated-local-wav-test' });
+    includeSequence = [bool]$IncludeSequence;
+    purpose = $(if ($IncludeSequence) { 'isolated-native-sequence-test' } elseif ($IncludeHttps) { 'isolated-audio-source-test' } else { 'isolated-local-wav-test' });
     flutterVersion = $env:FLUTTER_VERSION } |
     ConvertTo-Json | Set-Content -LiteralPath (Join-Path $bundle 'native-audio-build.json') -Encoding utf8
 Write-Output 'PASS: Profile AOT diagnostic identity recorded; no Debug CRT imports'

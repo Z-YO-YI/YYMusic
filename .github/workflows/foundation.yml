@@ -28,7 +28,7 @@ on:
         default: false
         type: boolean
       include_sequence_audio_poc:
-        description: Also run the isolated repeat-window probe in Android diagnostic mode
+        description: Select the isolated repeat-window probe in Android diagnostics or Windows Profile
         required: true
         default: false
         type: boolean
@@ -49,8 +49,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - name: Reject sequence probe outside isolated Android diagnostics
-        if: inputs.include_sequence_audio_poc && (github.event_name != 'workflow_dispatch' || !inputs.run_just_audio_poc || inputs.just_audio_poc_platform != 'android' || inputs.include_https_audio_poc || inputs.build_windows_audio_probe)
+      - name: Reject sequence probe outside isolated Android or Windows Profile diagnostics
+        if: inputs.include_sequence_audio_poc && (github.event_name != 'workflow_dispatch' || inputs.include_https_audio_poc || !((inputs.run_just_audio_poc && inputs.just_audio_poc_platform == 'android' && !inputs.build_windows_audio_probe) || (inputs.build_windows_audio_probe && !inputs.run_just_audio_poc)))
         run: exit 1
       - name: Reject conflicting diagnostic modes
         if: inputs.run_just_audio_poc && inputs.build_windows_audio_probe
@@ -124,8 +124,12 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && inputs.build_windows_audio_probe
         shell: pwsh
         run: |
-          flutter build windows --profile --no-pub --target=integration_test/windows_audio_probe.dart `
+          $includeSequence = '${{ inputs.include_sequence_audio_poc }}' -ceq 'true'
+          $probeTarget = if ($includeSequence) { 'integration_test/windows_sequence_probe.dart' } else { 'integration_test/windows_audio_probe.dart' }
+          flutter build windows --profile --no-pub "--target=$probeTarget" `
             --dart-define=YYMUSIC_WINDOWS_AUDIO_PROBE=true `
+            --dart-define=YYMUSIC_WINDOWS_SEQUENCE_PROBE=${{ inputs.include_sequence_audio_poc }} `
+            "--dart-define=YYMUSIC_SEQUENCE_SOURCE_COMMIT=$env:GITHUB_SHA" `
             "--dart-define=YYMUSIC_PROBE_SOURCE_COMMIT=$env:GITHUB_SHA" `
             "--dart-define=YYMUSIC_PROBE_NATIVE_COMMIT=$env:GITHUB_SHA" `
             --dart-define=YYMUSIC_PROBE_HTTPS=${{ inputs.include_https_audio_poc }} `
@@ -133,12 +137,12 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           ./tools/verify_windows_bundle.ps1 -BundlePath build/windows/x64/runner/Profile
           $includeHttps = '${{ inputs.include_https_audio_poc }}' -ceq 'true'
-          ./tools/windows_audio_profile_metadata.ps1 -IncludeHttps:$includeHttps
+          ./tools/windows_audio_profile_metadata.ps1 -IncludeHttps:$includeHttps -IncludeSequence:$includeSequence
       - name: Upload short-lived Windows diagnostic only
         if: github.event_name == 'workflow_dispatch' && inputs.build_windows_audio_probe
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: YYMusic-windows-audio-probe-${{ github.sha }}
+          name: YYMusic-windows-${{ inputs.include_sequence_audio_poc && 'sequence' || 'audio' }}-probe-${{ github.sha }}
           path: build/windows/x64/runner/Profile/
           if-no-files-found: error
           retention-days: 1

@@ -1,5 +1,9 @@
 # Phase 7J12A：独立原生循环序列探针
 
+## 2026-09-19 Android原生执行补记
+
+bd0c374已推送，显式[Actions 35412218776](https://github.com/Z-YO-YI/YYMusic/actions/runs/35412218776)完成success。原local/content两项先通过，随后本序列测试实际执行1项、31秒通过，日志sourceCommit=bd0c37460a0b1372a99317ef4f8d25c04ec4a881、platform=android、observedIndices/observedCycles=[0,1,2]，append/prune/retain/disposed=true，completedAtIndex=2，acousticGapMeasured=false。下文“尚未执行”为本批最初提交时记录，现已补模拟器原生执行证据，仍不代表Windows、真机声学或Phase7整体验收。Windows独立Profile接线继续见[J12B](phase_7j12b_windows_sequence_report.md)。
+
 ## 范围与基线
 
 2026-09-18，基线174d873，沿用codex/native-repeat-window。开始前fetch/ff-only pull，工作区干净；不切换分支，不重做J11的生产代码。按[J12计划](phase_7j12_native_sequence_probe_plan.md)先实现独立测试及Android显式诊断接线，Windows独立Profile封装和结果验证器留下一增量，旧Windows探针的1/2项测试合同不改变。

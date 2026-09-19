@@ -9,13 +9,24 @@ param(
     [string]$OutputDirectory,
     [ValidateSet('Debug', 'Profile')][string]$RuntimeMode = 'Debug',
     [string]$NativeCommit = '4db58997ffe16a62da204344578a5f4b7fd9c320',
-    [switch]$IncludeHttps
+    [switch]$IncludeHttps,
+    [switch]$IncludeSequence
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $probeRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 if ($NativeCommit -cnotmatch '^[0-9a-f]{40}$') { throw 'Expected native commit must be exact' }
 if ($IncludeHttps -and $RuntimeMode -cne 'Profile') { throw 'HTTPS probe requires a matching Profile bundle' }
+if ($IncludeSequence -and ($RuntimeMode -cne 'Profile' -or $IncludeHttps)) {
+    throw 'Sequence probe requires an isolated Profile bundle'
+}
+
+function Get-SequenceMode($Record) {
+    $property = $Record.PSObject.Properties['includeSequence']
+    if (-not $property) { return $false }
+    if ($property.Value -isnot [bool]) { throw 'Invalid sequence probe mode' }
+    return $property.Value
+}
 
 function Get-HttpsMode($Record) {
     $property = $Record.PSObject.Properties['includeHttps']
@@ -63,13 +74,15 @@ if ($Mode -eq 'Run') {
     if ($manifest.schemaVersion -ne 1 -or $manifest.nativeCommit -cne $nativeCommit -or
         $manifest.sourceCommit -cnotmatch '^[0-9a-f]{40}$' -or
         $manifest.runtimeMode -cne $RuntimeMode -or
+        (Get-SequenceMode $manifest) -ne [bool]$IncludeSequence -or
         (Get-HttpsMode $manifest) -ne [bool]$IncludeHttps) { throw 'Invalid probe manifest' }
     $runtime = Join-Path $outputPath 'runtime'
     $before = Get-Inventory $runtime
     if (($before | ConvertTo-Json -Depth 5 -Compress) -cne ($manifest.files | ConvertTo-Json -Depth 5 -Compress)) {
         throw 'Prepared runtime inventory has changed; refusing execution'
     }
-    $resultPath = Join-Path $runtime 'native-audio-poc-result.json'
+    $resultName = if ($IncludeSequence) { 'native-sequence-poc-result.json' } else { 'native-audio-poc-result.json' }
+    $resultPath = Join-Path $runtime $resultName
     if (Test-Path -LiteralPath $resultPath) { throw 'Existing probe result refused' }
     foreach ($name in @('stdout.log', 'stderr.log', 'process-result.json')) {
         if (Test-Path -LiteralPath (Join-Path $outputPath $name)) { throw 'Existing run evidence refused; prepare a new directory' }
@@ -103,6 +116,19 @@ if ($Mode -eq 'Run') {
         throw 'Native probe did not produce a bounded result; local logs retained'
     }
     $result = Get-Content -LiteralPath $resultPath -Raw | ConvertFrom-Json
+    if ($IncludeSequence) {
+        if ($probeExit -ne 0 -or $manifest.sourceCommit -cne $nativeCommit) { throw 'Native sequence process or identity failed' }
+        $sequenceRecord = Get-Content -LiteralPath $resultPath -Raw | ConvertFrom-Json -AsHashtable
+        $sequenceMetrics = & (Join-Path $PSScriptRoot 'native_sequence_result.ps1') -Record $sequenceRecord -ExpectedCommit $nativeCommit
+        $after = @(Get-Inventory $runtime | Where-Object { $_.path -cne $resultName })
+        if (($before | ConvertTo-Json -Depth 5 -Compress) -cne ($after | ConvertTo-Json -Depth 5 -Compress)) {
+            throw 'Runtime files changed during execution'
+        }
+        [ordered]@{ passed = $true; sourceCommit = $manifest.sourceCommit; nativeCommit = $nativeCommit;
+            runtimeMode = $RuntimeMode; includeSequence = $true; testCount = 1; renderEndpoints = $renderCount;
+            exitCode = $probeExit; sequenceMetrics = $sequenceMetrics } | ConvertTo-Json -Depth 5 -Compress
+        return
+    }
     $expectedTests = if ($IncludeHttps) { 2 } else { 1 }
     if ($result.schemaVersion -ne 1 -or $result.sourceCommit -cne $manifest.sourceCommit -or
         $result.nativeCommit -cne $nativeCommit -or $result.platform -cne 'windows' -or
@@ -209,10 +235,11 @@ try {
         if ($metadataEntry.Length -gt 4096) { throw 'Profile metadata exceeds limit' }
         $reader = [IO.StreamReader]::new($metadataEntry.Open())
         try { $metadata = $reader.ReadToEnd() | ConvertFrom-Json } finally { $reader.Dispose() }
-        $purpose = if ($IncludeHttps) { 'isolated-audio-source-test' } else { 'isolated-local-wav-test' }
+        $purpose = if ($IncludeSequence) { 'isolated-native-sequence-test' } elseif ($IncludeHttps) { 'isolated-audio-source-test' } else { 'isolated-local-wav-test' }
         if ($metadata.schemaVersion -ne 1 -or $metadata.sourceCommit -cne $nativeCommit -or
             $metadata.nativeCommit -cne $nativeCommit -or $metadata.runtimeMode -cne 'Profile' -or
             $metadata.purpose -cne $purpose -or $metadata.flutterVersion -cne '3.47.2' -or
+            (Get-SequenceMode $metadata) -ne [bool]$IncludeSequence -or
             (Get-HttpsMode $metadata) -ne [bool]$IncludeHttps) {
             throw 'Profile bundle identity mismatch'
         }
@@ -249,6 +276,7 @@ try {
 } finally { $archive.Dispose() }
 if ($Mode -eq 'PrepareProfile') {
     [ordered]@{ schemaVersion = 1; sourceCommit = $sourceCommit; nativeCommit = $nativeCommit; runtimeMode = $RuntimeMode;
+        includeSequence = [bool]$IncludeSequence;
         includeHttps = [bool]$IncludeHttps; archiveSha256 = $ExpectedArchiveSha256; files = @(Get-Inventory $runtime) } |
         ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $outputPath 'manifest.json') -Encoding utf8
     Write-Output "PASS: unmodified Profile diagnostic prepared; source=native=$sourceCommit"

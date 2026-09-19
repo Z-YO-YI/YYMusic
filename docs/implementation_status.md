@@ -1,5 +1,7 @@
 # 实施状态
 
+Phase7J12B：[Windows序列报告](phase_7j12b_windows_sequence_report.md)/ADR143。独立Profile入口与Dart/PowerShell双重结果验证，精确source/native SHA、单测试合同、索引/轮次及三段真实进度；旧WAV/HTTPS探针不变。全量2526 Flutter、168 Node及严格分析通过；代码/构建/真实运行分别记账，实际设备结果及本批CI以报告为准，不能标记Phase7完成。
+
 Phase7J12A：[独立序列探针](phase_7j12a_native_sequence_probe_report.md)新增真实插件集成测试和显式Android诊断选项，验证追加的cycle2实际播放、清理/截尾后的绝对身份与关闭。生产播放代码未变，旧Windows探针合同未变；设备执行状态以报告及对应Actions为准，不能将编译或静态门禁称为原生验收。J12整体、Phase7出口和Phase8–11仍未完成。
 
 2026-09-18云端补记：J11实现931956e的push35324669599、PR35324699642均success，Android APK签名/资源与Windows65文件开发包核验通过，[Draft PR #136](https://github.com/Z-YO-YI/YYMusic/pull/136)未合并。Windows Debug产物已上传；本次push没有Android下载附件或正式发布。可选音频POC均跳过，新序列设备验收未完成。下一批执行[7J12原生序列探针计划](phase_7j12_native_sequence_probe_plan.md)，不重新实现既有循环代码。

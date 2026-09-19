@@ -6,7 +6,7 @@ import test from 'node:test';
 import { root } from './design_audit.mjs';
 
 const script = join(root, 'tools/windows_audio_probe.ps1').replaceAll("'", "''");
-function fixtureCheck(mutation, expected, { wrongHash = false, omitFile = '', profile = false, wrongCommit = false, https = false, requestHttps = https, invalidHttps = false } = {}) {
+function fixtureCheck(mutation, expected, { wrongHash = false, omitFile = '', profile = false, wrongCommit = false, https = false, requestHttps = https, invalidHttps = false, sequence = false, requestSequence = sequence, invalidSequence = false } = {}) {
   // PowerShell fixtures exercise the actual archive guard on all CI hosts.
   const command = `
     $ErrorActionPreference = 'Stop'
@@ -28,7 +28,7 @@ function fixtureCheck(mutation, expected, { wrongHash = false, omitFile = '', pr
           $writer = [IO.StreamWriter]::new($entry.Open())
           try {
             if ($name -eq 'native-audio-build.json') {
-              $writer.Write('{"schemaVersion":1,"sourceCommit":"${'1'.repeat(40)}","nativeCommit":"${(wrongCommit ? '2' : '1').repeat(40)}","runtimeMode":"Profile","purpose":"${https ? 'isolated-audio-source-test' : 'isolated-local-wav-test'}","flutterVersion":"3.47.2"${https ? `,"includeHttps":${invalidHttps ? '"true"' : 'true'}` : ''}}')
+              $writer.Write('{"schemaVersion":1,"sourceCommit":"${'1'.repeat(40)}","nativeCommit":"${(wrongCommit ? '2' : '1').repeat(40)}","runtimeMode":"Profile","purpose":"${sequence ? 'isolated-native-sequence-test' : https ? 'isolated-audio-source-test' : 'isolated-local-wav-test'}","flutterVersion":"3.47.2"${https ? `,"includeHttps":${invalidHttps ? '"true"' : 'true'}` : ''}${sequence ? `,"includeSequence":${invalidSequence ? '"true"' : 'true'}` : ''}}')
             } else { $writer.Write('fixture engine') }
           } finally { $writer.Dispose() }
         }
@@ -36,7 +36,7 @@ function fixtureCheck(mutation, expected, { wrongHash = false, omitFile = '', pr
       } finally { $zip.Dispose() }
       $hash = (Get-FileHash -LiteralPath $zipPath).Hash.ToLowerInvariant()
       ${wrongHash ? "$hash = '0' * 64" : ''}
-      & '${script}' -Mode ValidateArchive -ArchivePath $zipPath -ExpectedArchiveSha256 $hash -FlutterRoot $sdk ${profile ? `-RuntimeMode Profile -NativeCommit '${'1'.repeat(40)}'` : ''} ${requestHttps ? '-IncludeHttps' : ''}
+      & '${script}' -Mode ValidateArchive -ArchivePath $zipPath -ExpectedArchiveSha256 $hash -FlutterRoot $sdk ${profile ? `-RuntimeMode Profile -NativeCommit '${'1'.repeat(40)}'` : ''} ${requestHttps ? '-IncludeHttps' : ''} ${requestSequence ? '-IncludeSequence' : ''}
     } finally {
       # Only delete the resolved, uniquely named fixture directly beneath temp.
       $resolved = [IO.Path]::GetFullPath($fixtureRoot)
@@ -113,4 +113,14 @@ test('Windows probe remains isolated, opt-in, timeout-bounded and tied to one re
   assert.match(tooling, /\$process\.Kill\(\)/);
   assert.doesNotMatch(tooling, /Set-Service|Set-ItemProperty|Remove-Item|Invoke-RestMethod|git push/);
   assert.doesNotMatch(readFileSync(join(root, 'lib/main.dart'), 'utf8'), /windows_audio_probe/);
+});
+
+test('sequence Profile archives cannot be confused with old WAV/HTTPS/Debug diagnostics', () => {
+  fixtureCheck('', null, { profile: true, sequence: true });
+  fixtureCheck('', /Profile bundle identity mismatch/, { profile: true, sequence: true, requestSequence: false });
+  fixtureCheck('', /Profile bundle identity mismatch/, { profile: true, requestSequence: true });
+  fixtureCheck('', /Profile bundle identity mismatch/, { profile: true, sequence: true, wrongCommit: true });
+  fixtureCheck('', /Invalid sequence probe mode/, { profile: true, sequence: true, invalidSequence: true });
+  fixtureCheck('', /Sequence probe requires/, { requestSequence: true });
+  fixtureCheck('', /Sequence probe requires/, { profile: true, sequence: true, requestHttps: true });
 });

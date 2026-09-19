@@ -86,7 +86,7 @@ void main() {
     expect(latest!.sequenceCursor!.cycle, 0);
     await engine.setVolume(0.05).timeout(const Duration(seconds: 10));
     await engine.play().timeout(const Duration(seconds: 10));
-    await waitFor(
+    final first = await waitFor(
       (state) =>
           state.phase == AudioEnginePhase.playing &&
           state.sequenceCursor?.index == 0 &&
@@ -157,6 +157,11 @@ void main() {
       'platform': Platform.operatingSystem,
       'observedIndices': indices.toList()..sort(),
       'observedCycles': cycles.toList()..sort(),
+      'progressMs': [
+        first.position.inMilliseconds,
+        second.position.inMilliseconds,
+        appended.position.inMilliseconds,
+      ],
       'appendAccepted': true,
       'pruneAccepted': true,
       'retainAccepted': true,
