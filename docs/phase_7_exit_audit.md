@@ -1,5 +1,61 @@
 # Phase 7 出口审计与剩余工作
 
+## Phase7J13E：Windows根整合进入设备验证准备
+
+已提取既有Android顺序根场景，新增Windows独立Profile入口、文件SQLite/队列/历史/恢复验收与严格身份门禁，见[E报告](phase_7j13e_windows_root_report.md)。本地实现与合同测试不替代GitHub新SHA原样设备执行；Windows最小顺序根出口尚不关闭。Windows随机、长时资源、声学、后台、标准化及Phase8–11仍在未完成清单。
+
+## Phase7J13D实机通过：关闭前缀故障，继续Windows根整合
+
+精确4380386原样GitHub Profile已在本机完成三轮自然序列、追加、前缀清理、截尾结束及释放；rawIndex在38ms从2归零而非此前超时，进程退出0，见[D实测](phase_7j13d_windows_prefix_fix_report.md)。同SHA普通双平台/PR及Android原生全成功。因此Windows引擎序列不再是未通过项；仍需[E计划](phase_7j13e_windows_root_validation_plan.md)的真实根/SQLite/历史/继续策略证据，并保留声学、长时资源、后台生命周期、标准化及Phase8–11。不会据此自动开放生产无缝、合并PR或正式发布。
+
+## Phase7J13D：保留安全判据修复Windows原生状态回报
+
+J13C精确3e34aa9原样Profile已确认当前失败为删除前缀后1秒没有原始索引0，不再沿用重启前加载失败结论。D只修改锁定插件成功删除后的真实状态广播，保留Dart所有确认/越界/超时保护；源码及本地回归通过不关闭设备出口，必须在GitHub新SHA构建后复测同一探针，见[D报告](phase_7j13d_windows_prefix_fix_report.md)。Android序列及根循环/随机已有各自证据，Windows完整状态/声学/资源/生命周期、音量标准化和Phase8–11仍保留。
+
+## Phase7J13B/C：Android随机根链路已实测，Windows失败转为前缀清理
+
+精确2856dfa的Android原生35447685127及双平台push35447630428成功；B随机跨轮、显式关闭随机、顺序回退及SQLite队列同步已有真实模拟器证据，见[B报告](phase_7j13b_root_native_shuffle_report.md)。Windows用户重启后原样e84bda7已通过第三轮进度检查，但前缀操作失败；[C诊断](phase_7j13c_windows_prefix_report.md)收集原始轨迹，不把重启前的加载失败当作当前阻碍，也不把新诊断实现当作修复。Windows完整播放/声学/资源/生命周期和Phase7整体出口仍保留。
+
+## Phase7J13A：Android最小顺序根链路已实测，随机出口继续B
+
+7b28a16的Android原生35445563113以及双平台push/PR均success，具体状态/时钟/SQLite/历史/关闭/重开证据见[A报告](phase_7j13a_root_native_repeat_report.md)。这只关闭最小Android顺序根验证，随机自然跨轮及显式策略变更按[B报告](phase_7j13b_root_native_shuffle_report.md)独立补证；不关闭Windows实际播放、声学/资源/生命周期、标准化、Phase7完整出口或Phase8–11。
+
+## Phase7J13A提交时：增加根级原生证据入口，验收仍按运行结果
+
+[Android根原生报告](phase_7j13a_root_native_repeat_report.md)在既有引擎级证据之上覆盖生产根、文件SQLite队列/历史、自然循环和继续策略；此提交只实现验证入口与本地门禁，同SHA原生结果尚待GitHub Actions。不得据此关闭原生随机、Windows实际播放、声学/资源/生命周期或整个Phase7，不重新实现已完成的循环/随机逻辑。
+
+## 2026-09-19 J12F双平台构建与下一验证层
+
+e49f048的两组Android/Windows Debug构建及云端回归已success；同SHA Android原生WAV/content/序列3项也已通过，见[J12F报告](phase_7j12f_command_failure_report.md)。Windows独立映射探针实际选择与首选不同，属于[J12E路径证据](phase_7j12e_windows_audio_comparison.md)，不是YYMusic出声验收，也不授权自动换输出。[7J13计划](phase_7j13_root_native_validation_plan.md)在已有引擎级证据之上补唯一根的自然循环、SQLite队列/历史和恢复，不重新实现循环/随机；此处仅确定下一批范围，没有新增已通过功能或关闭Phase7出口。
+
+## Phase7J12F命令确认与错误保留
+
+16项失败回归确认并修复命令等待期间错误仍被成功确认、偏好更新掩盖旧播放错误的缺口；2556 Flutter、168 Node及严格分析通过，见[J12F报告](phase_7j12f_command_failure_report.md)。双平台构建将按新SHA单独验证。只关闭该软件错误语义缺口，不把状态保护称为Windows实际播放恢复，不关闭生产无缝、声学/资源/生命周期、标准化或Phase8–11；用户设备其他应用正常的反馈保持有效，不再要求重启或换设备作为前提。
+
+## 2026-09-19 J12E诊断边界修正
+
+用户确认其他应用正常出声；独立WinRT与WinMM对照表明不同调用/选择方式的结果不同，根因尚未确认，见[J12E报告](phase_7j12e_windows_audio_comparison.md)。撤回“必须先恢复电脑音频或更换设备”的前置要求，继续定位默认输出路径与兼容性，不重复服务重启或改变系统设置。Windows成功播放仍未通过；无声初始化不替代原生序列、声学、资源与生命周期验收。下面保留历史结果，早期环境推断不再作为当前执行前提。
+
+## 2026-09-19 J12D最终平台验证
+
+e84bda7四条Actions全部success：普通双平台Debug、Windows Profile和Android原生3项验证均已取证，见[J12D报告](phase_7j12d_load_failure_report.md)。但本机Windows仍报告音频设备占用；新包2236ms内正确返回加载失败，仅关闭“旧式错误被忽略、等待超时”的软件证据缺口，不关闭成功播放、声学/内存/生命周期或整个Phase7出口。没有重新实现循环/随机、重复重启服务或扩大系统授权。后续依据J12E对照定位兼容性，不将构建success替代本机播放通过。
+
+## Phase7J12D加载提交保护
+
+单源open等待期间的异步错误不再被成功的方法确认掩盖；阻止根启动失败项并保留显式重试，见[报告](phase_7j12d_load_failure_report.md)。这是J12C后续错误链路修复，不是设备环境恢复；既有循环/随机/窗口代码不重做，Phase7完整出口与后续阶段仍未验收。
+
+## Phase7J12C错误传播与设备阻碍
+
+一次明确授权的Audiosrv重启已经成功，但旧单曲和2828d38序列包仍报告设备占用并超时。另发现锁定Windows插件的旧式EventChannel错误被just_audio忽略；J12C补Windows专属协议兼容，使失败可见，见[报告](phase_7j12c_windows_error_report.md)。这是独立软件修复，不是设备播放恢复；新源码的云构建、实际Windows序列成功及其余Phase7出口仍须逐项取证。
+
+## Phase7J12原生验证状态
+
+截至2026-09-19，2828d38普通双平台CI与Windows Profile构建成功，Android模拟器真实序列测试通过。Windows本机未通过：新序列与旧单曲对照均报告设备占用并超时，需环境恢复后重测，见[J12B报告](phase_7j12b_windows_sequence_report.md)。不得据构建成功开放生产无缝设置或标记Phase7完成；声学、内存、生命周期及后续阶段仍保留。
+
+## Phase7J11循环窗口与随机顺序
+
+已补循环窗口的代码与自动化验证：原生RepeatMode.all跨队尾预载，单项队列也保持独立cycle身份；每轮随机顺序仅在真正采用时同步，并防止存储等待中的旧轮覆盖用户新设置。11项新增测试，最终2520 Flutter与161 Node通过。见[报告](phase_7j11_repeat_window_report.md)。本次不开放生产无缝开关；真实Android/Windows事件时序、内存/听感与生命周期，带期限未来网络项无缝刷新、标准化及后续阶段仍须验收。下文旧阶段的“循环窗口未完成”保留历史归属，不代表需要重做此批。
+
 ## Phase7J10已播前缀清理
 
 已从“仅提前加载数有界”推进为根原生窗口最多11项，已播8项后清理前缀；应用队列保留，原生索引重排不重用绝对cursor身份。见[报告](phase_7j10_sequence_prefix_report.md)。该项有代码与自动化证据，但原生堆内存字节、设备事件时序/听感尚无新实测；循环窗口、未来网络刷新、标准化、Phase8–11和真机验收继续保留。不能将窗口测试当作生产无缝开关可上线证明。

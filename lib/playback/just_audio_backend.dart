@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:just_audio/just_audio.dart';
 
 import 'playable_source.dart';
+import 'windows_just_audio_error_compatibility.dart';
 
 /// Project-owned processing phases exposed by the just_audio candidate seam.
 enum JustAudioProcessingPhase { idle, loading, buffering, ready, completed }
@@ -39,7 +41,7 @@ final class JustAudioPlayerSnapshot {
   final int? currentIndex;
 }
 
-/// Injectable seam around just_audio. Plugin types stay inside this file.
+/// Injectable seam around just_audio. Plugin types stay in playback adapters.
 abstract interface class JustAudioPlayerBackend {
   JustAudioPlayerSnapshot get current;
   bool get supportsRequestHeaders;
@@ -93,12 +95,15 @@ final class NativeJustAudioPlayerBackend implements JustAudioSequenceBackend {
     required bool useProxyForRequestHeaders,
     required bool supportsRequestHeaders,
     DateTime Function()? clock,
-  }) => NativeJustAudioPlayerBackend._(
-    AudioPlayer(useProxyForRequestHeaders: useProxyForRequestHeaders),
-    useProxyForRequestHeaders,
-    clock ?? DateTime.now,
-    supportsRequestHeaders: supportsRequestHeaders,
-  );
+  }) {
+    configureWindowsJustAudioErrors(isWindows: Platform.isWindows);
+    return NativeJustAudioPlayerBackend._(
+      AudioPlayer(useProxyForRequestHeaders: useProxyForRequestHeaders),
+      useProxyForRequestHeaders,
+      clock ?? DateTime.now,
+      supportsRequestHeaders: supportsRequestHeaders,
+    );
+  }
 
   NativeJustAudioPlayerBackend._(
     this._player,

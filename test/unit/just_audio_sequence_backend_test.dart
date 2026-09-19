@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:just_audio_platform_interface/just_audio_platform_interface.dart';
 import 'package:yymusic/domain/models/collection_models.dart';
 import 'package:yymusic/domain/models/domain_failure.dart';
 import 'package:yymusic/domain/models/track.dart';
@@ -11,6 +12,7 @@ import 'package:yymusic/playback/just_audio_backend.dart';
 import 'package:yymusic/playback/just_audio_engine.dart';
 import 'package:yymusic/playback/playable_source.dart';
 import 'package:yymusic/playback/playback_controller.dart';
+import 'package:yymusic/playback/windows_just_audio_error_compatibility.dart';
 
 import '../support/fake_domain_repositories.dart';
 import '../support/fake_playback_dependencies.dart';
@@ -20,6 +22,7 @@ void main() {
   late _NativeChannelProbe probe;
   late NativeJustAudioPlayerBackend backend;
   late DateTime now;
+  late JustAudioPlatform originalPlatform;
   final track = TrackRef(
     trackId: 'sequence-fixture',
     sourceId: 'local-fixture',
@@ -38,6 +41,8 @@ void main() {
   );
 
   setUp(() {
+    originalPlatform = JustAudioPlatform.instance;
+    configureWindowsJustAudioErrors(isWindows: true);
     now = DateTime.utc(2026, 9, 13);
     probe = _NativeChannelProbe()..install();
     backend = NativeJustAudioPlayerBackend.create(
@@ -49,6 +54,143 @@ void main() {
   tearDown(() async {
     await backend.dispose();
     probe.uninstall();
+    JustAudioPlatform.instance = originalPlatform;
+  });
+
+  for (final sequence in [false, true]) {
+    test(
+      'legacy error before native load acknowledgement rejects, sequence=$sequence',
+      () async {
+        final engine = JustAudioEngine(backend);
+        final states = <AudioEngineState>[];
+        final subscription = engine.states.listen(states.add);
+        addTearDown(subscription.cancel);
+        addTearDown(engine.dispose);
+        final gate = probe.loadGate = Completer<void>();
+        final result = expectLater(
+          sequence
+              ? engine.loadSequence(
+                  AudioSequence([
+                    AudioSequenceEntry(
+                      entryId: 'current',
+                      source: local('/current.wav'),
+                    ),
+                  ]),
+                )
+              : engine.load(local('/current.wav')),
+          throwsA(
+            isA<DomainFailure>().having(
+              (failure) => failure.code,
+              'code',
+              DomainFailureCode.playbackOpenFailed,
+            ),
+          ),
+        );
+        await probe.loading.future;
+        await probe.emitError(probe.playerId!);
+        await Future<void>.delayed(Duration.zero);
+        gate.complete();
+        await result;
+        expect(states.last.phase, AudioEnginePhase.error);
+        expect(
+          states.last.failure!.diagnosticId,
+          sequence ? 'audio.just-audio.sequence' : 'audio.just-audio.open',
+        );
+        expect(probe.calls, isNot(contains('play')));
+      },
+    );
+
+    test(
+      'active legacy Windows event error reaches engine, sequence=$sequence',
+      () async {
+        final engine = JustAudioEngine(backend);
+        final states = <AudioEngineState>[];
+        final subscription = engine.states.listen(states.add);
+        addTearDown(subscription.cancel);
+        addTearDown(engine.dispose);
+        if (sequence) {
+          await engine.loadSequence(
+            AudioSequence([
+              AudioSequenceEntry(
+                entryId: 'current',
+                source: local('/current.wav'),
+              ),
+            ]),
+          );
+        } else {
+          await engine.load(local('/current.wav'));
+        }
+        await probe.emitError(probe.playerId!);
+        await Future<void>.delayed(Duration.zero);
+        expect(states.last.phase, AudioEnginePhase.error);
+        expect(states.last.failure!.diagnosticId, 'audio.just-audio.stream');
+        expect(
+          states.last.failure!.code,
+          DomainFailureCode.playbackInterrupted,
+        );
+      },
+    );
+  }
+
+  for (final sequence in [false, true]) {
+    test(
+      'preferences retain legacy Windows failure, sequence=$sequence',
+      () async {
+        final engine = JustAudioEngine(backend);
+        final states = <AudioEngineState>[];
+        final subscription = engine.states.listen(states.add);
+        addTearDown(subscription.cancel);
+        addTearDown(engine.dispose);
+        if (sequence) {
+          await engine.loadSequence(
+            AudioSequence([
+              AudioSequenceEntry(
+                entryId: 'current',
+                source: local('/current.wav'),
+              ),
+            ]),
+          );
+        } else {
+          await engine.load(local('/current.wav'));
+        }
+        await probe.emitError(probe.playerId!);
+        await Future<void>.delayed(Duration.zero);
+        final failure = states.last.failure;
+        expect(failure, isNotNull);
+        await engine.setVolume(0.4);
+        await engine.setPlaybackRate(1.5);
+        expect(states.last.phase, AudioEnginePhase.error);
+        expect(states.last.failure, same(failure));
+        expect(states.last.volume, 0.4);
+        expect(states.last.playbackRate, 1.5);
+      },
+    );
+  }
+
+  test('seek rejects legacy error before native acknowledgement', () async {
+    final engine = JustAudioEngine(backend);
+    final states = <AudioEngineState>[];
+    final subscription = engine.states.listen(states.add);
+    addTearDown(subscription.cancel);
+    addTearDown(engine.dispose);
+    await engine.load(local('/current.wav'));
+    final gate = probe.seekGate = Completer<void>();
+    final result = expectLater(
+      engine.seek(const Duration(seconds: 2)),
+      throwsA(
+        isA<DomainFailure>().having(
+          (failure) => failure.diagnosticId,
+          'diagnosticId',
+          'audio.just-audio.seek',
+        ),
+      ),
+    );
+    await probe.seeking.future;
+    await probe.emitError(probe.playerId!);
+    await Future<void>.delayed(Duration.zero);
+    gate.complete();
+    await result;
+    expect(states.last.phase, AudioEnginePhase.error);
   });
 
   test(
@@ -72,6 +214,64 @@ void main() {
       expect(probe.playerId, id);
       expect(backend.current.playing, isTrue);
       expect(await backend.pruneSequenceBefore(8), isFalse);
+    },
+  );
+
+  test('four-entry prefix edit accepts raw zero before ack and preserves logical entry', () async {
+    final engine = JustAudioEngine(backend);
+    addTearDown(engine.dispose);
+    final states = <AudioEngineState>[];
+    final subscription = engine.states.listen(states.add);
+    addTearDown(subscription.cancel);
+    final batch = AudioSequence([
+      for (var i = 0; i < 4; i++)
+        AudioSequenceEntry(entryId: 'e$i', source: local('/$i.wav')),
+    ]);
+    await engine.loadSequence(batch, initialIndex: 2);
+    await engine.play();
+    final gate = probe.removeGate = Completer<void>();
+    final pruning = engine.pruneSequenceBefore(batch.cursors[2]);
+    await probe.removing.future;
+    // just_audio has already shortened its Dart sequence. Its clamped view
+    // must not replace the raw native fact while the method is in flight.
+    expect(backend.current.currentIndex, 2);
+    expect(states.last.sequenceCursor!.index, 2);
+    await probe.emit(0);
+    expect(backend.current.currentIndex, 0);
+    gate.complete();
+    expect(await pruning, isTrue);
+    expect(states.last.sequenceCursor!.sequenceIdentity, same(batch.identity));
+    expect(states.last.sequenceCursor!.index, 2);
+    expect(states.last.sequenceCursor!.entryId, 'e2');
+    expect(states.last.phase, AudioEnginePhase.playing);
+    expect(probe.loads, hasLength(1));
+    expect(probe.removals.single['startIndex'], 0);
+    expect(probe.removals.single['endIndex'], 2);
+  });
+
+  test(
+    'load after legacy error recovers and ignores stale failed player',
+    () async {
+      final engine = JustAudioEngine(backend);
+      final states = <AudioEngineState>[];
+      final subscription = engine.states.listen(states.add);
+      addTearDown(subscription.cancel);
+      addTearDown(engine.dispose);
+      await engine.load(local('/first.wav'));
+      final failedId = probe.playerId!;
+      await probe.emitError(failedId);
+      await Future<void>.delayed(Duration.zero);
+      expect(states.last.phase, AudioEnginePhase.error);
+      await engine.load(local('/second.wav'));
+      expect(states.last.phase, AudioEnginePhase.ready);
+      expect(states.last.failure, isNull);
+      expect(probe.playerId, isNot(failedId));
+      await probe.emitError(failedId);
+      await Future<void>.delayed(Duration.zero);
+      expect(states.last.phase, AudioEnginePhase.ready);
+      await probe.emitError(probe.playerId!);
+      await Future<void>.delayed(Duration.zero);
+      expect(states.last.failure!.diagnosticId, 'audio.just-audio.stream');
     },
   );
 
@@ -115,6 +315,33 @@ void main() {
       ),
     );
   });
+
+  test(
+    'actual plugin index distinguishes repeated queue entry cycles',
+    () async {
+      final engine = JustAudioEngine(backend);
+      addTearDown(engine.dispose);
+      final states = <AudioEngineState>[];
+      engine.states.listen(states.add);
+      final batch = AudioSequence([
+        for (var cycle = 0; cycle < 3; cycle++)
+          AudioSequenceEntry(
+            entryId: 'same',
+            source: local('/same.wav'),
+            cycle: cycle,
+          ),
+      ]);
+      await engine.loadSequence(batch);
+      await engine.play();
+      await probe.emit(1);
+      expect(states.last.sequenceCursor!.entryId, 'same');
+      expect(states.last.sequenceCursor!.cycle, 1);
+      await probe.emit(2);
+      expect(states.last.sequenceCursor!.cycle, 2);
+      expect(probe.loads, hasLength(1));
+      expect(probe.calls.where((call) => call == 'play'), hasLength(1));
+    },
+  );
 
   test('expired preflight keeps prior native media usable', () async {
     await backend.openSequence([local('/old.wav')]);

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-19 — Phase 7J13D Windows 前缀清理状态补丁
+
+- 实测补记：精确4380386四条GitHub流程均success；本机未修改Profile在38ms获得真实rawIndex=0，三轮进度[114,100,103]ms、追加/清理/截尾/释放全通过，31865ms正常退出。Android同SHA序列及WAV/content回归通过。仅关闭该引擎级故障，不代表完整应用或声学验收；Windows根整合继续J13E。
+- 保留发布版 `just_audio_windows 0.2.3` 的完整源码及 MIT 许可到 `third_party/just_audio_windows`，仅在成功删除范围后、方法确认前广播实际 WinRT 状态；不更换引擎，不重启当前音频，不改变原始归零/超时保护。
+- Pub 路径依赖、锁文件与音频许可证验证同步调整；增加官方归档/逐文件指纹、唯一补丁及严格本地路径门禁，不修改全局 Pub 缓存。
+- 新增原始索引事件先于方法确认的回归，验证逻辑条目/批次保持不变；2580 Flutter、179 Node、严格分析及格式检查通过。GitHub 新 SHA 构建与本机原样 Profile 结果单独记录，不将源码检查当作实机修复证据。
+- 重启后的 J13C 实测已定位为前缀清理索引确认失败；原设备占用历史不再作为当前前提。详见 [J13D 报告](docs/phase_7j13d_windows_prefix_fix_report.md)。
+
 ## 2026-09-05 — Phase 4H 移除被拒绝的 media_kit 活动候选
 
 - 从pubspec/lockfile、Windows生成注册、活动源码和CI删除`media_kit`候选及13个直接/传递包；Phase4B—4G历史证据和机器清单仍保留。

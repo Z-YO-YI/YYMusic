@@ -29,10 +29,9 @@ if ($Mode -eq 'Source') {
     foreach ($package in $manifest.packages) {
         $configuredPackages = @($config.packages | Where-Object name -CEQ $package.name)
         if ($configuredPackages.Count -ne 1) { throw 'Missing or duplicate configured audio package' }
-        $uri = [Uri]$configuredPackages[0].rootUri
-        if (!$uri.IsAbsoluteUri -or !$uri.IsFile -or $uri.Query -or $uri.Fragment) { throw 'Audio package must use a local resolved cache' }
-        $packageRoots[$package.name] = $uri.LocalPath
-        $path = Join-Path $uri.LocalPath $package.licenseFile
+        $packageRoot = Resolve-YyAudioPackageRoot -Name $package.name -RootUri $configuredPackages[0].rootUri -RepositoryRoot $audioRoot
+        $packageRoots[$package.name] = $packageRoot
+        $path = Join-Path $packageRoot $package.licenseFile
         if ((Get-Item -LiteralPath $path).Length -ne $package.bytes) { throw 'Audio source license length mismatch' }
         Assert-YyLicenseBytes -Bytes ([IO.File]::ReadAllBytes($path)) -Expected $package
     }

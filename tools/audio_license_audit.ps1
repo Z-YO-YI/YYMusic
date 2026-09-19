@@ -1,6 +1,37 @@
 #Requires -Version 7.0
 # Read-only helpers shared by the source and packaged-notice checks.
 
+function Resolve-YyAudioPackageRoot {
+    param([string]$Name, [string]$RootUri, [string]$RepositoryRoot)
+    try { $uri = [Uri]::new($RootUri, [UriKind]::RelativeOrAbsolute) }
+    catch { throw 'Invalid audio package root URI' }
+    if ($Name -ceq 'just_audio_windows') {
+        if ($RootUri -match '[?#]') { throw 'Invalid local Windows audio package URI' }
+        if (!$uri.IsAbsoluteUri) {
+            $configUri = [Uri]::new([IO.Path]::GetFullPath((Join-Path $RepositoryRoot '.dart_tool/package_config.json')))
+            $uri = [Uri]::new($configUri, $uri)
+        }
+        if (!$uri.IsFile -or $uri.Query -or $uri.Fragment) { throw 'Invalid local Windows audio package URI' }
+        $expected = [IO.Path]::GetFullPath((Join-Path $RepositoryRoot 'third_party/just_audio_windows'))
+        $actual = [IO.Path]::GetFullPath($uri.LocalPath).TrimEnd([IO.Path]::DirectorySeparatorChar, [IO.Path]::AltDirectorySeparatorChar)
+        $comparison = if ($IsWindows) { [StringComparison]::OrdinalIgnoreCase } else { [StringComparison]::Ordinal }
+        if (!$actual.Equals($expected, $comparison)) { throw 'Windows audio package must resolve to the audited local fork' }
+        $cursor = $actual
+        while ($cursor) {
+            if ((Test-Path -LiteralPath $cursor) -and
+                ((Get-Item -LiteralPath $cursor -Force).Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+                throw 'Linked Windows audio package root refused'
+            }
+            $cursor = [IO.Path]::GetDirectoryName($cursor)
+        }
+        return $actual
+    }
+    if (!$uri.IsAbsoluteUri -or !$uri.IsFile -or $uri.Query -or $uri.Fragment) {
+        throw 'Audio package must use a local resolved cache'
+    }
+    return $uri.LocalPath
+}
+
 function Read-YyBoundedBytes {
     param([IO.Stream]$Stream, [long]$Limit)
     $buffer = [byte[]]::new(65536)

@@ -1,5 +1,19 @@
 # YYMusic
 
+当前增量：**Phase 7J13E Windows 播放根与数据库验证**。独立 Profile 测试已接入真实循环、队列/历史写入和重开无自动播放；与既有 Android 场景共享观测，不重写生产逻辑。2586 项本地 Flutter、严格分析及设计/许可指纹检查通过，新 SHA 的 GitHub 构建与 Windows 实测尚待完成。见[E 报告](docs/phase_7j13e_windows_root_report.md)。Windows 引擎序列已通过不变；Phase 7 其余出口和 Phase 8–11 仍未完成，新安装尚无真实导入能力，不能称为日常可用发行版。
+
+最新验收：**Windows 本机原生序列已通过，前缀清理故障已修复。** 精确 `4380386` 的四条 GitHub 流程全部成功；本机原样 Profile 在38ms收到真实索引归零，三轮自然播放、追加、清理、截尾及释放通过，正常退出。Android 相同场景回归通过。见[实测证据](docs/phase_7j13d_windows_prefix_fix_report.md)。这不是完整应用上线或无缝听感验收；接下来验证 Windows 真实播放根与 SQLite 队列/历史，Phase 7 其余出口及 Phase 8–11 继续保留。下面“新包待实测”是该提交前的记录。
+
+当前增量：**Phase 7J13D Windows 前缀清理状态修复**。重启后的原样 GitHub 包已经能进入第三轮；J13C 轨迹确认现在卡在删除前缀后未收到原始索引归零，而不是仍在加载期失败。D 在锁定 `just_audio_windows 0.2.3` 的仓库副本中，只补删除成功后回传真实 WinRT 状态，不暂停、重载或伪造索引。2580 项 Flutter、179 项 Node 与严格分析通过；新包构建和 Windows 实测待独立验证，不能据此声称播放问题已修复。见[D 报告](docs/phase_7j13d_windows_prefix_fix_report.md)与[副本来源/维护说明](third_party/just_audio_windows/UPSTREAM.md)。Android 根循环和随机跨轮已有独立原生证据；Windows 完整验收、Phase 7 剩余出口及 Phase 8–11 尚未完成。以下均为历史阶段记录，尤其重启前的设备占用记录不代表当前状态。
+
+最新增量：**Phase 7J12D 加载期异步失败保护**。单曲加载期间已收到错误，即使底层随后确认成功也不会开始播放；明确重新加载后可恢复。见[报告](docs/phase_7j12d_load_failure_report.md)。与J12C的Windows错误兼容分别验证，设备占用、Phase7完整验收及正式发布仍未完成。以下为历史记录。
+
+最新增量：**Phase 7J12C Windows 原生错误兼容**。修复旧式插件错误被音频库忽略的问题，使单曲和序列失败及时映射为安全错误；保留Android协议、播放队列与既有播放器隔离。见[报告](docs/phase_7j12c_windows_error_report.md)。本机音频设备占用在一次授权服务重启后仍存在，不能把软件错误传播修复称为Windows播放通过或正式上线。以下为历史记录。
+
+最新增量：**Phase 7J12B 独立 Windows 序列诊断**。在 J12A 真实序列测试基础上补独立 Profile 入口、精确构建身份与三段实际播放进度校验；旧单源/HTTPS 探针与默认生产构建保持独立。见[报告与操作说明](docs/phase_7j12b_windows_sequence_report.md)。诊断构建不等于设备运行，更不等于无缝听感或正式上线；Phase 7 与 Phase 8–11 尚未完成。以下为历史记录。
+
+最新增量：**Phase 7J11 原生循环窗口与随机顺序保护**。列表循环可跨队尾预载，单项队列以 cycle 区分重复播放；每轮随机顺序冻结，实际切入新轮才采用，迟到存储回调不能覆盖用户新设置。仍保持最多11项原生窗口、两项前瞻，不删除用户队列。最终2520项Flutter测试与161项Node检查通过。见[报告](docs/phase_7j11_repeat_window_report.md)。生产无缝开关、真机听感和Phase8–11尚未验收，以下为历史记录。
+
 最新增量：**Phase 7J10 原生队列前缀清理**。保持条目绝对身份，原生窗口最多11项，已播前缀积累8项时清理；当前曲目不主动暂停或重载，后续仍可追加和截尾，用户队列不删除。索引异常/超时安全失败。见[报告](docs/phase_7j10_sequence_prefix_report.md)。循环窗口与真机无缝验收仍待完成，以下为历史记录。
 
 最新增量：**Phase 7J9 原生等待期限保护**。有效期传入原生后端，替换准备前后、load/append等待结束及play/seek边界均复核；过期请求停止并返回安全错误，时钟回退不能重新启用已判失效源，新成功加载可恢复。见[报告](docs/phase_7j9_native_expiry_report.md)。持续播放定时刷新和真机验收仍待完成，以下为历史记录。

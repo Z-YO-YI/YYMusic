@@ -636,6 +636,8 @@ final class PlaybackController extends ChangeNotifier {
         final binding = _NativeSequenceBinding(
           loadSequence.cursors,
           nativePlan.tracks,
+          nativePlan.orders,
+          _shuffleOrder,
         );
         _nativeSequence = binding;
         await (_engine as AudioSequenceEngine).loadSequence(loadSequence);

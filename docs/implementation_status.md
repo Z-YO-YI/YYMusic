@@ -1,5 +1,41 @@
 # 实施状态
 
+2026-09-19 J13E：复用已验收Android顺序根测试主体，新增独立Windows Profile与SQLite/历史/恢复验收入口、严格平台/身份/指标投影、Actions互斥模式和反例；生产lib/插件/依赖/设计/Golden不变。16专项、2586全量Flutter、631格式零修改、严格分析及来源/许可通过，云端与设备仍待新SHA验证，见[E报告](phase_7j13e_windows_root_report.md)。父文档9b40810的push/PR双平台已success。Windows引擎故障已修复，不重复重启或归咎设备；Windows随机根及Phase7其余、Phase8–11继续保留。
+
+2026-09-19 J13D最终验收：精确4380386四条Actions全部success，Windows原样Profile本机退出0、31865ms，三轮原生进度[114,100,103]ms，追加/清理/截尾/释放通过；前缀rawIndex从2在38ms变0并接受，未暂停。Android同SHA三项原生回归与双平台开发包通过，见[D报告](phase_7j13d_windows_prefix_fix_report.md)。这已关闭当前Windows前缀状态回报故障，不再报告“本机引擎序列仍失败”。但Windows根队列/历史/策略仍按[E计划](phase_7j13e_windows_root_validation_plan.md)独立验收，声学/资源/后台、标准化及Phase8–11未关闭。以下D“待构建”是修复提交时记录。
+
+2026-09-19最新 J13D：J13C 精确3e34aa9的普通双平台、Windows Profile和Android原生四条Actions均成功；本机原样Profile再次进入第三轮，但rawIndex保持2超过1秒，前缀确认失败。Android相同探针5ms收到0，追加/清理/截尾/释放通过。按ADR150完成锁定Windows插件的最小状态广播补丁及本地副本指纹门禁；80专项、2580全量Flutter、179 Node、626文件格式零修改和严格分析通过。新SHA云构建/Windows实际结果待验证，见[D报告](phase_7j13d_windows_prefix_fix_report.md)。不放宽失败判据、不动系统音频设置；Phase7整体与正式发布仍未完成。以下“尚未执行C”是历史记录。
+
+2026-09-19最新：J13B精确2856dfa的Android根随机原生35447685127及双平台push35447630428已success，观测跨轮q0/q1/q2/q1、关闭随机后顺序q2、结束后1205ms不重启，见[B报告](phase_7j13b_root_native_shuffle_report.md)。Windows用户重启后的原样e84bda7 Profile已进入第三轮，当前失败转为audio.just-audio.sequence-prefix，不再引用重启前加载失败作为现状。[J13C](phase_7j13c_windows_prefix_report.md)/ADR149补有界脱敏原始索引诊断，2579 Flutter与175 Node通过，尚未执行新的Windows包、尚未修复或关闭Windows验收。生产逻辑、系统音频设置和原始安全检查不变；Phase7整体仍未完成。
+
+Phase7J13B：新增固定Random(42)三曲Android根原生验证，覆盖自然跨轮、关闭随机后保留当前时钟并按应用顺序回退、队列持久化与最终停止，见[B报告](phase_7j13b_root_native_shuffle_report.md)/ADR148。7项新Dart与3项新Node门禁，79专项、2573全量Flutter、174 Node、624文件格式和严格分析通过。只改独立诊断/CI/文档，生产与已验收A不变。B的新SHA云构建及原生实测需单独取证，尚不标记设备通过或Phase7完成。
+
+2026-09-19 J13A云端验收：精确7b28a16的push35445546018、PR35445548388与Android原生35445563113均success。三段根/引擎进度[302,111,101]ms，历史替换、持久化与重开无自动播放通过，见[A报告](phase_7j13a_root_native_repeat_report.md)。继续[B随机验证](phase_7j13b_root_native_shuffle_report.md)，不修改已通过的A或重做生产算法；B实现/本地测试不替代待执行的设备结果。Windows实际播放和Phase7整体仍未通过。以下“尚未执行”是A提交时历史记录。
+
+Phase7J13A：新增Android隔离根原生循环、文件SQLite队列/历史、关闭自动继续及重开不自动播放的验证入口，见[报告](phase_7j13a_root_native_repeat_report.md)/ADR147。10项新增Dart测试、完整2566 Flutter、171 Node、620文件格式与严格分析通过；首轮CI命令精确断言失败已修正工作流后全量重跑，同SHA云端结果另记。设备测试尚未执行，不将实现入口计作设备验收。基线c8dc13e的两条CI已success，生产代码/依赖/设计参考/Golden不变，仍沿用codex/native-repeat-window和Draft PR #136。
+
+2026-09-19 J12F云端补记：e49f048的push35440707665与PR35440709263均success，Android Debug、Windows Debug、2330普通测试、226 Windows Golden和3原生窗口测试通过，见[J12F报告](phase_7j12f_command_failure_report.md)。同SHA Android原生35441460890已success，WAV/content/序列3项通过，序列进度[303,103,115]ms。Windows无声映射状态查询首次确认该诊断实际索引1不同于首选0，详见[J12E补记](phase_7j12e_windows_audio_comparison.md)；不据此自动换输出或认定其他应用路由。下一批按[7J13根级原生计划](phase_7j13_root_native_validation_plan.md)推进Android自然循环、队列与历史验证，不重复引擎级实现，Phase7仍未完整验收。
+
+Phase7J12F：修复非加载命令确认忽略异步错误，以及音量/倍速掩盖已有错误；16项回归先失败后通过，73专项、2556全量Flutter、168 Node、614文件格式及严格分析通过，见[报告](phase_7j12f_command_failure_report.md)/ADR146。同分支codex/native-repeat-window、基线d6230e2，双平台新构建按新SHA单独核验。不重做循环/随机，不改变系统音频设置，Windows实际播放与Phase7完整出口仍未通过。
+
+2026-09-19 J12E诊断修正：用户确认其他软件均能正常出声。独立WinRT默认输出加载失败，但WinMM自动映射打开成功、明确指定默认端点打开失败；详见[音频路径对照](phase_7j12e_windows_audio_comparison.md)。不能据此认定电脑故障、确认占用者或要求用户先重启/换设备；后续聚焦路径与兼容性，系统设置保持不变。42ad95e的push/PR双平台CI均success，但本机播放与Phase7出口仍未通过。
+
+2026-09-19 J12D最终验证：e84bda7的push/PR双平台Debug、Android原生诊断和Windows Profile四条Actions均success。云端2314普通测试与Windows226项Golden分别通过；Android本地/content/序列3项通过。Windows完整Profile包指纹与身份通过，但本机在2236ms内正确返回原生设备占用对应的加载失败，不再25秒超时；不是播放成功。见[J12D报告](phase_7j12d_load_failure_report.md)。未重复服务重启或更改系统设置，后续诊断按J12E推进；Phase7及后续出口保持未验收。以下环境恢复相关表述是早期诊断记录，不作为新的重启/换设备要求。
+
+Phase7J12D：单源加载期间的异步错误此前未使load返回失败，根可能继续play；两项回归复现后补加载提交前置条件。引擎/根重试及单源/序列方法通道测试见[报告](phase_7j12d_load_failure_report.md)/ADR145。J12C已以c2177b0推送，同分支继续；新源码构建与设备结果分别核验，不标记Windows播放或Phase7完成。
+
+Phase7J12C：活动Windows旧式EventChannel错误被just_audio0.10.6忽略的缺口已用两项失败回归复现并补协议兼容，见[报告](phase_7j12c_windows_error_report.md)/ADR144。用户授权的Audiosrv单次重启成功，但未修改的旧单曲/序列包仍因设备占用失败；不重复重启，不标记Windows播放或Phase7完成。本批测试与新构建状态以报告和对应SHA为准。
+
+2026-09-19 J12B实测：2828d38的push/PR双平台构建、Android序列诊断、Windows Profile构建全部success；Android实际序列进度已取证。Windows新序列和旧单曲对照均报告音频设备占用并进度超时，实测failed；未更改系统设置，待环境恢复/明确授权后重测。见[J12B报告](phase_7j12b_windows_sequence_report.md)，不标记Phase7或J12整体完成。
+
+Phase7J12B：[Windows序列报告](phase_7j12b_windows_sequence_report.md)/ADR143。独立Profile入口与Dart/PowerShell双重结果验证，精确source/native SHA、单测试合同、索引/轮次及三段真实进度；旧WAV/HTTPS探针不变。全量2526 Flutter、168 Node及严格分析通过；代码/构建/真实运行分别记账，实际设备结果及本批CI以报告为准，不能标记Phase7完成。
+
+Phase7J12A：[独立序列探针](phase_7j12a_native_sequence_probe_report.md)新增真实插件集成测试和显式Android诊断选项，验证追加的cycle2实际播放、清理/截尾后的绝对身份与关闭。生产播放代码未变，旧Windows探针合同未变；设备执行状态以报告及对应Actions为准，不能将编译或静态门禁称为原生验收。J12整体、Phase7出口和Phase8–11仍未完成。
+
+2026-09-18云端补记：J11实现931956e的push35324669599、PR35324699642均success，Android APK签名/资源与Windows65文件开发包核验通过，[Draft PR #136](https://github.com/Z-YO-YI/YYMusic/pull/136)未合并。Windows Debug产物已上传；本次push没有Android下载附件或正式发布。可选音频POC均跳过，新序列设备验收未完成。下一批执行[7J12原生序列探针计划](phase_7j12_native_sequence_probe_plan.md)，不重新实现既有循环代码。
+
+最新Phase7J11：[循环窗口报告](phase_7j11_repeat_window_report.md)/ADR142。接续codex/native-repeat-window上保留的8个本地修改，基线c64301d；用户已授权验证后提交推送，不存在已核实的远程checkpoint。cycle区分重复队列项，跨尾部循环预载及每轮冻结随机顺序，待持久化切曲不能覆盖新显式随机设置。最终全量2520 Flutter、161 Node、严格分析零问题，608文件格式零修改、226已跟踪Golden不变。双平台云构建按本次新提交单独核验，不能引用父提交成功替代。Phase7整体及Phase8–11仍未完成；以下为历史阶段记录。
+
 最新Phase7J10：[原生前缀报告](phase_7j10_sequence_prefix_report.md)/ADR141。根与引擎窗口使用绝对逻辑cursor、原生索引可重排；根限制11项，8项已播前缀后清理。36项顺序播放测试覆盖多次清理、继续追加/截尾且不改应用队列。8新测试，全量2509 Flutter、161 Node、严格分析及Android Debug通过。分支codex/native-sequence-prefix，基线0ec28c2；原生内存字节/事件时序及循环无缝仍需验收。
 
 最新Phase7J9：[原生期限报告](phase_7j9_native_expiry_report.md)/ADR140。期限传至NativeBackend，跨准备/load/append/seek等待失效时停止并转换streamUrlExpired；10新通道测试，全量2501 Flutter、161 Node、严格分析和Android Debug通过。分支codex/native-source-expiry，基线c169efc。持续播放定时撤销、网络Adapter及声学/生命周期仍待验收；以下为历史阶段。
