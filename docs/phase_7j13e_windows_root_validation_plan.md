@@ -4,6 +4,8 @@
 
 ## 缺口与最小范围
 
+实施补记：本计划已进入E实现与全量回归，详见[E报告](phase_7j13e_windows_root_report.md)；下文准备事项为原计划，未执行的Windows设备项目仍不计通过。
+
 引擎探针没有证明真实PlaybackController的队列、历史与SQLite提交；Android A的顺序根和B的随机根分别有原生证据，Windows仍缺。本批先只补Windows顺序根：q0→q1→q0自然跨轮，native/root/persisted身份一致、历史去重更新，关闭自动继续后本曲结束不重启，数据库关闭重开不自动播放。Windows随机与更长窗口压力另批验收，不借Android通过替代Windows。
 
 准备从既有Android顺序场景提取可复用的测试注册/观测逻辑；Android入口默认仍严格要求android，原输出标记、结果合同与宿主门禁保持有效。Windows另建默认关闭的Profile入口、独立purpose/结果文件和精确source=native SHA校验，不把旧单曲/序列探针或Android结果扩大为通用成功。只复用生产根、真实引擎和文件SQLite，不复制循环业务实现，不人工emit、seek或手动下一首冒充自然事件。

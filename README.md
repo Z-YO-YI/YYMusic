@@ -1,5 +1,7 @@
 # YYMusic
 
+当前增量：**Phase 7J13E Windows 播放根与数据库验证**。独立 Profile 测试已接入真实循环、队列/历史写入和重开无自动播放；与既有 Android 场景共享观测，不重写生产逻辑。2586 项本地 Flutter、严格分析及设计/许可指纹检查通过，新 SHA 的 GitHub 构建与 Windows 实测尚待完成。见[E 报告](docs/phase_7j13e_windows_root_report.md)。Windows 引擎序列已通过不变；Phase 7 其余出口和 Phase 8–11 仍未完成，新安装尚无真实导入能力，不能称为日常可用发行版。
+
 最新验收：**Windows 本机原生序列已通过，前缀清理故障已修复。** 精确 `4380386` 的四条 GitHub 流程全部成功；本机原样 Profile 在38ms收到真实索引归零，三轮自然播放、追加、清理、截尾及释放通过，正常退出。Android 相同场景回归通过。见[实测证据](docs/phase_7j13d_windows_prefix_fix_report.md)。这不是完整应用上线或无缝听感验收；接下来验证 Windows 真实播放根与 SQLite 队列/历史，Phase 7 其余出口及 Phase 8–11 继续保留。下面“新包待实测”是该提交前的记录。
 
 当前增量：**Phase 7J13D Windows 前缀清理状态修复**。重启后的原样 GitHub 包已经能进入第三轮；J13C 轨迹确认现在卡在删除前缀后未收到原始索引归零，而不是仍在加载期失败。D 在锁定 `just_audio_windows 0.2.3` 的仓库副本中，只补删除成功后回传真实 WinRT 状态，不暂停、重载或伪造索引。2580 项 Flutter、179 项 Node 与严格分析通过；新包构建和 Windows 实测待独立验证，不能据此声称播放问题已修复。见[D 报告](docs/phase_7j13d_windows_prefix_fix_report.md)与[副本来源/维护说明](third_party/just_audio_windows/UPSTREAM.md)。Android 根循环和随机跨轮已有独立原生证据；Windows 完整验收、Phase 7 剩余出口及 Phase 8–11 尚未完成。以下均为历史阶段记录，尤其重启前的设备占用记录不代表当前状态。

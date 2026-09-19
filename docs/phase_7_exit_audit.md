@@ -1,5 +1,9 @@
 # Phase 7 出口审计与剩余工作
 
+## Phase7J13E：Windows根整合进入设备验证准备
+
+已提取既有Android顺序根场景，新增Windows独立Profile入口、文件SQLite/队列/历史/恢复验收与严格身份门禁，见[E报告](phase_7j13e_windows_root_report.md)。本地实现与合同测试不替代GitHub新SHA原样设备执行；Windows最小顺序根出口尚不关闭。Windows随机、长时资源、声学、后台、标准化及Phase8–11仍在未完成清单。
+
 ## Phase7J13D实机通过：关闭前缀故障，继续Windows根整合
 
 精确4380386原样GitHub Profile已在本机完成三轮自然序列、追加、前缀清理、截尾结束及释放；rawIndex在38ms从2归零而非此前超时，进程退出0，见[D实测](phase_7j13d_windows_prefix_fix_report.md)。同SHA普通双平台/PR及Android原生全成功。因此Windows引擎序列不再是未通过项；仍需[E计划](phase_7j13e_windows_root_validation_plan.md)的真实根/SQLite/历史/继续策略证据，并保留声学、长时资源、后台生命周期、标准化及Phase8–11。不会据此自动开放生产无缝、合并PR或正式发布。

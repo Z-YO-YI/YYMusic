@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+Phase7J13E：新增6项Windows结果/共享平台Dart测试及6项Node宿主/归档/隔离检查。16专项、2586完整Flutter（144秒）、631文件格式零修改、严格分析、24ZIP/6许可/2原生指纹通过。Node首轮旧两分支CI断言失配，已扩展为精确三分支；最终185/185全量重跑通过（47.07秒），无失败/跳过。新SHA Android A回归、Windows Profile构建和原样本机根/SQLite验证待独立回填，不计作当前通过，见[E报告](phase_7j13e_windows_root_report.md)。
+
 2026-09-19 J13D设备补记：精确4380386的push35450858997、PR35450861486、Windows Profile35450881237、Android原生35450882711全部success。Linux2354通过/226宿主跳过；Windows另行226 Golden、3原生窗口握手及Debug包通过。Android原生WAV/content2项、序列1项通过，进度[302,115,100]ms。Windows原样Profile严格单项通过、退出0，三轮进度[114,100,103]ms、前缀38ms真实归零、追加/截尾/释放通过，运行库指纹不变；见[D证据](phase_7j13d_windows_prefix_fix_report.md)。acousticGapMeasured=false，不能计为声学或Windows根整合；[E计划](phase_7j13e_windows_root_validation_plan.md)不计已实现测试。以下D待设备措辞是提交时状态。
 
 Phase7J13D：新增1项真实Dart插件通道回归（原始索引0先于方法确认、应用绝对entry/cursor不变且不重载），4项Node源码/路径完整性门禁。80相关Flutter、2580全量（119秒，含原226 Windows Golden）、179 Node（22.57秒，无失败/跳过）、626文件格式零修改、严格分析和6许可/2原生源码指纹通过。旧Node的hosted依赖断言已改成精确本地路径、锁文件来源与0.2.3版本检查，完整重跑通过，未移除门禁。新SHA原生构建和Windows实测尚待执行，见[D报告](phase_7j13d_windows_prefix_fix_report.md)。J13C精确3e34aa9四条Actions及Android3项通过；Windows失败轨迹见[C报告](phase_7j13c_windows_prefix_report.md)，不计通过。

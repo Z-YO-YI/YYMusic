@@ -42,6 +42,11 @@ on:
         required: true
         default: false
         type: boolean
+      include_windows_root_repeat_poc:
+        description: Build isolated Windows root repeat and SQLite Profile diagnostics (not a release)
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -59,6 +64,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
+      - name: Reject Windows root repeat outside isolated Profile diagnostics
+        if: inputs.include_windows_root_repeat_poc && (github.event_name != 'workflow_dispatch' || !inputs.build_windows_audio_probe || inputs.run_just_audio_poc || inputs.include_https_audio_poc || inputs.include_sequence_audio_poc || inputs.include_root_repeat_poc || inputs.include_root_shuffle_poc)
+        run: exit 1
       - name: Reject root shuffle outside isolated Android diagnostics
         if: inputs.include_root_shuffle_poc && (github.event_name != 'workflow_dispatch' || !inputs.run_just_audio_poc || inputs.just_audio_poc_platform != 'android' || inputs.build_windows_audio_probe || inputs.include_https_audio_poc || inputs.include_sequence_audio_poc || inputs.include_root_repeat_poc)
         run: exit 1
@@ -143,8 +151,11 @@ jobs:
         shell: pwsh
         run: |
           $includeSequence = '${{ inputs.include_sequence_audio_poc }}' -ceq 'true'
-          $probeTarget = if ($includeSequence) { 'integration_test/windows_sequence_probe.dart' } else { 'integration_test/windows_audio_probe.dart' }
+          $includeRootRepeat = '${{ inputs.include_windows_root_repeat_poc }}' -ceq 'true'
+          $probeTarget = if ($includeRootRepeat) { 'integration_test/windows_root_repeat_probe.dart' } elseif ($includeSequence) { 'integration_test/windows_sequence_probe.dart' } else { 'integration_test/windows_audio_probe.dart' }
           flutter build windows --profile --no-pub "--target=$probeTarget" `
+            --dart-define=YYMUSIC_WINDOWS_ROOT_REPEAT_PROBE=${{ inputs.include_windows_root_repeat_poc }} `
+            "--dart-define=YYMUSIC_ROOT_REPEAT_SOURCE_COMMIT=$env:GITHUB_SHA" `
             --dart-define=YYMUSIC_WINDOWS_AUDIO_PROBE=true `
             --dart-define=YYMUSIC_WINDOWS_SEQUENCE_PROBE=${{ inputs.include_sequence_audio_poc }} `
             "--dart-define=YYMUSIC_SEQUENCE_SOURCE_COMMIT=$env:GITHUB_SHA" `
@@ -155,12 +166,12 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           ./tools/verify_windows_bundle.ps1 -BundlePath build/windows/x64/runner/Profile
           $includeHttps = '${{ inputs.include_https_audio_poc }}' -ceq 'true'
-          ./tools/windows_audio_profile_metadata.ps1 -IncludeHttps:$includeHttps -IncludeSequence:$includeSequence
+          ./tools/windows_audio_profile_metadata.ps1 -IncludeHttps:$includeHttps -IncludeSequence:$includeSequence -IncludeRootRepeat:$includeRootRepeat
       - name: Upload short-lived Windows diagnostic only
         if: github.event_name == 'workflow_dispatch' && inputs.build_windows_audio_probe
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: YYMusic-windows-${{ inputs.include_sequence_audio_poc && 'sequence' || 'audio' }}-probe-${{ github.sha }}
+          name: YYMusic-windows-${{ inputs.include_windows_root_repeat_poc && 'root-repeat' || inputs.include_sequence_audio_poc && 'sequence' || 'audio' }}-probe-${{ github.sha }}
           path: build/windows/x64/runner/Profile/
           if-no-files-found: error
           retention-days: 1

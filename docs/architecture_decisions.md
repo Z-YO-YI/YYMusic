@@ -1,5 +1,9 @@
 # YYMusic 架构决策记录
 
+## ADR-151：共享根验证场景，Windows保留独立Profile证据合同
+
+Phase7J13E，基线9b40810。Windows引擎序列已由4380386原样Profile在本机通过，下一缺口是生产根到SQLite队列/历史的整合。将既有Android顺序根场景机械提取到integration_test/support，严格平台枚举由入口固定，不从指标自报决定；Android结果包装和日志合同保持android-only。Windows新增独立默认关闭Profile入口、source=native SHA、purpose/结果文件与宿主校验，旧单曲/序列/Android结果不能混用。共用场景仍只观察自然原生事件并使用自有临时WAV/文件SQLite，不人工切曲，不修改生产逻辑。所有指标在断言通过后投影，最终成功须等待runner teardown及进程退出；归档和运行前后指纹仍严格验证。先本地回归，再GitHub构建与Windows原样运行，同时复验Android A提取后的场景。仅关闭最小顺序根出口，不开放生产无缝或声明声学/Phase7完整验收。
+
 ## ADR-150：本地锁定Windows插件只补删除后的真实状态广播
 
 Phase7J13D。J13C真实Windows轨迹确认删除前缀后rawIndex停留2直至1秒超时；Android同源码5ms收到0。保留just_audio_windows0.2.3的原发布源码到third_party，锁定官方归档与逐文件指纹、保留MIT许可，只有player.hpp成功RemoveAt循环后新增既有broadcastState调用。该函数读取真实WinRT CurrentItemIndex，不人工重算索引，不seek/重载/暂停，不更换引擎或修改Pub缓存。Dart既有1秒确认、索引前进/错误/关闭保护不动；许可门禁仅为这个精确仓库路径增加来源支持，其他包的缓存约束不变。先以完整性门禁和平台边界测试审查，再用GitHub精确SHA构建与同一Windows失败探针验证；构建或源码测试成功不代替实际播放通过。

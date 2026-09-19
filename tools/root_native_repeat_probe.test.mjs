@@ -7,7 +7,7 @@ import { root } from './design_audit.mjs';
 const read = path => readFileSync(join(root, path), 'utf8');
 
 test('root device probe uses production root and file SQLite with natural native events', () => {
-  const probe = read('integration_test/root_native_repeat_poc_test.dart');
+  const probe = read('integration_test/support/root_native_repeat_scenario.dart');
   for (const evidence of [
     'JustAudioEngine.create(', 'PlaybackController(',
     'NativeDatabase.createInBackground(databaseFile)', 'data.library.upsertTracks(',
@@ -22,6 +22,10 @@ test('root device probe uses production root and file SQLite with natural native
   assert.doesNotMatch(probe, /FakeAudio|Mock|NativeDatabase\.memory|Future\.delayed|\.emit\(|\.seek\(|\.skipNext\(|\.loadSequence\(/);
   assert.match(probe, /expect\(nativeIndices, \[0, 1, 2\]\)/);
   assert.match(probe, /expect\(nativeCycles, \[0, 0, 1\]\)/);
+  const android = read('integration_test/root_native_repeat_poc_test.dart');
+  assert.match(android, /registerRootNativeRepeatScenario\(/);
+  assert.match(android, /platform: RootRepeatPlatform\.android/);
+  assert.match(probe, /expect\(Platform\.operatingSystem, platform\.name\)/);
 });
 
 test('root report waits for runner teardown and has a separate host gate', () => {

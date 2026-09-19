@@ -6,7 +6,8 @@ import test from 'node:test';
 import { root } from './design_audit.mjs';
 
 const script = join(root, 'tools/windows_audio_probe.ps1').replaceAll("'", "''");
-function fixtureCheck(mutation, expected, { wrongHash = false, omitFile = '', profile = false, wrongCommit = false, https = false, requestHttps = https, invalidHttps = false, sequence = false, requestSequence = sequence, invalidSequence = false } = {}) {
+function fixtureCheck(mutation, expected, { wrongHash = false, omitFile = '', profile = false, wrongCommit = false, https = false, requestHttps = https, invalidHttps = false, sequence = false, requestSequence = sequence, invalidSequence = false, rootRepeat = false, requestRootRepeat = rootRepeat, invalidRoot = false } = {}) {
+  const metadataName = rootRepeat ? 'native-root-repeat-build.json' : 'native-audio-build.json';
   // PowerShell fixtures exercise the actual archive guard on all CI hosts.
   const command = `
     $ErrorActionPreference = 'Stop'
@@ -22,13 +23,13 @@ function fixtureCheck(mutation, expected, { wrongHash = false, omitFile = '', pr
       $zip = [IO.Compression.ZipFile]::Open($zipPath, 'Create')
       try {
         foreach ($name in @('yymusic.exe', 'flutter_windows.dll', 'just_audio_windows_plugin.dll',
-          'data/icudtl.dat', 'data/flutter_assets/AssetManifest.bin'${profile ? ", 'data/app.so', 'native-audio-build.json'" : ''})) {
+          'data/icudtl.dat', 'data/flutter_assets/AssetManifest.bin'${profile ? `, 'data/app.so', '${metadataName}'` : ''})) {
           if ($name -eq '${omitFile}') { continue }
           $entry = $zip.CreateEntry($name)
           $writer = [IO.StreamWriter]::new($entry.Open())
           try {
-            if ($name -eq 'native-audio-build.json') {
-              $writer.Write('{"schemaVersion":1,"sourceCommit":"${'1'.repeat(40)}","nativeCommit":"${(wrongCommit ? '2' : '1').repeat(40)}","runtimeMode":"Profile","purpose":"${sequence ? 'isolated-native-sequence-test' : https ? 'isolated-audio-source-test' : 'isolated-local-wav-test'}","flutterVersion":"3.47.2"${https ? `,"includeHttps":${invalidHttps ? '"true"' : 'true'}` : ''}${sequence ? `,"includeSequence":${invalidSequence ? '"true"' : 'true'}` : ''}}')
+            if ($name -eq '${metadataName}') {
+              $writer.Write('{"schemaVersion":1,"sourceCommit":"${'1'.repeat(40)}","nativeCommit":"${(wrongCommit ? '2' : '1').repeat(40)}","runtimeMode":"Profile","purpose":"${rootRepeat ? 'isolated-windows-root-repeat-test' : sequence ? 'isolated-native-sequence-test' : https ? 'isolated-audio-source-test' : 'isolated-local-wav-test'}","flutterVersion":"3.47.2"${https ? `,"includeHttps":${invalidHttps ? '"true"' : 'true'}` : ''}${sequence ? `,"includeSequence":${invalidSequence ? '"true"' : 'true'}` : ''}${rootRepeat ? `,"includeRootRepeat":${invalidRoot ? '"true"' : 'true'}` : ''}}')
             } else { $writer.Write('fixture engine') }
           } finally { $writer.Dispose() }
         }
@@ -36,7 +37,7 @@ function fixtureCheck(mutation, expected, { wrongHash = false, omitFile = '', pr
       } finally { $zip.Dispose() }
       $hash = (Get-FileHash -LiteralPath $zipPath).Hash.ToLowerInvariant()
       ${wrongHash ? "$hash = '0' * 64" : ''}
-      & '${script}' -Mode ValidateArchive -ArchivePath $zipPath -ExpectedArchiveSha256 $hash -FlutterRoot $sdk ${profile ? `-RuntimeMode Profile -NativeCommit '${'1'.repeat(40)}'` : ''} ${requestHttps ? '-IncludeHttps' : ''} ${requestSequence ? '-IncludeSequence' : ''}
+      & '${script}' -Mode ValidateArchive -ArchivePath $zipPath -ExpectedArchiveSha256 $hash -FlutterRoot $sdk ${profile ? `-RuntimeMode Profile -NativeCommit '${'1'.repeat(40)}'` : ''} ${requestHttps ? '-IncludeHttps' : ''} ${requestSequence ? '-IncludeSequence' : ''} ${requestRootRepeat ? '-IncludeRootRepeat' : ''}
     } finally {
       # Only delete the resolved, uniquely named fixture directly beneath temp.
       $resolved = [IO.Path]::GetFullPath($fixtureRoot)
@@ -123,4 +124,15 @@ test('sequence Profile archives cannot be confused with old WAV/HTTPS/Debug diag
   fixtureCheck('', /Invalid sequence probe mode/, { profile: true, sequence: true, invalidSequence: true });
   fixtureCheck('', /Sequence probe requires/, { requestSequence: true });
   fixtureCheck('', /Sequence probe requires/, { profile: true, sequence: true, requestHttps: true });
+});
+
+test('Windows root Profile archives keep their own strict identity and mode', () => {
+  fixtureCheck('', null, { profile: true, rootRepeat: true });
+  fixtureCheck('', /Invalid Profile AOT bundle/, { profile: true, rootRepeat: true, requestRootRepeat: false });
+  fixtureCheck('', /Invalid Profile AOT bundle/, { profile: true, requestRootRepeat: true });
+  fixtureCheck('', /Profile bundle identity mismatch/, { profile: true, rootRepeat: true, wrongCommit: true });
+  fixtureCheck('', /Invalid Windows root probe mode/, { profile: true, rootRepeat: true, invalidRoot: true });
+  fixtureCheck('', /Windows root probe requires/, { requestRootRepeat: true });
+  fixtureCheck('', /Windows root probe requires/, { profile: true, rootRepeat: true, requestSequence: true });
+  fixtureCheck('', /Windows root probe requires/, { profile: true, rootRepeat: true, requestHttps: true });
 });

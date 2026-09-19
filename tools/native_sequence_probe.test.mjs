@@ -59,8 +59,8 @@ test('Windows sequence entry waits for teardown and cannot replace the old or pr
   assert.doesNotMatch(read('lib/main.dart'), /windows_sequence_probe/);
   assert.doesNotMatch(read('integration_test/windows_audio_probe.dart'), /sequence/);
   const workflow = read('.github/workflows/foundation.yml');
-  assert.match(workflow, /\$probeTarget = if \(\$includeSequence\) \{ 'integration_test\/windows_sequence_probe\.dart' \} else \{ 'integration_test\/windows_audio_probe\.dart' \}/);
+  assert.match(workflow, /\$probeTarget = if \(\$includeRootRepeat\) \{ 'integration_test\/windows_root_repeat_probe\.dart' \} elseif \(\$includeSequence\) \{ 'integration_test\/windows_sequence_probe\.dart' \} else \{ 'integration_test\/windows_audio_probe\.dart' \}/);
   assert.match(workflow, /-IncludeSequence:\$includeSequence/);
-  assert.match(workflow, /YYMusic-windows-\$\{\{ inputs\.include_sequence_audio_poc && 'sequence' \|\| 'audio' \}\}-probe/);
+  assert.match(workflow, /YYMusic-windows-\$\{\{ inputs\.include_windows_root_repeat_poc && 'root-repeat' \|\| inputs\.include_sequence_audio_poc && 'sequence' \|\| 'audio' \}\}-probe/);
   assert.match(read('integration_test/just_audio_native_sequence_poc_test.dart'), /'progressMs': \[\s*first\.position\.inMilliseconds,\s*second\.position\.inMilliseconds,\s*appended\.position\.inMilliseconds/);
 });
