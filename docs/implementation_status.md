@@ -1,5 +1,7 @@
 # 实施状态
 
+Phase7J12F：修复非加载命令确认忽略异步错误，以及音量/倍速掩盖已有错误；16项回归先失败后通过，73专项、2556全量Flutter、168 Node、614文件格式及严格分析通过，见[报告](phase_7j12f_command_failure_report.md)/ADR146。同分支codex/native-repeat-window、基线d6230e2，双平台新构建按新SHA单独核验。不重做循环/随机，不改变系统音频设置，Windows实际播放与Phase7完整出口仍未通过。
+
 2026-09-19 J12E诊断修正：用户确认其他软件均能正常出声。独立WinRT默认输出加载失败，但WinMM自动映射打开成功、明确指定默认端点打开失败；详见[音频路径对照](phase_7j12e_windows_audio_comparison.md)。不能据此认定电脑故障、确认占用者或要求用户先重启/换设备；后续聚焦路径与兼容性，系统设置保持不变。42ad95e的push/PR双平台CI均success，但本机播放与Phase7出口仍未通过。
 
 2026-09-19 J12D最终验证：e84bda7的push/PR双平台Debug、Android原生诊断和Windows Profile四条Actions均success。云端2314普通测试与Windows226项Golden分别通过；Android本地/content/序列3项通过。Windows完整Profile包指纹与身份通过，但本机在2236ms内正确返回原生设备占用对应的加载失败，不再25秒超时；不是播放成功。见[J12D报告](phase_7j12d_load_failure_report.md)。未重复服务重启或更改系统设置，后续诊断按J12E推进；Phase7及后续出口保持未验收。以下环境恢复相关表述是早期诊断记录，不作为新的重启/换设备要求。

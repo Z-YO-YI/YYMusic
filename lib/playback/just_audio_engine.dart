@@ -394,7 +394,7 @@ final class JustAudioEngine implements AudioSequenceEngine {
     _loading = false;
     _hasPlayed = false;
     await _backend.stop();
-    _failure = null;
+    if (_failure != null) throw _failure!;
     _publish(
       AudioEngineState(
         volume: _volume(_backend.current.volume),
@@ -427,7 +427,7 @@ final class JustAudioEngine implements AudioSequenceEngine {
     return _command('volume', () async {
       await _backend.setVolume(value);
       _acceptSnapshot(_backend.current);
-    });
+    }, preserveFailure: true);
   }
 
   @override
@@ -440,25 +440,35 @@ final class JustAudioEngine implements AudioSequenceEngine {
     return _command('rate', () async {
       await _backend.setSpeed(value);
       _acceptSnapshot(_backend.current);
-    });
+    }, preserveFailure: true);
   }
 
-  Future<void> _command(String operation, Future<void> Function() callback) =>
-      _enqueue(() async {
-        _failure = null;
-        try {
-          await callback();
-        } catch (error) {
-          final failure = _commandFailure(
-            error is JustAudioSourceExpired
-                ? DomainFailureCode.streamUrlExpired
-                : DomainFailureCode.playbackInterrupted,
-            operation,
-          );
-          _publishFailure(failure);
-          throw failure;
-        }
-      });
+  Future<void> _command(
+    String operation,
+    Future<void> Function() callback, {
+    bool preserveFailure = false,
+  }) => _enqueue(() async {
+    // Preferences can change during a failure without claiming recovery.
+    final previousFailure = preserveFailure ? _failure : null;
+    if (!preserveFailure) _failure = null;
+    try {
+      await callback();
+      // A stream error can arrive while the backend command is pending.
+      // Only a newly observed error rejects an otherwise valid preference.
+      if (_failure != null && !identical(_failure, previousFailure)) {
+        throw _failure!;
+      }
+    } catch (error) {
+      final failure = _commandFailure(
+        error is JustAudioSourceExpired
+            ? DomainFailureCode.streamUrlExpired
+            : DomainFailureCode.playbackInterrupted,
+        operation,
+      );
+      _publishFailure(failure);
+      throw failure;
+    }
+  });
 
   Future<void> _enqueue(Future<void> Function() callback) {
     if (_closing) {

@@ -132,6 +132,67 @@ void main() {
     );
   }
 
+  for (final sequence in [false, true]) {
+    test(
+      'preferences retain legacy Windows failure, sequence=$sequence',
+      () async {
+        final engine = JustAudioEngine(backend);
+        final states = <AudioEngineState>[];
+        final subscription = engine.states.listen(states.add);
+        addTearDown(subscription.cancel);
+        addTearDown(engine.dispose);
+        if (sequence) {
+          await engine.loadSequence(
+            AudioSequence([
+              AudioSequenceEntry(
+                entryId: 'current',
+                source: local('/current.wav'),
+              ),
+            ]),
+          );
+        } else {
+          await engine.load(local('/current.wav'));
+        }
+        await probe.emitError(probe.playerId!);
+        await Future<void>.delayed(Duration.zero);
+        final failure = states.last.failure;
+        expect(failure, isNotNull);
+        await engine.setVolume(0.4);
+        await engine.setPlaybackRate(1.5);
+        expect(states.last.phase, AudioEnginePhase.error);
+        expect(states.last.failure, same(failure));
+        expect(states.last.volume, 0.4);
+        expect(states.last.playbackRate, 1.5);
+      },
+    );
+  }
+
+  test('seek rejects legacy error before native acknowledgement', () async {
+    final engine = JustAudioEngine(backend);
+    final states = <AudioEngineState>[];
+    final subscription = engine.states.listen(states.add);
+    addTearDown(subscription.cancel);
+    addTearDown(engine.dispose);
+    await engine.load(local('/current.wav'));
+    final gate = probe.seekGate = Completer<void>();
+    final result = expectLater(
+      engine.seek(const Duration(seconds: 2)),
+      throwsA(
+        isA<DomainFailure>().having(
+          (failure) => failure.diagnosticId,
+          'diagnosticId',
+          'audio.just-audio.seek',
+        ),
+      ),
+    );
+    await probe.seeking.future;
+    await probe.emitError(probe.playerId!);
+    await Future<void>.delayed(Duration.zero);
+    gate.complete();
+    await result;
+    expect(states.last.phase, AudioEnginePhase.error);
+  });
+
   test(
     'native prefix removal waits for raw rebase without reloading',
     () async {

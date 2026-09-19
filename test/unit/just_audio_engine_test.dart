@@ -77,6 +77,172 @@ void main() {
     sourceType: MusicSourceType.rest,
   );
 
+  for (final command in ['play', 'pause', 'seek', 'stop', 'volume', 'rate']) {
+    test(
+      '$command rejects an asynchronous error before acknowledgement',
+      () async {
+        final backend = _FakeJustAudioBackend();
+        final engine = JustAudioEngine(backend);
+        final states = <AudioEngineState>[];
+        final subscription = engine.states.listen(states.add);
+        addTearDown(subscription.cancel);
+        addTearDown(engine.dispose);
+        await engine.load(
+          PlayableSource.localFile(
+            track: localTrack,
+            path: r'C:\Music\command.wav',
+          ),
+        );
+        backend.gatedCommand = command;
+        backend.commandGate = Completer<void>();
+        final result = expectLater(
+          _runCommand(engine, command),
+          throwsA(
+            isA<DomainFailure>()
+                .having(
+                  (failure) => failure.code,
+                  'code',
+                  DomainFailureCode.playbackInterrupted,
+                )
+                .having(
+                  (failure) => failure.diagnosticId,
+                  'diagnosticId',
+                  'audio.just-audio.$command',
+                ),
+          ),
+        );
+        await backend.commandStarted.future;
+        backend.emitError();
+        final offset = states.length - 1;
+        backend.commandGate!.complete();
+        await result;
+        expect(
+          states.skip(offset).map((state) => state.phase),
+          everyElement(AudioEnginePhase.error),
+        );
+        backend.gatedCommand = null;
+        await _runCommand(engine, command);
+        if (command == 'volume' || command == 'rate') {
+          expect(states.last.phase, AudioEnginePhase.error);
+        } else {
+          expect(states.last.phase, isNot(AudioEnginePhase.error));
+          expect(states.last.failure, isNull);
+        }
+      },
+    );
+  }
+
+  for (final command in ['volume', 'rate']) {
+    for (final failedLoad in [false, true]) {
+      test(
+        '$command preserves existing failure, failedLoad=$failedLoad',
+        () async {
+          final backend = _FakeJustAudioBackend();
+          final engine = JustAudioEngine(backend);
+          final states = <AudioEngineState>[];
+          final subscription = engine.states.listen(states.add);
+          addTearDown(subscription.cancel);
+          addTearDown(engine.dispose);
+          final source = PlayableSource.localFile(
+            track: localTrack,
+            path: r'C:\Music\preferences.wav',
+          );
+          if (failedLoad) {
+            backend.openError = StateError('private source');
+            await expectLater(
+              engine.load(source),
+              throwsA(isA<DomainFailure>()),
+            );
+          } else {
+            await engine.load(source);
+            await engine.play();
+            backend.emitError();
+          }
+          final failure = states.last.failure;
+          final offset = states.length;
+          await _runCommand(engine, command);
+          expect(
+            states.skip(offset).map((state) => state.phase),
+            everyElement(AudioEnginePhase.error),
+          );
+          expect(states.last.failure, same(failure));
+          expect(
+            command == 'volume' ? states.last.volume : states.last.playbackRate,
+            command == 'volume' ? 0.4 : 1.5,
+          );
+          backend.openError = null;
+          await engine.load(source);
+          expect(states.last.phase, AudioEnginePhase.ready);
+          expect(states.last.failure, isNull);
+        },
+      );
+    }
+
+    test(
+      '$command rejects a new error even when preserving an old error',
+      () async {
+        final backend = _FakeJustAudioBackend();
+        final engine = JustAudioEngine(backend);
+        addTearDown(engine.dispose);
+        await engine.load(
+          PlayableSource.localFile(
+            track: localTrack,
+            path: r'C:\Music\new-error.wav',
+          ),
+        );
+        backend.emitError();
+        backend.gatedCommand = command;
+        backend.commandGate = Completer<void>();
+        final result = expectLater(
+          _runCommand(engine, command),
+          throwsA(isA<DomainFailure>()),
+        );
+        await backend.commandStarted.future;
+        backend.emitError();
+        backend.commandGate!.complete();
+        await result;
+      },
+    );
+  }
+
+  test(
+    'root rejects failed play acknowledgement without recording history',
+    () async {
+      final track = detailTrack('async-play-error');
+      final backend = _FakeJustAudioBackend()
+        ..gatedCommand = 'play'
+        ..commandGate = Completer<void>();
+      final engine = JustAudioEngine(backend);
+      final library = FakeLibraryRepository(tracks: [track]);
+      final collection = FakeCollectionRepository();
+      await collection.saveQueue(systemQueue([track.ref], current: 'q-0'));
+      final player = PlaybackController(
+        engine,
+        library: library,
+        collection: collection,
+        sourceResolver: FakePlaybackSourceResolver(),
+      );
+      addTearDown(() async {
+        await player.close();
+        await engine.dispose();
+        await library.dispose();
+        await collection.dispose();
+      });
+      await player.initialize();
+      final result = expectLater(player.play(), throwsA(isA<DomainFailure>()));
+      await backend.commandStarted.future;
+      backend.emitError();
+      backend.commandGate!.complete();
+      await result;
+      expect(player.state.phase, PlaybackPhase.error);
+      expect(await collection.watchHistory().first, isEmpty);
+      backend.gatedCommand = null;
+      await player.play();
+      expect(player.state.phase, PlaybackPhase.playing);
+      expect(await collection.watchHistory().first, isEmpty);
+    },
+  );
+
   test(
     'single load rejects an asynchronous error before acknowledgement',
     () async {
@@ -424,6 +590,17 @@ void main() {
   });
 }
 
+Future<void> _runCommand(JustAudioEngine engine, String command) =>
+    switch (command) {
+      'play' => engine.play(),
+      'pause' => engine.pause(),
+      'seek' => engine.seek(const Duration(seconds: 2)),
+      'stop' => engine.stop(),
+      'volume' => engine.setVolume(0.4),
+      'rate' => engine.setPlaybackRate(1.5),
+      _ => throw ArgumentError.value(command),
+    };
+
 final class _FakeJustAudioBackend implements JustAudioPlayerBackend {
   final _snapshots = StreamController<JustAudioPlayerSnapshot>.broadcast(
     sync: true,
@@ -438,6 +615,9 @@ final class _FakeJustAudioBackend implements JustAudioPlayerBackend {
   Object? openError;
   final opened = Completer<void>();
   Completer<void>? openGate;
+  String? gatedCommand;
+  Completer<void>? commandGate;
+  final commandStarted = Completer<void>();
   Object? disposeError;
   int disposalCount = 0;
 
@@ -472,18 +652,21 @@ final class _FakeJustAudioBackend implements JustAudioPlayerBackend {
   @override
   Future<void> play() async {
     calls.add('play');
+    await _waitCommand('play');
     emit(playing: true, processing: JustAudioProcessingPhase.ready);
   }
 
   @override
   Future<void> pause() async {
     calls.add('pause');
+    await _waitCommand('pause');
     emit(playing: false);
   }
 
   @override
   Future<void> stop() async {
     calls.add('stop');
+    await _waitCommand('stop');
     current = JustAudioPlayerSnapshot(
       volume: current.volume,
       speed: current.speed,
@@ -494,19 +677,28 @@ final class _FakeJustAudioBackend implements JustAudioPlayerBackend {
   @override
   Future<void> seek(Duration position) async {
     calls.add('seek:${position.inMilliseconds}');
+    await _waitCommand('seek');
     emit(position: position, processing: JustAudioProcessingPhase.ready);
   }
 
   @override
   Future<void> setVolume(double value) async {
     calls.add('volume:$value');
+    await _waitCommand('volume');
     emit(volume: value);
   }
 
   @override
   Future<void> setSpeed(double value) async {
     calls.add('speed:$value');
+    await _waitCommand('rate');
     emit(speed: value);
+  }
+
+  Future<void> _waitCommand(String command) async {
+    if (command != gatedCommand) return;
+    if (!commandStarted.isCompleted) commandStarted.complete();
+    await commandGate!.future;
   }
 
   void emit({

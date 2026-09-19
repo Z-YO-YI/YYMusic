@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+Phase7J12F：16项新增回归全部先失败后通过，覆盖play/pause/seek/stop/音量/倍速等待期流错误、旧错误下偏好更新及再次错误、根历史与明确重试、真实插件旧式Windows错误。73项专项及完整2556项Flutter通过（117秒），168 Node通过（49.03秒），614文件格式零修改、严格分析零问题。新SHA双平台CI待推送后独立核验；协议/状态测试不计Windows实际播放通过，见[J12F报告](phase_7j12f_command_failure_report.md)。
+
 2026-09-19 J12E无声对照补记：WASAPI共享Initialize返回0x8889000A；WinMM自动映射打开/关闭返回0，明确匹配默认多媒体端点后打开返回4；独立WinRT原生内存WAV加载报C00D4E85（221ms）。没有Play/Start/waveOutWrite，不计播放通过或新增自动化测试。用户确认其他软件正常出声，根因仍待定位；不再以重启/换设备为前提。详见[J12E报告](phase_7j12e_windows_audio_comparison.md)，包括脚本自身误报排除与证据限制。42ad95e两条普通双平台CI均success，与本批文档提交CI分开记录；以下环境恢复措辞仅为历史诊断。
 
 2026-09-19 J12D最终设备/云端补记：精确e84bda7四条Actions均success，Linux2314通过/226宿主Golden跳过，Windows另行226项通过，原生窗口3项通过；Android本地/content两项和序列一项通过（progressMs=[301,112,110]）。Windows未修改Profile归档SHA验证通过，但实际序列在2236ms退出1，加载失败已正确传播、音频设备占用仍在；失败不计通过、没有运行到追加/清理指标。详见[J12D报告](phase_7j12d_load_failure_report.md)，不将云构建或错误及时可见视为本机播放恢复。
