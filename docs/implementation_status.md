@@ -1,5 +1,7 @@
 # 实施状态
 
+2026-09-19最新 J13D：J13C 精确3e34aa9的普通双平台、Windows Profile和Android原生四条Actions均成功；本机原样Profile再次进入第三轮，但rawIndex保持2超过1秒，前缀确认失败。Android相同探针5ms收到0，追加/清理/截尾/释放通过。按ADR150完成锁定Windows插件的最小状态广播补丁及本地副本指纹门禁；80专项、2580全量Flutter、179 Node、626文件格式零修改和严格分析通过。新SHA云构建/Windows实际结果待验证，见[D报告](phase_7j13d_windows_prefix_fix_report.md)。不放宽失败判据、不动系统音频设置；Phase7整体与正式发布仍未完成。以下“尚未执行C”是历史记录。
+
 2026-09-19最新：J13B精确2856dfa的Android根随机原生35447685127及双平台push35447630428已success，观测跨轮q0/q1/q2/q1、关闭随机后顺序q2、结束后1205ms不重启，见[B报告](phase_7j13b_root_native_shuffle_report.md)。Windows用户重启后的原样e84bda7 Profile已进入第三轮，当前失败转为audio.just-audio.sequence-prefix，不再引用重启前加载失败作为现状。[J13C](phase_7j13c_windows_prefix_report.md)/ADR149补有界脱敏原始索引诊断，2579 Flutter与175 Node通过，尚未执行新的Windows包、尚未修复或关闭Windows验收。生产逻辑、系统音频设置和原始安全检查不变；Phase7整体仍未完成。
 
 Phase7J13B：新增固定Random(42)三曲Android根原生验证，覆盖自然跨轮、关闭随机后保留当前时钟并按应用顺序回退、队列持久化与最终停止，见[B报告](phase_7j13b_root_native_shuffle_report.md)/ADR148。7项新Dart与3项新Node门禁，79专项、2573全量Flutter、174 Node、624文件格式和严格分析通过。只改独立诊断/CI/文档，生产与已验收A不变。B的新SHA云构建及原生实测需单独取证，尚不标记设备通过或Phase7完成。

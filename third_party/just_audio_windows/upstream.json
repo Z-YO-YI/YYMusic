@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "name": "just_audio_windows",
+  "version": "0.2.3",
+  "archiveUrl": "https://pub.dev/api/archives/just_audio_windows-0.2.3.tar.gz",
+  "archiveSha256": "7d80dfa02a2189f1c26673a56f4d8584a306d3f22735302be6111e9578a40318",
+  "sourceFiles": [
+    {
+      "path": "LICENSE",
+      "sha256": "5ce607ae5defa5246b2886d696c1b495e8c099fd728421c8ac1bc627b0105d4d",
+      "finalLfAdded": false
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "bbec4fe3ccf3f13f02feb355e2402bbe522540cb7d897db8f88513cae6e8ed6e",
+      "finalLfAdded": true
+    },
+    {
+      "path": "README.md",
+      "sha256": "2d97fc888327194c0b8c03351df9fc5dfe7502d905f51088200e24a01f82fe0b",
+      "finalLfAdded": false
+    },
+    {
+      "path": "analysis_options.yaml",
+      "sha256": "df692318073ecc5f3b8a759a1f9338eb21995900d3c2bc1fbcd2c7780a1c7c6e",
+      "finalLfAdded": false
+    },
+    {
+      "path": "pubspec.yaml",
+      "sha256": "c78375452a469231eef8ef3b203de732f5f1399b1a28cfe3e5a86f39d5ee6e5b",
+      "finalLfAdded": false
+    },
+    {
+      "path": "windows/CMakeLists.txt",
+      "sha256": "931796ade3a2a04e40d91e82b4006e783a25e9d214f6e076a1aed5a371cc2643",
+      "finalLfAdded": false
+    },
+    {
+      "path": "windows/player.hpp",
+      "sha256": "a22138e22ad9dd836c71e795030b7b33b49e95cb5df80c054d73af0c1839780f",
+      "finalLfAdded": false
+    },
+    {
+      "path": "windows/uri_utils.hpp",
+      "sha256": "ede56fe5bd70fd14cc727f1d1554ed1d536e824d3b0a5cd9e34b429eb2aa3dbe",
+      "finalLfAdded": false
+    },
+    {
+      "path": "windows/url_code.hpp",
+      "sha256": "4ede4a732259a29b15460c8506dcb3a7b2042339ef5ebb538c88a78297e233dc",
+      "finalLfAdded": false
+    },
+    {
+      "path": "windows/just_audio_windows_plugin.cpp",
+      "sha256": "a8a94a3cc5ecd6282e824e525f2fda27d35627b363044e6689905ddb1ea8863b",
+      "finalLfAdded": false
+    },
+    {
+      "path": "windows/include/just_audio_windows/just_audio_windows_plugin.h",
+      "sha256": "e17c3d4c702506e282afa73f6e55b79f2f5645f1fde6d90a72ac301f5759fc55",
+      "finalLfAdded": false
+    },
+    {
+      "path": "windows/test/uri_utils_test.cpp",
+      "sha256": "d88248d41a7f163351fc601ba2cc9eda5e315a2ae38cad6a057513cf535107a6",
+      "finalLfAdded": false
+    }
+  ]
+}

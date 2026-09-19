@@ -24,3 +24,5 @@
 /pubspec.yaml text eol=lf
 /pubspec.lock text eol=lf
 /analysis_options.yaml text eol=lf
+# Audited upstream bytes; the vendor integrity gate verifies all original files.
+/third_party/just_audio_windows/** -text whitespace=-blank-at-eol,-blank-at-eof

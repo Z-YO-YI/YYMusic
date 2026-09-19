@@ -1,5 +1,9 @@
 # YYMusic 架构决策记录
 
+## ADR-150：本地锁定Windows插件只补删除后的真实状态广播
+
+Phase7J13D。J13C真实Windows轨迹确认删除前缀后rawIndex停留2直至1秒超时；Android同源码5ms收到0。保留just_audio_windows0.2.3的原发布源码到third_party，锁定官方归档与逐文件指纹、保留MIT许可，只有player.hpp成功RemoveAt循环后新增既有broadcastState调用。该函数读取真实WinRT CurrentItemIndex，不人工重算索引，不seek/重载/暂停，不更换引擎或修改Pub缓存。Dart既有1秒确认、索引前进/错误/关闭保护不动；许可门禁仅为这个精确仓库路径增加来源支持，其他包的缓存约束不变。先以完整性门禁和平台边界测试审查，再用GitHub精确SHA构建与同一Windows失败探针验证；构建或源码测试成功不代替实际播放通过。
+
 ## ADR-149：失败诊断保留真实原始索引，不改变成功判据
 
 Phase7J13C。用户重启后的原样GitHub Windows Profile已自然进入第三轮，失败点转为前缀清理。先在隔离序列测试中显式构造既有NativeJustAudioPlayerBackend，并将同一实例交给JustAudioEngine，订阅公开原始快照；不再额外创建播放器，不注册新的平台实现。仅在前缀操作窗口保存固定阶段、原始索引（包括null/负值）、处理状态、playing、位置和单调耗时，记录有界、快照按100ms桶去重。固定枚举及数值投影不接受地址、异常原文或任意字符串；精确SHA标识运行版本。失败原样抛出、成功指标与Profile退出合同不变，诊断日志不代表设备验收。生产原始归零/越界/切曲保护和1秒上限保持不变；实际轨迹取证后才选择最小修复。

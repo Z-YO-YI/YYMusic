@@ -326,7 +326,9 @@ test('playback has one root-owned truth behind project contracts', () => {
   assert(!/media_kit/i.test(`${pubspec}\n${lockfile}`));
   assert.match(pubspec, /^  just_audio: 0\.10\.6$/m);
   assert.match(pubspec, /^  just_audio_platform_interface: 4\.6\.0$/m);
-  assert.match(pubspec, /^  just_audio_windows: 0\.2\.3$/m);
+  assert.match(pubspec, /^  just_audio_windows:\r?\n    path: third_party\/just_audio_windows\r?$/m);
+  assert.match(read('third_party/just_audio_windows/pubspec.yaml'), /^version: 0\.2\.3\r?$/m);
+  assert.match(lockfile, /just_audio_windows:\r?\n    dependency: "direct main"\r?\n    description:\r?\n      path: "third_party\/just_audio_windows"\r?\n      relative: true\r?\n    source: path\r?\n    version: "0\.2\.3"/);
   assert.match(lockfile, /just_audio_platform_interface:[\s\S]*?version: "4\.6\.0"/);
   assert.match(lockfile, /audio_session:[\s\S]*?version: "0\.2\.4"/);
   assert.match(read('windows/flutter/generated_plugin_registrant.cc'), /JustAudioWindowsPluginRegisterWithRegistrar/);

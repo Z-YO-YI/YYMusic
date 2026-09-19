@@ -217,6 +217,38 @@ void main() {
     },
   );
 
+  test('four-entry prefix edit accepts raw zero before ack and preserves logical entry', () async {
+    final engine = JustAudioEngine(backend);
+    addTearDown(engine.dispose);
+    final states = <AudioEngineState>[];
+    final subscription = engine.states.listen(states.add);
+    addTearDown(subscription.cancel);
+    final batch = AudioSequence([
+      for (var i = 0; i < 4; i++)
+        AudioSequenceEntry(entryId: 'e$i', source: local('/$i.wav')),
+    ]);
+    await engine.loadSequence(batch, initialIndex: 2);
+    await engine.play();
+    final gate = probe.removeGate = Completer<void>();
+    final pruning = engine.pruneSequenceBefore(batch.cursors[2]);
+    await probe.removing.future;
+    // just_audio has already shortened its Dart sequence. Its clamped view
+    // must not replace the raw native fact while the method is in flight.
+    expect(backend.current.currentIndex, 2);
+    expect(states.last.sequenceCursor!.index, 2);
+    await probe.emit(0);
+    expect(backend.current.currentIndex, 0);
+    gate.complete();
+    expect(await pruning, isTrue);
+    expect(states.last.sequenceCursor!.sequenceIdentity, same(batch.identity));
+    expect(states.last.sequenceCursor!.index, 2);
+    expect(states.last.sequenceCursor!.entryId, 'e2');
+    expect(states.last.phase, AudioEnginePhase.playing);
+    expect(probe.loads, hasLength(1));
+    expect(probe.removals.single['startIndex'], 0);
+    expect(probe.removals.single['endIndex'], 2);
+  });
+
   test(
     'load after legacy error recovers and ignores stale failed player',
     () async {

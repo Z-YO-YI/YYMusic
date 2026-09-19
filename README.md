@@ -1,5 +1,7 @@
 # YYMusic
 
+当前增量：**Phase 7J13D Windows 前缀清理状态修复**。重启后的原样 GitHub 包已经能进入第三轮；J13C 轨迹确认现在卡在删除前缀后未收到原始索引归零，而不是仍在加载期失败。D 在锁定 `just_audio_windows 0.2.3` 的仓库副本中，只补删除成功后回传真实 WinRT 状态，不暂停、重载或伪造索引。2580 项 Flutter、179 项 Node 与严格分析通过；新包构建和 Windows 实测待独立验证，不能据此声称播放问题已修复。见[D 报告](docs/phase_7j13d_windows_prefix_fix_report.md)与[副本来源/维护说明](third_party/just_audio_windows/UPSTREAM.md)。Android 根循环和随机跨轮已有独立原生证据；Windows 完整验收、Phase 7 剩余出口及 Phase 8–11 尚未完成。以下均为历史阶段记录，尤其重启前的设备占用记录不代表当前状态。
+
 最新增量：**Phase 7J12D 加载期异步失败保护**。单曲加载期间已收到错误，即使底层随后确认成功也不会开始播放；明确重新加载后可恢复。见[报告](docs/phase_7j12d_load_failure_report.md)。与J12C的Windows错误兼容分别验证，设备占用、Phase7完整验收及正式发布仍未完成。以下为历史记录。
 
 最新增量：**Phase 7J12C Windows 原生错误兼容**。修复旧式插件错误被音频库忽略的问题，使单曲和序列失败及时映射为安全错误；保留Android协议、播放队列与既有播放器隔离。见[报告](docs/phase_7j12c_windows_error_report.md)。本机音频设备占用在一次授权服务重启后仍存在，不能把软件错误传播修复称为Windows播放通过或正式上线。以下为历史记录。

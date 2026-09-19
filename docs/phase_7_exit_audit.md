@@ -1,5 +1,9 @@
 # Phase 7 出口审计与剩余工作
 
+## Phase7J13D：保留安全判据修复Windows原生状态回报
+
+J13C精确3e34aa9原样Profile已确认当前失败为删除前缀后1秒没有原始索引0，不再沿用重启前加载失败结论。D只修改锁定插件成功删除后的真实状态广播，保留Dart所有确认/越界/超时保护；源码及本地回归通过不关闭设备出口，必须在GitHub新SHA构建后复测同一探针，见[D报告](phase_7j13d_windows_prefix_fix_report.md)。Android序列及根循环/随机已有各自证据，Windows完整状态/声学/资源/生命周期、音量标准化和Phase8–11仍保留。
+
 ## Phase7J13B/C：Android随机根链路已实测，Windows失败转为前缀清理
 
 精确2856dfa的Android原生35447685127及双平台push35447630428成功；B随机跨轮、显式关闭随机、顺序回退及SQLite队列同步已有真实模拟器证据，见[B报告](phase_7j13b_root_native_shuffle_report.md)。Windows用户重启后原样e84bda7已通过第三轮进度检查，但前缀操作失败；[C诊断](phase_7j13c_windows_prefix_report.md)收集原始轨迹，不把重启前的加载失败当作当前阻碍，也不把新诊断实现当作修复。Windows完整播放/声学/资源/生命周期和Phase7整体出口仍保留。
