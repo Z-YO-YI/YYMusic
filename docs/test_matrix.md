@@ -1,5 +1,7 @@
 # 原生基础验证矩阵
 
+Phase7J13C：6项新增脱敏原始索引追踪测试，61项序列/结果专项及完整2579 Flutter（105秒）、175 Node（43.90秒，无失败/跳过）、严格分析通过；新Windows诊断待GitHub构建和原样执行，见[C报告](phase_7j13c_windows_prefix_report.md)。用户重启后旧e84bda7进入第三轮后前缀清理失败，不计通过。B精确2856dfa的Android原生35447685127已有1项根随机实测通过（53秒）及旧WAV/content2项通过，双平台push35447630428 success，见[B原生补记](phase_7j13b_root_native_shuffle_report.md)；下方B未执行措辞为提交时历史。
+
 Phase7J13B：7项新增种子/结果合同/宿主日志单测、3项Node隔离门禁；79相关Flutter、完整2573 Flutter（134秒，含226 Windows Golden）、174 Node（51.13秒）、624文件格式零修改与严格分析零问题通过。独立Android随机跨轮/关闭随机场景尚待新SHA Actions执行，不混入上述数字，详见[B报告](phase_7j13b_root_native_shuffle_report.md)。原生产代码、A探针、Windows入口与旧合同不变。
 
 2026-09-19 J13A设备补记：精确7b28a16的push/PR成功，Linux2340普通测试与Windows226 Golden、3原生窗口握手分别通过，Android/Windows Debug构建成功。Android原生35445563113的WAV/content两项及根循环一项通过，根/引擎进度[302,111,101]ms，历史两项去重更新、自然完成和数据库重开无播放已取证，见[A报告](phase_7j13a_root_native_repeat_report.md)。模拟器-noaudio，声学未测。B固定种子随机与策略变更单独新增、单独计数，见[B报告](phase_7j13b_root_native_shuffle_report.md)。下方A“尚未设备执行”是该提交时记录，以本补记为准。

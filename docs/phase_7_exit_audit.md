@@ -1,5 +1,9 @@
 # Phase 7 出口审计与剩余工作
 
+## Phase7J13B/C：Android随机根链路已实测，Windows失败转为前缀清理
+
+精确2856dfa的Android原生35447685127及双平台push35447630428成功；B随机跨轮、显式关闭随机、顺序回退及SQLite队列同步已有真实模拟器证据，见[B报告](phase_7j13b_root_native_shuffle_report.md)。Windows用户重启后原样e84bda7已通过第三轮进度检查，但前缀操作失败；[C诊断](phase_7j13c_windows_prefix_report.md)收集原始轨迹，不把重启前的加载失败当作当前阻碍，也不把新诊断实现当作修复。Windows完整播放/声学/资源/生命周期和Phase7整体出口仍保留。
+
 ## Phase7J13A：Android最小顺序根链路已实测，随机出口继续B
 
 7b28a16的Android原生35445563113以及双平台push/PR均success，具体状态/时钟/SQLite/历史/关闭/重开证据见[A报告](phase_7j13a_root_native_repeat_report.md)。这只关闭最小Android顺序根验证，随机自然跨轮及显式策略变更按[B报告](phase_7j13b_root_native_shuffle_report.md)独立补证；不关闭Windows实际播放、声学/资源/生命周期、标准化、Phase7完整出口或Phase8–11。

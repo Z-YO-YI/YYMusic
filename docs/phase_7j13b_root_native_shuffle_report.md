@@ -31,4 +31,8 @@
 gh workflow run foundation.yml --repo Z-YO-YI/YYMusic --ref codex/native-repeat-window -f run_just_audio_poc=true -f just_audio_poc_platform=android -f build_windows_audio_probe=false -f include_https_audio_poc=false -f include_sequence_audio_poc=false -f include_root_repeat_poc=false -f include_root_shuffle_poc=true
 ```
 
-本批Android随机原生测试尚未执行，不能使用A或既有引擎探针成功替代；新SHA双平台构建与Android原生结果分别在Actions/PR记录。后续先处理本批原生失败（若有），成功后才评估下一设备验收增量；Windows真实播放、声学/资源字节/真机生命周期/标准化、Phase7剩余出口与Phase8–11仍未完成。
+### 2026-09-19 原生执行补记
+
+精确源码2856dfa530d7cefbc3e1e48d1e476c2847a94ec2的[Android原生35447685127](https://github.com/Z-YO-YI/YYMusic/actions/runs/35447685127)已success。既有WAV/content两项通过；新增根随机测试1项通过（53秒），宿主完整SHA、唯一成功记录和全字段合同复验通过。观测nativeEntries=q0/q1/q2/q1，nativeIndices=0/1/2/3，nativeCycles=0/0/0/1，原生进度[301,101,104,113]ms；根与持久化顺序均q0/q1/q2/q1/q2。关闭随机后当前原生曲继续111ms，完成后单曲顺序q2进度108ms；最终完成后1205ms未重启。mode变化时随机调用3次，此后停止；同批次、元数据、队列不重排、边界完成、顺序回退、随机保持关闭和资源清理均为true，acousticGapMeasured=false。
+
+同SHA的[push35447630428](https://github.com/Z-YO-YI/YYMusic/actions/runs/35447630428)源码检查、Android Debug与Windows构建均success；[PR35447633899](https://github.com/Z-YO-YI/YYMusic/actions/runs/35447633899)也已最终success。本结果关闭B的模拟器状态/时钟/持久化验收，不代表有声音频输出或Android真机后台。Windows重启后的新失败及下一定位见[C报告](phase_7j13c_windows_prefix_report.md)；声学/资源字节/真机生命周期/标准化、Phase7剩余出口与Phase8–11仍未完成。

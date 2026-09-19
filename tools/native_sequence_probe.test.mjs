@@ -11,7 +11,8 @@ test('sequence device probe uses real engine events and remains outside producti
   for (const call of ['loadSequence', 'appendSequence', 'pruneSequenceBefore', 'retainSequenceThrough', 'dispose']) {
     assert.ok(probe.includes(`.${call}(`), call);
   }
-  assert.match(probe, /JustAudioEngine\.create/);
+  assert.match(probe, /final backend = NativeJustAudioPlayerBackend\.create/);
+  assert.match(probe, /final engine = JustAudioEngine\(backend\)/);
   assert.match(probe, /engine\.states\.listen/);
   assert.match(probe, /\.firstWhere\(accepted\)/);
   assert.match(probe, /YYMUSIC_SEQUENCE_SOURCE_COMMIT/);
@@ -20,6 +21,18 @@ test('sequence device probe uses real engine events and remains outside producti
   assert.doesNotMatch(probe, /FakeAudio|Mock|Future\.delayed|\.emit\(/);
   assert.doesNotMatch(read('lib/main.dart'), /native_sequence_poc/);
   assert.doesNotMatch(read('integration_test/windows_audio_probe.dart'), /native_sequence_poc/);
+});
+
+test('prefix diagnostics observe one real backend without changing failure gates', () => {
+  const probe = read('integration_test/just_audio_native_sequence_poc_test.dart');
+  assert.equal(probe.match(/NativeJustAudioPlayerBackend\.create/g)?.length, 1);
+  assert.match(probe, /backend\.snapshots\.listen/);
+  assert.match(probe, /NativeSequencePruneStage\.failed,[\s\S]*?rethrow;[\s\S]*?finally/);
+  assert.match(probe, /await rawSubscription\.cancel\(\)/);
+  assert.match(probe, /YYMUSIC_NATIVE_SEQUENCE_PREFIX_TRACE/);
+  assert.match(probe, /trace\.toJson\(sourceCommit: commit\)/);
+  assert.doesNotMatch(read('lib/main.dart'), /native_sequence_prune_trace/);
+  assert.doesNotMatch(read('integration_test/support/native_sequence_probe_result.dart'), /PREFIX_TRACE|droppedSamples/);
 });
 
 test('sequence diagnostics are isolated opt-in modes and retain original source tests', () => {

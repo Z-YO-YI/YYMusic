@@ -7,10 +7,12 @@ import 'package:integration_test/integration_test.dart';
 import 'package:yymusic/domain/models/track.dart';
 import 'package:yymusic/playback/audio_engine_state.dart';
 import 'package:yymusic/playback/audio_sequence.dart';
+import 'package:yymusic/playback/just_audio_backend.dart';
 import 'package:yymusic/playback/just_audio_engine.dart';
 import 'package:yymusic/playback/playable_source.dart';
 
 import 'support/deterministic_pcm_wav.dart';
+import 'support/native_sequence_prune_trace.dart';
 
 /// Explicit device test; never called from the production app or old probes.
 void main() {
@@ -30,10 +32,11 @@ void main() {
       buildDeterministicPcmWav(duration: const Duration(seconds: 10)),
       flush: true,
     );
-    final engine = JustAudioEngine.create(
+    final backend = NativeJustAudioPlayerBackend.create(
       useProxyForRequestHeaders: false,
       supportsRequestHeaders: false,
     );
+    final engine = JustAudioEngine(backend);
     addTearDown(engine.dispose);
     AudioEngineState? latest;
     var hadError = false;
@@ -127,12 +130,47 @@ void main() {
     expect(cursor.sequenceIdentity, same(batch.identity));
     expect(cursor.entryId, 'same');
     expect(cursor.cycle, 2);
-    expect(
-      await engine
-          .pruneSequenceBefore(cursor)
-          .timeout(const Duration(seconds: 10)),
-      isTrue,
+    final trace = NativeSequencePruneTrace();
+    final pruneClock = Stopwatch()..start();
+    trace.record(
+      NativeSequencePruneStage.before,
+      backend.current,
+      elapsed: pruneClock.elapsed,
     );
+    final rawSubscription = backend.snapshots.listen((snapshot) {
+      trace.record(
+        NativeSequencePruneStage.snapshot,
+        snapshot,
+        elapsed: pruneClock.elapsed,
+      );
+    });
+    try {
+      final accepted = await engine
+          .pruneSequenceBefore(cursor)
+          .timeout(const Duration(seconds: 10));
+      trace.record(
+        accepted
+            ? NativeSequencePruneStage.accepted
+            : NativeSequencePruneStage.rejected,
+        backend.current,
+        elapsed: pruneClock.elapsed,
+      );
+      expect(accepted, isTrue);
+    } catch (_) {
+      trace.record(
+        NativeSequencePruneStage.failed,
+        backend.current,
+        elapsed: pruneClock.elapsed,
+      );
+      rethrow;
+    } finally {
+      await rawSubscription.cancel();
+      pruneClock.stop();
+      debugPrint(
+        'YYMUSIC_NATIVE_SEQUENCE_PREFIX_TRACE '
+        '${jsonEncode(trace.toJson(sourceCommit: commit))}',
+      );
+    }
     expect(latest!.sequenceCursor!.index, 2);
     expect(latest!.sequenceCursor!.cycle, 2);
     expect(latest!.phase, AudioEnginePhase.playing);
